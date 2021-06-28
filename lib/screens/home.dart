@@ -38,18 +38,31 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
       children: [
         Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          child: Consumer<PanelPosition>(
-            builder: (_, pos, __) => Opacity(
-              opacity: pos.position,
-              child: Text(
-                'Discover',
-                style: TextStyle(color: Colors.white, fontSize: 32),
-              ),
-            ),
-          ),
-        ),
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            child: Stack(
+              children: [
+                Consumer<PanelPosition>(
+                    builder: (_, pos, __) => Opacity(
+                        opacity: pos.position,
+                        child: Text(
+                          'Discover',
+                          style: TextStyle(color: Colors.white, fontSize: 32),
+                        ))),
+                Row(
+                  children: [
+                    Consumer<PanelPosition>(
+                        builder: (_, pos, __) => Opacity(
+                            opacity: 1 - pos.position,
+                            child: Text(
+                              'Distance',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 32),
+                            ))),
+                  ],
+                )
+              ],
+            )),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
@@ -66,10 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _body() {
     return Container(
+        padding: EdgeInsets.only(bottom: 180),
         color: Color(0xFF5DB075),
         child: SafeArea(
-          child: Stack(
-            children: [Center(child: Text('Content'))],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [],
           ),
         ));
     return GestureDetector(
