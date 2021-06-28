@@ -61,7 +61,10 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                     : Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.all(Radius.circular(48))),
             child: DefaultTextStyle(
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: .5),
                 child: Center(
                   widthFactor: 0,
                   child: widget.icon != null ? widget.icon : widget.child,
