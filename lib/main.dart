@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
 import 'package:hikee/screens/library.dart';
 import 'package:hikee/screens/profile.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -45,10 +47,8 @@ class MyApp extends StatelessWidget {
               showSelectedLabels: false),
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          textTheme: TextTheme(
-            headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-            headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-            bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+          textTheme: GoogleFonts.latoTextTheme(
+            Theme.of(context).textTheme,
           ),
         ),
         home: NotificationListener<OverscrollIndicatorNotification>(
@@ -83,8 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    EventsScreen(),
     LibraryScreen(),
+    EventsScreen(),
     CommunityScreen(),
     ProfileScreen()
   ];
@@ -107,12 +107,16 @@ class _MyHomePageState extends State<MyHomePage> {
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.local_library), label: 'Library'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Community'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
+              icon: Icon(LineAwesomeIcons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(LineAwesomeIcons.book_open), label: 'Library'),
+          BottomNavigationBarItem(
+              icon: Icon(LineAwesomeIcons.globe), label: 'Events'),
+          BottomNavigationBarItem(
+              icon: Icon(LineAwesomeIcons.comments), label: 'Community'),
+          BottomNavigationBarItem(
+              icon: Icon(LineAwesomeIcons.user), label: 'Profile')
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
