@@ -26,27 +26,27 @@ class _HomeScreenState extends State<HomeScreen> {
             boxShadow: [],
             color: Colors.transparent,
             onPanelSlide: (position) {
-              context.read<PanelPosition>().update(position);
+              Provider.of<PanelPosition>(context, listen: false)
+                  .update(position);
             },
-            panelBuilder: (_sc) => ChangeNotifierProvider(
-                create: (context) => PanelPosition(),
-                child: _panel(context, _sc)),
+            panel: _panel(context),
             body: _body()));
   }
 
-  Widget _panel(BuildContext context, ScrollController sc) {
+  Widget _panel(BuildContext context) {
     return SafeArea(
         child: Column(
       children: [
         Container(
           alignment: Alignment.centerLeft,
           padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          child: AnimatedOpacity(
-            opacity: context.watch<PanelPosition>().position,
-            duration: const Duration(milliseconds: 1),
-            child: Text(
-              'Discover',
-              style: TextStyle(color: Colors.white, fontSize: 32),
+          child: Consumer<PanelPosition>(
+            builder: (_, pos, __) => Opacity(
+              opacity: pos.position,
+              child: Text(
+                'Discover',
+                style: TextStyle(color: Colors.white, fontSize: 32),
+              ),
             ),
           ),
         ),
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32), topRight: Radius.circular(32)),
+                  topLeft: Radius.circular(26), topRight: Radius.circular(26)),
             ),
             child: Center(child: Text('Content')),
           ),
