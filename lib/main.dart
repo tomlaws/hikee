@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
 import 'package:hikee/screens/library.dart';
 import 'package:hikee/screens/profile.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => PanelPosition()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 const Color themeColor = Color(0xFF5DB075);
