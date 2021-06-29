@@ -54,19 +54,22 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
           ),
           child: Container(
             padding:
-                EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 36),
+                EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16),
             decoration: BoxDecoration(
                 color: widget.invert
                     ? Colors.white
                     : Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.all(Radius.circular(48))),
+                borderRadius: BorderRadius.all(Radius.circular(32))),
             child: DefaultTextStyle(
                 style: TextStyle(
-                    color: Colors.white,
+                    color: widget.invert
+                        ? Theme.of(context).primaryColor
+                        : Colors.white,
                     fontWeight: FontWeight.bold,
                     letterSpacing: .5),
                 child: Center(
-                  widthFactor: 0,
+                  widthFactor: 1,
+                  heightFactor: 1,
                   child: widget.icon != null ? widget.icon : widget.child,
                 )),
           ),
