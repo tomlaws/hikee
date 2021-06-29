@@ -87,28 +87,52 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Consumer<PanelPosition>(
-                  builder: (_, pos, __) => Opacity(
-                        opacity: 1 - pos.position,
-                        child: DefaultTextStyle(
-                          style: TextStyle(color: Colors.white),
+              Expanded(
+                  child: Consumer<PanelPosition>(
+                      builder: (_, pos, __) => Opacity(
+                          opacity: 1 - pos.position,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 12),
-                                height: _panelHeaderHeight,
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Good Morning',
-                                  style: TextStyle(fontSize: 32),
+                              DefaultTextStyle(
+                                style: TextStyle(color: Colors.white),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 18, vertical: 12),
+                                          height: _panelHeaderHeight,
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            'Good Morning',
+                                            style: TextStyle(fontSize: 32),
+                                          ),
+                                        ),
+                                        Button(
+                                          icon: Icon(LineAwesomeIcons.bars,
+                                              color: Colors.white, size: 32),
+                                          onPressed: () {},
+                                        )
+                                      ],
+                                    )
+                                  ],
                                 ),
-                              )
+                              ),
+                              Expanded(
+                                  child: Center(
+                                child: Button(
+                                  invert: true,
+                                  child: Text('Set Your Goal'),
+                                  onPressed: () {},
+                                ),
+                              ))
                             ],
-                          ),
-                        ),
-                      )),
+                          )))),
               Padding(
                 padding: EdgeInsets.all(12),
                 child: Row(
