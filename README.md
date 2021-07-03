@@ -2,6 +2,11 @@
 
 This is our final year project at HKUST.
 
+# Setup
+
+1. Install <a href="https://flutter.dev/docs/get-started/install">Flutter and Android Studio</a>
+2. Run `flutter run` to launch the app in emulator/browser
+
 # Team
 
 This is a collaborative project with members listed below.
