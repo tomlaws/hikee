@@ -232,7 +232,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _map(ActiveRoute activeRouteProvider) {
-    print(activeRouteProvider.route!.polyline.length);
     return Listener(
         onPointerDown: (e) {
           _lockPosition = false;
