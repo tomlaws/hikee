@@ -7,12 +7,14 @@ class Button extends StatefulWidget {
   final Widget? child;
   final void Function() onPressed;
   final bool invert;
+  final Color? backgroundColor;
   final Icon? icon;
   const Button(
       {Key? key,
       this.child,
       required this.onPressed,
       this.icon,
+      this.backgroundColor,
       this.invert = false})
       : super(key: key);
 
@@ -23,6 +25,7 @@ class Button extends StatefulWidget {
 class _ButtonState extends State<Button> with TickerProviderStateMixin {
   double _scale = 1;
   late AnimationController _controller;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -56,9 +59,11 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
             padding:
                 EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16),
             decoration: BoxDecoration(
-                color: widget.invert
-                    ? Colors.white
-                    : Theme.of(context).primaryColor,
+                color: widget.backgroundColor != null
+                    ? widget.backgroundColor
+                    : (widget.invert
+                        ? Colors.white
+                        : Theme.of(context).primaryColor),
                 borderRadius: BorderRadius.all(Radius.circular(32))),
             child: DefaultTextStyle(
                 style: TextStyle(
@@ -83,7 +88,11 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         _controller.reverse();
       },
       onTapUp: (dp) {
-        Timer(Duration(milliseconds: 150), () {
+        if (_timer != null) {
+          _timer!.cancel();
+          _timer = null;
+        }
+        _timer = Timer(Duration(milliseconds: 150), () {
           _controller.fling();
         });
       },
@@ -95,6 +104,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    if (_timer != null) _timer!.cancel();
     _controller.dispose();
     super.dispose();
   }
