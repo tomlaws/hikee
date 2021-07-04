@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -96,15 +97,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       clipBehavior: Clip.none,
       padding: EdgeInsets.only(
-          bottom: _collapsedPanelHeight -
-              (_panelHeaderHeight / 2) -
-              _mapBottomPadding),
+          bottom: max(
+              0,
+              _collapsedPanelHeight -
+                  (_panelHeaderHeight / 2) -
+                  _mapBottomPadding)),
       color: Color(0xFF5DB075),
       child: Consumer2<PanelPosition, ActiveRoute>(
           builder: (_, posProvider, activeRouteProvider, __) => Stack(
                 children: [
                   if (activeRouteProvider.route != null)
-                    Opacity(opacity: 1 - posProvider.position, child: _map()),
+                    Opacity(
+                        opacity: 1 - posProvider.position,
+                        child: _map(activeRouteProvider)),
                   SafeArea(
                       child: Opacity(
                           opacity: 1 - posProvider.position,
@@ -173,6 +178,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Button(
                                     icon: Icon(
+                                      LineAwesomeIcons.expand,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    invert: true,
+                                    onPressed: () {},
+                                  ),
+                                  Container(
+                                    height: 8,
+                                  ),
+                                  Button(
+                                    icon: Icon(
                                       LineAwesomeIcons.map_marker,
                                       color: Theme.of(context).primaryColor,
                                     ),
@@ -215,7 +231,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _map() {
+  Widget _map(ActiveRoute activeRouteProvider) {
+    print(activeRouteProvider.route!.polyline.length);
     return Listener(
         onPointerDown: (e) {
           _lockPosition = false;
@@ -227,9 +244,20 @@ class _HomeScreenState extends State<HomeScreen> {
           zoomControlsEnabled: false,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
+          polylines: [
+            Polyline(
+              polylineId: PolylineId('polyLine'),
+              color: Colors.amber,
+              startCap: Cap.roundCap,
+              endCap: Cap.roundCap,
+              width: 5,
+              jointType: JointType.bevel,
+              points: activeRouteProvider.route!.polyline,
+            ),
+          ].toSet(),
           onMapCreated: (GoogleMapController controller) {
             controller.setMapStyle(
-                '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
+                '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
             _mapController = Completer<GoogleMapController>();
             _mapController.complete(controller);
             setState(() {
@@ -243,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       CameraPosition(
                           target: LatLng(
                               l.latitude as double, l.longitude as double),
-                          zoom: 18),
+                          zoom: 16),
                     ),
                   );
                 } catch (e) {}
@@ -266,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
           bearing: 0,
           target:
               LatLng(location.latitude as double, location.longitude as double),
-          zoom: 17.0,
+          zoom: 16.0,
         ),
       ));
     } catch (e) {
