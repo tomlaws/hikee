@@ -1,4 +1,4 @@
-package com.example.hikee
+package com.hikee.android
 
 import io.flutter.embedding.android.FlutterActivity
 
