@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/data/routes.dart';
-import 'package:hikee/models/active_route.dart';
+import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -48,11 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Provider.of<PanelPosition>(context, listen: false)
                   .update(position);
             },
-            panel: _panel(context),
+            panelBuilder: (ScrollController sc) => _panel(context, sc),
             body: _body()));
   }
 
-  Widget _panel(BuildContext context) {
+  Widget _panel(BuildContext context, ScrollController sc) {
     return SafeArea(
         child: Column(
       children: [
@@ -78,17 +79,40 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(26), topRight: Radius.circular(26)),
             ),
-            child: Padding(
-                padding: EdgeInsets.all(18),
-                child: Column(
-                  children: [
-                    TextInput(
-                      hintText: 'Search...',
-                    )
-                  ],
-                )),
+            child: Column(
+              children: [
+                Padding(
+                    padding: EdgeInsets.all(18),
+                    child: Column(
+                      children: [
+                        TextInput(
+                          hintText: 'Search...',
+                        )
+                      ],
+                    )),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: 4,
+                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 60),
+                    controller: sc,
+                    itemBuilder: (_, __) => HikingRouteTile(
+                        route: HikingRouteData.retrieve()[0],
+                        onTap: () {
+                          Provider.of<ActiveHikingRoute>(context, listen: false)
+                              .update(HikingRouteData.retrieve()[0]);
+                          _pc.close();
+                        }),
+                    separatorBuilder: (BuildContext context, int index) {
+                      return SizedBox(
+                        height: 10,
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
-        )
+        ),
       ],
     ));
   }
@@ -103,13 +127,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   (_panelHeaderHeight / 2) -
                   _mapBottomPadding)),
       color: Color(0xFF5DB075),
-      child: Consumer2<PanelPosition, ActiveRoute>(
-          builder: (_, posProvider, activeRouteProvider, __) => Stack(
+      child: Consumer2<PanelPosition, ActiveHikingRoute>(
+          builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
                 children: [
-                  if (activeRouteProvider.route != null)
+                  if (activeHikingRouteProvider.route != null)
                     Opacity(
                         opacity: 1 - posProvider.position,
-                        child: _map(activeRouteProvider)),
+                        child: _map(activeHikingRouteProvider)),
                   SafeArea(
                       child: Opacity(
                           opacity: 1 - posProvider.position,
@@ -146,22 +170,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                               ),
-                              if (activeRouteProvider.route == null)
+                              if (activeHikingRouteProvider.route == null)
                                 Expanded(
                                     child: Center(
                                   child: Button(
                                     invert: true,
                                     child: Text('Set Your Goal'),
                                     onPressed: () {
-                                      Provider.of<ActiveRoute>(context,
-                                              listen: false)
-                                          .update(RouteData.retrieve()[0]);
+                                      _pc.open();
                                     },
                                   ),
                                 ))
                             ],
                           ))),
-                  if (activeRouteProvider.route != null)
+                  if (activeHikingRouteProvider.route != null)
                     Positioned(
                         bottom: _mapBottomPadding,
                         left: 0,
@@ -207,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     invert: true,
                                     onPressed: () {
-                                      Provider.of<ActiveRoute>(context,
+                                      Provider.of<ActiveHikingRoute>(context,
                                               listen: false)
                                           .update(null);
                                     },
@@ -231,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _map(ActiveRoute activeRouteProvider) {
+  Widget _map(ActiveHikingRoute activeHikingRouteProvider) {
     return Listener(
         onPointerDown: (e) {
           _lockPosition = false;
@@ -251,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
               endCap: Cap.roundCap,
               width: 5,
               jointType: JointType.bevel,
-              points: activeRouteProvider.route!.polyline,
+              points: activeHikingRouteProvider.route!.polyline,
             ),
           ].toSet(),
           onMapCreated: (GoogleMapController controller) {

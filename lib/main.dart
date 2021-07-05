@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hikee/models/active_route.dart';
+import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
@@ -15,7 +15,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PanelPosition()),
-        ChangeNotifierProvider(create: (_) => ActiveRoute()),
+        ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
       ],
       child: MyApp(),
     ),

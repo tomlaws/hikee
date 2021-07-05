@@ -1,14 +1,16 @@
 import 'package:hikee/models/route.dart';
 
-class RouteData {
-  static List<Route> retrieve() {
-    List<Route> routes = [
-      Route.fromJson({
+class HikingRouteData {
+  static List<HikingRoute> retrieve() {
+    List<HikingRoute> routes = [
+      HikingRoute.fromJson({
         'name': '萬宜水庫',
         'name_en': 'High Island Reservoir',
         'difficulty': 5,
         'duration': 6.0,
         'length': 20.5,
+        'image':
+            'https://follo3me.com/wp-content/uploads/2015/09/special005-01.jpg?w=721&h=480&ssl=1',
         'polyline': [
           [22.399671, 114.322878],
           [22.399686, 114.322868],
