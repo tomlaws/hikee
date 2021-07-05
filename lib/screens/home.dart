@@ -10,6 +10,7 @@ import 'package:hikee/components/text_input.dart';
 import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
+import 'package:hikee/models/route.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -98,8 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (_, __) => HikingRouteTile(
                         route: HikingRouteData.retrieve()[0],
                         onTap: () {
-                          Provider.of<ActiveHikingRoute>(context, listen: false)
-                              .update(HikingRouteData.retrieve()[0]);
+                          _setRoute(HikingRouteData.retrieve()[0]);
                           _pc.close();
                         }),
                     separatorBuilder: (BuildContext context, int index) {
@@ -321,5 +321,10 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print(e);
     }
+  }
+
+  void _setRoute(HikingRoute route) {
+    _lockPosition = true;
+    Provider.of<ActiveHikingRoute>(context, listen: false).update(route);
   }
 }
