@@ -22,8 +22,10 @@ class _HorizontalListState extends State<HorizontalList> {
     return Stack(
       children: [
         CarouselSlider(
-            items: List<EventCard>.generate(widget.items.length,
-                (index) => EventCard(event: widget.items[index])),
+            items: List<EventCard>.generate(
+                widget.items.length,
+                (index) =>
+                    EventCard(featured: true, event: widget.items[index])),
             options: CarouselOptions(
               height: 460,
               viewportFraction: 0.85,
@@ -41,7 +43,7 @@ class _HorizontalListState extends State<HorizontalList> {
               scrollDirection: Axis.horizontal,
             )),
         Positioned(
-          bottom: -12,
+          bottom: -9,
           left: 0,
           right: 0,
           child: Row(
