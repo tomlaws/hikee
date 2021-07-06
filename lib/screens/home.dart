@@ -43,7 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: _pc,
             parallaxEnabled: true,
             renderPanelSheet: false,
-            maxHeight: MediaQuery.of(context).size.height,
+            maxHeight:
+                MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
             minHeight: _collapsedPanelHeight,
             color: Colors.transparent,
             onPanelSlide: (position) {
@@ -61,17 +62,24 @@ class _HomeScreenState extends State<HomeScreen> {
         Consumer<PanelPosition>(
             builder: (_, pos, __) => IgnorePointer(
                 ignoring: pos.position == 0,
-                child: Container(
-                  height: _panelHeaderHeight,
-                  color: Colors.transparent,
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  child: Opacity(
-                      opacity: pos.position,
-                      child: Text(
-                        'Discover',
-                        style: TextStyle(color: Colors.white, fontSize: 32),
-                      )),
+                child: GestureDetector(
+                  onVerticalDragUpdate: (DragUpdateDetails dets) {
+                    // enable swipe down to close for this component when scroll position is not zero
+                    if (sc.offset == 0) return;
+                    _adjustPanelPosition(dets);
+                  },
+                  child: Container(
+                    height: _panelHeaderHeight,
+                    color: Colors.transparent,
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    child: Opacity(
+                        opacity: pos.position,
+                        child: Text(
+                          'Discover',
+                          style: TextStyle(color: Colors.white, fontSize: 32),
+                        )),
+                  ),
                 ))),
         Expanded(
           child: Container(
@@ -82,19 +90,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Column(
               children: [
-                Padding(
-                    padding: EdgeInsets.all(18),
-                    child: Column(
-                      children: [
-                        TextInput(
-                          hintText: 'Search...',
-                        )
-                      ],
-                    )),
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onVerticalDragUpdate: (DragUpdateDetails dets) {
+                    // enable swipe down to close for this component when scroll position is not zero
+                    if (sc.offset == 0) return;
+                    _adjustPanelPosition(dets);
+                  },
+                  child: Container(
+                      margin: EdgeInsets.all(18),
+                      child: Column(
+                        children: [
+                          TextInput(
+                            hintText: 'Search...',
+                          )
+                        ],
+                      )),
+                ),
                 Expanded(
                   child: ListView.separated(
                     itemCount: 4,
-                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 60),
+                    padding: EdgeInsets.only(left: 16, right: 16),
                     controller: sc,
                     itemBuilder: (_, __) => HikingRouteTile(
                         route: HikingRouteData.retrieve()[0],
@@ -251,6 +267,15 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Color(0xFF5DB075),
       ),
     );
+  }
+
+  void _adjustPanelPosition(DragUpdateDetails dets) {
+    double dy = dets.delta.dy;
+    double newPos = _pc.panelPosition -
+        dy /
+            ((MediaQuery.of(context).size.height - kBottomNavigationBarHeight) -
+                _collapsedPanelHeight);
+    _pc.panelPosition = newPos.clamp(0, 1);
   }
 
   Widget _map(ActiveHikingRoute activeHikingRouteProvider) {
