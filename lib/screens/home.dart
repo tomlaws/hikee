@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
+import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
@@ -149,7 +150,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (activeHikingRouteProvider.route != null)
                     Opacity(
                         opacity: 1 - posProvider.position,
-                        child: _map(activeHikingRouteProvider)),
+                        child: _map(activeHikingRouteProvider))
+                  else
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Opacity(
+                        opacity: 1 - posProvider.position,
+                        child: ClipPath(
+                          clipper: MountainDeco(),
+                          child: Container(
+                            color: Colors.black.withOpacity(.05),
+                            width: 300,
+                            height: 300,
+                          ),
+                        ),
+                      ),
+                    ),
                   SafeArea(
                       child: Opacity(
                           opacity: 1 - posProvider.position,
@@ -257,15 +275,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ))
                 ],
               )),
-    );
-    return GestureDetector(
-      onPanUpdate: (d) {
-        if (d.delta.dy < 0 && _pc.isPanelClosed) _pc.open();
-        if (d.delta.dy > 0 && _pc.isPanelOpen) _pc.close();
-      },
-      child: Container(
-        color: Color(0xFF5DB075),
-      ),
     );
   }
 
