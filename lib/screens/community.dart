@@ -14,15 +14,15 @@ class _CommunityScreenState extends State<CommunityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () {},
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      // extendBodyBehindAppBar: true,
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back_ios_new),
+      //     onPressed: () {},
+      //   ),
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      // ),
       body: SafeArea(
         // whole
         child: Container(
@@ -35,6 +35,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
                 // title
                 CommunityTitle(),
                 // Cards
+                CommunityCard(),
+                CommunityCard(),
                 CommunityCard(),
                 CommunityCard(),
               ],

@@ -6,61 +6,73 @@ class CommunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      shadowColor: Colors.black,
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 22),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withAlpha(24),
+              offset: Offset(0, 3),
+              blurRadius: 12)
+        ],
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
-        children: [
-          Container(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.network(
-                'https://ychef.files.bbci.co.uk/live/624x351/p0973lkk.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(12),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title = club name + number of memebers
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 10, 0, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "XX Hiking Club",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris",
-                          style: TextStyle(color: Colors.grey))
-                    ],
-                  )),
-                  Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text("123 members"),
-                        Button(
-                          onPressed: () {},
-                          child: Text("JOIN"),
-                        )
-                      ],
-                    ),
-                  )
+                  Text(
+                    "XXHiking Club",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                  Text("123 members",
+                      style: TextStyle(color: Colors.grey[400], fontSize: 12))
                 ],
               ),
             ),
-          )
-        ],
-      ),
+
+            // img
+            Image.network(
+                'https://ychef.files.bbci.co.uk/live/624x351/p0973lkk.jpg'),
+
+            // container of description + button
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                children: [
+                  // club description
+                  Container(
+                    padding: const EdgeInsets.symmetric(),
+                    child: Text(
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ipsum non neque viverra porttitor eros, lacus, est. Lobortis in egestas hac sit porttitor odio cras suspendisse in. Dictum suspendisse sit iaculis erat morbi arcu eu enim. Eget purus pharetra, ultricies condimentum."),
+                  ),
+                    // Button
+                  Container(
+                    padding: const EdgeInsets.symmetric(),
+                    child:SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+                        onPressed: () {},
+                        child: const Text('JOIN', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    )
+                  )
+                ],
+              )
+            )
+          ],
+        ),
     );
   }
 }
