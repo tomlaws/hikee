@@ -7,6 +7,7 @@ class HikingRouteData {
         'name': '萬宜水庫',
         'name_en': 'High Island Reservoir',
         'difficulty': 5,
+        'rating': 3.5,
         'duration': 6.0,
         'length': 20.5,
         'image':
