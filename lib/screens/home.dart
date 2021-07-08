@@ -7,13 +7,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/mountain_deco.dart';
+import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
 
@@ -26,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
+  ScrollController _sc = ScrollController();
   final double _collapsedPanelHeight = 180;
   final double _panelHeaderHeight = 60;
   double _mapBottomPadding = 18;
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     zoom: 11.55,
   );
   bool _lockPosition = true;
+  bool _pinned = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +51,26 @@ class _HomeScreenState extends State<HomeScreen> {
             minHeight: _collapsedPanelHeight,
             color: Colors.transparent,
             onPanelSlide: (position) {
+              setState(() {
+                _pinned = true;
+              });
               Provider.of<PanelPosition>(context, listen: false)
                   .update(position);
             },
-            panelBuilder: (ScrollController sc) => _panel(context, sc),
+            onPanelOpened: () {
+              setState(() {
+                _pinned = false;
+              });
+            },
+            onPanelClosed: () {
+              setState(() {
+                _pinned = false;
+              });
+            },
+            panelBuilder: (ScrollController sc) {
+              _sc = sc;
+              return _panel(context, sc);
+            },
             body: _body()));
   }
 
@@ -63,24 +81,17 @@ class _HomeScreenState extends State<HomeScreen> {
         Consumer<PanelPosition>(
             builder: (_, pos, __) => IgnorePointer(
                 ignoring: pos.position == 0,
-                child: GestureDetector(
-                  onVerticalDragUpdate: (DragUpdateDetails dets) {
-                    // enable swipe down to close for this component when scroll position is not zero
-                    if (sc.offset == 0) return;
-                    _adjustPanelPosition(dets);
-                  },
-                  child: Container(
-                    height: _panelHeaderHeight,
-                    color: Colors.transparent,
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                    child: Opacity(
-                        opacity: pos.position,
-                        child: Text(
-                          'Discover',
-                          style: TextStyle(color: Colors.white, fontSize: 32),
-                        )),
-                  ),
+                child: Container(
+                  height: _panelHeaderHeight,
+                  color: Colors.transparent,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                  child: Opacity(
+                      opacity: pos.position,
+                      child: Text(
+                        'Discover',
+                        style: TextStyle(color: Colors.white, fontSize: 32),
+                      )),
                 ))),
         Expanded(
           child: Container(
@@ -89,43 +100,78 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(26), topRight: Radius.circular(26)),
             ),
-            child: Column(
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onVerticalDragUpdate: (DragUpdateDetails dets) {
-                    // enable swipe down to close for this component when scroll position is not zero
-                    if (sc.offset == 0) return;
-                    _adjustPanelPosition(dets);
-                  },
-                  child: Container(
-                      margin: EdgeInsets.all(18),
-                      child: Column(
-                        children: [
-                          TextInput(
-                            hintText: 'Search...',
-                          )
-                        ],
-                      )),
+            clipBehavior: Clip.hardEdge,
+            child: CustomScrollView(
+              controller: sc,
+              slivers: [
+                SliverAppBar(
+                  shadowColor: Colors.transparent,
+                  expandedHeight: 116,
+                  backgroundColor: Colors.white,
+                  floating: true,
+                  snap: true,
+                  pinned: _pinned,
+                  toolbarHeight: 116,
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: TextInput(
+                          hintText: 'Search...',
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Container(
+                          height: 32,
+                          child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              Button(
+                                onPressed: () {},
+                                child: Text('test'),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: 4,
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    controller: sc,
-                    itemBuilder: (_, __) => HikingRouteTile(
-                        route: HikingRouteData.retrieve()[0],
-                        onTap: () {
-                          _setRoute(HikingRouteData.retrieve()[0]);
-                          _pc.close();
-                        }),
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(
-                        height: 10,
-                      );
-                    },
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    // The builder function returns a ListTile with a title that
+                    // displays the index of the current item.
+                    (context, index) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: HikingRouteTile(
+                          route: HikingRouteData.retrieve()[0],
+                          onTap: () {
+                            _setRoute(HikingRouteData.retrieve()[0]);
+                            _pc.close();
+                          }),
+                    ),
+                    // Builds 1000 ListTiles
+                    childCount: 1000,
                   ),
                 )
+                //   itemCount: 4,
+                //   padding: EdgeInsets.only(left: 16, right: 16, top: 116),
+                //   controller: sc,
+                //   itemBuilder: (_, __) => HikingRouteTile(
+                //       route: HikingRouteData.retrieve()[0],
+                //       onTap: () {
+                //         _setRoute(HikingRouteData.retrieve()[0]);
+                //         _pc.close();
+                //       }),
+                //   separatorBuilder: (BuildContext context, int index) {
+                //     return SizedBox(
+                //       height: 10,
+                //     );
+                //   },
+                // ),
               ],
             ),
           ),
@@ -278,14 +324,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _adjustPanelPosition(DragUpdateDetails dets) {
-    double dy = dets.delta.dy;
-    double newPos = _pc.panelPosition -
-        dy /
-            ((MediaQuery.of(context).size.height - kBottomNavigationBarHeight) -
-                _collapsedPanelHeight);
-    _pc.panelPosition = newPos.clamp(0, 1);
-  }
+  // void _adjustPanelPosition(DragUpdateDetails dets) {
+  //   double dy = dets.delta.dy;
+  //   double newPos = _pc.panelPosition -
+  //       dy /
+  //           ((MediaQuery.of(context).size.height - kBottomNavigationBarHeight) -
+  //               _collapsedPanelHeight);
+  //   _pc.panelPosition = newPos.clamp(0, 1);
+  // }
 
   Widget _map(ActiveHikingRoute activeHikingRouteProvider) {
     return Listener(
