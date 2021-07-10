@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/components/button.dart';
 
 class CommunityCard extends StatelessWidget {
   const CommunityCard({Key? key}) : super(key: key);

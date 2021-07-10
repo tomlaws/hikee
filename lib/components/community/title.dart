@@ -6,7 +6,6 @@ class CommunityTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
