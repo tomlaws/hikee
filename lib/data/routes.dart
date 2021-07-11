@@ -4,6 +4,7 @@ class HikingRouteData {
   static List<HikingRoute> retrieve() {
     List<HikingRoute> routes = [
       HikingRoute.fromJson({
+        'id': 1,
         'name': '萬宜水庫',
         'name_en': 'High Island Reservoir',
         'difficulty': 5,

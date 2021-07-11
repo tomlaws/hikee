@@ -1,6 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HikingRoute {
+  final int id;
   final String name;
   final String name_en;
   final String image;
@@ -11,11 +12,12 @@ class HikingRoute {
   final List<LatLng> polyline;
   final DateTime? updatedAt;
 
-  HikingRoute(this.name, this.name_en, this.image, this.difficulty, this.rating,
+  HikingRoute(this.id, this.name, this.name_en, this.image, this.difficulty, this.rating,
       this.duration, this.length, this.polyline, this.updatedAt);
   //\[(.*?),(.*?)\]
   HikingRoute.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
+      : id = json['id'],
+        name = json['name'],
         name_en = json['name_en'],
         image = json['image'],
         difficulty = json['difficulty'],
@@ -28,6 +30,7 @@ class HikingRoute {
         updatedAt = json['updatedAt'];
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'name': name,
         'name_en': name_en,
         'image': image,

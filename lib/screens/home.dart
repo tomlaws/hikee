@@ -13,6 +13,7 @@ import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/screens/route.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
@@ -149,8 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: HikingRouteTile(
                           route: HikingRouteData.retrieve()[0],
                           onTap: () {
-                            _setRoute(HikingRouteData.retrieve()[0]);
-                            _pc.close();
+                            // _setRoute(HikingRouteData.retrieve()[0]);
+                            // _pc.close();
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => RouteScreen(id: 1)));
                           }),
                     ),
                     // Builds 1000 ListTiles
