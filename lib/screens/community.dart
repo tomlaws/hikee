@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hikee/components/community/title.dart';
-import 'package:hikee/components/community/card.dart';
+import 'package:hikee/components/community/group_card.dart';
 import 'package:hikee/components/community/feed_card.dart';
+import 'package:hikee/components/text_input.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({Key? key}) : super(key: key);
@@ -90,38 +91,42 @@ class _CommunityScreenState extends State<CommunityScreen> {
   }
 
   Widget _searchBar() {
-    return TextField(
-      decoration: InputDecoration(
-          border: OutlineInputBorder(), hintText: "Search a group..."),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 18),
+      child: TextInput(
+        hintText: "Search a group...",
+      ),
     );
   }
 
   Widget _feedTab() {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
-      children: [
-        CommunityFeedCard(),
-        CommunityFeedCard(),
-        CommunityFeedCard(),
-        CommunityFeedCard(),
-      ],
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      child: ListView(
+        children: [
+          CommunityFeedCard(),
+          CommunityFeedCard(),
+          CommunityFeedCard(),
+          CommunityFeedCard(),
+        ],
+      ),
     );
   }
 
   Widget _groupTab() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
+      padding: const EdgeInsets.only(top: 12),
       child: ListView(
         children: [
           _searchBar(),
           Container(
-            padding: const EdgeInsets.only(bottom: 22),
+            padding: const EdgeInsets.only(bottom: 6),
           ),
-          CommunityCard(),
-          CommunityCard(),
-          CommunityCard(),
-          CommunityCard(),
-          CommunityCard(),
+          CommunityGroupCard(),
+          CommunityGroupCard(),
+          CommunityGroupCard(),
+          CommunityGroupCard(),
+          CommunityGroupCard(),
         ],
       ),
     );
