@@ -33,10 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   double _mapBottomPadding = 18;
   Completer<GoogleMapController> _mapController = Completer();
   Location _location = Location();
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(22.352036, 114.1373281),
-    zoom: 11.55,
-  );
   bool _lockPosition = true;
   bool _pinned = false;
   HikingRoute? _activeRoute;
@@ -50,7 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_activeRoute != null) {
         _pc.close();
         _lockPosition = false;
-        _goToLocation(_activeRoute!.polyline[0].latitude, _activeRoute!.polyline[0].longitude);
+        _goToLocation(_activeRoute!.polyline[0].latitude,
+            _activeRoute!.polyline[0].longitude);
       }
     }
     return Scaffold(
@@ -339,7 +336,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: GoogleMap(
           padding: EdgeInsets.only(bottom: _mapBottomPadding),
           mapType: MapType.normal,
-          initialCameraPosition: _kGooglePlex,
+          initialCameraPosition: CameraPosition(
+            target: LatLng(22.302711, 114.177216),
+            zoom: 14,
+          ),
           zoomControlsEnabled: false,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
@@ -370,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       CameraPosition(
                           target: LatLng(
                               l.latitude as double, l.longitude as double),
-                          zoom: 16),
+                          zoom: 14),
                     ),
                   );
                 } catch (e) {}
@@ -382,20 +382,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _goToCurrentLocation() async {
     try {
-      final GoogleMapController controller = await _mapController.future;
-
       Location _location = new Location();
       LocationData location;
       _lockPosition = true;
       location = await _location.getLocation();
-      controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          bearing: 0,
-          target:
-              LatLng(location.latitude as double, location.longitude as double),
-          zoom: 16.0,
-        ),
-      ));
+      await _goToLocation(location.latitude as double, location.longitude as double);
     } catch (e) {
       print(e);
     }
@@ -407,9 +398,8 @@ class _HomeScreenState extends State<HomeScreen> {
       controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           bearing: 0,
-          target:
-              LatLng(latitude, longitude),
-          zoom: 16.0,
+          target: LatLng(latitude, longitude),
+          zoom: 14.0,
         ),
       ));
     } catch (e) {
