@@ -6,6 +6,8 @@ class HikingRoute {
   final String name_en;
   final String district;
   final String district_en;
+  final String description;
+  final String description_en;
   final String image;
   final double difficulty;
   final double rating;
@@ -20,6 +22,8 @@ class HikingRoute {
       this.name_en,
       this.district,
       this.district_en,
+      this.description,
+      this.description_en,
       this.image,
       this.difficulty,
       this.rating,
@@ -34,6 +38,8 @@ class HikingRoute {
         name_en = json['name_en'],
         district = json['district'],
         district_en = json['district_en'],
+        description = json['description'],
+        description_en = json['description_en'],
         image = json['image'],
         difficulty = json['difficulty'],
         rating = json['rating'],
@@ -50,6 +56,8 @@ class HikingRoute {
         'name_en': name_en,
         'district': district,
         'district_en': district_en,
+        'description': description,
+        'description_en': description_en,
         'image': image,
         'difficulty': difficulty,
         'rating': rating,

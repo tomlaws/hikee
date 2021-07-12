@@ -39,9 +39,20 @@ class _HomeScreenState extends State<HomeScreen> {
   );
   bool _lockPosition = true;
   bool _pinned = false;
+  HikingRoute? _activeRoute;
 
   @override
   Widget build(BuildContext context) {
+    HikingRoute? route =
+        Provider.of<ActiveHikingRoute>(context, listen: true).route;
+    if (route != _activeRoute) {
+      _activeRoute = route;
+      if (_activeRoute != null) {
+        _pc.close();
+        _lockPosition = false;
+        _goToLocation(_activeRoute!.polyline[0].latitude, _activeRoute!.polyline[0].longitude);
+      }
+    }
     return Scaffold(
         body: SlidingUpPanel(
             controller: _pc,
@@ -150,8 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: HikingRouteTile(
                           route: HikingRouteData.retrieve()[index],
                           onTap: () {
-                            // _setRoute(HikingRouteData.retrieve()[0]);
-                            // _pc.close();
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (_) => RouteScreen(
                                     id: HikingRouteData.retrieve()[index].id)));
@@ -161,21 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     childCount: HikingRouteData.retrieve().length,
                   ),
                 )
-                //   itemCount: 4,
-                //   padding: EdgeInsets.only(left: 16, right: 16, top: 116),
-                //   controller: sc,
-                //   itemBuilder: (_, __) => HikingRouteTile(
-                //       route: HikingRouteData.retrieve()[0],
-                //       onTap: () {
-                //         _setRoute(HikingRouteData.retrieve()[0]);
-                //         _pc.close();
-                //       }),
-                //   separatorBuilder: (BuildContext context, int index) {
-                //     return SizedBox(
-                //       height: 10,
-                //     );
-                //   },
-                // ),
               ],
             ),
           ),
@@ -399,6 +393,22 @@ class _HomeScreenState extends State<HomeScreen> {
           bearing: 0,
           target:
               LatLng(location.latitude as double, location.longitude as double),
+          zoom: 16.0,
+        ),
+      ));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _goToLocation(double latitude, double longitude) async {
+    try {
+      final GoogleMapController controller = await _mapController.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          bearing: 0,
+          target:
+              LatLng(latitude, longitude),
           zoom: 16.0,
         ),
       ));

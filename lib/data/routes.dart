@@ -11,6 +11,10 @@ class HikingRouteData {
         'name_en': 'High Island Reservoir',
         'district': '西貢',
         'district_en': 'Sai Kung',
+        'description':
+            '萬宜水庫位於香港西貢區，是香港儲水量最大的水庫，\n萬宜水庫獲由香港郊野公園之友會、國際獅子總會港澳303區及漁農自然護理署舉辦，「香港十大勝景選舉」第四名。',
+        'description_en':
+            'The Wangi Reservoir is located in the Saigon District of Hong Kong. It is the largest reservoir in Hong Kong with a capacity of 281 million cubic meters. \nThe Wanyi Reservoir was organized by the Friends of Hong Kong Country Parks, Lions Clubs International District 303 of Hong Kong and Macau, and the Agriculture, Fisheries and Conservation Department, and ranked fourth in the "Hong Kong Top Ten Scenic Spots Election".',
         'difficulty': 5.0,
         'rating': 3.5,
         'duration': 6.0,
@@ -450,6 +454,10 @@ class HikingRouteData {
         'name_en': 'Little Hawaii Trail',
         'district': '將軍澳',
         'district_en': 'Tseung Kwan O',
+        'description':
+            '小夏威夷徑，山路已有百年歷史，是昔日市民來往井欄樹和將軍澳的棧道。此徑冇多餘的人工雕飾，保留濃厚的原始氣息。石路鋪得齊整，綠樹叢蔭之間，花朵不斷，山下更有溪流，蟲鳥和唱，簡直是香港的桃花源。',
+        'description_en':
+            'The Little Hawaii Trail, a mountain road with a history of a century, is a plank road used by citizens to travel between Tseng Lan Shu and Tseung Kwan O. This path has no redundant artificial carvings, retaining a strong original atmosphere. The stone roads are neatly paved, the green trees are shaded, the flowers are endless, the mountains are more streamed, and the insects and birds are singing. It is simply the peach blossom source of Hong Kong.',
         'difficulty': 1.0,
         'rating': 2.0,
         'duration': 1.5,
