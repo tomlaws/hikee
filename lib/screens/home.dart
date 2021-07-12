@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -36,6 +38,20 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _lockPosition = true;
   bool _pinned = false;
   HikingRoute? _activeRoute;
+  BitmapDescriptor? _bdS, _bdE;
+
+  @override
+  void initState() {
+    super.initState();
+    _buildIcons();
+  }
+
+  void _buildIcons() async {
+    _bdS = await _getIcon('START');
+    _bdE = await _getIcon('END');
+    setState(() {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,14 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
               slivers: [
                 SliverAppBar(
                   shadowColor: Colors.transparent,
-                  expandedHeight: 116,
+                  expandedHeight: 126,
                   backgroundColor: Colors.white,
                   floating: true,
                   snap: true,
                   pinned: _pinned,
-                  toolbarHeight: 116,
+                  toolbarHeight: 126,
+                  centerTitle: false,
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
@@ -130,22 +148,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           hintText: 'Search...',
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          height: 32,
-                          child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              Button(
-                                onPressed: () {},
-                                child: Text('test'),
-                              )
-                            ],
-                          ),
+                      Container(height: 12),
+                      Container(
+                        height: 32,
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            Button(
+                              onPressed: () {},
+                              child: Text('Popular Routes'),
+                            ),
+                            Container(width: 12),
+                            Button(
+                              onPressed: () {},
+                              child: Text('Hot Events'),
+                            )
+                          ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -335,9 +356,10 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: GoogleMap(
           padding: EdgeInsets.only(bottom: _mapBottomPadding),
+          compassEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: LatLng(22.302711, 114.177216),
+            target: activeHikingRouteProvider.route!.polyline[0],
             zoom: 14,
           ),
           zoomControlsEnabled: false,
@@ -354,6 +376,18 @@ class _HomeScreenState extends State<HomeScreen> {
               points: activeHikingRouteProvider.route!.polyline,
             ),
           ].toSet(),
+          markers: _bdS != null && _bdE != null
+              ? Set.from([
+                  Marker(
+                      markerId: MarkerId('start'),
+                      position: activeHikingRouteProvider.route!.polyline.first,
+                      icon: _bdS!),
+                  Marker(
+                      markerId: MarkerId('end'),
+                      position: activeHikingRouteProvider.route!.polyline.last,
+                      icon: _bdE!)
+                ])
+              : Set.from([]),
           onMapCreated: (GoogleMapController controller) {
             controller.setMapStyle(
                 '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
@@ -386,7 +420,8 @@ class _HomeScreenState extends State<HomeScreen> {
       LocationData location;
       _lockPosition = true;
       location = await _location.getLocation();
-      await _goToLocation(location.latitude as double, location.longitude as double);
+      await _goToLocation(
+          location.latitude as double, location.longitude as double);
     } catch (e) {
       print(e);
     }
@@ -407,8 +442,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _setRoute(HikingRoute route) {
-    _lockPosition = true;
-    Provider.of<ActiveHikingRoute>(context, listen: false).update(route);
+  Future<BitmapDescriptor> _getIcon(String text) async {
+    final int width = 80;
+    final int height = 80;
+    final PictureRecorder pictureRecorder = PictureRecorder();
+    final Canvas canvas = Canvas(pictureRecorder);
+    final Paint paint = Paint()..color = Colors.blue;
+    final Radius radius = Radius.circular(20.0);
+    canvas.drawRRect(
+        RRect.fromRectAndCorners(
+          Rect.fromLTWH(0.0, 0.0, width.toDouble(), height.toDouble()),
+          topLeft: radius,
+          topRight: radius,
+          bottomLeft: radius,
+          bottomRight: radius,
+        ),
+        paint);
+    TextPainter painter = TextPainter(textDirection: TextDirection.ltr);
+    painter.text = TextSpan(
+      text: text,
+      style: TextStyle(fontSize: 25.0, color: Colors.white),
+    );
+    painter.layout();
+    painter.paint(
+        canvas,
+        Offset((width * 0.5) - painter.width * 0.5,
+            (height * 0.5) - painter.height * 0.5));
+    final img = await pictureRecorder.endRecording().toImage(width, height);
+    final data = await img.toByteData(format: ImageByteFormat.png);
+    return BitmapDescriptor.fromBytes(data!.buffer.asUint8List());
   }
 }
