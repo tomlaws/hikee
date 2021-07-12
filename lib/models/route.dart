@@ -5,7 +5,7 @@ class HikingRoute {
   final String name;
   final String name_en;
   final String image;
-  final int difficulty;
+  final double difficulty;
   final double rating;
   final double duration;
   final double length;

@@ -148,15 +148,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     (context, index) => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: HikingRouteTile(
-                          route: HikingRouteData.retrieve()[0],
+                          route: HikingRouteData.retrieve()[index],
                           onTap: () {
                             // _setRoute(HikingRouteData.retrieve()[0]);
                             // _pc.close();
-                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => RouteScreen(id: 1)));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => RouteScreen(
+                                    id: HikingRouteData.retrieve()[index].id)));
                           }),
                     ),
                     // Builds 1000 ListTiles
-                    childCount: 1000,
+                    childCount: HikingRouteData.retrieve().length,
                   ),
                 )
                 //   itemCount: 4,
