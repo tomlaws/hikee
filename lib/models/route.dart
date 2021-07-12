@@ -4,6 +4,8 @@ class HikingRoute {
   final int id;
   final String name;
   final String name_en;
+  final String district;
+  final String district_en;
   final String image;
   final double difficulty;
   final double rating;
@@ -12,13 +14,26 @@ class HikingRoute {
   final List<LatLng> polyline;
   final DateTime? updatedAt;
 
-  HikingRoute(this.id, this.name, this.name_en, this.image, this.difficulty, this.rating,
-      this.duration, this.length, this.polyline, this.updatedAt);
-  //\[(.*?),(.*?)\]
+  HikingRoute(
+      this.id,
+      this.name,
+      this.name_en,
+      this.district,
+      this.district_en,
+      this.image,
+      this.difficulty,
+      this.rating,
+      this.duration,
+      this.length,
+      this.polyline,
+      this.updatedAt);
+
   HikingRoute.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = json['name'],
         name_en = json['name_en'],
+        district = json['district'],
+        district_en = json['district_en'],
         image = json['image'],
         difficulty = json['difficulty'],
         rating = json['rating'],
@@ -33,6 +48,8 @@ class HikingRoute {
         'id': id,
         'name': name,
         'name_en': name_en,
+        'district': district,
+        'district_en': district_en,
         'image': image,
         'difficulty': difficulty,
         'rating': rating,

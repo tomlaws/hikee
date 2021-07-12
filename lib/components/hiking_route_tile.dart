@@ -61,7 +61,7 @@ class _HikingRouteTileState extends State<HikingRouteTile> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold)),
                           Text(
-                            widget.route.name_en,
+                            widget.route.district_en,
                             maxLines: 1,
                             style:
                                 TextStyle(color: Color(0xFFCCCCCC)),
