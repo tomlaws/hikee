@@ -90,12 +90,15 @@ class _RouteScreenState extends State<RouteScreen> {
                       mapType: MapType.normal,
                       initialCameraPosition: CameraPosition(
                         target: route
-                            .polyline[(route.polyline.length / 2).floor()],
+                            .polyline[(route.polyline.length / 5 * 2).floor()],
                         zoom: 13,
                       ),
-                      gestureRecognizers: Set()
-                        ..add(Factory<PanGestureRecognizer>(
-                            () => PanGestureRecognizer())),
+                      gestureRecognizers:
+                          <Factory<OneSequenceGestureRecognizer>>[
+                        new Factory<OneSequenceGestureRecognizer>(
+                          () => new EagerGestureRecognizer(),
+                        ),
+                      ].toSet(),
                       zoomControlsEnabled: false,
                       //myLocationEnabled: true,
                       //myLocationButtonEnabled: false,
