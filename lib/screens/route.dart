@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
@@ -78,6 +81,41 @@ class _RouteScreenState extends State<RouteScreen> {
                       style: TextStyle(),
                     ),
                   ),
+                  Container(
+                    height: 240,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.0)),
+                    child: GoogleMap(
+                      mapType: MapType.normal,
+                      initialCameraPosition: CameraPosition(
+                        target: route
+                            .polyline[(route.polyline.length / 2).floor()],
+                        zoom: 13,
+                      ),
+                      gestureRecognizers: Set()
+                        ..add(Factory<PanGestureRecognizer>(
+                            () => PanGestureRecognizer())),
+                      zoomControlsEnabled: false,
+                      //myLocationEnabled: true,
+                      //myLocationButtonEnabled: false,
+                      polylines: [
+                        Polyline(
+                          polylineId: PolylineId('polyLine'),
+                          color: Colors.amber,
+                          startCap: Cap.roundCap,
+                          endCap: Cap.roundCap,
+                          width: 5,
+                          jointType: JointType.bevel,
+                          points: route.polyline,
+                        ),
+                      ].toSet(),
+                      onMapCreated: (GoogleMapController controller) {
+                        controller.setMapStyle(
+                            '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
+                      },
+                    ),
+                  )
                 ]),
               ),
             )
