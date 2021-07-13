@@ -1,23 +1,27 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/mountain_deco.dart';
+import 'package:hikee/components/sliding_up_panel.dart';
+import 'package:hikee/components/text_input.dart';
+import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/screens/route.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Function switchToTab;
-  const HomeScreen({Key? key, required this.switchToTab}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -25,7 +29,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
-  final double _collapsedPanelHeight = 120;
+  ScrollController _sc = ScrollController();
+  final double _collapsedPanelHeight = 180;
   final double _panelHeaderHeight = 60;
   double _mapBottomPadding = 18;
   Completer<GoogleMapController> _mapController = Completer();
@@ -44,7 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void _buildIcons() async {
     _bdS = await _getIcon('START');
     _bdE = await _getIcon('END');
-    setState(() {});
+    setState(() {
+    });
   }
 
   @override
@@ -65,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: _pc,
             parallaxEnabled: true,
             renderPanelSheet: false,
-            maxHeight: _activeRoute != null ? 480 : 0,
+            maxHeight:
+                MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
             minHeight: _collapsedPanelHeight,
             color: Colors.transparent,
             onPanelSlide: (position) {
@@ -85,41 +92,119 @@ class _HomeScreenState extends State<HomeScreen> {
                 _pinned = false;
               });
             },
-            panel: _panel(),
+            panelBuilder: (ScrollController sc) {
+              _sc = sc;
+              return _panel(context, sc);
+            },
             body: _body()));
   }
 
-  Widget _panel() {
+  Widget _panel(BuildContext context, ScrollController sc) {
     return SafeArea(
-        child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(26), topRight: Radius.circular(26)),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            height: _panelHeaderHeight,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Progress',
-              style: TextStyle(
-                  fontSize: 32, color: Theme.of(context).primaryColor),
+        child: Column(
+      children: [
+        Consumer<PanelPosition>(
+            builder: (_, pos, __) => IgnorePointer(
+                ignoring: pos.position == 0,
+                child: Container(
+                  height: _panelHeaderHeight,
+                  color: Colors.transparent,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                  child: Opacity(
+                      opacity: pos.position,
+                      child: Text(
+                        'Discover',
+                        style: TextStyle(color: Colors.white, fontSize: 32),
+                      )),
+                ))),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(26), topRight: Radius.circular(26)),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: CustomScrollView(
+              controller: sc,
+              slivers: [
+                SliverAppBar(
+                  shadowColor: Colors.transparent,
+                  expandedHeight: 126,
+                  backgroundColor: Colors.white,
+                  floating: true,
+                  snap: true,
+                  pinned: _pinned,
+                  toolbarHeight: 126,
+                  centerTitle: false,
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: TextInput(
+                          hintText: 'Search...',
+                        ),
+                      ),
+                      Container(height: 12),
+                      Container(
+                        height: 32,
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            Button(
+                              onPressed: () {},
+                              child: Text('Popular Routes'),
+                            ),
+                            Container(width: 12),
+                            Button(
+                              onPressed: () {},
+                              child: Text('Hot Events'),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    // The builder function returns a ListTile with a title that
+                    // displays the index of the current item.
+                    (context, index) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: HikingRouteTile(
+                          route: HikingRouteData.retrieve()[index],
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => RouteScreen(
+                                    id: HikingRouteData.retrieve()[index].id)));
+                          }),
+                    ),
+                    // Builds 1000 ListTiles
+                    childCount: HikingRouteData.retrieve().length,
+                  ),
+                )
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     ));
   }
 
   Widget _body() {
     return Container(
       clipBehavior: Clip.none,
-      padding: EdgeInsets.only(bottom: 0),
+      padding: EdgeInsets.only(
+          bottom: max(
+              0,
+              _collapsedPanelHeight -
+                  (_panelHeaderHeight / 2) -
+                  _mapBottomPadding)),
       color: Color(0xFF5DB075),
       child: Consumer2<PanelPosition, ActiveHikingRoute>(
           builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
@@ -133,12 +218,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      child: ClipPath(
-                        clipper: MountainDeco(),
-                        child: Container(
-                          color: Colors.black.withOpacity(.05),
-                          width: 400,
-                          height: 400,
+                      child: Opacity(
+                        opacity: 1 - posProvider.position,
+                        child: ClipPath(
+                          clipper: MountainDeco(),
+                          child: Container(
+                            color: Colors.black.withOpacity(.05),
+                            width: 300,
+                            height: 300,
+                          ),
                         ),
                       ),
                     ),
@@ -159,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: [
                                         Container(
                                           padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 10),
+                                              horizontal: 18, vertical: 12),
                                           height: _panelHeaderHeight,
                                           alignment: Alignment.centerLeft,
                                           child: Text(
@@ -183,9 +271,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Center(
                                   child: Button(
                                     invert: true,
-                                    child: Text('Discover Routes'),
+                                    child: Text('Set Your Goal'),
                                     onPressed: () {
-                                      widget.switchToTab(1);
+                                      _pc.open();
                                     },
                                   ),
                                 ))
@@ -251,6 +339,15 @@ class _HomeScreenState extends State<HomeScreen> {
               )),
     );
   }
+
+  // void _adjustPanelPosition(DragUpdateDetails dets) {
+  //   double dy = dets.delta.dy;
+  //   double newPos = _pc.panelPosition -
+  //       dy /
+  //           ((MediaQuery.of(context).size.height - kBottomNavigationBarHeight) -
+  //               _collapsedPanelHeight);
+  //   _pc.panelPosition = newPos.clamp(0, 1);
+  // }
 
   Widget _map(ActiveHikingRoute activeHikingRouteProvider) {
     return Listener(
