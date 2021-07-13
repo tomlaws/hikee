@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
   final double _collapsedPanelHeight = 96;
   final double _panelHeaderHeight = 60;
-  double _mapBottomPadding = 18;
+  double _mapBottomPadding = 80;
   Completer<GoogleMapController> _mapController = Completer();
   Location _location = Location();
   bool _lockPosition = true;
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: _pc,
             parallaxEnabled: true,
             renderPanelSheet: false,
-            maxHeight: _activeRoute != null ? 280 : 0,
+            maxHeight: _activeRoute != null ? 296 : 0,
             minHeight: _collapsedPanelHeight,
             color: Colors.transparent,
             onPanelSlide: (position) {
@@ -94,40 +94,70 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _panel() {
     return SafeArea(
-        child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(26), topRight: Radius.circular(26)),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            height: _panelHeaderHeight,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Progress',
-              style: TextStyle(
-                  fontSize: 32, color: Theme.of(context).primaryColor),
-            ),
+        child: Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(26), topRight: Radius.circular(26)),
           ),
-        ],
-      ),
+          clipBehavior: Clip.hardEdge,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Icon(
+                    LineAwesomeIcons.walking,
+                    size: 32,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  Container(width: 4),
+                  Text(
+                    '3.2',
+                    style: TextStyle(
+                        fontSize: 32,
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1),
+                  ),
+                  Container(width: 4),
+                  Text(
+                    'km',
+                    style: TextStyle(
+                        fontSize: 24,
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 8,
+          child: Container(
+            width: 36,
+            height: 6,
+            decoration: BoxDecoration(
+                color: Colors.black.withOpacity(.2),
+                borderRadius: BorderRadius.circular(8.0)),
+          ),
+        ),
+      ],
     ));
   }
 
   Widget _body() {
     return Container(
       clipBehavior: Clip.none,
-      padding: EdgeInsets.only(
-          bottom: max(
-              0,
-              _collapsedPanelHeight -
-                  (_panelHeaderHeight / 2) -
-                  _mapBottomPadding)),
+      padding: EdgeInsets.only(bottom: max(0, _collapsedPanelHeight + 12)),
       color: Color(0xFF5DB075),
       child: Consumer2<PanelPosition, ActiveHikingRoute>(
           builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
@@ -264,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _lockPosition = false;
         },
         child: GoogleMap(
-          padding: EdgeInsets.only(bottom: 80),
+          padding: EdgeInsets.only(bottom: _mapBottomPadding),
           compassEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
@@ -302,9 +332,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
             _mapController = Completer<GoogleMapController>();
             _mapController.complete(controller);
-            setState(() {
-              _mapBottomPadding = 18;
-            });
             _location.onLocationChanged.listen((l) {
               if (_lockPosition) {
                 try {
