@@ -25,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
-  final double _collapsedPanelHeight = 120;
+  final double _collapsedPanelHeight = 96;
   final double _panelHeaderHeight = 60;
   double _mapBottomPadding = 18;
   Completer<GoogleMapController> _mapController = Completer();
@@ -54,6 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (route != _activeRoute) {
       _activeRoute = route;
       if (_activeRoute != null) {
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
+          widget.switchToTab(0);
+        });
         _pc.close();
         _lockPosition = false;
         _goToLocation(_activeRoute!.polyline[0].latitude,
@@ -65,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: _pc,
             parallaxEnabled: true,
             renderPanelSheet: false,
-            maxHeight: _activeRoute != null ? 480 : 0,
+            maxHeight: _activeRoute != null ? 280 : 0,
             minHeight: _collapsedPanelHeight,
             color: Colors.transparent,
             onPanelSlide: (position) {
@@ -119,15 +122,18 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _body() {
     return Container(
       clipBehavior: Clip.none,
-      padding: EdgeInsets.only(bottom: 0),
+      padding: EdgeInsets.only(
+          bottom: max(
+              0,
+              _collapsedPanelHeight -
+                  (_panelHeaderHeight / 2) -
+                  _mapBottomPadding)),
       color: Color(0xFF5DB075),
       child: Consumer2<PanelPosition, ActiveHikingRoute>(
           builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
                 children: [
                   if (activeHikingRouteProvider.route != null)
-                    Opacity(
-                        opacity: 1 - posProvider.position,
-                        child: _map(activeHikingRouteProvider))
+                    _map(activeHikingRouteProvider)
                   else
                     Positioned(
                       bottom: 0,
@@ -258,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _lockPosition = false;
         },
         child: GoogleMap(
-          padding: EdgeInsets.only(bottom: _mapBottomPadding),
+          padding: EdgeInsets.only(bottom: 80),
           compassEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
