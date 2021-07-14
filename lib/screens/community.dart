@@ -19,91 +19,90 @@ class _CommunityScreenState extends State<CommunityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Expanded(
-            child: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              height: _headerHeight,
-              child: Text("Community", style: TextStyle(fontSize: 32)),
-            ),
+        // Header
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          height: _headerHeight,
+          child: Text("Community", style: TextStyle(fontSize: 32)),
+        ),
 
-            // Buttonsgroup
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              padding: EdgeInsets.symmetric(horizontal: 18),
-              decoration: new BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(25)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // Buttonsgroup
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 18),
+          decoration: new BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(25)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // New + Hot
+              ToggleButtons(
+                borderRadius: BorderRadius.circular(25),
+                renderBorder: false,
+                selectedColor: Colors.grey,
+                selectedBorderColor: Colors.black,
+                isSelected: isSelected,
                 children: [
-                  // New + Hot
-                  ToggleButtons(
-                    borderRadius: BorderRadius.circular(25),
-                    renderBorder: false,
-                    selectedColor: Colors.grey,
-                    selectedBorderColor: Colors.black,
-                    isSelected: isSelected,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.align_vertical_bottom_rounded,
-                              color: Colors.white,
-                            ),
-                            Text(
-                              "New",
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.align_vertical_bottom_rounded,
+                          color: Colors.white,
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Row(
-                          children: [
-                            Icon(Icons.local_fire_department,
-                                color: Colors.white),
-                            Text("Hot", style: TextStyle(color: Colors.white))
-                          ],
-                        ),
-                      )
-                    ],
+                        Text(
+                          "New",
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
                   ),
-
-                  // Create Post
-                  Button(
-                      onPressed: () {},
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
-                          Text("Create Post")
-                        ],
-                      ))
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      children: [
+                        Icon(Icons.local_fire_department,
+                            color: Colors.white),
+                        Text("Hot", style: TextStyle(color: Colors.white))
+                      ],
+                    ),
+                  )
                 ],
               ),
-            ),
 
-            // List
-            Expanded(
-                child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      return CommunityPostTile();
-                    },
-                    separatorBuilder: (context, index) => const Divider(
-                          height: 1.0,
-                        ),
-                    itemCount: 10))
+              // Create Post
+              Button(
+                  onPressed: () {},
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      Text("Create Post")
+                    ],
+                  ))
+            ],
+          ),
+        ),
+
+        // List
+        Expanded(
+            child: ListView.separated(
+                itemBuilder: (context, index) {
+                  return CommunityPostTile();
+                },
+                separatorBuilder: (context, index) => const Divider(
+                      height: 1.0,
+                    ),
+                itemCount: 10))
           ],
-        )),
+        ),
       ),
     );
   }
