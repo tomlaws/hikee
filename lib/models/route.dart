@@ -13,7 +13,7 @@ class HikingRoute {
   final double rating;
   final int duration; // minutes
   final double length;
-  final List<LatLng> polyline;
+  final String path;
   final DateTime? updatedAt;
 
   HikingRoute(
@@ -29,7 +29,7 @@ class HikingRoute {
       this.rating,
       this.duration,
       this.length,
-      this.polyline,
+      this.path,
       this.updatedAt);
 
   HikingRoute.fromJson(Map<String, dynamic> json)
@@ -45,9 +45,7 @@ class HikingRoute {
         rating = json['rating'],
         duration = json['duration'],
         length = json['length'],
-        polyline = (json['polyline'] as List)
-            .map((e) => LatLng.fromJson(e) as LatLng)
-            .toList(),
+        path = json['path'],
         updatedAt = json['updatedAt'];
 
   Map<String, dynamic> toJson() => {
@@ -63,7 +61,7 @@ class HikingRoute {
         'rating': rating,
         'duration': duration,
         'length': length,
-        'polyline': polyline.map((e) => e.toJson()).toList(),
+        'path': path,
         'updatedAt': updatedAt,
       };
 }

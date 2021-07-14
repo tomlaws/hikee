@@ -11,6 +11,7 @@ import 'package:hikee/components/route_info.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     initialPage: 0,
   );
   int _selectPageIndex = 0;
+  List<LatLng>? _decodedPoints;
 
   @override
   void initState() {
@@ -54,24 +56,24 @@ class _HomeScreenState extends State<HomeScreen> {
   void _buildIcons() async {
     _bdS = await _getIcon(true);
     _bdE = await _getIcon(false);
-    //setState(() {});
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    _buildIcons();
     HikingRoute? route =
         Provider.of<ActiveHikingRoute>(context, listen: true).route;
     if (route != _activeRoute) {
       _activeRoute = route;
+      _pc.close();
       if (_activeRoute != null) {
+        _decodedPoints = GeoUtils.decodePath(_activeRoute!.path);
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           widget.switchToTab(0);
         });
-        _pc.close();
         _lockPosition = false;
-        _goToLocation(_activeRoute!.polyline[0].latitude,
-            _activeRoute!.polyline[0].longitude);
+        _goToLocation(
+            _decodedPoints![0].latitude, _decodedPoints![0].longitude);
       }
     }
     MediaQueryData mediaQueryData = MediaQuery.of(context);
@@ -142,10 +144,10 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Container(
               height: kBottomNavigationBarHeight + 1,
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                          width: 1, color: Theme.of(context).dividerColor))),
+              // decoration: BoxDecoration(
+              //     border: Border(
+              //         bottom: BorderSide(
+              //             width: 1, color: Theme.of(context).dividerColor.withOpacity(.25)))),
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -190,9 +192,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: _pageIndicators(2, _selectPageIndex),
+              ),
+            ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.only(bottom: 16.0),
                 child: PageView(
                   controller: _pageController,
                   onPageChanged: (int page) {
@@ -202,13 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   children: [_routeInfo(), _routeInfo()],
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _pageIndicators(2, _selectPageIndex),
               ),
             ),
           ],
@@ -326,21 +328,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _goToCurrentLocation();
                                     },
                                   ),
-                                  Container(
-                                    height: 8,
-                                  ),
-                                  Button(
-                                    icon: Icon(
-                                      LineAwesomeIcons.alternate_undo,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    invert: true,
-                                    onPressed: () {
-                                      Provider.of<ActiveHikingRoute>(context,
-                                              listen: false)
-                                          .update(null);
-                                    },
-                                  ),
                                 ],
                               )
                             ],
@@ -364,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
           tiltGesturesEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: activeHikingRouteProvider.route!.polyline[0],
+            target: _decodedPoints![0],
             zoom: 14,
           ),
           myLocationEnabled: true,
@@ -374,7 +361,8 @@ class _HomeScreenState extends State<HomeScreen> {
               polylineId: PolylineId('polyLine1'),
               color: Colors.amber.shade900,
               width: 8,
-              points: activeHikingRouteProvider.route!.polyline,
+              jointType: JointType.round,
+              points: _decodedPoints!,
             ),
             Polyline(
               polylineId: PolylineId('polyLine2'),
@@ -385,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _bdS != null ? Cap.customCapFromBitmap(_bdS!) : Cap.buttCap,
               endCap:
                   _bdE != null ? Cap.customCapFromBitmap(_bdE!) : Cap.buttCap,
-              points: activeHikingRouteProvider.route!.polyline,
+              points: _decodedPoints!,
             ),
           ].toSet(),
           onMapCreated: (GoogleMapController controller) {
@@ -490,9 +478,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _routeInfo() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: RouteInfo(
-        route: _activeRoute!,
-      ),
+      child:
+          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        RouteInfo(
+          route: _activeRoute!,
+          showRouteName: true,
+          hideDistrict: true,
+        ),
+        Button(
+          onPressed: () {
+            Provider.of<ActiveHikingRoute>(context, listen: false).update(null);
+          },
+          child: Text('Quit Route'),
+        )
+      ]),
     );
   }
 }
