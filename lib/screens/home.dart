@@ -25,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
-  final double _collapsedPanelHeight = 96;
+  final double _collapsedPanelHeight = 72;
   final double _panelHeaderHeight = 60;
   double _mapBottomPadding = 80;
   Completer<GoogleMapController> _mapController = Completer();
@@ -34,11 +34,21 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _pinned = false;
   HikingRoute? _activeRoute;
   BitmapDescriptor? _bdS, _bdE;
+  PageController _pageController = PageController(
+    initialPage: 0,
+  );
+  int _selectPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _buildIcons();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   void _buildIcons() async {
@@ -64,32 +74,58 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     return Scaffold(
-        body: SlidingUpPanel(
-            controller: _pc,
-            parallaxEnabled: true,
-            renderPanelSheet: false,
-            maxHeight: _activeRoute != null ? 296 : 0,
-            minHeight: _collapsedPanelHeight,
-            color: Colors.transparent,
-            onPanelSlide: (position) {
-              setState(() {
-                _pinned = true;
-              });
-              Provider.of<PanelPosition>(context, listen: false)
-                  .update(position);
-            },
-            onPanelOpened: () {
-              setState(() {
-                _pinned = false;
-              });
-            },
-            onPanelClosed: () {
-              setState(() {
-                _pinned = false;
-              });
-            },
-            panel: _panel(),
-            body: _body()));
+        body: Stack(children: [
+      SlidingUpPanel(
+          controller: _pc,
+          parallaxEnabled: true,
+          renderPanelSheet: false,
+          maxHeight: 296,
+          minHeight: _collapsedPanelHeight,
+          color: Colors.transparent,
+          onPanelSlide: (position) {
+            setState(() {
+              _pinned = true;
+            });
+            Provider.of<PanelPosition>(context, listen: false).update(position);
+          },
+          onPanelOpened: () {
+            setState(() {
+              _pinned = false;
+            });
+          },
+          onPanelClosed: () {
+            setState(() {
+              _pinned = false;
+            });
+          },
+          panel: _panel(),
+          body: _body()),
+      Consumer<PanelPosition>(
+        builder: (_, panelPosition, __) => Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: IgnorePointer(
+            child: Opacity(
+              opacity: 1 - panelPosition.position,
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Colors.blueGrey.withOpacity(.1)
+                      ],
+                      begin: const FractionalOffset(0.0, 0.4),
+                      end: const FractionalOffset(0.0, 1.0),
+                      stops: [0.4, 1.0]),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]));
   }
 
   Widget _panel() {
@@ -106,36 +142,96 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           clipBehavior: Clip.hardEdge,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    LineAwesomeIcons.walking,
-                    size: 32,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  Container(width: 4),
-                  Text(
-                    '3.2',
-                    style: TextStyle(
-                        fontSize: 32,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        LineAwesomeIcons.walking,
+                        size: 40,
                         color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1),
+                      ),
+                      Container(width: 4),
+                      Text(
+                        '3.2',
+                        style: TextStyle(
+                            fontSize: 28,
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      ),
+                      Container(width: 4),
+                      Text(
+                        'km',
+                        style: TextStyle(
+                            fontSize: 24,
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      ),
+                    ],
                   ),
-                  Container(width: 4),
-                  Text(
-                    'km',
-                    style: TextStyle(
-                        fontSize: 24,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        LineAwesomeIcons.clock,
+                        size: 40,
                         color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1),
+                      ),
+                      Container(width: 4),
+                      Text('54',
+                          style: TextStyle(
+                              fontSize: 28,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1)),
+                      Text('m',
+                          style: TextStyle(
+                              fontSize: 24,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1)),
+                      Text(
+                        '30',
+                        style: TextStyle(
+                            fontSize: 28,
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      ),
+                      Text('s',
+                          style: TextStyle(
+                              fontSize: 24,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1)),
+                    ],
                   ),
                 ],
+              ),
+              Container(height: 10),
+              //indicator
+              Divider(),
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (int page) {
+                    setState(() {
+                      _selectPageIndex = page;
+                    });
+                  },
+                  children: [_routeInfo(), _routeInfo()],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: _pageIndicators(2, _selectPageIndex),
               ),
             ],
           ),
@@ -282,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             ],
                           ),
-                        ))
+                        )),
                 ],
               )),
     );
@@ -407,5 +503,49 @@ class _HomeScreenState extends State<HomeScreen> {
     final img = await pictureRecorder.endRecording().toImage(width, height);
     final data = await img.toByteData(format: ImageByteFormat.png);
     return BitmapDescriptor.fromBytes(data!.buffer.asUint8List());
+  }
+
+  List<Widget> _pageIndicators(int total, int selectedindex) {
+    List<Widget> list = [];
+    for (int i = 0; i < total; i++) {
+      bool isActive = i == selectedindex;
+      list.add(Container(
+        height: 10,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 150),
+          margin: EdgeInsets.symmetric(horizontal: 4.0),
+          height: isActive ? 10 : 8.0,
+          width: isActive ? 12 : 8.0,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isActive ? Theme.of(context).primaryColor : Color(0XFFEAEAEA),
+          ),
+        ),
+      ));
+    }
+    return list;
+  }
+
+  Widget _routeInfo() {
+    return Column(children: [
+      Row(
+        children: [
+          Icon(
+            LineAwesomeIcons.location_arrow,
+            size: 40,
+            color: Theme.of(context).primaryColor,
+          ),
+          Container(width: 4),
+          Text(
+            _activeRoute?.name_en ?? 'Hiking Route',
+            style: TextStyle(
+                fontSize: 28,
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1),
+          ),
+        ],
+      ),
+    ]);
   }
 }
