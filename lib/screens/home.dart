@@ -29,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
   final double _collapsedPanelHeight = kBottomNavigationBarHeight;
   final double _panelHeaderHeight = 60;
-  double _mapBottomPadding = 80;
   Completer<GoogleMapController> _mapController = Completer();
   Location _location = Location();
   bool _lockPosition = true;
@@ -74,11 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
             _activeRoute!.polyline[0].longitude);
       }
     }
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
     return Container(
       color: Theme.of(context).primaryColor,
       child: Stack(children: [
-        SafeArea(
-          maintainBottomViewPadding: true,
+        Container(
           child: SlidingUpPanel(
               controller: _pc,
               parallaxEnabled: true,
@@ -86,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(0),
               margin: EdgeInsets.all(0),
               maxHeight: 296,
-              minHeight: _collapsedPanelHeight,
+              minHeight: _collapsedPanelHeight + mediaQueryData.padding.top,
               color: Colors.transparent,
               onPanelSlide: (position) {
                 Provider.of<PanelPosition>(context, listen: false)
@@ -220,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _body() {
     return Container(
       clipBehavior: Clip.none,
-      padding: EdgeInsets.only(bottom: max(0, _collapsedPanelHeight + 12)),
+      padding: EdgeInsets.only(bottom: _collapsedPanelHeight),
       color: Color(0xFF5DB075),
       child: Consumer2<PanelPosition, ActiveHikingRoute>(
           builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
@@ -292,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ))),
                   if (activeHikingRouteProvider.route != null)
                     Positioned(
-                        bottom: _mapBottomPadding,
+                        bottom: _collapsedPanelHeight,
                         left: 0,
                         right: 0,
                         child: Padding(
@@ -357,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _lockPosition = false;
         },
         child: GoogleMap(
-          padding: EdgeInsets.only(bottom: _mapBottomPadding),
+          padding: EdgeInsets.only(bottom: _collapsedPanelHeight),
           compassEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
@@ -498,7 +497,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _routeInfo() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: RouteInfo(route: _activeRoute!,),
+      child: RouteInfo(
+        route: _activeRoute!,
+      ),
     );
   }
 }
