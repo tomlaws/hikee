@@ -17,7 +17,7 @@ class HikingRouteData {
             'The Wangi Reservoir is located in the Saigon District of Hong Kong. It is the largest reservoir in Hong Kong with a capacity of 281 million cubic meters. \nThe Wanyi Reservoir was organized by the Friends of Hong Kong Country Parks, Lions Clubs International District 303 of Hong Kong and Macau, and the Agriculture, Fisheries and Conservation Department, and ranked fourth in the "Hong Kong Top Ten Scenic Spots Election".',
         'difficulty': 5.0,
         'rating': 3.5,
-        'duration': 6.0,
+        'duration': 6 * 60,
         'length': 20.5,
         'image':
             'https://follo3me.com/wp-content/uploads/2015/09/special005-01.jpg?w=721&h=480&ssl=1',
@@ -460,7 +460,7 @@ class HikingRouteData {
             'The Little Hawaii Trail, a mountain road with a history of a century, is a plank road used by citizens to travel between Tseng Lan Shu and Tseung Kwan O. This path has no redundant artificial carvings, retaining a strong original atmosphere. The stone roads are neatly paved, the green trees are shaded, the flowers are endless, the mountains are more streamed, and the insects and birds are singing. It is simply the peach blossom source of Hong Kong.',
         'difficulty': 1.0,
         'rating': 2.0,
-        'duration': 1.5,
+        'duration': 90,
         'length': 3.5,
         'image':
             'https://www.getreadyhk.com/images/stories/blog/mountaingirlhk/little-hawaii-trail/little-hawaii-trail-12.JPG',
@@ -919,7 +919,7 @@ class HikingRouteData {
             'Kwun Yam Shan is one of the mountain peaks in the southwest of Lantau Island, with a height of 434 meters above sea level. Guanyin Temple and Yishan Mountain are located to the west and southwest respectively. The fifth section of the Phoenix Trail passes through this mountain and passes only a few tens of meters away, but there is a path leading to the top of the mountain.',
         'difficulty': 4.5,
         'rating': 4.5,
-        'duration': 5.0,
+        'duration': 300,
         'length': 15.0,
         'image':
             'https://i2.wp.com/follo3me.com/wp-content/uploads/2020/10/DSC04277.jpg?w=721&h=480&ssl=1',

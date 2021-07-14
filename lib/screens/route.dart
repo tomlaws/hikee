@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/route_info.dart';
 import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/route.dart';
@@ -80,6 +81,17 @@ class _RouteScreenState extends State<RouteScreen> {
                       route.description_en,
                       style: TextStyle(),
                     ),
+                  ),
+                  Divider(),
+                  Container(
+                    height: 16,
+                  ),
+                  RouteInfo(
+                    route: route,
+                    showRouteName: false,
+                  ),
+                  Container(
+                    height: 16,
                   ),
                   Container(
                     height: 240,

@@ -11,7 +11,7 @@ class HikingRoute {
   final String image;
   final double difficulty;
   final double rating;
-  final double duration;
+  final int duration; // minutes
   final double length;
   final List<LatLng> polyline;
   final DateTime? updatedAt;

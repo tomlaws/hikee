@@ -41,17 +41,9 @@ class MyApp extends StatelessWidget {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           textTheme: GoogleFonts.latoTextTheme(
-            Theme.of(context).textTheme,
+            Theme.of(context).textTheme.apply(bodyColor: Color(0xFF666666)),
           ),
         ),
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case '/':
-              return MaterialPageRoute(
-                  settings: RouteSettings(name: '/', arguments: Map()),
-                  builder: (_) => HomeScreen());
-          }
-        },
         home: NotificationListener<OverscrollIndicatorNotification>(
             onNotification: (OverscrollIndicatorNotification overscroll) {
               overscroll.disallowGlow();
@@ -82,15 +74,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    LibraryScreen(),
-    EventsScreen(),
-    CommunityScreen(),
-    ProfileScreen()
-  ];
-
   void _onItemTapped(int index) {
+    if (_selectedIndex == index) return;
     setState(() {
       _selectedIndex = index;
     });
@@ -105,7 +90,13 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      body: IndexedStack(children: _widgetOptions, index: _selectedIndex),
+      body: IndexedStack(children: [
+        HomeScreen(switchToTab: (i) => _onItemTapped(i),),
+        LibraryScreen(),
+        EventsScreen(),
+        CommunityScreen(),
+        ProfileScreen()
+      ], index: _selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
