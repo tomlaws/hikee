@@ -52,13 +52,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _buildIcons() async {
-    _bdS = await _getIcon('START');
-    _bdE = await _getIcon('END');
-    setState(() {});
+    _bdS = await _getIcon(true);
+    _bdE = await _getIcon(false);
+    //setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    _buildIcons();
     HikingRoute? route =
         Provider.of<ActiveHikingRoute>(context, listen: true).route;
     if (route != _activeRoute) {
@@ -358,37 +359,35 @@ class _HomeScreenState extends State<HomeScreen> {
         child: GoogleMap(
           padding: EdgeInsets.only(bottom: _collapsedPanelHeight),
           compassEnabled: false,
+          mapToolbarEnabled: false,
+          zoomControlsEnabled: false,
+          tiltGesturesEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
             target: activeHikingRouteProvider.route!.polyline[0],
             zoom: 14,
           ),
-          zoomControlsEnabled: false,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
           polylines: [
             Polyline(
-              polylineId: PolylineId('polyLine'),
+              polylineId: PolylineId('polyLine1'),
+              color: Colors.amber.shade900,
+              width: 8,
+              points: activeHikingRouteProvider.route!.polyline,
+            ),
+            Polyline(
+              polylineId: PolylineId('polyLine2'),
               color: Colors.amber,
-              startCap: Cap.roundCap,
-              endCap: Cap.roundCap,
-              width: 5,
-              jointType: JointType.bevel,
+              width: 6,
+              jointType: JointType.round,
+              startCap:
+                  _bdS != null ? Cap.customCapFromBitmap(_bdS!) : Cap.buttCap,
+              endCap:
+                  _bdE != null ? Cap.customCapFromBitmap(_bdE!) : Cap.buttCap,
               points: activeHikingRouteProvider.route!.polyline,
             ),
           ].toSet(),
-          markers: _bdS != null && _bdE != null
-              ? Set.from([
-                  Marker(
-                      markerId: MarkerId('start'),
-                      position: activeHikingRouteProvider.route!.polyline.first,
-                      icon: _bdS!),
-                  Marker(
-                      markerId: MarkerId('end'),
-                      position: activeHikingRouteProvider.route!.polyline.last,
-                      icon: _bdE!)
-                ])
-              : Set.from([]),
           onMapCreated: (GoogleMapController controller) {
             controller.setMapStyle(
                 '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
@@ -440,33 +439,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<BitmapDescriptor> _getIcon(String text) async {
-    final int width = 80;
-    final int height = 80;
+  Future<BitmapDescriptor> _getIcon(bool start) async {
+    final int diameter = 48;
+    final double borderWidth = 2;
+    final center = Offset(diameter / 2, diameter / 2);
     final PictureRecorder pictureRecorder = PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
-    final Paint paint = Paint()..color = Colors.blue;
-    final Radius radius = Radius.circular(20.0);
-    canvas.drawRRect(
-        RRect.fromRectAndCorners(
-          Rect.fromLTWH(0.0, 0.0, width.toDouble(), height.toDouble()),
-          topLeft: radius,
-          topRight: radius,
-          bottomLeft: radius,
-          bottomRight: radius,
-        ),
-        paint);
-    TextPainter painter = TextPainter(textDirection: TextDirection.ltr);
-    painter.text = TextSpan(
-      text: text,
-      style: TextStyle(fontSize: 25.0, color: Colors.white),
-    );
-    painter.layout();
-    painter.paint(
-        canvas,
-        Offset((width * 0.5) - painter.width * 0.5,
-            (height * 0.5) - painter.height * 0.5));
-    final img = await pictureRecorder.endRecording().toImage(width, height);
+    final double radius = (diameter / 2) - borderWidth;
+
+    Paint paintCircle = Paint()..color = Colors.amber;
+    Paint paintBorder = Paint()
+      ..color = Colors.amber.shade900
+      ..strokeWidth = borderWidth
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, radius, paintCircle);
+    canvas.drawCircle(center, radius, paintBorder);
+
+    Paint paintDot = Paint()..color = Colors.amber.shade900;
+    canvas.drawCircle(center, radius / 2, paintDot);
+
+    final img =
+        await pictureRecorder.endRecording().toImage(diameter, diameter);
     final data = await img.toByteData(format: ImageByteFormat.png);
     return BitmapDescriptor.fromBytes(data!.buffer.asUint8List());
   }
