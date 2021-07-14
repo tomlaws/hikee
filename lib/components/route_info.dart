@@ -5,21 +5,40 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class RouteInfo extends StatelessWidget {
   final HikingRoute route;
-  const RouteInfo({Key? key, required this.route}) : super(key: key);
+  final bool showRouteName;
+  const RouteInfo({Key? key, required this.route, this.showRouteName = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
+      if (showRouteName) ...[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              LineAwesomeIcons.map_signs,
+              color: Theme.of(context).primaryColor,
+            ),
+            Container(width: 8),
+            Text(
+              route.name_en,
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+          ],
+        ),
+        Container(height: 8),
+      ],
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(
-            LineAwesomeIcons.map_signs,
+            LineAwesomeIcons.map,
             color: Theme.of(context).primaryColor,
           ),
           Container(width: 8),
           Text(
-            route.name_en,
+            route.district_en,
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
           ),
         ],
