@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           textTheme: GoogleFonts.latoTextTheme(
-            Theme.of(context).textTheme,
+            Theme.of(context).textTheme.apply(bodyColor: Color(0xFF666666)),
           ),
         ),
         home: NotificationListener<OverscrollIndicatorNotification>(

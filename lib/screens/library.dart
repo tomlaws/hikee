@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hikee/components/library/card.dart';
 import 'package:hikee/components/text_input.dart';
+import 'package:hikee/data/routes.dart';
+import 'package:hikee/screens/route.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({Key? key}) : super(key: key);
@@ -23,13 +25,19 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
             Expanded(
                 child: ListView(
-                  children: [
-                    LibraryCard(),
-                    LibraryCard(),
-                    LibraryCard(),
-                    LibraryCard(),
-                  ],
-                ))
+              children: [
+                GestureDetector(
+                  child: LibraryCard(),
+                  onTapDown: (_) {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => RouteScreen(id: 1)));
+                  },
+                ),
+                LibraryCard(),
+                LibraryCard(),
+                LibraryCard(),
+              ],
+            ))
           ]),
         ),
       ),

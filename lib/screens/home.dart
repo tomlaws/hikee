@@ -10,6 +10,7 @@ import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
@@ -25,13 +26,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
-  final double _collapsedPanelHeight = 72;
+  final double _collapsedPanelHeight = kBottomNavigationBarHeight;
   final double _panelHeaderHeight = 60;
   double _mapBottomPadding = 80;
   Completer<GoogleMapController> _mapController = Completer();
   Location _location = Location();
   bool _lockPosition = true;
-  bool _pinned = false;
   HikingRoute? _activeRoute;
   BitmapDescriptor? _bdS, _bdE;
   PageController _pageController = PageController(
@@ -73,103 +73,93 @@ class _HomeScreenState extends State<HomeScreen> {
             _activeRoute!.polyline[0].longitude);
       }
     }
-    return Scaffold(
-        body: Stack(children: [
-      SlidingUpPanel(
-          controller: _pc,
-          parallaxEnabled: true,
-          renderPanelSheet: false,
-          maxHeight: 296,
-          minHeight: _collapsedPanelHeight,
-          color: Colors.transparent,
-          onPanelSlide: (position) {
-            setState(() {
-              _pinned = true;
-            });
-            Provider.of<PanelPosition>(context, listen: false).update(position);
-          },
-          onPanelOpened: () {
-            setState(() {
-              _pinned = false;
-            });
-          },
-          onPanelClosed: () {
-            setState(() {
-              _pinned = false;
-            });
-          },
-          panel: _panel(),
-          body: _body()),
-      Consumer<PanelPosition>(
-        builder: (_, panelPosition, __) => Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: IgnorePointer(
-            child: Opacity(
-              opacity: 1 - panelPosition.position,
-              child: Container(
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.blueGrey.withOpacity(.1)
-                      ],
-                      begin: const FractionalOffset(0.0, 0.4),
-                      end: const FractionalOffset(0.0, 1.0),
-                      stops: [0.4, 1.0]),
+    return Container(
+      color: Theme.of(context).primaryColor,
+      child: Stack(children: [
+        SafeArea(
+          maintainBottomViewPadding: true,
+          child: SlidingUpPanel(
+              controller: _pc,
+              parallaxEnabled: true,
+              renderPanelSheet: false,
+              padding: EdgeInsets.all(0),
+              margin: EdgeInsets.all(0),
+              maxHeight: 296,
+              minHeight: _collapsedPanelHeight,
+              color: Colors.transparent,
+              onPanelSlide: (position) {
+                Provider.of<PanelPosition>(context, listen: false)
+                    .update(position);
+              },
+              panel: _panel(),
+              body: _body()),
+        ),
+        Consumer<PanelPosition>(
+          builder: (_, panelPosition, __) => Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 1 - panelPosition.position,
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.blueGrey.withOpacity(.1)
+                        ],
+                        begin: const FractionalOffset(0.0, 0.4),
+                        end: const FractionalOffset(0.0, 1.0),
+                        stops: [0.4, 1.0]),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    ]));
+      ]),
+    );
   }
 
   Widget _panel() {
     return SafeArea(
-        child: Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(26), topRight: Radius.circular(26)),
-          ),
-          clipBehavior: Clip.hardEdge,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(26), topRight: Radius.circular(26)),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: kBottomNavigationBarHeight + 1,
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                          width: 1, color: Theme.of(context).dividerColor))),
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
                         LineAwesomeIcons.walking,
-                        size: 40,
+                        size: 30,
                         color: Theme.of(context).primaryColor,
                       ),
                       Container(width: 4),
                       Text(
-                        '3.2',
+                        '3.2 km',
                         style: TextStyle(
                             fontSize: 28,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1),
-                      ),
-                      Container(width: 4),
-                      Text(
-                        'km',
-                        style: TextStyle(
-                            fontSize: 24,
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1),
@@ -180,34 +170,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
-                        LineAwesomeIcons.clock,
-                        size: 40,
+                        LineAwesomeIcons.stopwatch,
+                        size: 30,
                         color: Theme.of(context).primaryColor,
                       ),
                       Container(width: 4),
-                      Text('54',
+                      Text('54m 3s',
                           style: TextStyle(
                               fontSize: 28,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1)),
-                      Text('m',
-                          style: TextStyle(
-                              fontSize: 24,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1)),
-                      Text(
-                        '30',
-                        style: TextStyle(
-                            fontSize: 28,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1),
-                      ),
-                      Text('s',
-                          style: TextStyle(
-                              fontSize: 24,
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1)),
@@ -215,10 +185,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              Container(height: 10),
-              //indicator
-              Divider(),
-              Expanded(
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: PageView(
                   controller: _pageController,
                   onPageChanged: (int page) {
@@ -229,25 +199,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [_routeInfo(), _routeInfo()],
                 ),
               ),
-              Row(
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: _pageIndicators(2, _selectPageIndex),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        Positioned(
-          top: 8,
-          child: Container(
-            width: 36,
-            height: 6,
-            decoration: BoxDecoration(
-                color: Colors.black.withOpacity(.1),
-                borderRadius: BorderRadius.circular(8.0)),
-          ),
-        ),
-      ],
-    ));
+      ),
+    );
   }
 
   Widget _body() {
@@ -510,15 +473,17 @@ class _HomeScreenState extends State<HomeScreen> {
     for (int i = 0; i < total; i++) {
       bool isActive = i == selectedindex;
       list.add(Container(
-        height: 10,
+        height: 16,
+        width: 16,
         child: AnimatedContainer(
           duration: Duration(milliseconds: 150),
           margin: EdgeInsets.symmetric(horizontal: 4.0),
-          height: isActive ? 10 : 8.0,
-          width: isActive ? 12 : 8.0,
+          height: 16,
+          width: 16,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isActive ? Theme.of(context).primaryColor : Color(0XFFEAEAEA),
+            color:
+                isActive ? Theme.of(context).primaryColor : Color(0XFFEAEAEA),
           ),
         ),
       ));
@@ -527,25 +492,58 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _routeInfo() {
-    return Column(children: [
-      Row(
-        children: [
-          Icon(
-            LineAwesomeIcons.location_arrow,
-            size: 40,
-            color: Theme.of(context).primaryColor,
-          ),
-          Container(width: 4),
-          Text(
-            _activeRoute?.name_en ?? 'Hiking Route',
-            style: TextStyle(
-                fontSize: 28,
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1),
-          ),
-        ],
-      ),
-    ]);
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              LineAwesomeIcons.map_signs,
+              color: Theme.of(context).primaryColor,
+            ),
+            Container(width: 8),
+            Text(
+              _activeRoute?.name_en ?? 'Hiking Route',
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+          ],
+        ),
+        Container(height: 8),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              LineAwesomeIcons.ruler,
+              color: Theme.of(context).primaryColor,
+            ),
+            Container(width: 8),
+            Text(
+              _activeRoute?.length != null
+                  ? '${_activeRoute!.length.toString()}km'
+                  : '5 km',
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+          ],
+        ),
+        Container(height: 8),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              LineAwesomeIcons.clock,
+              color: Theme.of(context).primaryColor,
+            ),
+            Container(width: 8),
+            Text(
+              _activeRoute?.duration != null
+                  ? TimeUtils.toText(_activeRoute!.duration)
+                  : TimeUtils.toText(90),
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+          ],
+        ),
+      ]),
+    );
   }
 }
