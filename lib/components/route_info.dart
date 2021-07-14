@@ -34,7 +34,7 @@ class RouteInfo extends StatelessWidget {
           ),
           Container(width: 8),
           Text(
-            '${route!.length.toString()}km',
+            '${route.length.toString()}km',
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
           ),
         ],

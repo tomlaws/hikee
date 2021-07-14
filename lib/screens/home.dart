@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mountain_deco.dart';
+import 'package:hikee/components/route_info.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
@@ -124,6 +125,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _panel() {
+    if (_activeRoute == null) {
+      return Container();
+    }
     return SafeArea(
       child: Container(
         decoration: BoxDecoration(
@@ -494,56 +498,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _routeInfo() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Column(children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              LineAwesomeIcons.map_signs,
-              color: Theme.of(context).primaryColor,
-            ),
-            Container(width: 8),
-            Text(
-              _activeRoute?.name_en ?? 'Hiking Route',
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
-            ),
-          ],
-        ),
-        Container(height: 8),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              LineAwesomeIcons.ruler,
-              color: Theme.of(context).primaryColor,
-            ),
-            Container(width: 8),
-            Text(
-              _activeRoute?.length != null
-                  ? '${_activeRoute!.length.toString()}km'
-                  : '5 km',
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
-            ),
-          ],
-        ),
-        Container(height: 8),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              LineAwesomeIcons.clock,
-              color: Theme.of(context).primaryColor,
-            ),
-            Container(width: 8),
-            Text(
-              _activeRoute?.duration != null
-                  ? TimeUtils.toText(_activeRoute!.duration)
-                  : TimeUtils.toText(90),
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
-            ),
-          ],
-        ),
-      ]),
+      child: RouteInfo(route: _activeRoute!,),
     );
   }
 }
