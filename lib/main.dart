@@ -18,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => PanelPosition()),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
         ChangeNotifierProvider(create: (_) => CurrentLocation()),
+        ChangeNotifierProvider(create: (_) => LibrarySort()),
       ],
       child: MyApp(),
     ),
