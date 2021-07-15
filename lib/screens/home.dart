@@ -9,6 +9,7 @@ import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/route_elevation.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/models/active_hiking_route.dart';
+import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/geo.dart';
@@ -33,12 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Location _location = Location();
   bool _lockPosition = true;
   HikingRoute? _activeRoute;
+  List<LatLng>? _decodedRoute;
   BitmapDescriptor? _bdS, _bdE;
   PageController _pageController = PageController(
     initialPage: 0,
   );
   int _selectPageIndex = 0;
-  List<LatLng>? _decodedPoints;
 
   @override
   void initState() {
@@ -66,13 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
       _activeRoute = route;
       _pc.close();
       if (_activeRoute != null) {
-        _decodedPoints = GeoUtils.decodePath(_activeRoute!.path);
+        _decodedRoute = GeoUtils.decodePath(_activeRoute!.path);
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           widget.switchToTab(0);
         });
         _lockPosition = false;
-        _goToLocation(
-            _decodedPoints![0].latitude, _decodedPoints![0].longitude);
+        _goToLocation(_decodedRoute![0].latitude, _decodedRoute![0].longitude);
       }
     }
     MediaQueryData mediaQueryData = MediaQuery.of(context);
@@ -124,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ]),
     );
   }
+
   Widget _panel() {
     if (_activeRoute == null) {
       return Container();
@@ -160,14 +161,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Theme.of(context).primaryColor,
                       ),
                       Container(width: 4),
-                      Text(
-                        '3.2 km',
-                        style: TextStyle(
-                            fontSize: 28,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1),
-                      ),
+                      Consumer<CurrentLocation>(
+                          builder: (_, currentLocation, __) {
+                        if (currentLocation.locationData == null ||
+                            currentLocation.locationData!.latitude == null ||
+                            _decodedRoute == null) {
+                          return CircularProgressIndicator();
+                        }
+                        double walked = GeoUtils.getWalkedLength(
+                            LatLng(currentLocation.locationData!.latitude!,
+                                currentLocation.locationData!.longitude!),
+                            _decodedRoute!);
+                        return Text(
+                          GeoUtils.formatDistance(walked),
+                          style: TextStyle(
+                              fontSize: 28,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1),
+                        );
+                      }),
                     ],
                   ),
                   Row(
@@ -205,7 +218,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectPageIndex = page;
                   });
                 },
-                children: [_routeInfo(), RouteElevation(encodedPath: _activeRoute!.path,)],
+                children: [
+                  _routeInfo(),
+                  RouteElevation(
+                    encodedPath: _activeRoute!.path,
+                  )
+                ],
               ),
             ),
           ],
@@ -346,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
           tiltGesturesEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: _decodedPoints![0],
+            target: _decodedRoute![0],
             zoom: 14,
           ),
           myLocationEnabled: true,
@@ -357,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.amber.shade900,
               width: 8,
               jointType: JointType.round,
-              points: _decodedPoints!,
+              points: _decodedRoute!,
             ),
             Polyline(
               polylineId: PolylineId('polyLine2'),
@@ -368,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _bdS != null ? Cap.customCapFromBitmap(_bdS!) : Cap.buttCap,
               endCap:
                   _bdE != null ? Cap.customCapFromBitmap(_bdE!) : Cap.buttCap,
-              points: _decodedPoints!,
+              points: _decodedRoute!,
             ),
           ].toSet(),
           onMapCreated: (GoogleMapController controller) {
@@ -484,7 +502,8 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(bottom: 16.0),
           child: Button(
             onPressed: () {
-              Provider.of<ActiveHikingRoute>(context, listen: false).update(null);
+              Provider.of<ActiveHikingRoute>(context, listen: false)
+                  .update(null);
             },
             child: Text('Quit Route'),
           ),
