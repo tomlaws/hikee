@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -7,9 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mountain_deco.dart';
+import 'package:hikee/components/route_elevation.dart';
+import 'package:hikee/components/route_info.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/utils/geo.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
@@ -25,19 +27,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
-  final double _collapsedPanelHeight = 72;
+  final double _collapsedPanelHeight = kBottomNavigationBarHeight;
   final double _panelHeaderHeight = 60;
-  double _mapBottomPadding = 80;
   Completer<GoogleMapController> _mapController = Completer();
   Location _location = Location();
   bool _lockPosition = true;
-  bool _pinned = false;
   HikingRoute? _activeRoute;
   BitmapDescriptor? _bdS, _bdE;
   PageController _pageController = PageController(
     initialPage: 0,
   );
   int _selectPageIndex = 0;
+  List<LatLng>? _decodedPoints;
 
   @override
   void initState() {
@@ -52,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _buildIcons() async {
-    _bdS = await _getIcon('START');
-    _bdE = await _getIcon('END');
+    _bdS = await _getIcon(true);
+    _bdE = await _getIcon(false);
     setState(() {});
   }
 
@@ -63,113 +64,106 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<ActiveHikingRoute>(context, listen: true).route;
     if (route != _activeRoute) {
       _activeRoute = route;
+      _pc.close();
       if (_activeRoute != null) {
+        _decodedPoints = GeoUtils.decodePath(_activeRoute!.path);
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           widget.switchToTab(0);
         });
-        _pc.close();
         _lockPosition = false;
-        _goToLocation(_activeRoute!.polyline[0].latitude,
-            _activeRoute!.polyline[0].longitude);
+        _goToLocation(
+            _decodedPoints![0].latitude, _decodedPoints![0].longitude);
       }
     }
-    return Scaffold(
-        body: Stack(children: [
-      SlidingUpPanel(
-          controller: _pc,
-          parallaxEnabled: true,
-          renderPanelSheet: false,
-          maxHeight: 296,
-          minHeight: _collapsedPanelHeight,
-          color: Colors.transparent,
-          onPanelSlide: (position) {
-            setState(() {
-              _pinned = true;
-            });
-            Provider.of<PanelPosition>(context, listen: false).update(position);
-          },
-          onPanelOpened: () {
-            setState(() {
-              _pinned = false;
-            });
-          },
-          onPanelClosed: () {
-            setState(() {
-              _pinned = false;
-            });
-          },
-          panel: _panel(),
-          body: _body()),
-      Consumer<PanelPosition>(
-        builder: (_, panelPosition, __) => Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: IgnorePointer(
-            child: Opacity(
-              opacity: 1 - panelPosition.position,
-              child: Container(
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.blueGrey.withOpacity(.1)
-                      ],
-                      begin: const FractionalOffset(0.0, 0.4),
-                      end: const FractionalOffset(0.0, 1.0),
-                      stops: [0.4, 1.0]),
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+    return Container(
+      color: Theme.of(context).primaryColor,
+      child: Stack(children: [
+        Container(
+          child: SlidingUpPanel(
+              controller: _pc,
+              parallaxEnabled: true,
+              renderPanelSheet: false,
+              padding: EdgeInsets.all(0),
+              margin: EdgeInsets.all(0),
+              maxHeight: 296,
+              minHeight: _collapsedPanelHeight + mediaQueryData.padding.top,
+              color: Colors.transparent,
+              onPanelSlide: (position) {
+                Provider.of<PanelPosition>(context, listen: false)
+                    .update(position);
+              },
+              panel: _panel(),
+              body: _body()),
+        ),
+        Consumer<PanelPosition>(
+          builder: (_, panelPosition, __) => Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 1 - panelPosition.position,
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.blueGrey.withOpacity(.1)
+                        ],
+                        begin: const FractionalOffset(0.0, 0.4),
+                        end: const FractionalOffset(0.0, 1.0),
+                        stops: [0.4, 1.0]),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    ]));
+      ]),
+    );
   }
-
   Widget _panel() {
+    if (_activeRoute == null) {
+      return Container();
+    }
     return SafeArea(
-        child: Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(26), topRight: Radius.circular(26)),
-          ),
-          clipBehavior: Clip.hardEdge,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(26), topRight: Radius.circular(26)),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: kBottomNavigationBarHeight + 1,
+              // decoration: BoxDecoration(
+              //     border: Border(
+              //         bottom: BorderSide(
+              //             width: 1, color: Theme.of(context).dividerColor.withOpacity(.25)))),
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
                         LineAwesomeIcons.walking,
-                        size: 40,
+                        size: 30,
                         color: Theme.of(context).primaryColor,
                       ),
                       Container(width: 4),
                       Text(
-                        '3.2',
+                        '3.2 km',
                         style: TextStyle(
                             fontSize: 28,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1),
-                      ),
-                      Container(width: 4),
-                      Text(
-                        'km',
-                        style: TextStyle(
-                            fontSize: 24,
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1),
@@ -180,34 +174,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
-                        LineAwesomeIcons.clock,
-                        size: 40,
+                        LineAwesomeIcons.stopwatch,
+                        size: 30,
                         color: Theme.of(context).primaryColor,
                       ),
                       Container(width: 4),
-                      Text('54',
+                      Text('54m 3s',
                           style: TextStyle(
                               fontSize: 28,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1)),
-                      Text('m',
-                          style: TextStyle(
-                              fontSize: 24,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1)),
-                      Text(
-                        '30',
-                        style: TextStyle(
-                            fontSize: 28,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1),
-                      ),
-                      Text('s',
-                          style: TextStyle(
-                              fontSize: 24,
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1)),
@@ -215,45 +189,35 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              Container(height: 10),
-              //indicator
-              Divider(),
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (int page) {
-                    setState(() {
-                      _selectPageIndex = page;
-                    });
-                  },
-                  children: [_routeInfo(), _routeInfo()],
-                ),
-              ),
-              Row(
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: _pageIndicators(2, _selectPageIndex),
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (int page) {
+                  setState(() {
+                    _selectPageIndex = page;
+                  });
+                },
+                children: [_routeInfo(), RouteElevation(encodedPath: _activeRoute!.path,)],
+              ),
+            ),
+          ],
         ),
-        Positioned(
-          top: 8,
-          child: Container(
-            width: 36,
-            height: 6,
-            decoration: BoxDecoration(
-                color: Colors.black.withOpacity(.1),
-                borderRadius: BorderRadius.circular(8.0)),
-          ),
-        ),
-      ],
-    ));
+      ),
+    );
   }
 
   Widget _body() {
     return Container(
       clipBehavior: Clip.none,
-      padding: EdgeInsets.only(bottom: max(0, _collapsedPanelHeight + 12)),
+      padding: EdgeInsets.only(bottom: _collapsedPanelHeight),
       color: Color(0xFF5DB075),
       child: Consumer2<PanelPosition, ActiveHikingRoute>(
           builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
@@ -325,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ))),
                   if (activeHikingRouteProvider.route != null)
                     Positioned(
-                        bottom: _mapBottomPadding,
+                        bottom: _collapsedPanelHeight,
                         left: 0,
                         right: 0,
                         child: Padding(
@@ -359,21 +323,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _goToCurrentLocation();
                                     },
                                   ),
-                                  Container(
-                                    height: 8,
-                                  ),
-                                  Button(
-                                    icon: Icon(
-                                      LineAwesomeIcons.alternate_undo,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    invert: true,
-                                    onPressed: () {
-                                      Provider.of<ActiveHikingRoute>(context,
-                                              listen: false)
-                                          .update(null);
-                                    },
-                                  ),
                                 ],
                               )
                             ],
@@ -390,39 +339,38 @@ class _HomeScreenState extends State<HomeScreen> {
           _lockPosition = false;
         },
         child: GoogleMap(
-          padding: EdgeInsets.only(bottom: _mapBottomPadding),
+          padding: EdgeInsets.only(bottom: _collapsedPanelHeight),
           compassEnabled: false,
+          mapToolbarEnabled: false,
+          zoomControlsEnabled: false,
+          tiltGesturesEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: activeHikingRouteProvider.route!.polyline[0],
+            target: _decodedPoints![0],
             zoom: 14,
           ),
-          zoomControlsEnabled: false,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
           polylines: [
             Polyline(
-              polylineId: PolylineId('polyLine'),
+              polylineId: PolylineId('polyLine1'),
+              color: Colors.amber.shade900,
+              width: 8,
+              jointType: JointType.round,
+              points: _decodedPoints!,
+            ),
+            Polyline(
+              polylineId: PolylineId('polyLine2'),
               color: Colors.amber,
-              startCap: Cap.roundCap,
-              endCap: Cap.roundCap,
-              width: 5,
-              jointType: JointType.bevel,
-              points: activeHikingRouteProvider.route!.polyline,
+              width: 6,
+              jointType: JointType.round,
+              startCap:
+                  _bdS != null ? Cap.customCapFromBitmap(_bdS!) : Cap.buttCap,
+              endCap:
+                  _bdE != null ? Cap.customCapFromBitmap(_bdE!) : Cap.buttCap,
+              points: _decodedPoints!,
             ),
           ].toSet(),
-          markers: _bdS != null && _bdE != null
-              ? Set.from([
-                  Marker(
-                      markerId: MarkerId('start'),
-                      position: activeHikingRouteProvider.route!.polyline.first,
-                      icon: _bdS!),
-                  Marker(
-                      markerId: MarkerId('end'),
-                      position: activeHikingRouteProvider.route!.polyline.last,
-                      icon: _bdE!)
-                ])
-              : Set.from([]),
           onMapCreated: (GoogleMapController controller) {
             controller.setMapStyle(
                 '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
@@ -474,33 +422,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<BitmapDescriptor> _getIcon(String text) async {
-    final int width = 80;
-    final int height = 80;
+  Future<BitmapDescriptor> _getIcon(bool start) async {
+    final int diameter = 48;
+    final double borderWidth = 2;
+    final center = Offset(diameter / 2, diameter / 2);
     final PictureRecorder pictureRecorder = PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
-    final Paint paint = Paint()..color = Colors.blue;
-    final Radius radius = Radius.circular(20.0);
-    canvas.drawRRect(
-        RRect.fromRectAndCorners(
-          Rect.fromLTWH(0.0, 0.0, width.toDouble(), height.toDouble()),
-          topLeft: radius,
-          topRight: radius,
-          bottomLeft: radius,
-          bottomRight: radius,
-        ),
-        paint);
-    TextPainter painter = TextPainter(textDirection: TextDirection.ltr);
-    painter.text = TextSpan(
-      text: text,
-      style: TextStyle(fontSize: 25.0, color: Colors.white),
-    );
-    painter.layout();
-    painter.paint(
-        canvas,
-        Offset((width * 0.5) - painter.width * 0.5,
-            (height * 0.5) - painter.height * 0.5));
-    final img = await pictureRecorder.endRecording().toImage(width, height);
+    final double radius = (diameter / 2) - borderWidth;
+
+    Paint paintCircle = Paint()..color = Colors.amber;
+    Paint paintBorder = Paint()
+      ..color = Colors.amber.shade900
+      ..strokeWidth = borderWidth
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, radius, paintCircle);
+    canvas.drawCircle(center, radius, paintBorder);
+
+    Paint paintDot = Paint()..color = Colors.amber.shade900;
+    canvas.drawCircle(center, radius / 2, paintDot);
+
+    final img =
+        await pictureRecorder.endRecording().toImage(diameter, diameter);
     final data = await img.toByteData(format: ImageByteFormat.png);
     return BitmapDescriptor.fromBytes(data!.buffer.asUint8List());
   }
@@ -510,15 +452,17 @@ class _HomeScreenState extends State<HomeScreen> {
     for (int i = 0; i < total; i++) {
       bool isActive = i == selectedindex;
       list.add(Container(
-        height: 10,
+        height: 16,
+        width: 16,
         child: AnimatedContainer(
           duration: Duration(milliseconds: 150),
           margin: EdgeInsets.symmetric(horizontal: 4.0),
-          height: isActive ? 10 : 8.0,
-          width: isActive ? 12 : 8.0,
+          height: 16,
+          width: 16,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isActive ? Theme.of(context).primaryColor : Color(0XFFEAEAEA),
+            color:
+                isActive ? Theme.of(context).primaryColor : Color(0XFFEAEAEA),
           ),
         ),
       ));
@@ -527,25 +471,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _routeInfo() {
-    return Column(children: [
-      Row(
-        children: [
-          Icon(
-            LineAwesomeIcons.location_arrow,
-            size: 40,
-            color: Theme.of(context).primaryColor,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child:
+          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        RouteInfo(
+          route: _activeRoute!,
+          showRouteName: true,
+          hideDistrict: true,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Button(
+            onPressed: () {
+              Provider.of<ActiveHikingRoute>(context, listen: false).update(null);
+            },
+            child: Text('Quit Route'),
           ),
-          Container(width: 4),
-          Text(
-            _activeRoute?.name_en ?? 'Hiking Route',
-            style: TextStyle(
-                fontSize: 28,
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1),
-          ),
-        ],
-      ),
-    ]);
+        ),
+      ]),
+    );
   }
 }

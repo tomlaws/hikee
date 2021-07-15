@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hikee/models/active_hiking_route.dart';
+import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
@@ -16,6 +17,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => PanelPosition()),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
+        ChangeNotifierProvider(create: (_) => CurrentLocation()),
       ],
       child: MyApp(),
     ),
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           textTheme: GoogleFonts.latoTextTheme(
-            Theme.of(context).textTheme,
+            Theme.of(context).textTheme.apply(bodyColor: Color(0xFF666666)),
           ),
         ),
         home: NotificationListener<OverscrollIndicatorNotification>(

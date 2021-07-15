@@ -3,9 +3,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/route_info.dart';
 import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/utils/geo.dart';
 import 'package:provider/provider.dart';
 
 class RouteScreen extends StatefulWidget {
@@ -21,6 +23,8 @@ class _RouteScreenState extends State<RouteScreen> {
   Widget build(BuildContext context) {
     HikingRoute route = HikingRouteData.retrieve()
         .firstWhere((element) => element.id == widget.id);
+
+    var points = GeoUtils.decodePath(route.path);
     return Scaffold(
         extendBodyBehindAppBar: true,
         body: CustomScrollView(
@@ -81,6 +85,17 @@ class _RouteScreenState extends State<RouteScreen> {
                       style: TextStyle(),
                     ),
                   ),
+                  Divider(),
+                  Container(
+                    height: 16,
+                  ),
+                  RouteInfo(
+                    route: route,
+                    showRouteName: false,
+                  ),
+                  Container(
+                    height: 16,
+                  ),
                   Container(
                     height: 240,
                     clipBehavior: Clip.antiAlias,
@@ -89,8 +104,7 @@ class _RouteScreenState extends State<RouteScreen> {
                     child: GoogleMap(
                       mapType: MapType.normal,
                       initialCameraPosition: CameraPosition(
-                        target: route
-                            .polyline[(route.polyline.length / 5 * 2).floor()],
+                        target: points[(points.length / 5 * 2).floor()],
                         zoom: 13,
                       ),
                       gestureRecognizers:
@@ -110,7 +124,7 @@ class _RouteScreenState extends State<RouteScreen> {
                           endCap: Cap.roundCap,
                           width: 5,
                           jointType: JointType.bevel,
-                          points: route.polyline,
+                          points: points,
                         ),
                       ].toSet(),
                       onMapCreated: (GoogleMapController controller) {
