@@ -23,7 +23,7 @@ class _CommunityPostTileState extends State<CommunityPostTile> {
                 child: Row(
                   children:[
                     CircleAvatar(
-                      backgroundImage: NetworkImage("https://lh3.googleusercontent.com/proxy/3vQYnbwA06rXh2WVxixTJD2QDPoRFsUeADSkI2UaG8URNNpHN82c8sGPr30vy2-N-KLezOGuxlNRmbQCjopSkzHK39Cg_pgvZlmO9HH97E2Hz8Bh5H0YlZhkfw"),
+                      backgroundImage: NetworkImage("https://www.thestatesman.com/wp-content/uploads/2017/08/1493458748-beauty-face-517.jpg"),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
