@@ -63,9 +63,9 @@ class GeoUtils {
 
   static String formatDistance(double km) {
     if (km < 0) {
-      return (km * 1000).toStringAsFixed(0) + ' km';
+      return (km * 1000).toStringAsFixed(0) + ' m';
     }
-    return km.toStringAsFixed(2) + ' km';;
+    return km.toStringAsFixed(2) + ' km';
   }
 
   static Future<LocationData>? getCurrentLocation() {
