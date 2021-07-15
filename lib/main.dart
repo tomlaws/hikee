@@ -30,6 +30,7 @@ void main() {
                   clockStream: prev?.clockStream,
                   reset: prev?.id != route.id);
             }),
+        ChangeNotifierProvider(create: (_) => LibrarySort()),
       ],
       child: MyApp(),
     ),

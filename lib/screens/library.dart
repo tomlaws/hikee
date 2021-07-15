@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/data/routes.dart';
+import 'package:hikee/data/sortValues.dart';
 import 'package:hikee/screens/route.dart';
+import 'package:provider/provider.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({Key? key}) : super(key: key);
@@ -16,13 +18,13 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -43,11 +45,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     ],
                   ),
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      TextButton(onPressed: () => {},
-                        style: TextButton.styleFrom( primary: Theme.of(context).primaryColor,),
+                      TextButton(onPressed: () => _showSortDialog(context),
+                        style: TextButton.styleFrom( primary: Theme.of(context).primaryColor),
                           child: Row(
                             children: [
                               Icon(Icons.sort),
@@ -56,7 +59,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           )
                       ),
                       TextButton(onPressed: () => {},
-                          style: TextButton.styleFrom( primary: Theme.of(context).primaryColor,),
+                          style: TextButton.styleFrom( primary: Colors.grey,),
                           child: Row(
                             children: [
                               Icon(Icons.filter_list),
@@ -112,3 +115,46 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 }
+
+_showSortDialog(BuildContext context) => showDialog(context: context, builder: (context){
+  final _LibrarySort= Provider.of<LibrarySort>(context);
+  return AlertDialog(
+    title: Text("Sorting"),
+    content: SingleChildScrollView(
+      child: Container(
+        width: double.infinity,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: sortValues.map((e) => RadioListTile<String>(
+            activeColor: Theme.of(context).primaryColor,
+            title: Text(e),
+            value: e,
+            groupValue: _LibrarySort.currentSort,
+            selected: _LibrarySort.currentSort == e,
+            onChanged: (value) {
+              _LibrarySort.updateSort(value!);
+              Navigator.of(context).pop();
+            },
+          )).toList(),
+        )
+
+      ),
+    ),
+  );
+});
+
+class LibrarySort extends ChangeNotifier{
+
+    String _currentSort = sortValues[0];
+    LibrarySort();
+
+    String get currentSort => _currentSort;
+
+    updateSort(String value){
+      if (value != _currentSort) {
+        _currentSort = value;
+        notifyListeners();
+      }
+    }
+}
+
