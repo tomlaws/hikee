@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/current_location.dart';
+import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
@@ -18,6 +19,17 @@ void main() {
         ChangeNotifierProvider(create: (_) => PanelPosition()),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
         ChangeNotifierProvider(create: (_) => CurrentLocation()),
+        ChangeNotifierProxyProvider2<ActiveHikingRoute, CurrentLocation,
+                HikingStat>(
+            create: (BuildContext context) => HikingStat(
+                Provider.of<ActiveHikingRoute>(context, listen: false),
+                Provider.of<CurrentLocation>(context, listen: false)),
+            update: (BuildContext context, ActiveHikingRoute route,
+                CurrentLocation loc, HikingStat? prev) {
+              return HikingStat(route, loc,
+                  clockStream: prev?.clockStream,
+                  reset: prev?.id != route.id);
+            }),
       ],
       child: MyApp(),
     ),
@@ -93,7 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       body: IndexedStack(children: [
-        HomeScreen(switchToTab: (i) => _onItemTapped(i),),
+        HomeScreen(
+          switchToTab: (i) => _onItemTapped(i),
+        ),
         LibraryScreen(),
         EventsScreen(),
         CommunityScreen(),

@@ -43,7 +43,23 @@ class GeoUtils {
     return dist;
   }
 
-  static List<LatLng> truncatePathByLocation(List<LatLng> path, LatLng location) {
+  static double minDistanceToPath(LatLng location, List<LatLng> path) {
+    double min = double.infinity;
+    path.forEach((p) {
+      var dist = calculateDistance(p, location);
+      if (dist < min) {
+        min = dist;
+      }
+    });
+    return min;
+  }
+
+  static bool isFarWayFromPath(LatLng location, List<LatLng> path) {
+    return minDistanceToPath(location, path) > 0.5; // greater than 500meters
+  }
+
+  static List<LatLng> truncatePathByLocation(
+      List<LatLng> path, LatLng location) {
     double dist = double.infinity;
     int index = 0;
     for (int i = 0; i < path.length; i++) {

@@ -1,5 +1,5 @@
 class TimeUtils {
-  static String toText(int minutes) {
+  static String formatMinutes(int minutes) {
     int remainder = minutes % 60;
     int hour = (minutes / 60).floor();
     if (hour > 0) {
@@ -10,5 +10,11 @@ class TimeUtils {
     } else {
       return '${remainder}m';
     }
+  }
+
+  static String formatSeconds(int seconds) {
+    int remainder = seconds % 60;
+    int minutes = (seconds / 60).floor();
+    return formatMinutes(minutes) + (remainder != 0 ? ' ${remainder}s' : '');
   }
 }

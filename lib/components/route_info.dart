@@ -75,7 +75,7 @@ class RouteInfo extends StatelessWidget {
           ),
           Container(width: 8),
           Text(
-            TimeUtils.toText(route.duration),
+            TimeUtils.formatMinutes(route.duration),
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
           ),
         ],

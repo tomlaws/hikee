@@ -10,9 +10,11 @@ import 'package:hikee/components/route_elevation.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/current_location.dart';
+import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
@@ -142,73 +144,102 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: kBottomNavigationBarHeight + 1,
+              height: kBottomNavigationBarHeight,
               // decoration: BoxDecoration(
               //     border: Border(
               //         bottom: BorderSide(
               //             width: 1, color: Theme.of(context).dividerColor.withOpacity(.25)))),
               margin: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
+              child: Consumer<HikingStat>(builder: (_, hikingStat, __) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTapDown: (_) {
+                    if (_pc.isPanelClosed) {
+                      _pc.open();
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        LineAwesomeIcons.walking,
-                        size: 30,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      Container(width: 4),
-                      Consumer<CurrentLocation>(
-                          builder: (_, currentLocation, __) {
-                        if (currentLocation.locationData == null ||
-                            currentLocation.locationData!.latitude == null ||
-                            _decodedRoute == null) {
-                          return CircularProgressIndicator();
-                        }
-                        double walked = GeoUtils.getWalkedLength(
-                            LatLng(currentLocation.locationData!.latitude!,
-                                currentLocation.locationData!.longitude!),
-                            _decodedRoute!);
-                        return Text(
-                          GeoUtils.formatDistance(walked),
-                          style: TextStyle(
-                              fontSize: 28,
+                      if (!hikingStat.isFarAway) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.walking,
+                              size: 30,
                               color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1),
-                        );
-                      }),
+                            ),
+                            Container(width: 4),
+                            Text(
+                              GeoUtils.formatDistance(
+                                  hikingStat.walkedDistance),
+                              style: TextStyle(
+                                  fontSize: 28,
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1),
+                            )
+                          ],
+                        ),
+                        StreamBuilder<int>(
+                            stream: hikingStat.clockStream,
+                            builder: (_, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting ||
+                                  snapshot.data == null) {
+                                return Container();
+                              }
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LineAwesomeIcons.stopwatch,
+                                    size: 30,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  Container(width: 4),
+                                  Text(
+                                    TimeUtils.formatSeconds(snapshot.data ?? 0),
+                                    style: TextStyle(
+                                        fontSize: 28,
+                                        color: Theme.of(context).primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1),
+                                  ),
+                                ],
+                              );
+                            })
+                      ] else
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'You\'re far away from the route',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                              Opacity(
+                                  opacity: .5,
+                                  child: Text(
+                                      'Please reach to the starting point first',
+                                      style: TextStyle(fontSize: 12)))
+                            ],
+                          ),
+                        )
                     ],
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        LineAwesomeIcons.stopwatch,
-                        size: 30,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      Container(width: 4),
-                      Text('54m 3s',
-                          style: TextStyle(
-                              fontSize: 28,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1)),
-                    ],
-                  ),
-                ],
-              ),
+                );
+              }),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _pageIndicators(2, _selectPageIndex),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: _pageIndicators(2, _selectPageIndex),
             ),
             Expanded(
               child: PageView(
@@ -219,7 +250,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
                 children: [
-                  _routeInfo(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: _routeInfo(),
+                  ),
                   RouteElevation(
                     encodedPath: _activeRoute!.path,
                   )
@@ -320,17 +354,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Column(
                                 children: [
-                                  Button(
-                                    icon: Icon(
-                                      LineAwesomeIcons.expand,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    invert: true,
-                                    onPressed: () {},
-                                  ),
-                                  Container(
-                                    height: 8,
-                                  ),
+                                  // Button(
+                                  //   icon: Icon(
+                                  //     LineAwesomeIcons.expand,
+                                  //     color: Theme.of(context).primaryColor,
+                                  //   ),
+                                  //   invert: true,
+                                  //   onPressed: () {},
+                                  // ),
+                                  // Container(
+                                  //   height: 8,
+                                  // ),
                                   Button(
                                     icon: Icon(
                                       LineAwesomeIcons.map_marker,
@@ -372,14 +406,14 @@ class _HomeScreenState extends State<HomeScreen> {
           polylines: [
             Polyline(
               polylineId: PolylineId('polyLine1'),
-              color: Colors.amber.shade900,
+              color: Colors.blue.shade900,
               width: 8,
               jointType: JointType.round,
               points: _decodedRoute!,
             ),
             Polyline(
               polylineId: PolylineId('polyLine2'),
-              color: Colors.amber,
+              color: Colors.blue,
               width: 6,
               jointType: JointType.round,
               startCap:
@@ -441,22 +475,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<BitmapDescriptor> _getIcon(bool start) async {
-    final int diameter = 48;
+    final int diameter = 36;
     final double borderWidth = 2;
     final center = Offset(diameter / 2, diameter / 2);
     final PictureRecorder pictureRecorder = PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
     final double radius = (diameter / 2) - borderWidth;
 
-    Paint paintCircle = Paint()..color = Colors.amber;
+    Paint paintCircle = Paint()..color = Colors.blue;
     Paint paintBorder = Paint()
-      ..color = Colors.amber.shade900
+      ..color = Colors.blue.shade900
       ..strokeWidth = borderWidth
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, paintCircle);
     canvas.drawCircle(center, radius, paintBorder);
 
-    Paint paintDot = Paint()..color = Colors.amber.shade900;
+    Paint paintDot = Paint()..color = Colors.blue.shade900;
     canvas.drawCircle(center, radius / 2, paintDot);
 
     final img =
