@@ -19,40 +19,90 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-                Text("Hiking Library", textAlign: TextAlign.left, style: TextStyle(fontSize: 20)),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextInput(
                     hintText: 'Search...',
                   ),
                 ),
-                Expanded(
-                    child: CustomScrollView(
-                        slivers: [
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              // The builder function returns a ListTile with a title that
-                              // displays the index of the current item.
-                              (context, index) => Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                child: HikingRouteTile(
-                                    route: HikingRouteData.retrieve()[index],
-                                    onTap: () {
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (_) => RouteScreen(
-                                              id: HikingRouteData.retrieve()[index].id)));
-                                    }),
-                              ),
-                              // Builds 1000 ListTiles
-                              childCount: HikingRouteData.retrieve().length,
-                            ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 3,
+                        blurRadius: 3,
+                        offset: Offset(0, 6), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      TextButton(onPressed: () => {},
+                        style: TextButton.styleFrom( primary: Theme.of(context).primaryColor,),
+                          child: Row(
+                            children: [
+                              Icon(Icons.sort),
+                              Text("Sorting", style: TextStyle(fontSize: 15),),
+                            ],
                           )
-                        ]
+                      ),
+                      TextButton(onPressed: () => {},
+                          style: TextButton.styleFrom( primary: Theme.of(context).primaryColor,),
+                          child: Row(
+                            children: [
+                              Icon(Icons.filter_list),
+                              Text("Filter", style: TextStyle(fontSize: 15),),
+                            ],
+                          )
+                      ),
+                      TextButton(onPressed: () => {},
+                          style: TextButton.styleFrom( primary: Theme.of(context).primaryColor,),
+                          child: Row(
+                            children: [
+                              Icon(Icons.map),
+                              Text("District", style: TextStyle(fontSize: 15),),
+                            ],
+                          )
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                      child: CustomScrollView(
+
+                          slivers: [
+                            SliverList(
+
+                              delegate: SliverChildBuilderDelegate(
+                                // The builder function returns a ListTile with a title that
+                                // displays the index of the current item.
+                                (context, index) => Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: HikingRouteTile(
+                                      route: HikingRouteData.retrieve()[index],
+                                      onTap: () {
+                                        Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (_) => RouteScreen(
+                                                id: HikingRouteData.retrieve()[index].id)));
+                                      }),
+                                ),
+                                // Builds 1000 ListTiles
+                                childCount: HikingRouteData.retrieve().length,
+                              ),
+                            )
+                          ]
+                      ),
                     )
                 ),
 
@@ -62,4 +112,3 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 }
-
