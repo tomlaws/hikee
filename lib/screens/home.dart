@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -7,12 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mountain_deco.dart';
+import 'package:hikee/components/route_elevation.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
@@ -125,7 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ]),
     );
   }
-
   Widget _panel() {
     if (_activeRoute == null) {
       return Container();
@@ -200,17 +198,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (int page) {
-                    setState(() {
-                      _selectPageIndex = page;
-                    });
-                  },
-                  children: [_routeInfo(), _routeInfo()],
-                ),
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (int page) {
+                  setState(() {
+                    _selectPageIndex = page;
+                  });
+                },
+                children: [_routeInfo(), RouteElevation(encodedPath: _activeRoute!.path,)],
               ),
             ),
           ],
@@ -485,12 +480,15 @@ class _HomeScreenState extends State<HomeScreen> {
           showRouteName: true,
           hideDistrict: true,
         ),
-        Button(
-          onPressed: () {
-            Provider.of<ActiveHikingRoute>(context, listen: false).update(null);
-          },
-          child: Text('Quit Route'),
-        )
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Button(
+            onPressed: () {
+              Provider.of<ActiveHikingRoute>(context, listen: false).update(null);
+            },
+            child: Text('Quit Route'),
+          ),
+        ),
       ]),
     );
   }
