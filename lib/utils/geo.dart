@@ -31,20 +31,47 @@ class GeoUtils {
     return 12742 * asin(sqrt(a));
   }
 
+  static double getPathLength({String? encodedPath, List<LatLng>? path}) {
+    List<LatLng> points = [];
+    if (path != null)
+      points = path;
+    else if (encodedPath != null) points = decodePath(encodedPath);
+    double dist = 0.0;
+    for (int i = 0; i < points.length - 1; i++) {
+      dist += calculateDistance(points[i], points[i + 1]);
+    }
+    return dist;
+  }
+
+  static List<LatLng> truncatePathByLocation(List<LatLng> path, LatLng location) {
+    double dist = double.infinity;
+    int index = 0;
+    for (int i = 0; i < path.length; i++) {
+      double d = calculateDistance(path[i], location);
+      if (d < dist) {
+        dist = d;
+        index = i;
+      }
+    }
+    return path.take(index + 1).toList();
+  }
+
+  static double getWalkedLength(LatLng myLocation, List<LatLng> path) {
+    var walked = truncatePathByLocation(path, myLocation);
+    return double.parse(getPathLength(path: walked).toStringAsFixed(3));
+  }
+
+  static String formatDistance(double km) {
+    if (km < 0) {
+      return (km * 1000).toStringAsFixed(0) + ' km';
+    }
+    return km.toStringAsFixed(2) + ' km';;
+  }
+
   static Future<LocationData>? getCurrentLocation() {
     var location = Location();
     try {
       return location.getLocation();
-    } catch (e) {
-      print('e AddLocation ==>> ${e.toString()}');
-      return null;
-    }
-  }
-
-  static Stream<LocationData>? streamLocationData() {
-    var location = Location();
-    try {
-      return location.onLocationChanged;
     } catch (e) {
       print('e AddLocation ==>> ${e.toString()}');
       return null;

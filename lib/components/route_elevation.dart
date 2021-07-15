@@ -20,21 +20,22 @@ class RouteElevation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CurrentLocation>(builder: (_, currentLocationProvider, __) {
-      LocationData? loc = currentLocationProvider.locationData;
-      return FutureBuilder<List<Elevation>>(
-          future: GeoUtils.getElevations(encodedPath),
-          builder: (_, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            }
+    return FutureBuilder<List<Elevation>>(
+        future: GeoUtils.getElevations(encodedPath),
+        builder: (_, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return Consumer<CurrentLocation>(
+              builder: (_, currentLocationProvider, __) {
+            LocationData? loc = currentLocationProvider.locationData;
             LatLng? _myLocation =
                 loc != null && loc.latitude != null && loc.longitude != null
                     ? LatLng(loc.latitude!, loc.longitude!)
                     : null;
             return _graph(snapshot.data!, myLocation: _myLocation);
           });
-    });
+        });
   }
 
   Widget _graph(List<Elevation> elevations,
@@ -43,7 +44,6 @@ class RouteElevation extends StatelessWidget {
     List<FlSpot> spots = [];
     double maxE = double.negativeInfinity;
     double minE = double.infinity;
-    //int closestIndex = -1;
     FlSpot? currentSpot;
     double minDist = double.infinity;
     elevations.asMap().forEach((index, value) {
