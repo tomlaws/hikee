@@ -15,6 +15,6 @@ class TimeUtils {
   static String formatSeconds(int seconds) {
     int remainder = seconds % 60;
     int minutes = (seconds / 60).floor();
-    return formatMinutes(minutes) + (remainder != 0 ? ' ${remainder}s' : '');
+    return (minutes > 0 ? formatMinutes(minutes) : '') + (remainder != 0 ? ' ${remainder}s' : '');
   }
 }
