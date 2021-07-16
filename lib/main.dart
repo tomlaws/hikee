@@ -26,9 +26,7 @@ void main() {
                 Provider.of<CurrentLocation>(context, listen: false)),
             update: (BuildContext context, ActiveHikingRoute route,
                 CurrentLocation loc, HikingStat? prev) {
-              return HikingStat(route, loc,
-                  clockStream: prev?.clockStream,
-                  reset: prev?.id != route.id);
+              return HikingStat(route, loc);
             }),
         ChangeNotifierProvider(create: (_) => LibrarySort()),
       ],

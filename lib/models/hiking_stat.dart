@@ -13,28 +13,26 @@ class HikingStat extends ChangeNotifier {
   late int id;
   late Stream<int> _clockStream;
   Stream<int> get clockStream => _clockStream;
-  bool _isCounting = false;
 
-  HikingStat(this.route, this.location,
-      {Stream<int>? clockStream, bool reset = false}) {
+  HikingStat(this.route, this.location) {
     // timer
     id = route.id;
-    if (reset) {
+    if (route.isStarted) {
       _clockStream = _timedCounter(const Duration(seconds: 1));
-    } else
-      _clockStream = clockStream ?? _timedCounter(const Duration(seconds: 1));
+    }
   }
 
-  bool get isFarAway {
+  bool get isFarAwayFromStart {
     if (route.decodedPath == null) return true;
     if (location.locationData == null) return true;
     LatLng current = LatLng(
         location.locationData!.latitude!, location.locationData!.longitude!);
-    return GeoUtils.isFarWayFromPath(current, route.decodedPath!);
+    return GeoUtils.isFarWayFromPoint(current, route.decodedPath![0]);
   }
 
   double get walkedDistance {
     if (route.decodedPath == null) return 0.0;
+    if (location.locationData == null) return 0.0;
     LatLng current = LatLng(
         location.locationData!.latitude!, location.locationData!.longitude!);
     double walked = GeoUtils.getWalkedLength(current, route.decodedPath!);
@@ -44,17 +42,11 @@ class HikingStat extends ChangeNotifier {
   Stream<int> _timedCounter(Duration interval) {
     late StreamController<int> controller;
     Timer? timer;
-    int counter = 0;
 
     void tick(_) {
-      if (!isFarAway) {
-        // close enough, start counting
-        _isCounting = true;
-      }
-      if (_isCounting) {
-        counter++;
-        controller.add(counter);
-      }
+      int elapsed = DateTime.now().millisecondsSinceEpoch -
+          (route.startTime ?? DateTime.now().millisecondsSinceEpoch);
+      controller.add((elapsed / 1000).floor());
     }
 
     void startTimer() {

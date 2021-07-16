@@ -11,7 +11,9 @@ class CurrentLocation extends ChangeNotifier {
     Stream<LocationData> stream = location.onLocationChanged;
     stream.listen((LocationData currentLocation) {
       _locationData = currentLocation;
-      notifyListeners();
+      if (currentLocation.latitude != _locationData?.latitude ||
+          currentLocation.longitude != _locationData?.longitude)
+        notifyListeners();
     });
   }
 

@@ -58,6 +58,10 @@ class GeoUtils {
     return minDistanceToPath(location, path) > 0.5; // greater than 500meters
   }
 
+  static bool isFarWayFromPoint(LatLng location, LatLng point) {
+    return calculateDistance(location, point) > 0.15; // greater than 150meters
+  }
+
   static List<LatLng> truncatePathByLocation(
       List<LatLng> path, LatLng location) {
     double dist = double.infinity;

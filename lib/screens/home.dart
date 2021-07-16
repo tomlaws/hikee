@@ -9,7 +9,6 @@ import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/route_elevation.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/models/active_hiking_route.dart';
-import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
@@ -105,9 +104,9 @@ class _HomeScreenState extends State<HomeScreen> {
             right: 0,
             child: IgnorePointer(
               child: Opacity(
-                opacity: 1 - panelPosition.position,
+                opacity: (1 - panelPosition.position).clamp(0, 0.75),
                 child: Container(
-                  height: 60,
+                  height: 36,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                         colors: [
@@ -150,7 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
               //         bottom: BorderSide(
               //             width: 1, color: Theme.of(context).dividerColor.withOpacity(.25)))),
               margin: EdgeInsets.symmetric(horizontal: 16),
-              child: Consumer<HikingStat>(builder: (_, hikingStat, __) {
+              child: Consumer2<ActiveHikingRoute, HikingStat>(
+                  builder: (_, activeHikingRoute, hikingStat, __) {
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTapDown: (_) {
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if (!hikingStat.isFarAway) ...[
+                      if (activeHikingRoute.isStarted) ...[
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -218,7 +218,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                'You\'re far away from the route',
+                                hikingStat.isFarAwayFromStart
+                                    ? 'You\'re far away from the route'
+                                    : 'You\'re now at the start of the route',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -227,7 +229,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Opacity(
                                   opacity: .5,
                                   child: Text(
-                                      'Please reach to the starting point first',
+                                      hikingStat.isFarAwayFromStart
+                                          ? 'Please reach to the starting point first'
+                                          : 'Swipe up to get start!',
                                       style: TextStyle(fontSize: 12)))
                             ],
                           ),
@@ -534,15 +538,66 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
-          child: Button(
-            onPressed: () {
-              Provider.of<ActiveHikingRoute>(context, listen: false)
-                  .update(null);
-            },
-            child: Text('Quit Route'),
-          ),
+          child: Consumer2<ActiveHikingRoute, HikingStat>(
+              builder: (_, activeHikingRoute, hikingStat, ___) {
+            if (activeHikingRoute.isStarted)
+              return Button(
+                  child: Text('Quit Route'),
+                  onPressed: () {
+                    activeHikingRoute.quitRoute();
+                  });
+            else {
+              bool closeEnough = !hikingStat.isFarAwayFromStart;
+              return Button(
+                  child: Text('Start Route'),
+                  backgroundColor: closeEnough
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey,
+                  onPressed: () {
+                    if (closeEnough) {
+                      activeHikingRoute.startRoute();
+                    } else {
+                      _showFarAwayDialog();
+                    }
+                  });
+            }
+          }),
         ),
       ]),
+    );
+  }
+
+  Future<void> _showFarAwayDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seems too far away...'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('You\'re not at the start of the route'),
+                Text('Would you like to check how to reach there?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No, thanks'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
