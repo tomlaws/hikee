@@ -537,14 +537,14 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (_, activeHikingRoute, hikingStat, ___) {
             if (activeHikingRoute.isStarted)
               return Button(
-                  child: Text('Quit Route'),
+                  child: Text('QUIT'),
                   onPressed: () {
                     activeHikingRoute.quitRoute();
                   });
             else {
               bool closeEnough = !hikingStat.isFarAwayFromStart;
               return Button(
-                  child: Text('Start Route'),
+                  child: Text('START NOW'),
                   backgroundColor: closeEnough
                       ? Theme.of(context).primaryColor
                       : Colors.grey,

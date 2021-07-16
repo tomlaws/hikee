@@ -55,7 +55,7 @@ class _RouteScreenState extends State<RouteScreen> {
                 delegate: SliverChildListDelegate([
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Column(
@@ -65,12 +65,17 @@ class _RouteScreenState extends State<RouteScreen> {
                             Text(
                               route.name_en,
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                            Container(
+                              height: 4,
                             ),
                             Text(
                               route.district_en,
                               style: TextStyle(
-                                  fontSize: 16, color: Color(0xFFBBBBBB)),
+                                  fontSize: 16, color: Color(0xFFAAAAAA)),
                             ),
                           ],
                         ),
@@ -81,17 +86,32 @@ class _RouteScreenState extends State<RouteScreen> {
                               .update(route);
                           Navigator.popUntil(context, ModalRoute.withName('/'));
                         },
-                        child: Text('GO NOW'),
+                        child: Text('SELECT'),
                       )
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Text(
-                      route.description_en,
-                      style: TextStyle(),
-                    ),
+                  Container(
+                    height: 12,
                   ),
+                  Divider(),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Description',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Theme.of(context).primaryColor)),
+                          Container(
+                            height: 12,
+                          ),
+                          Text(
+                            route.description_en,
+                            style: TextStyle(height: 1.6),
+                          ),
+                        ],
+                      )),
                   Divider(),
                   Container(
                     height: 16,
