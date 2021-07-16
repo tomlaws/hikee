@@ -8,6 +8,7 @@ import 'package:hikee/data/routes.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/map_marker.dart';
 import 'package:provider/provider.dart';
 
 class RouteScreen extends StatefulWidget {
@@ -20,11 +21,17 @@ class RouteScreen extends StatefulWidget {
 
 class _RouteScreenState extends State<RouteScreen> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     HikingRoute route = HikingRouteData.retrieve()
         .firstWhere((element) => element.id == widget.id);
 
     var points = GeoUtils.decodePath(route.path);
+
     return Scaffold(
         extendBodyBehindAppBar: true,
         body: CustomScrollView(
@@ -113,23 +120,53 @@ class _RouteScreenState extends State<RouteScreen> {
                           () => new EagerGestureRecognizer(),
                         ),
                       ].toSet(),
-                      zoomControlsEnabled: false,
-                      //myLocationEnabled: true,
-                      //myLocationButtonEnabled: false,
+                      zoomControlsEnabled: true,
+                      compassEnabled: false,
+                      mapToolbarEnabled: false,
+                      tiltGesturesEnabled: false,
+                      scrollGesturesEnabled: false,
+                      zoomGesturesEnabled: false,
+                      rotateGesturesEnabled: false,
                       polylines: [
                         Polyline(
-                          polylineId: PolylineId('polyLine'),
-                          color: Colors.amber,
+                          polylineId: PolylineId('polyLine1'),
+                          color: Colors.amber.shade400,
+                          zIndex: 2,
+                          width: 4,
+                          jointType: JointType.round,
                           startCap: Cap.roundCap,
                           endCap: Cap.roundCap,
-                          width: 5,
-                          jointType: JointType.bevel,
                           points: points,
                         ),
+                        Polyline(
+                          polylineId: PolylineId('polyLine2'),
+                          color: Colors.white,
+                          width: 6,
+                          jointType: JointType.round,
+                          startCap: Cap.roundCap,
+                          endCap: Cap.roundCap,
+                          zIndex: 1,
+                          points: points,
+                        ),
+                      ].toSet(),
+                      markers: [
+                        Marker(
+                            markerId: MarkerId('start'),
+                            position: points.first,
+                            icon: MapMarker().red,
+                            anchor: Offset(0.5, 0.5)),
+                        Marker(
+                            markerId: MarkerId('end'),
+                            position: points.last,
+                            icon: MapMarker().blue,
+                            anchor: Offset(0.5, 0.5))
                       ].toSet(),
                       onMapCreated: (GoogleMapController controller) {
                         controller.setMapStyle(
                             '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
+
+                        controller.moveCamera(CameraUpdate.newLatLngBounds(
+                            GeoUtils.getPathBounds(points), 20));
                       },
                     ),
                   )

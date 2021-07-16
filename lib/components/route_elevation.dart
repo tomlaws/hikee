@@ -65,85 +65,87 @@ class RouteElevation extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
       child: LineChart(LineChartData(
-          gridData: FlGridData(
-            show: false,
-          ),
-          borderData: FlBorderData(show: false),
-          axisTitleData: FlAxisTitleData(
-              show: true,
-              leftTitle: AxisTitle(
-                  showTitle: true,
-                  titleText: 'Elevation',
-                  textStyle: TextStyle(color: Colors.blueGrey))),
-          titlesData: FlTitlesData(
+        gridData: FlGridData(
+          show: false,
+        ),
+        borderData: FlBorderData(show: false),
+        axisTitleData: FlAxisTitleData(
             show: true,
-            bottomTitles: SideTitles(
-              showTitles: false,
-            ),
-            leftTitles: SideTitles(
-              showTitles: true,
-              getTextStyles: (value) => const TextStyle(
-                color: Color(0xff67727d),
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-              interval: 100,
-              reservedSize: 28,
-              margin: 12,
-            ),
+            leftTitle: AxisTitle(
+                showTitle: true,
+                titleText: 'Elevation',
+                textStyle: TextStyle(color: Colors.blueGrey))),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: SideTitles(
+            showTitles: false,
           ),
-          maxY: maxE + 48.0,
-          minY: minE,
-          lineBarsData: [
-            LineChartBarData(
-              spots: spots,
-              isCurved: true,
-              colors: gradientColors,
-              barWidth: 3,
-              isStrokeCapRound: true,
-              dotData: FlDotData(
-                show: false,
-              ),
-              belowBarData: BarAreaData(
-                  show: true,
-                  colors: gradientColors
-                      .map((color) => color.withOpacity(0.2))
-                      .toList(),
-                  spotsLine: BarAreaSpotsLine(
-                      show: true,
-                      flLineStyle: FlLine(color: Colors.blue),
-                      checkToShowSpotLine: (FlSpot spot) {
-                        return spot == currentSpot;
-                      })),
+          leftTitles: SideTitles(
+            showTitles: true,
+            getTextStyles: (value) => const TextStyle(
+              color: Color(0xff67727d),
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
             ),
-          ],
-          lineTouchData: LineTouchData(
-              getTouchedSpotIndicator:
-                  (LineChartBarData barData, List<int> spotIndexes) {
-                return spotIndexes.map((spotIndex) {
-                  //final spot = barData.spots[spotIndex];
-                  return TouchedSpotIndicatorData(
-                    FlLine(color: Color(0xFF5DB075), strokeWidth: 2),
-                    FlDotData(show: false),
-                  );
-                }).toList();
-              },
-              touchTooltipData: LineTouchTooltipData(
-                  tooltipBgColor: Color(0xFF5DB075),
-                  tooltipMargin: 1,
-                  tooltipRoundedRadius: 3,
-                  getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
-                    return touchedBarSpots.map((barSpot) {
-                      final flSpot = barSpot;
-                      return LineTooltipItem(
-                        flSpot.y.toString(),
-                        const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    }).toList();
-                  })))),
+            interval: 100,
+            reservedSize: 28,
+            margin: 12,
+          ),
+        ),
+        maxY: maxE + 48.0,
+        minY: minE,
+        lineBarsData: [
+          LineChartBarData(
+            spots: spots,
+            isCurved: true,
+            colors: gradientColors,
+            barWidth: 3,
+            isStrokeCapRound: true,
+            dotData: FlDotData(
+              show: false,
+            ),
+            belowBarData: BarAreaData(
+                show: true,
+                colors: gradientColors
+                    .map((color) => color.withOpacity(0.2))
+                    .toList(),
+                spotsLine: BarAreaSpotsLine(
+                    show: true,
+                    flLineStyle: FlLine(color: Colors.blue),
+                    checkToShowSpotLine: (FlSpot spot) {
+                      return spot == currentSpot;
+                    })),
+          ),
+        ],
+        lineTouchData: LineTouchData(enabled: false)
+        // lineTouchData: LineTouchData(
+        //     getTouchedSpotIndicator:
+        //         (LineChartBarData barData, List<int> spotIndexes) {
+        //       return spotIndexes.map((spotIndex) {
+        //         //final spot = barData.spots[spotIndex];
+        //         return TouchedSpotIndicatorData(
+        //           FlLine(color: Color(0xFF5DB075), strokeWidth: 2),
+        //           FlDotData(show: false),
+        //         );
+        //       }).toList();
+        //     },
+        //     touchTooltipData: LineTouchTooltipData(
+        //         tooltipBgColor: Color(0xFF5DB075),
+        //         tooltipMargin: 1,
+        //         tooltipRoundedRadius: 3,
+        //         getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+        //           return touchedBarSpots.map((barSpot) {
+        //             final flSpot = barSpot;
+        //             return LineTooltipItem(
+        //               flSpot.y.toString(),
+        //               const TextStyle(
+        //                 color: Colors.white,
+        //                 fontWeight: FontWeight.bold,
+        //               ),
+        //             );
+        //           }).toList();
+        //         }))
+      )),
     );
   }
 }

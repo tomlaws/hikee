@@ -36,6 +36,7 @@ class HikingStat extends ChangeNotifier {
     LatLng current = LatLng(
         location.locationData!.latitude!, location.locationData!.longitude!);
     double walked = GeoUtils.getWalkedLength(current, route.decodedPath!);
+    print(current.toString());
     return walked;
   }
 

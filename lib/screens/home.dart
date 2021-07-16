@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/map_marker.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -35,8 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Location _location = Location();
   bool _lockPosition = true;
   HikingRoute? _activeRoute;
-  List<LatLng>? _decodedRoute;
-  BitmapDescriptor? _bdS, _bdE;
   PageController _pageController = PageController(
     initialPage: 0,
   );
@@ -45,19 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _buildIcons();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  void _buildIcons() async {
-    _bdS = await _getIcon(true);
-    _bdE = await _getIcon(false);
-    setState(() {});
   }
 
   @override
@@ -68,12 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
       _activeRoute = route;
       _pc.close();
       if (_activeRoute != null) {
-        _decodedRoute = GeoUtils.decodePath(_activeRoute!.path);
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           widget.switchToTab(0);
         });
         _lockPosition = false;
-        _goToLocation(_decodedRoute![0].latitude, _decodedRoute![0].longitude);
+        _focusActiveRoute();
       }
     }
     MediaQueryData mediaQueryData = MediaQuery.of(context);
@@ -358,17 +350,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Column(
                                 children: [
-                                  // Button(
-                                  //   icon: Icon(
-                                  //     LineAwesomeIcons.expand,
-                                  //     color: Theme.of(context).primaryColor,
-                                  //   ),
-                                  //   invert: true,
-                                  //   onPressed: () {},
-                                  // ),
-                                  // Container(
-                                  //   height: 8,
-                                  // ),
+                                  Button(
+                                    icon: Icon(
+                                      LineAwesomeIcons.expand,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    invert: true,
+                                    onPressed: () {
+                                      _focusActiveRoute();
+                                    },
+                                  ),
+                                  Container(
+                                    height: 8,
+                                  ),
                                   Button(
                                     icon: Icon(
                                       LineAwesomeIcons.map_marker,
@@ -402,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
           tiltGesturesEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: _decodedRoute![0],
+            target: activeHikingRouteProvider.decodedPath![0],
             zoom: 14,
           ),
           myLocationEnabled: true,
@@ -410,22 +404,38 @@ class _HomeScreenState extends State<HomeScreen> {
           polylines: [
             Polyline(
               polylineId: PolylineId('polyLine1'),
-              color: Colors.blue.shade900,
-              width: 8,
+              color: Colors.amber.shade400,
+              zIndex: 2,
+              width: 4,
               jointType: JointType.round,
-              points: _decodedRoute!,
+              startCap: Cap.roundCap,
+              endCap: Cap.roundCap,
+              points: activeHikingRouteProvider.decodedPath!,
             ),
             Polyline(
               polylineId: PolylineId('polyLine2'),
-              color: Colors.blue,
+              color: Colors.white,
               width: 6,
               jointType: JointType.round,
-              startCap:
-                  _bdS != null ? Cap.customCapFromBitmap(_bdS!) : Cap.buttCap,
-              endCap:
-                  _bdE != null ? Cap.customCapFromBitmap(_bdE!) : Cap.buttCap,
-              points: _decodedRoute!,
+              startCap: Cap.roundCap,
+              endCap: Cap.roundCap,
+              zIndex: 1,
+              points: activeHikingRouteProvider.decodedPath!,
             ),
+          ].toSet(),
+          markers: [
+            Marker(
+                markerId: MarkerId('start'),
+                position: activeHikingRouteProvider.decodedPath!.first,
+                icon: !activeHikingRouteProvider.isStarted
+                    ? MapMarker().red
+                    : MapMarker().grey,
+                anchor: Offset(0.5, 0.5)),
+            Marker(
+                markerId: MarkerId('end'),
+                position: activeHikingRouteProvider.decodedPath!.last,
+                icon: MapMarker().blue,
+                anchor: Offset(0.5, 0.5))
           ].toSet(),
           onMapCreated: (GoogleMapController controller) {
             controller.setMapStyle(
@@ -478,29 +488,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<BitmapDescriptor> _getIcon(bool start) async {
-    final int diameter = 36;
-    final double borderWidth = 2;
-    final center = Offset(diameter / 2, diameter / 2);
-    final PictureRecorder pictureRecorder = PictureRecorder();
-    final Canvas canvas = Canvas(pictureRecorder);
-    final double radius = (diameter / 2) - borderWidth;
+  void _focusActiveRoute() async {
+    var decodedPath =
+        Provider.of<ActiveHikingRoute>(context, listen: false).decodedPath;
+    if (decodedPath == null) return;
 
-    Paint paintCircle = Paint()..color = Colors.blue;
-    Paint paintBorder = Paint()
-      ..color = Colors.blue.shade900
-      ..strokeWidth = borderWidth
-      ..style = PaintingStyle.stroke;
-    canvas.drawCircle(center, radius, paintCircle);
-    canvas.drawCircle(center, radius, paintBorder);
-
-    Paint paintDot = Paint()..color = Colors.blue.shade900;
-    canvas.drawCircle(center, radius / 2, paintDot);
-
-    final img =
-        await pictureRecorder.endRecording().toImage(diameter, diameter);
-    final data = await img.toByteData(format: ImageByteFormat.png);
-    return BitmapDescriptor.fromBytes(data!.buffer.asUint8List());
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(
+        CameraUpdate.newLatLngBounds(GeoUtils.getPathBounds(decodedPath), 20));
   }
 
   List<Widget> _pageIndicators(int total, int selectedindex) {
@@ -556,6 +551,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     if (closeEnough) {
                       activeHikingRoute.startRoute();
+                      _goToCurrentLocation();
                     } else {
                       _showFarAwayDialog();
                     }

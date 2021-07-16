@@ -9,10 +9,12 @@ import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
 import 'package:hikee/screens/library.dart';
 import 'package:hikee/screens/profile.dart';
+import 'package:hikee/utils/map_marker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  MapMarker();
   runApp(
     MultiProvider(
       providers: [

@@ -30,7 +30,7 @@ class ActiveHikingRoute extends ChangeNotifier {
     if (route != null) {
       _decodedPath = GeoUtils.decodePath(route.path);
     }
-    _saveRoute();
+    _startTime = null;
     notifyListeners();
   }
 
@@ -52,23 +52,13 @@ class ActiveHikingRoute extends ChangeNotifier {
     }
   }
 
-  _saveRoute() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (_route != null) {
-        String encoded = jsonEncode(_route!.toJson());
-        prefs.setString('activeRoute', encoded);
-      }
-    } catch (ex) {
-      print(ex);
-    }
-  }
-
   startRoute() async {
     try {
       _startTime = DateTime.now().millisecondsSinceEpoch;
       notifyListeners();
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String encoded = jsonEncode(_route!.toJson());
+      prefs.setString('activeRoute', encoded);
       prefs.setInt('startTime', _startTime!);
     } catch (ex) {
       print(ex);

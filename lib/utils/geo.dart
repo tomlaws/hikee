@@ -43,6 +43,21 @@ class GeoUtils {
     return dist;
   }
 
+  static LatLngBounds getPathBounds(List<LatLng> path) {
+    double minLat = path.first.latitude;
+    double minLng = path.first.longitude;
+    double maxLat = path.first.latitude;
+    double maxLng = path.first.longitude;
+    for (int i = 1; i < path.length; i++) {
+      if (path[i].latitude < minLat) minLat = path[i].latitude;
+      if (path[i].longitude < minLng) minLng = path[i].longitude;
+      if (path[i].latitude > maxLat) maxLat = path[i].latitude;
+      if (path[i].longitude > maxLng) maxLng = path[i].longitude;
+    }
+    return LatLngBounds(
+        northeast: LatLng(maxLat, maxLng), southwest: LatLng(minLat, minLng));
+  }
+
   static double minDistanceToPath(LatLng location, List<LatLng> path) {
     double min = double.infinity;
     path.forEach((p) {
