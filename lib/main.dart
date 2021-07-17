@@ -32,6 +32,7 @@ void main() {
             }),
         ChangeNotifierProvider(create: (_) => LibrarySort()),
         ChangeNotifierProvider(create: (_) => LibraryFilter([])),
+        ChangeNotifierProvider(create: (_) => LibraryDistrict([])),
       ],
       child: MyApp(),
     ),

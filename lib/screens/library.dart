@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/text_input.dart';
+import 'package:hikee/data/districtValues.dart';
 import 'package:hikee/data/routes.dart';
 import 'package:hikee/data/sortValues.dart';
 import 'package:hikee/data/filterValues.dart';
@@ -87,7 +88,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       ),
 
                       //District Button
-                      TextButton(onPressed: () => {},
+                      TextButton(onPressed: () => {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => DistrictPage()))
+                      },
                           style: TextButton.styleFrom( primary: districtColor,),
                           child: Row(
                             children: [
@@ -273,6 +277,146 @@ class LibraryFilter extends ChangeNotifier{
       notifyListeners();
     }
   }
-
 }
 
+class LibraryDistrict extends ChangeNotifier{
+  List<String> _selectedDistrict;
+  LibraryDistrict(this._selectedDistrict);
+
+  List<String> get selectedDistrict => _selectedDistrict;
+
+  bool isEmpty() {
+    return _selectedDistrict.isEmpty;
+  }
+
+  clear(){
+    _selectedDistrict.clear();
+    notifyListeners();
+  }
+
+  bool isHaveDistrict(String value) => _selectedDistrict.contains(value);
+
+  addDistrict(String value){
+    if (!isHaveDistrict(value)) {
+      _selectedDistrict.add(value);
+      notifyListeners();
+    }
+  }
+
+  removeDistrict(String value){
+    if (isHaveDistrict(value)){
+      _selectedDistrict.remove(value);
+      notifyListeners();
+    }
+  }
+}
+
+//=============District=====
+class DistrictPage extends StatefulWidget{
+  const DistrictPage({Key? key}) : super(key: key);
+
+  @override
+  _DistrictPageState createState() => _DistrictPageState();
+}
+
+class _DistrictPageState extends State<DistrictPage>{
+  @override
+  Widget build(BuildContext context) {
+    final _LibraryDistrict = Provider.of<LibraryDistrict>(context);
+    return Scaffold(
+      appBar: AppBar( title: Text('Select District(s)')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Kowloon :",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+              Wrap(
+                spacing: 5.0,
+                runSpacing: 5.0,
+                children: kowloonValues.map((e) => FilterChip(
+                  label: Text(e),
+                  selectedColor: Theme.of(context).primaryColor,
+                  onSelected: (value){
+                    setState(() {
+                      value ? _LibraryDistrict.addDistrict(e) : _LibraryDistrict.removeDistrict(e);
+                     // if (_LibraryDistrict.isEmpty())
+                     //   districtColor = Colors.grey;
+                     // else districtColor = Theme.of(context).primaryColor;
+                    });
+                  },
+                  selected: _LibraryDistrict.isHaveDistrict(e),
+                )).toList(),
+              ),
+              Text("New Territories :",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+              Wrap(
+                spacing: 5.0,
+                runSpacing: 5.0,
+                children: newTerriValues.map((e) => FilterChip(
+                  label: Text(e),
+                  selectedColor: Theme.of(context).primaryColor,
+                  onSelected: (value){
+                    setState(() {
+                      value ? _LibraryDistrict.addDistrict(e) : _LibraryDistrict.removeDistrict(e);
+                     // if (_LibraryDistrict.isEmpty())
+                      //  districtColor = Colors.grey;
+                      //else districtColor = Theme.of(context).primaryColor;
+                    });
+                  },
+                  selected: _LibraryDistrict.isHaveDistrict(e),
+                )).toList(),
+              ),
+              Text("Hong Kong Island :",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+              Wrap(
+                spacing: 5.0,
+                runSpacing: 5.0,
+                children: hkIslandValues.map((e) => FilterChip(
+                  label: Text(e),
+                  selectedColor: Theme.of(context).primaryColor,
+                  onSelected: (value){
+                    setState(() {
+                      value ? _LibraryDistrict.addDistrict(e) : _LibraryDistrict.removeDistrict(e);
+                      //if (_LibraryDistrict.isEmpty())
+                       // districtColor = Colors.grey;
+                      //else districtColor = Theme.of(context).primaryColor;
+                    });
+                  },
+                  selected: _LibraryDistrict.isHaveDistrict(e),
+                )).toList(),
+              ),
+              Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: Button(
+                        child: Text("Clear"),
+                        backgroundColor: Colors.grey.withOpacity(0.6),
+                        onPressed: () {
+                          setState(() {
+                            _LibraryDistrict.clear();
+                            //districtColor = Colors.grey;
+                          });
+                        }
+                    ),
+                  ),
+                  Container(width:5),
+                  Expanded(
+                    child: Button(
+                        child: Text("Apply"),
+                        backgroundColor: Theme.of(context).primaryColor,
+                        onPressed: () {}
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        )
+      ),
+    );
+  }
+}
