@@ -31,6 +31,7 @@ void main() {
               return HikingStat(route, loc);
             }),
         ChangeNotifierProvider(create: (_) => LibrarySort()),
+        ChangeNotifierProvider(create: (_) => LibraryFilter([])),
       ],
       child: MyApp(),
     ),
