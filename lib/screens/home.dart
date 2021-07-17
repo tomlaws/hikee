@@ -494,6 +494,7 @@ class _HomeScreenState extends State<HomeScreen>
     var decodedPath =
         Provider.of<ActiveHikingRoute>(context, listen: false).decodedPath;
     if (decodedPath == null) return;
+    _lockPosition = false;
     //print('focus');
     final GoogleMapController controller = await _mapController.future;
     controller.moveCamera(
