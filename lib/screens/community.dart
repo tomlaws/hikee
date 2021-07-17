@@ -24,98 +24,118 @@ class _CommunityScreenState extends State<CommunityScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-        // Header
-        Container(
-          padding: EdgeInsets.fromLTRB(_horizontalPadding, 12, _horizontalPadding, 0),
-          height: _headerHeight,
-          child: Text("Community", style: TextStyle(fontSize: 32)),
-        ),
+            // Header
+            Container(
+              padding: EdgeInsets.fromLTRB(
+                  _horizontalPadding, 12, _horizontalPadding, 0),
+              height: _headerHeight,
+              child: Text("Community", style: TextStyle(fontSize: 32)),
+            ),
 
-        // Buttonsgroup
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: _horizontalPadding, vertical: 12),
-          padding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
-          decoration: new BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(_borderRadius)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // New + Hot
-              ToggleButtons(
-                renderBorder: false,
-                color: Colors.white,
-                selectedColor: Colors.blue,
-                isSelected: isSelected,
-                fillColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onPressed: (int index) {
-                  setState(() {
-                    for (int i = 0; i < 2; ++i) {
-                      i == index
-                          ? isSelected[i] = !isSelected[i]
-                          : isSelected[i] = false;
-                    }
-                  });
-                },
+            // Buttonsgroup
+            Container(
+              margin: EdgeInsets.fromLTRB(
+                  _horizontalPadding, 0, _horizontalPadding, 4),
+              padding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
+              decoration: new BoxDecoration(
+                  borderRadius: BorderRadius.circular(_borderRadius),
+                  border: Border.all(
+                    width: 1.0,
+                    color: Theme.of(context).primaryColor,
+                  )),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.align_vertical_bottom_rounded,
+                  // New + Hot
+                  ToggleButtons(
+                    renderBorder: false,
+                    color: Colors.grey[400],
+                    selectedColor: Theme.of(context).primaryColor,
+                    isSelected: isSelected,
+                    fillColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onPressed: (int index) {
+                      setState(() {
+                        if (isSelected[index]) return;
+
+                        for (int i = 0; i < 2; ++i) {
+                          i == index
+                              ? isSelected[i] = !isSelected[i]
+                              : isSelected[i] = false;
+                        }
+                      });
+                    },
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.align_vertical_bottom_rounded,
+                            ),
+                            Text("New",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: .5))
+                          ],
                         ),
-                        Text(
-                          "New",
-                          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: .5)
-                        )
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.local_fire_department,
+                            ),
+                            Text("Hot",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: .5))
+                          ],
+                        ),
+                      )
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.local_fire_department,
+
+                  // search + create
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.search,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        Text(
-                          "Hot",
-                          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: .5)
-                        )
-                      ],
-                    ),
+                        tooltip: 'Search Post',
+                        splashColor: Colors.grey[200],
+                        splashRadius: 24,
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.add,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        tooltip: 'Create Post',
+                        splashColor: Colors.grey[200],
+                        splashRadius: 24,
+                      ),
+                    ],
                   )
                 ],
               ),
+            ),
 
-              // Create Post
-              Button(
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                      Text("Create Post")
-                    ],
-                  ))
-            ],
-          ),
-        ),
-
-        // List
-        Expanded(
-            child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return CommunityPostTile();
-                },
-                separatorBuilder: (context, index) => const Divider(
-                      height: 1.0,
-                    ),
-                itemCount: 10))
+            // List
+            Expanded(
+                child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      return CommunityPostTile();
+                    },
+                    separatorBuilder: (context, index) => const Divider(
+                          height: 0.5,
+                        ),
+                    itemCount: 10))
           ],
         ),
       ),
