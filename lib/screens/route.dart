@@ -175,7 +175,7 @@ class _RouteScreenState extends State<RouteScreen> {
                             center: points.first,
                             fillColor: Colors.blue.withOpacity(.6),
                             strokeWidth: 0,
-                            zIndex: 2,
+                            zIndex: 3,
                             radius: 200),
                         Circle(
                             circleId:
@@ -183,14 +183,14 @@ class _RouteScreenState extends State<RouteScreen> {
                             center: points.first,
                             fillColor: Colors.blue.withOpacity(.3),
                             strokeWidth: 0,
-                            zIndex: 2,
+                            zIndex: 4,
                             radius: 300),
                         Circle(
                             circleId: CircleId('end-' + route.id.toString()),
                             center: points.last,
                             fillColor: Colors.red.withOpacity(.6),
                             strokeWidth: 0,
-                            zIndex: 2,
+                            zIndex: 3,
                             radius: 200),
                         Circle(
                             circleId:
@@ -198,7 +198,7 @@ class _RouteScreenState extends State<RouteScreen> {
                             center: points.last,
                             fillColor: Colors.red.withOpacity(.3),
                             strokeWidth: 0,
-                            zIndex: 2,
+                            zIndex: 4,
                             radius: 300),
                       ].toSet(),
                       onMapCreated: (GoogleMapController controller) {
