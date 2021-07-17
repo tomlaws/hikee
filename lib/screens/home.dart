@@ -432,15 +432,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: !activeHikingRouteProvider.isStarted
                     ? MapMarker().red
                     : MapMarker().grey,
-                anchor: Offset(0.5, 0.5),
-                zIndex: 99),
+                anchor: Offset(0.5, 0.5)),
             Marker(
                 markerId: MarkerId(
                     'end' + activeHikingRouteProvider.route!.id.toString()),
                 position: activeHikingRouteProvider.decodedPath!.last,
                 icon: MapMarker().blue,
-                anchor: Offset(0.5, 0.5),
-                zIndex: 99)
+                anchor: Offset(0.5, 0.5))
           ].toSet(),
           onMapCreated: (GoogleMapController controller) {
             controller.setMapStyle(
