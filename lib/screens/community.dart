@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hikee/components/button.dart';
 
 import 'package:hikee/components/community_post_tile.dart';
+import 'package:hikee/screens/community_post.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({Key? key}) : super(key: key);
@@ -130,10 +130,15 @@ class _CommunityScreenState extends State<CommunityScreen> {
             Expanded(
                 child: ListView.separated(
                     itemBuilder: (context, index) {
-                      return CommunityPostTile();
+                      return CommunityPostTile(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => CommunityPostScreen(id: 1)));
+                        },
+                      );
                     },
                     separatorBuilder: (context, index) => const Divider(
-                          height: 0.5,
+                          height: 0.1,
                         ),
                     itemCount: 10))
           ],
