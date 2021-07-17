@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math' show cos, sqrt, asin;
+import 'dart:math' show sin, cos, sqrt, asin, pi;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/models/elevation.dart';
@@ -103,10 +103,38 @@ class GeoUtils {
     return km.toStringAsFixed(2) + ' km';
   }
 
-  static Future<LocationData>? getCurrentLocation() {
+
+  static Future<bool> _askPermission() async {
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return false;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  static Future<LocationData?> getCurrentLocation() async {
+    await _askPermission();
     var location = Location();
     try {
-      return location.getLocation();
+    print(await location.getLocation());
+      return await location.getLocation();
     } catch (e) {
       print('e AddLocation ==>> ${e.toString()}');
       return null;

@@ -169,17 +169,37 @@ class _RouteScreenState extends State<RouteScreen> {
                           points: points,
                         ),
                       ].toSet(),
-                      markers: [
-                        Marker(
-                            markerId: MarkerId('start' + route.id.toString()),
-                            position: points.first,
-                            icon: MapMarker().red,
-                            anchor: Offset(0.5, 0.5)),
-                        Marker(
-                            markerId: MarkerId('end' + route.id.toString()),
-                            position: points.last,
-                            icon: MapMarker().blue,
-                            anchor: Offset(0.5, 0.5))
+                      circles: [
+                        Circle(
+                            circleId: CircleId('start-' + route.id.toString()),
+                            center: points.first,
+                            fillColor: Colors.blue.withOpacity(.6),
+                            strokeWidth: 0,
+                            zIndex: 2,
+                            radius: 200),
+                        Circle(
+                            circleId:
+                                CircleId('start-border-' + route.id.toString()),
+                            center: points.first,
+                            fillColor: Colors.blue.withOpacity(.3),
+                            strokeWidth: 0,
+                            zIndex: 2,
+                            radius: 300),
+                        Circle(
+                            circleId: CircleId('end-' + route.id.toString()),
+                            center: points.last,
+                            fillColor: Colors.red.withOpacity(.6),
+                            strokeWidth: 0,
+                            zIndex: 2,
+                            radius: 200),
+                        Circle(
+                            circleId:
+                                CircleId('end-border-' + route.id.toString()),
+                            center: points.last,
+                            fillColor: Colors.red.withOpacity(.3),
+                            strokeWidth: 0,
+                            zIndex: 2,
+                            radius: 300),
                       ].toSet(),
                       onMapCreated: (GoogleMapController controller) {
                         controller.setMapStyle(

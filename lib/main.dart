@@ -20,7 +20,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => PanelPosition()),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
-        ChangeNotifierProvider(create: (_) => CurrentLocation()),
+        ChangeNotifierProvider(create: (_) => CurrentLocation(), lazy: false,),
         ChangeNotifierProxyProvider2<ActiveHikingRoute, CurrentLocation,
                 HikingStat>(
             create: (BuildContext context) => HikingStat(
@@ -105,15 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      body: IndexedStack(children: [
-        HomeScreen(
-          switchToTab: (i) => _onItemTapped(i),
-        ),
-        LibraryScreen(),
-        EventsScreen(),
-        CommunityScreen(),
-        ProfileScreen()
-      ], index: _selectedIndex),
+      body: Center(
+        child: [
+          HomeScreen(
+            switchToTab: (i) => _onItemTapped(i),
+          ),
+          LibraryScreen(),
+          EventsScreen(),
+          CommunityScreen(),
+          ProfileScreen()
+        ][_selectedIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

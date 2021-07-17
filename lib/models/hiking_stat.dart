@@ -23,8 +23,14 @@ class HikingStat extends ChangeNotifier {
   }
 
   bool get isFarAwayFromStart {
-    if (route.decodedPath == null) return true;
-    if (location.locationData == null) return true;
+    if (route.decodedPath == null) {
+      print('decode null');
+      return true;
+    }
+    if (location.locationData == null) {
+      print('location null');
+      return true;
+    }
     LatLng current = LatLng(
         location.locationData!.latitude!, location.locationData!.longitude!);
     return GeoUtils.isFarWayFromPoint(current, route.decodedPath![0]);

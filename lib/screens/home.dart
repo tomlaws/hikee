@@ -8,7 +8,9 @@ import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/route_elevation.dart';
 import 'package:hikee/components/route_info.dart';
+import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/models/active_hiking_route.dart';
+import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
@@ -18,7 +20,6 @@ import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:location/location.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function switchToTab;
@@ -30,7 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PanelController _pc = PanelController();
-  final double _collapsedPanelHeight = kBottomNavigationBarHeight;
+  final double _collapsedPanelHeight = 48;
   final double _panelHeaderHeight = 60;
   Completer<GoogleMapController> _mapController = Completer();
   Location _location = Location();
@@ -57,8 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
     HikingRoute? route =
         Provider.of<ActiveHikingRoute>(context, listen: true).route;
     if (route != _activeRoute) {
+      if (route == null && _activeRoute != null) {
+        _pc.close();
+      }
       _activeRoute = route;
-      _pc.close();
       if (_activeRoute != null) {
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           widget.switchToTab(0);
@@ -69,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _lockPosition = false;
       }
     }
-    MediaQueryData mediaQueryData = MediaQuery.of(context);
     return Container(
       color: Theme.of(context).primaryColor,
       child: Stack(children: [
@@ -78,10 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
               controller: _pc,
               parallaxEnabled: true,
               renderPanelSheet: false,
-              padding: EdgeInsets.all(0),
-              margin: EdgeInsets.all(0),
               maxHeight: 296,
-              minHeight: _collapsedPanelHeight + mediaQueryData.padding.top,
+              minHeight: _collapsedPanelHeight + kBottomNavigationBarHeight,
               color: Colors.transparent,
               onPanelSlide: (position) {
                 Provider.of<PanelPosition>(context, listen: false)
@@ -134,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               height: kBottomNavigationBarHeight,
@@ -266,7 +267,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _body() {
     return Container(
       clipBehavior: Clip.none,
-      padding: EdgeInsets.only(bottom: _collapsedPanelHeight),
       color: Color(0xFF5DB075),
       child: Consumer2<PanelPosition, ActiveHikingRoute>(
           builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
@@ -288,97 +288,98 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   SafeArea(
-                      child: Opacity(
-                          opacity: 1 - posProvider.position,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              DefaultTextStyle(
-                                style: TextStyle(color: Colors.white),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 10),
-                                          height: _panelHeaderHeight,
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            'Good Morning',
-                                            style: TextStyle(fontSize: 32),
-                                          ),
+                    child: Opacity(
+                        opacity: 1 - posProvider.position,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            DefaultTextStyle(
+                              style: TextStyle(color: Colors.white),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 10),
+                                        height: _panelHeaderHeight,
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          'Good Morning',
+                                          style: TextStyle(fontSize: 32),
                                         ),
-                                        Button(
-                                          icon: Icon(LineAwesomeIcons.bars,
-                                              color: Colors.white, size: 32),
-                                          backgroundColor: Colors.transparent,
-                                          onPressed: () {},
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
+                                      ),
+                                      Button(
+                                        icon: Icon(LineAwesomeIcons.bars,
+                                            color: Colors.white, size: 32),
+                                        backgroundColor: Colors.transparent,
+                                        onPressed: () {},
+                                      )
+                                    ],
+                                  )
+                                ],
                               ),
-                              if (activeHikingRouteProvider.route == null)
-                                Expanded(
-                                    child: Center(
-                                  child: Button(
-                                    invert: true,
-                                    child: Text('Discover Routes'),
-                                    onPressed: () {
-                                      widget.switchToTab(1);
-                                    },
-                                  ),
-                                ))
-                            ],
-                          ))),
+                            ),
+                            if (activeHikingRouteProvider.route == null)
+                              Expanded(
+                                  child: Center(
+                                child: Button(
+                                  invert: true,
+                                  child: Text('Discover Routes'),
+                                  onPressed: () {
+                                    widget.switchToTab(1);
+                                  },
+                                ),
+                              ))
+                          ],
+                        )),
+                  ),
                   if (activeHikingRouteProvider.route != null)
                     Positioned(
-                        bottom: _collapsedPanelHeight,
-                        left: 0,
-                        right: 0,
-                        child: Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                children: [],
-                              ),
-                              Column(
-                                children: [
-                                  Button(
-                                    icon: Icon(
-                                      LineAwesomeIcons.expand,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    invert: true,
-                                    onPressed: () {
-                                      _focusActiveRoute();
-                                    },
+                      right: 0,
+                      bottom: _collapsedPanelHeight + 8,
+                      child: Container(
+                        //color: Colors.black,
+                        padding: EdgeInsets.all(12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Button(
+                                  icon: Icon(
+                                    LineAwesomeIcons.expand,
+                                    color: Theme.of(context).primaryColor,
                                   ),
-                                  Container(
-                                    height: 8,
+                                  invert: true,
+                                  onPressed: () {
+                                    _focusActiveRoute();
+                                  },
+                                ),
+                                Container(
+                                  height: 8,
+                                ),
+                                Button(
+                                  icon: Icon(
+                                    LineAwesomeIcons.map_marker,
+                                    color: Theme.of(context).primaryColor,
                                   ),
-                                  Button(
-                                    icon: Icon(
-                                      LineAwesomeIcons.map_marker,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    invert: true,
-                                    onPressed: () {
-                                      _goToCurrentLocation();
-                                    },
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        )),
+                                  invert: true,
+                                  onPressed: () {
+                                    _goToCurrentLocation();
+                                  },
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               )),
     );
@@ -390,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _lockPosition = false;
         },
         child: GoogleMap(
-          padding: EdgeInsets.only(bottom: _collapsedPanelHeight),
+          padding: EdgeInsets.only(bottom: _collapsedPanelHeight + 8),
           compassEnabled: false,
           mapToolbarEnabled: false,
           zoomControlsEnabled: false,
@@ -406,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Polyline(
               polylineId: PolylineId('polyLine1'),
               color: Colors.amber.shade400,
-              zIndex: 2,
+              zIndex: 1,
               width: 4,
               jointType: JointType.round,
               startCap: Cap.roundCap,
@@ -420,71 +421,64 @@ class _HomeScreenState extends State<HomeScreen> {
               jointType: JointType.round,
               startCap: Cap.roundCap,
               endCap: Cap.roundCap,
-              zIndex: 1,
+              zIndex: 0,
               points: activeHikingRouteProvider.decodedPath!,
             ),
           ].toSet(),
-          markers: [
-            Marker(
-                markerId: MarkerId(
-                    'start' + activeHikingRouteProvider.route!.id.toString()),
-                position: activeHikingRouteProvider.decodedPath!.first,
-                icon: !activeHikingRouteProvider.isStarted
-                    ? MapMarker().red
-                    : MapMarker().grey,
-                anchor: Offset(0.5, 0.5),
-                zIndex: 99),
-            Marker(
-                markerId: MarkerId(
-                    'end' + activeHikingRouteProvider.route!.id.toString()),
-                position: activeHikingRouteProvider.decodedPath!.last,
-                icon: MapMarker().blue,
-                anchor: Offset(0.5, 0.5),
-                zIndex: 99)
+          circles: [
+            Circle(
+                circleId: CircleId(
+                    'start-' + activeHikingRouteProvider.route!.id.toString()),
+                center: activeHikingRouteProvider.decodedPath!.first,
+                fillColor: Colors.blue.withOpacity(.6),
+                strokeWidth: 0,
+                zIndex: 2,
+                radius: 200),
+            Circle(
+                circleId: CircleId('start-border-' +
+                    activeHikingRouteProvider.route!.id.toString()),
+                center: activeHikingRouteProvider.decodedPath!.first,
+                fillColor: Colors.blue.withOpacity(.3),
+                strokeWidth: 0,
+                zIndex: 2,
+                radius: 300),
+            Circle(
+                circleId: CircleId(
+                    'end-' + activeHikingRouteProvider.route!.id.toString()),
+                center: activeHikingRouteProvider.decodedPath!.last,
+                fillColor: Colors.red.withOpacity(.6),
+                strokeWidth: 0,
+                zIndex: 2,
+                radius: 200),
+            Circle(
+                circleId: CircleId('end-border-' +
+                    activeHikingRouteProvider.route!.id.toString()),
+                center: activeHikingRouteProvider.decodedPath!.last,
+                fillColor: Colors.red.withOpacity(.3),
+                strokeWidth: 0,
+                zIndex: 2,
+                radius: 300),
           ].toSet(),
-          onMapCreated: (GoogleMapController controller) {
+          onMapCreated: (GoogleMapController controller) async {
             controller.setMapStyle(
                 '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
             _mapController = Completer<GoogleMapController>();
             _mapController.complete(controller);
-            _location.onLocationChanged.listen((l) {
-              if (_lockPosition) {
-                try {
-                  controller.animateCamera(
-                    CameraUpdate.newCameraPosition(
-                      CameraPosition(
-                          target: LatLng(
-                              l.latitude as double, l.longitude as double),
-                          zoom: 14),
-                    ),
-                  );
-                } catch (e) {}
-              }
-            });
           },
         ));
   }
 
   Future<void> _goToCurrentLocation() async {
     try {
-      Location _location = new Location();
-      LocationData location;
       _lockPosition = true;
-      location = await _location.getLocation();
-      await _goToLocation(
-          location.latitude as double, location.longitude as double);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> _goToLocation(double latitude, double longitude) async {
-    try {
+      var location =
+          Provider.of<CurrentLocation>(context, listen: false).location;
+      if (location == null) return;
       final GoogleMapController controller = await _mapController.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           bearing: 0,
-          target: LatLng(latitude, longitude),
+          target: location,
           zoom: 14.0,
         ),
       ));
@@ -556,6 +550,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     if (closeEnough) {
                       activeHikingRoute.startRoute();
+                      print('hi');
                       _goToCurrentLocation();
                     } else {
                       _showFarAwayDialog();
