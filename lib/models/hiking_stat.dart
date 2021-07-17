@@ -10,13 +10,11 @@ class HikingStat extends ChangeNotifier {
   ActiveHikingRoute route;
   CurrentLocation location;
 
-  late int id;
   late Stream<int> _clockStream;
   Stream<int> get clockStream => _clockStream;
 
   HikingStat(this.route, this.location) {
     // timer
-    id = route.id;
     if (route.isStarted) {
       _clockStream = _timedCounter(const Duration(seconds: 1));
     }

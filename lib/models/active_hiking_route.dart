@@ -7,9 +7,6 @@ import 'package:hikee/utils/geo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ActiveHikingRoute extends ChangeNotifier {
-  int _id = 0;
-  int get id => _id;
-
   HikingRoute? _route;
   HikingRoute? get route => _route;
 
@@ -22,16 +19,6 @@ class ActiveHikingRoute extends ChangeNotifier {
 
   ActiveHikingRoute() {
     _loadRoute();
-  }
-
-  void update(HikingRoute? route) {
-    _id++;
-    this._route = route;
-    if (route != null) {
-      _decodedPath = GeoUtils.decodePath(route.path);
-    }
-    _startTime = null;
-    notifyListeners();
   }
 
   _loadRoute() async {
@@ -49,6 +36,20 @@ class ActiveHikingRoute extends ChangeNotifier {
     } catch (ex) {
       print(ex);
       _route = null;
+    }
+  }
+
+  selectRoute(HikingRoute route) async {
+    try {
+      _route = route;
+      _decodedPath = GeoUtils.decodePath(route.path);
+      _startTime = null;
+      notifyListeners();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String encoded = jsonEncode(_route!.toJson());
+      prefs.setString('activeRoute', encoded);
+    } catch (ex) {
+      print(ex);
     }
   }
 

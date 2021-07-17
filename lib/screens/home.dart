@@ -15,11 +15,9 @@ import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/map_marker.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:location/location.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function switchToTab;
@@ -29,12 +27,13 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => true;
   PanelController _pc = PanelController();
-  final double _collapsedPanelHeight = 48;
+  final double _collapsedPanelHeight = kBottomNavigationBarHeight;
   final double _panelHeaderHeight = 60;
   Completer<GoogleMapController> _mapController = Completer();
-  Location _location = Location();
   bool _lockPosition = true;
   HikingRoute? _activeRoute;
   PageController _pageController = PageController(
@@ -81,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
               parallaxEnabled: true,
               renderPanelSheet: false,
               maxHeight: 296,
-              minHeight: _collapsedPanelHeight + kBottomNavigationBarHeight,
+              minHeight: _collapsedPanelHeight,
               color: Colors.transparent,
               onPanelSlide: (position) {
                 Provider.of<PanelPosition>(context, listen: false)
@@ -123,143 +122,140 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_activeRoute == null) {
       return Container();
     }
-    return SafeArea(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(26), topRight: Radius.circular(26)),
-        ),
-        clipBehavior: Clip.hardEdge,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: kBottomNavigationBarHeight,
-              // decoration: BoxDecoration(
-              //     border: Border(
-              //         bottom: BorderSide(
-              //             width: 1, color: Theme.of(context).dividerColor.withOpacity(.25)))),
-              margin: EdgeInsets.symmetric(horizontal: 16),
-              child: Consumer2<ActiveHikingRoute, HikingStat>(
-                  builder: (_, activeHikingRoute, hikingStat, __) {
-                return GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTapDown: (_) {
-                    if (_pc.isPanelClosed) {
-                      _pc.open();
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (activeHikingRoute.isStarted) ...[
-                        Row(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(26), topRight: Radius.circular(26)),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: kBottomNavigationBarHeight,
+            // decoration: BoxDecoration(
+            //     border: Border(
+            //         bottom: BorderSide(
+            //             width: 1, color: Theme.of(context).dividerColor.withOpacity(.25)))),
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            child: Consumer2<ActiveHikingRoute, HikingStat>(
+                builder: (_, activeHikingRoute, hikingStat, __) {
+              return GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTapDown: (_) {
+                  if (_pc.isPanelClosed) {
+                    _pc.open();
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (activeHikingRoute.isStarted) ...[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            LineAwesomeIcons.walking,
+                            size: 30,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          Container(width: 4),
+                          Text(
+                            GeoUtils.formatDistance(hikingStat.walkedDistance),
+                            style: TextStyle(
+                                fontSize: 28,
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1),
+                          )
+                        ],
+                      ),
+                      StreamBuilder<int>(
+                          stream: hikingStat.clockStream,
+                          builder: (_, snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting ||
+                                snapshot.data == null) {
+                              return Container();
+                            }
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  LineAwesomeIcons.stopwatch,
+                                  size: 30,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                Container(width: 4),
+                                Text(
+                                  TimeUtils.formatSeconds(snapshot.data ?? 0),
+                                  style: TextStyle(
+                                      fontSize: 28,
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1),
+                                ),
+                              ],
+                            );
+                          })
+                    ] else
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              LineAwesomeIcons.walking,
-                              size: 30,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            Container(width: 4),
                             Text(
-                              GeoUtils.formatDistance(
-                                  hikingStat.walkedDistance),
+                              hikingStat.isFarAwayFromStart
+                                  ? 'You\'re far away from the route'
+                                  : 'You\'re now at the start of the route',
                               style: TextStyle(
-                                  fontSize: 28,
-                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  letterSpacing: 1),
-                            )
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                            Opacity(
+                                opacity: .5,
+                                child: Text(
+                                    hikingStat.isFarAwayFromStart
+                                        ? 'Please reach to the starting point first'
+                                        : 'Swipe up to get start!',
+                                    style: TextStyle(fontSize: 12)))
                           ],
                         ),
-                        StreamBuilder<int>(
-                            stream: hikingStat.clockStream,
-                            builder: (_, snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting ||
-                                  snapshot.data == null) {
-                                return Container();
-                              }
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    LineAwesomeIcons.stopwatch,
-                                    size: 30,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  Container(width: 4),
-                                  Text(
-                                    TimeUtils.formatSeconds(snapshot.data ?? 0),
-                                    style: TextStyle(
-                                        fontSize: 28,
-                                        color: Theme.of(context).primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1),
-                                  ),
-                                ],
-                              );
-                            })
-                      ] else
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                hikingStat.isFarAwayFromStart
-                                    ? 'You\'re far away from the route'
-                                    : 'You\'re now at the start of the route',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor),
-                              ),
-                              Opacity(
-                                  opacity: .5,
-                                  child: Text(
-                                      hikingStat.isFarAwayFromStart
-                                          ? 'Please reach to the starting point first'
-                                          : 'Swipe up to get start!',
-                                      style: TextStyle(fontSize: 12)))
-                            ],
-                          ),
-                        )
-                    ],
-                  ),
-                );
-              }),
+                      )
+                  ],
+                ),
+              );
+            }),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _pageIndicators(2, _selectPageIndex),
+          ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (int page) {
+                setState(() {
+                  _selectPageIndex = page;
+                });
+              },
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: _routeInfo(),
+                ),
+                RouteElevation(
+                  encodedPath: _activeRoute!.path,
+                )
+              ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: _pageIndicators(2, _selectPageIndex),
-            ),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (int page) {
-                  setState(() {
-                    _selectPageIndex = page;
-                  });
-                },
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: _routeInfo(),
-                  ),
-                  RouteElevation(
-                    encodedPath: _activeRoute!.path,
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -464,6 +460,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
             _mapController = Completer<GoogleMapController>();
             _mapController.complete(controller);
+            var stream =
+                Provider.of<CurrentLocation>(context, listen: false).stream;
+            stream.listen((event) {
+              if (_lockPosition) {
+                _goToCurrentLocation();
+              }
+            });
           },
         ));
   }
@@ -534,29 +537,33 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(bottom: 16.0),
           child: Consumer2<ActiveHikingRoute, HikingStat>(
               builder: (_, activeHikingRoute, hikingStat, ___) {
-            if (activeHikingRoute.isStarted)
-              return Button(
-                  child: Text('QUIT'),
-                  onPressed: () {
-                    activeHikingRoute.quitRoute();
-                  });
-            else {
-              bool closeEnough = !hikingStat.isFarAwayFromStart;
-              return Button(
-                  child: Text('START NOW'),
-                  backgroundColor: closeEnough
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey,
-                  onPressed: () {
-                    if (closeEnough) {
-                      activeHikingRoute.startRoute();
-                      print('hi');
-                      _goToCurrentLocation();
-                    } else {
-                      _showFarAwayDialog();
-                    }
-                  });
-            }
+            bool closeEnough = !hikingStat.isFarAwayFromStart;
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!activeHikingRoute.isStarted) ...[
+                  Button(
+                      child: Text('START NOW'),
+                      backgroundColor: closeEnough
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey,
+                      onPressed: () {
+                        if (closeEnough) {
+                          activeHikingRoute.startRoute();
+                          _goToCurrentLocation();
+                        } else {
+                          _showFarAwayDialog();
+                        }
+                      }),
+                  Container(width: 16),
+                ],
+                Button(
+                    child: Text('QUIT ROUTE'),
+                    onPressed: () {
+                      activeHikingRoute.quitRoute();
+                    })
+              ],
+            );
           }),
         ),
       ]),

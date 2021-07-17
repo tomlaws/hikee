@@ -83,7 +83,7 @@ class _RouteScreenState extends State<RouteScreen> {
                       Button(
                         onPressed: () {
                           Provider.of<ActiveHikingRoute>(context, listen: false)
-                              .update(route);
+                              .selectRoute(route);
                           Navigator.popUntil(context, ModalRoute.withName('/'));
                         },
                         child: Text('SELECT'),

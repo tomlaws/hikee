@@ -11,7 +11,9 @@ class CommunityScreen extends StatefulWidget {
   _CommunityScreenState createState() => _CommunityScreenState();
 }
 
-class _CommunityScreenState extends State<CommunityScreen> {
+class _CommunityScreenState extends State<CommunityScreen>
+    with AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => true;
   final double _headerHeight = 60;
   final double _horizontalPadding = 18;
   final double _borderRadius = 25;

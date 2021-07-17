@@ -11,7 +11,9 @@ class EventsScreen extends StatefulWidget {
   _EventsScreenState createState() => _EventsScreenState();
 }
 
-class _EventsScreenState extends State<EventsScreen> {
+class _EventsScreenState extends State<EventsScreen>
+    with AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => true;
   final items = List<Event>.generate(
       6, (i) => Event('Testing event', new DateTime.now()));
   @override

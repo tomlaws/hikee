@@ -20,7 +20,10 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => PanelPosition()),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
-        ChangeNotifierProvider(create: (_) => CurrentLocation(), lazy: false,),
+        ChangeNotifierProvider(
+          create: (_) => CurrentLocation(),
+          lazy: false,
+        ),
         ChangeNotifierProxyProvider2<ActiveHikingRoute, CurrentLocation,
                 HikingStat>(
             create: (BuildContext context) => HikingStat(
@@ -91,32 +94,38 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index) {
+  late PageController _pageController;
+
+  void initState() {
+    super.initState();
+    this._pageController =
+        PageController(initialPage: this._selectedIndex, keepPage: true);
+  }
+
+  void _onTap(int index) {
     if (_selectedIndex == index) return;
     setState(() {
-      _selectedIndex = index;
+      this._selectedIndex = index;
+      _pageController.jumpToPage(index);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    List<Widget> _screens = [
+      HomeScreen(
+        switchToTab: (i) => _onTap(i),
+      ),
+      LibraryScreen(),
+      EventsScreen(),
+      CommunityScreen(),
+      ProfileScreen()
+    ];
     return Scaffold(
-      body: Center(
-        child: [
-          HomeScreen(
-            switchToTab: (i) => _onItemTapped(i),
-          ),
-          LibraryScreen(),
-          EventsScreen(),
-          CommunityScreen(),
-          ProfileScreen()
-        ][_selectedIndex],
+      body: PageView(
+        physics: NeverScrollableScrollPhysics(),
+        children: _screens,
+        controller: _pageController,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
@@ -132,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(LineAwesomeIcons.user), label: 'Profile')
         ],
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        onTap: _onTap,
       ),
     );
   }
