@@ -171,12 +171,12 @@ class _RouteScreenState extends State<RouteScreen> {
                       ].toSet(),
                       markers: [
                         Marker(
-                            markerId: MarkerId('start'),
+                            markerId: MarkerId('start' + route.id.toString()),
                             position: points.first,
                             icon: MapMarker().red,
                             anchor: Offset(0.5, 0.5)),
                         Marker(
-                            markerId: MarkerId('end'),
+                            markerId: MarkerId('end' + route.id.toString()),
                             position: points.last,
                             icon: MapMarker().blue,
                             anchor: Offset(0.5, 0.5))

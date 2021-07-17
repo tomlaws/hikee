@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -63,9 +62,11 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_activeRoute != null) {
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           widget.switchToTab(0);
+          Future.delayed(const Duration(milliseconds: 10), () {
+            _focusActiveRoute();
+          });
         });
         _lockPosition = false;
-        _focusActiveRoute();
       }
     }
     MediaQueryData mediaQueryData = MediaQuery.of(context);
@@ -425,17 +426,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ].toSet(),
           markers: [
             Marker(
-                markerId: MarkerId('start'),
+                markerId: MarkerId(
+                    'start' + activeHikingRouteProvider.route!.id.toString()),
                 position: activeHikingRouteProvider.decodedPath!.first,
                 icon: !activeHikingRouteProvider.isStarted
                     ? MapMarker().red
                     : MapMarker().grey,
-                anchor: Offset(0.5, 0.5)),
+                anchor: Offset(0.5, 0.5),
+                zIndex: 99),
             Marker(
-                markerId: MarkerId('end'),
+                markerId: MarkerId(
+                    'end' + activeHikingRouteProvider.route!.id.toString()),
                 position: activeHikingRouteProvider.decodedPath!.last,
                 icon: MapMarker().blue,
-                anchor: Offset(0.5, 0.5))
+                anchor: Offset(0.5, 0.5),
+                zIndex: 99)
           ].toSet(),
           onMapCreated: (GoogleMapController controller) {
             controller.setMapStyle(
@@ -492,9 +497,9 @@ class _HomeScreenState extends State<HomeScreen> {
     var decodedPath =
         Provider.of<ActiveHikingRoute>(context, listen: false).decodedPath;
     if (decodedPath == null) return;
-
+    //print('focus');
     final GoogleMapController controller = await _mapController.future;
-    controller.animateCamera(
+    controller.moveCamera(
         CameraUpdate.newLatLngBounds(GeoUtils.getPathBounds(decodedPath), 20));
   }
 
