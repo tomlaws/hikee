@@ -31,7 +31,7 @@ class _CommunityPostTileState extends State<CommunityPostTile> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6),
                       ),
-                      Text("Chan Siu Ming"), 
+                      Text("Chan Siu Ming", style: TextStyle(fontWeight: FontWeight.w900)), 
                     ]
                   )
                 ),

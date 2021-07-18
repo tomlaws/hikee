@@ -130,19 +130,21 @@ class _CommunityScreenState extends State<CommunityScreen>
 
             // List
             Expanded(
-                child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      return CommunityPostTile(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => CommunityPostScreen(id: 1)));
-                        },
-                      );
+              child: ListView.separated(
+                itemBuilder: (context, index) {
+                  return CommunityPostTile(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => CommunityPostScreen(id: 1)));
                     },
-                    separatorBuilder: (context, index) => const Divider(
-                          height: 0.1,
-                        ),
-                    itemCount: 10))
+                  );
+                },
+                separatorBuilder: (context, index) => const Divider(
+                      height: 0.1,
+                    ),
+                itemCount: 10
+                )
+            )
           ],
         ),
       ),
