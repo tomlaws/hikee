@@ -77,7 +77,6 @@ class _HomeScreenState extends State<HomeScreen>
         Container(
           child: SlidingUpPanel(
               controller: _pc,
-              parallaxEnabled: true,
               renderPanelSheet: false,
               maxHeight: 296,
               minHeight: _collapsedPanelHeight,
@@ -122,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (_activeRoute == null) {
       return Container();
     }
+    print(DateTime.now());
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
