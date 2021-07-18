@@ -17,7 +17,19 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
         SliverAppBar(
             pinned: true,
             expandedHeight: 200,
-            title: Text("Can someone suggest a route for me as a beginner?"),
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              ),
+            ),
+            title: Text("Can someone suggest a route for me as a beginner?",
+                style: TextStyle(
+                  color: Colors.white,
+                )),
             flexibleSpace: FlexibleSpaceBar(
               background: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -55,7 +67,9 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                 ),
-                Text("Chan Siu Ming", style: TextStyle(color: Colors.white)),
+                Text("Chan Siu Ming",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w900)),
               ])),
               Text("4 hours ago", style: TextStyle(color: Colors.white))
             ],
@@ -84,8 +98,8 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
               TextButton.icon(
                 onPressed: () {},
                 style: ButtonStyle(
-                  padding: MaterialStateProperty.all<EdgeInsets>(
-                      EdgeInsets.all(0)),
+                  padding:
+                      MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
                   alignment: Alignment.centerLeft,
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                 ),
@@ -147,7 +161,8 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                       padding: MaterialStateProperty.all<EdgeInsets>(
                           EdgeInsets.all(0)),
                       alignment: Alignment.centerLeft,
-                      overlayColor: MaterialStateProperty.all(Colors.transparent),
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.transparent),
                     ),
                     label: Text(
                       "12",
