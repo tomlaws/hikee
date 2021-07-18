@@ -172,7 +172,7 @@ class _RouteScreenState extends State<RouteScreen> {
                       markers: [
                         Marker(
                           markerId: MarkerId('marker-start'),
-                          zIndex: 1,
+                          zIndex: 2,
                           icon: MapMarker().start,
                           position: points.first,
                         ),

@@ -459,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen>
           markers: [
             Marker(
               markerId: MarkerId('marker-start'),
-              zIndex: 1,
+              zIndex: 2,
               icon: MapMarker().start,
               position: activeHikingRouteProvider.decodedPath!.first,
             ),
@@ -557,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen>
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (!activeHikingRoute.isStarted) ...[
+                if (!activeHikingRoute.isStarted)
                   Button(
                       child: Text('START NOW'),
                       backgroundColor: closeEnough
@@ -570,9 +570,14 @@ class _HomeScreenState extends State<HomeScreen>
                         } else {
                           _showFarAwayDialog();
                         }
+                      })
+                else
+                  Button(
+                      child: Text('EMERGENCY'),
+                      backgroundColor: Colors.red,
+                      onPressed: () {
                       }),
-                  Container(width: 16),
-                ],
+                Container(width: 16),
                 Button(
                     child: Text('QUIT ROUTE'),
                     onPressed: () {
