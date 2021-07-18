@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     HikingRoute? route =
         Provider.of<ActiveHikingRoute>(context, listen: true).route;
     if (route != _activeRoute) {
