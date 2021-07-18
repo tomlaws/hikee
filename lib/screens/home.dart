@@ -15,6 +15,7 @@ import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/map_marker.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -122,7 +123,6 @@ class _HomeScreenState extends State<HomeScreen>
     if (_activeRoute == null) {
       return Container();
     }
-    print(DateTime.now());
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -422,39 +422,53 @@ class _HomeScreenState extends State<HomeScreen>
               points: activeHikingRouteProvider.decodedPath!,
             ),
           ].toSet(),
-          circles: [
-            Circle(
-                circleId: CircleId(
-                    'start-' + activeHikingRouteProvider.route!.id.toString()),
-                center: activeHikingRouteProvider.decodedPath!.first,
-                fillColor: Colors.blue.withOpacity(.6),
-                strokeWidth: 0,
-                zIndex: 2,
-                radius: 200),
-            Circle(
-                circleId: CircleId('start-border-' +
-                    activeHikingRouteProvider.route!.id.toString()),
-                center: activeHikingRouteProvider.decodedPath!.first,
-                fillColor: Colors.blue.withOpacity(.3),
-                strokeWidth: 0,
-                zIndex: 2,
-                radius: 300),
-            Circle(
-                circleId: CircleId(
-                    'end-' + activeHikingRouteProvider.route!.id.toString()),
-                center: activeHikingRouteProvider.decodedPath!.last,
-                fillColor: Colors.red.withOpacity(.6),
-                strokeWidth: 0,
-                zIndex: 2,
-                radius: 200),
-            Circle(
-                circleId: CircleId('end-border-' +
-                    activeHikingRouteProvider.route!.id.toString()),
-                center: activeHikingRouteProvider.decodedPath!.last,
-                fillColor: Colors.red.withOpacity(.3),
-                strokeWidth: 0,
-                zIndex: 2,
-                radius: 300),
+          // circles: [
+          //   Circle(
+          //       circleId: CircleId(
+          //           'start-' + activeHikingRouteProvider.route!.id.toString()),
+          //       center: activeHikingRouteProvider.decodedPath!.first,
+          //       fillColor: Colors.blue.withOpacity(.6),
+          //       strokeWidth: 0,
+          //       zIndex: 2,
+          //       radius: 200),
+          //   Circle(
+          //       circleId: CircleId('start-border-' +
+          //           activeHikingRouteProvider.route!.id.toString()),
+          //       center: activeHikingRouteProvider.decodedPath!.first,
+          //       fillColor: Colors.blue.withOpacity(.3),
+          //       strokeWidth: 0,
+          //       zIndex: 2,
+          //       radius: 300),
+          //   Circle(
+          //       circleId: CircleId(
+          //           'end-' + activeHikingRouteProvider.route!.id.toString()),
+          //       center: activeHikingRouteProvider.decodedPath!.last,
+          //       fillColor: Colors.red.withOpacity(.6),
+          //       strokeWidth: 0,
+          //       zIndex: 2,
+          //       radius: 200),
+          //   Circle(
+          //       circleId: CircleId('end-border-' +
+          //           activeHikingRouteProvider.route!.id.toString()),
+          //       center: activeHikingRouteProvider.decodedPath!.last,
+          //       fillColor: Colors.red.withOpacity(.3),
+          //       strokeWidth: 0,
+          //       zIndex: 2,
+          //       radius: 300),
+          // ].toSet(),
+          markers: [
+            Marker(
+              markerId: MarkerId('marker-start'),
+              zIndex: 1,
+              icon: MapMarker().start,
+              position: activeHikingRouteProvider.decodedPath!.first,
+            ),
+            Marker(
+              markerId: MarkerId('marker-end'),
+              zIndex: 1,
+              icon: MapMarker().end,
+              position: activeHikingRouteProvider.decodedPath!.last,
+            )
           ].toSet(),
           onMapCreated: (GoogleMapController controller) async {
             controller.setMapStyle(

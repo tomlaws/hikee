@@ -169,37 +169,19 @@ class _RouteScreenState extends State<RouteScreen> {
                           points: points,
                         ),
                       ].toSet(),
-                      circles: [
-                        Circle(
-                            circleId: CircleId('start-' + route.id.toString()),
-                            center: points.first,
-                            fillColor: Colors.blue.withOpacity(.6),
-                            strokeWidth: 0,
-                            zIndex: 3,
-                            radius: 200),
-                        Circle(
-                            circleId:
-                                CircleId('start-border-' + route.id.toString()),
-                            center: points.first,
-                            fillColor: Colors.blue.withOpacity(.3),
-                            strokeWidth: 0,
-                            zIndex: 4,
-                            radius: 300),
-                        Circle(
-                            circleId: CircleId('end-' + route.id.toString()),
-                            center: points.last,
-                            fillColor: Colors.red.withOpacity(.6),
-                            strokeWidth: 0,
-                            zIndex: 3,
-                            radius: 200),
-                        Circle(
-                            circleId:
-                                CircleId('end-border-' + route.id.toString()),
-                            center: points.last,
-                            fillColor: Colors.red.withOpacity(.3),
-                            strokeWidth: 0,
-                            zIndex: 4,
-                            radius: 300),
+                      markers: [
+                        Marker(
+                          markerId: MarkerId('marker-start'),
+                          zIndex: 1,
+                          icon: MapMarker().start,
+                          position: points.first,
+                        ),
+                        Marker(
+                          markerId: MarkerId('marker-end'),
+                          zIndex: 1,
+                          icon: MapMarker().end,
+                          position: points.last,
+                        )
                       ].toSet(),
                       onMapCreated: (GoogleMapController controller) {
                         controller.setMapStyle(

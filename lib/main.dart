@@ -14,7 +14,6 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  MapMarker();
   runApp(
     MultiProvider(
       providers: [
@@ -48,6 +47,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    MapMarker();
     return MaterialApp(
         title: 'Hikee',
         theme: ThemeData(
