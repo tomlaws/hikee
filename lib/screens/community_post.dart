@@ -70,6 +70,12 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
             children: [
               TextButton.icon(
                   onPressed: () {},
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                        EdgeInsets.all(0)),
+                    alignment: Alignment.centerLeft,
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
                   label: Text(
                     "12",
                     style: TextStyle(color: Colors.white),
@@ -77,6 +83,12 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                   icon: Icon(Icons.thumb_up_alt_outlined, color: Colors.white)),
               TextButton.icon(
                 onPressed: () {},
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      EdgeInsets.all(0)),
+                  alignment: Alignment.centerLeft,
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
                 label: Text("8", style: TextStyle(color: Colors.white)),
                 icon: Icon(Icons.comment_outlined, color: Colors.white),
               )
@@ -106,7 +118,10 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                 ),
-                Text("Wong Chi Wai", style: TextStyle(fontWeight: FontWeight.w900),),
+                Text(
+                  "Wong Chi Wai",
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
               ])),
               Text("32 miniutes ago")
             ],
@@ -124,22 +139,27 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                     style: TextStyle(),
                   ),
                 ),
+
                 // like
                 TextButton.icon(
-                  onPressed: () {},
-                  label: Text(
-                    "12",
-                    style: TextStyle(color: Colors.grey[400]),
-                  ),
-                  icon: Icon(
-                    Icons.thumb_up_alt_outlined,
-                    color: Colors.grey[400],
-                  )
-                ),
+                    onPressed: () {},
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all<EdgeInsets>(
+                          EdgeInsets.all(0)),
+                      alignment: Alignment.centerLeft,
+                      overlayColor: MaterialStateProperty.all(Colors.transparent),
+                    ),
+                    label: Text(
+                      "12",
+                      style: TextStyle(color: Colors.grey[400]),
+                    ),
+                    icon: Icon(
+                      Icons.thumb_up_alt_outlined,
+                      color: Colors.grey[400],
+                    )),
               ],
             ),
           )
-          
         ],
       ),
     );
