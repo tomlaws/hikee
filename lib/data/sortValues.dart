@@ -1,6 +1,7 @@
 final List<String> sortValues = [
-  'Popular',
-  'Top Rated',
+  'Most Popular',
+  'Distance(Longest to Short)',
+  'Distance(Shortest to Long)',
   'Difficulty (Lowest to High)',
   'Difficulty (Highest to Low)'
 ];
