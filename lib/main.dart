@@ -30,6 +30,9 @@ void main() {
                 Provider.of<CurrentLocation>(context, listen: false)),
             update: (BuildContext context, ActiveHikingRoute route,
                 CurrentLocation loc, HikingStat? prev) {
+              if (prev != null) {
+                return prev..update(route, loc);
+              }
               return HikingStat(route, loc);
             }),
         ChangeNotifierProvider(create: (_) => LibrarySort()),

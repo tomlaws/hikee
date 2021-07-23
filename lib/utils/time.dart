@@ -16,6 +16,7 @@ class TimeUtils {
     int remainder = seconds % 60;
     int minutes = (seconds / 60).floor();
     int hour = (minutes / 60).floor();
-    return (minutes > 0 ? formatMinutes(minutes) : '') + (remainder != 0 && hour < 1 ? ' ${remainder}s' : '');
+    return (minutes > 0 ? formatMinutes(minutes) : '') +
+        (minutes < 1 || (remainder != 0 && hour < 1) ? ' ${remainder}s' : '');
   }
 }

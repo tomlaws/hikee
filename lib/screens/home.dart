@@ -9,16 +9,20 @@ import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/route_elevation.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/components/sliding_up_panel.dart';
+import 'package:hikee/data/distance_posts/reader.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/current_location.dart';
+import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function switchToTab;
@@ -37,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen>
   Completer<GoogleMapController> _mapController = Completer();
   bool _lockPosition = true;
   HikingRoute? _activeRoute;
+  DistancePost? _nearestDistancePost;
   PageController _pageController = PageController(
     initialPage: 0,
   );
@@ -175,34 +180,25 @@ class _HomeScreenState extends State<HomeScreen>
                           )
                         ],
                       ),
-                      StreamBuilder<int>(
-                          stream: hikingStat.clockStream,
-                          builder: (_, snapshot) {
-                            if (snapshot.connectionState ==
-                                    ConnectionState.waiting ||
-                                snapshot.data == null) {
-                              return Container();
-                            }
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  LineAwesomeIcons.stopwatch,
-                                  size: 30,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                Container(width: 4),
-                                Text(
-                                  TimeUtils.formatSeconds(snapshot.data ?? 0),
-                                  style: TextStyle(
-                                      fontSize: 28,
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1),
-                                ),
-                              ],
-                            );
-                          })
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            LineAwesomeIcons.stopwatch,
+                            size: 30,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          Container(width: 4),
+                          Text(
+                            TimeUtils.formatSeconds(hikingStat.elapsed),
+                            style: TextStyle(
+                                fontSize: 28,
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1),
+                          ),
+                        ],
+                      )
                     ] else
                       Expanded(
                         child: Column(
@@ -468,7 +464,17 @@ class _HomeScreenState extends State<HomeScreen>
               zIndex: 1,
               icon: MapMarker().end,
               position: activeHikingRouteProvider.decodedPath!.last,
-            )
+            ),
+            if (_nearestDistancePost != null)
+              Marker(
+                markerId: MarkerId('marker-distance-post'),
+                zIndex: 999,
+                icon: MapMarker().distancePost,
+                position: _nearestDistancePost!.location,
+                // onTap: () {
+                //   _showNearestDistancePostDialog(_nearestDistancePost!, );
+                // }
+              )
           ].toSet(),
           onMapCreated: (GoogleMapController controller) async {
             controller.setMapStyle(
@@ -498,6 +504,26 @@ class _HomeScreenState extends State<HomeScreen>
           bearing: 0,
           target: location,
           zoom: 14.0,
+        ),
+      ));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _showDistancePost(DistancePost dp) async {
+    try {
+      _lockPosition = false;
+      var location = dp.location;
+      setState(() {
+        _nearestDistancePost = dp;
+      });
+      final GoogleMapController controller = await _mapController.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          bearing: 0,
+          target: location,
+          zoom: 16.0,
         ),
       ));
     } catch (e) {
@@ -575,7 +601,8 @@ class _HomeScreenState extends State<HomeScreen>
                   Button(
                       child: Text('EMERGENCY'),
                       backgroundColor: Colors.red,
-                      onPressed: () {
+                      onPressed: () async {
+                        _showNearestDistancePostDialog();
                       }),
                 Container(width: 16),
                 Button(
@@ -623,5 +650,94 @@ class _HomeScreenState extends State<HomeScreen>
         );
       },
     );
+  }
+
+  void _showNearestDistancePostDialog() {
+    var location =
+        Provider.of<CurrentLocation>(context, listen: false).location;
+    DialogUtils.show(
+        context,
+        FutureBuilder<DistancePost?>(
+            future: DistancePostsReader.findClosestDistancePost(location!),
+            builder: (_, snapshot) {
+              var nearestDistancePost = snapshot.data;
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              if (nearestDistancePost == null) {
+                return Center(
+                  child: Text('Distance post not found'),
+                );
+              }
+              var distInKm = GeoUtils.calculateDistance(
+                  nearestDistancePost.location, location);
+              return Column(
+                children: [
+                  Text(
+                    'The nearest distance post is',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Opacity(
+                    opacity: .75,
+                    child: Text(
+                      'You\'re ${distInKm.toStringAsFixed(2)} km away from this distance post.',
+                    ),
+                  ),
+                  Opacity(
+                    opacity: .75,
+                    child: Text(
+                      'This may help the rescue team to locate you',
+                    ),
+                  ),
+                  Container(
+                    height: 16,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(8.0)),
+                    child: Column(
+                      children: [
+                        Text(nearestDistancePost.trail_name_en),
+                        Text(nearestDistancePost.trail_name_zh),
+                        Text(nearestDistancePost.no,
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 16,
+                  ),
+                  Button(
+                      child: Text('SHOW IN MAP'),
+                      onPressed: () {
+                        _showDistancePost(nearestDistancePost);
+                        Navigator.of(context).pop();
+                      }),
+                ],
+              );
+            }),
+        buttons: (context) => [
+              Button(
+                  child: Text('DIAL 999 NOW'),
+                  backgroundColor: Colors.red,
+                  onPressed: () {
+                    launch("tel://999");
+                    Navigator.of(context).pop();
+                  }),
+              Button(
+                  child: Text('CANCEL'),
+                  backgroundColor: Colors.black38,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  })
+            ]);
   }
 }

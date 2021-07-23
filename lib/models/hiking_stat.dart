@@ -9,14 +9,26 @@ import 'package:hikee/utils/geo.dart';
 class HikingStat extends ChangeNotifier {
   ActiveHikingRoute route;
   CurrentLocation location;
+  Timer? timer;
+  int elapsed = 0;
 
-  late Stream<int> _clockStream;
-  Stream<int> get clockStream => _clockStream;
+  HikingStat(this.route, this.location, {this.elapsed = 0}) {
+    if (!route.isStarted) {
+      elapsed = 0;
+      timer = null;
+    } else {
+      timer = Timer.periodic(const Duration(seconds: 1), tick);
+    }
+  }
 
-  HikingStat(this.route, this.location) {
-    // timer
-    if (route.isStarted) {
-      _clockStream = _timedCounter(const Duration(seconds: 1));
+  void update(ActiveHikingRoute route, CurrentLocation loc) {
+    this.route = route;
+    this.location = loc;
+    if (!route.isStarted) {
+      elapsed = 0;
+      timer = null;
+    } else {
+      timer = Timer.periodic(const Duration(seconds: 1), tick);
     }
   }
 
@@ -40,32 +52,15 @@ class HikingStat extends ChangeNotifier {
     LatLng current = LatLng(
         location.locationData!.latitude!, location.locationData!.longitude!);
     double walked = GeoUtils.getWalkedLength(current, route.decodedPath!);
-    print(current.toString());
+    //print(current.toString());
     return walked;
   }
 
-  Stream<int> _timedCounter(Duration interval) {
-    late StreamController<int> controller;
-    Timer? timer;
-
-    void tick(_) {
-      int elapsed = DateTime.now().millisecondsSinceEpoch -
-          (route.startTime ?? DateTime.now().millisecondsSinceEpoch);
-      controller.add((elapsed / 1000).floor());
-    }
-
-    void startTimer() {
-      timer = Timer.periodic(interval, tick);
-    }
-
-    void stopTimer() {
-      timer?.cancel();
-      timer = null;
-    }
-
-    controller = StreamController<int>.broadcast(
-        onListen: startTimer, onCancel: stopTimer);
-
-    return controller.stream;
+  void tick(_) {
+    int s = DateTime.now().millisecondsSinceEpoch -
+        (route.startTime ?? DateTime.now().millisecondsSinceEpoch);
+    elapsed = ((s / 1000).floor());
+    notifyListeners();
   }
+
 }

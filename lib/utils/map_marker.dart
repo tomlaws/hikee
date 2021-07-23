@@ -6,10 +6,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class MapMarker {
   static final MapMarker _mapMarker = MapMarker._internal();
 
-  BitmapDescriptor? _startMarker, _endMarker;
+  BitmapDescriptor? _startMarker, _endMarker, _distancePostMarker;
 
   BitmapDescriptor get start => _startMarker ?? BitmapDescriptor.defaultMarker;
   BitmapDescriptor get end => _endMarker ?? BitmapDescriptor.defaultMarker;
+  BitmapDescriptor get distancePost =>
+      _distancePostMarker ?? BitmapDescriptor.defaultMarker;
 
   factory MapMarker() {
     return _mapMarker;
@@ -21,13 +23,17 @@ class MapMarker {
 
   void _buildMarkers() async {
     if (_startMarker == null)
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(),
-              'assets/images/marker_start.png')
+      BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(), 'assets/images/marker_start.png')
           .then((bd) => _startMarker = bd);
     if (_endMarker == null)
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(),
-              'assets/images/marker_end.png')
+      BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(), 'assets/images/marker_end.png')
           .then((bd) => _endMarker = bd);
+    if (_distancePostMarker == null)
+      BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(), 'assets/images/marker_distance_post.png')
+          .then((bd) => _distancePostMarker = bd);
   }
 
   Future<BitmapDescriptor> _buildMarker(Color color) async {
