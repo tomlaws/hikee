@@ -1,7 +1,7 @@
 final List<String> kowloonValues = [
+  'Kowloon City',
   'Kwun Tong',
   'Wong Tai Sin',
-  'Kowloon City',
   'Sham Shui Po',
   'Yau Tsim Mong'
 ];

@@ -28,6 +28,9 @@ class _LibraryScreenState extends State<LibraryScreen>
 
   @override
   Widget build(BuildContext context) {
+    final _LibraryFilter= Provider.of<LibraryFilter>(context);
+    final _LibraryDistrict= Provider.of<LibraryDistrict>(context);
+    districtColor = (_LibraryDistrict.isEmpty())? Colors.grey : Theme.of(context).primaryColor;
     return Scaffold(
       body: SafeArea(
         child: Container(
