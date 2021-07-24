@@ -8,7 +8,6 @@ import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/elevation.dart';
 import 'package:hikee/services/route.dart';
 import 'package:hikee/utils/geo.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class RouteElevation extends StatelessWidget {
@@ -28,6 +27,11 @@ class RouteElevation extends StatelessWidget {
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.data == null) {
+            return Center(
+              child: Text('Error while getting elevations'),
+            );
           }
           return Consumer<CurrentLocation>(
               builder: (_, currentLocationProvider, __) {

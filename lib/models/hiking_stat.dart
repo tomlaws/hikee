@@ -33,7 +33,6 @@ class HikingStat extends ChangeNotifier {
   }
 
   bool get isFarAwayFromStart {
-    return false;
     if (route.decodedPath == null) {
       print('decode null');
       return true;

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/keep_alive.dart';
 import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/route_elevation.dart';
 import 'package:hikee/components/route_info.dart';
@@ -14,6 +15,7 @@ import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/models/hiking_stat.dart';
+import 'package:hikee/models/page_view_state.dart';
 import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/dialog.dart';
@@ -45,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen>
   PageController _pageController = PageController(
     initialPage: 0,
   );
-  int _selectPageIndex = 0;
 
   @override
   void initState() {
@@ -128,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (_activeRoute == null) {
       return Container();
     }
+    print('a' + DateTime.now().toString());
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -229,27 +231,45 @@ class _HomeScreenState extends State<HomeScreen>
               );
             }),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: _pageIndicators(2, _selectPageIndex),
-          ),
           Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (int page) {
-                setState(() {
-                  _selectPageIndex = page;
-                });
-              },
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: _routeInfo(),
+            child: ChangeNotifierProvider(
+              create: (_) => PageViewState(),
+              builder: (context, _) => Column(children: [
+                Consumer<PageViewState>(
+                  builder: (context, pvs, ___) => Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: _pageIndicators(2, pvs.currentPage),
+                  ),
                 ),
-                RouteElevation(
-                  routeId: _activeRoute!.id,
-                )
-              ],
+                if ((() {
+                  print(DateTime.now());
+                  return true;
+                })())
+                  Container(),
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (int page) {
+                      Provider.of<PageViewState>(context, listen: false)
+                          .updatePage(page);
+                      // setState(() {
+                      //   _selectPageIndex = page;
+                      // });
+                    },
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: _routeInfo(),
+                      ),
+                      KeepAlivePage(
+                        child: RouteElevation(
+                          routeId: _activeRoute!.id,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ]),
             ),
           ),
         ],
