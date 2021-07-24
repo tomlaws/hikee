@@ -23,16 +23,19 @@ class MapMarker {
 
   void _buildMarkers() async {
     if (_startMarker == null)
-      BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(size: Size(12,12)), 'assets/images/marker_start.png')
+      BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+              'assets/images/marker_start.png',
+              mipmaps: false)
           .then((bd) => _startMarker = bd);
     if (_endMarker == null)
-      BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(size: Size(12,12)), 'assets/images/marker_end.png')
+      BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+              'assets/images/marker_end.png',
+              mipmaps: false)
           .then((bd) => _endMarker = bd);
     if (_distancePostMarker == null)
-      BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(size: Size(12,12)), 'assets/images/marker_distance_post.png')
+      BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+              'assets/images/marker_distance_post.png',
+              mipmaps: false)
           .then((bd) => _distancePostMarker = bd);
   }
 

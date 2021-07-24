@@ -11,7 +11,6 @@ class DistancePostsReader {
     final data =
         await rootBundle.loadString("assets/data/AFCD_Distance_Post.csv");
     List<List<dynamic>> rows =  CsvToListConverter(csvSettingsDetector: d).convert(data);
-    print(rows.length);
     if (rows.length < 2) {
       return null;
     }
