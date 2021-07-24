@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: _routeInfo(),
                 ),
                 RouteElevation(
-                  encodedPath: _activeRoute!.path,
+                  routeId: _activeRoute!.id,
                 )
               ],
             ),

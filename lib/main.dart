@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/current_location.dart';
@@ -9,11 +10,17 @@ import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
 import 'package:hikee/screens/library.dart';
 import 'package:hikee/screens/profile.dart';
+import 'package:hikee/services/route.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+void setupLocator() {
+  GetIt.I.registerLazySingleton(() => RouteService());
+}
+
 void main() {
+  setupLocator();
   runApp(
     MultiProvider(
       providers: [

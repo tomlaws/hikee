@@ -2,26 +2,29 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/elevation.dart';
+import 'package:hikee/services/route.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class RouteElevation extends StatelessWidget {
-  final String encodedPath;
-  RouteElevation({Key? key, required this.encodedPath}) : super(key: key);
+  final int routeId;
+  RouteElevation({Key? key, required this.routeId}) : super(key: key);
 
   final List<Color> gradientColors = [
     const Color(0xff23b6e6),
     const Color(0xff02d39a),
   ];
+  RouteService get routeService => GetIt.I<RouteService>();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Elevation>>(
-        future: GeoUtils.getElevations(encodedPath),
+        future: routeService.getElevations(routeId),
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -40,7 +43,7 @@ class RouteElevation extends StatelessWidget {
 
   Widget _graph(List<Elevation> elevations,
       {LatLng? myLocation = const LatLng(22.3872078, 114.3777223)}) {
-    myLocation = const LatLng(22.3872078, 114.3777223);
+    //myLocation = const LatLng(22.3872078, 114.3777223);
     List<FlSpot> spots = [];
     double maxE = double.negativeInfinity;
     double minE = double.infinity;

@@ -40,6 +40,7 @@ dependencies:
   fl_chart: ^0.36.2
   csv: ^5.0.0
   url_launcher: ^6.0.9
+  get_it: ^7.2.0
 
 
 dev_dependencies:
