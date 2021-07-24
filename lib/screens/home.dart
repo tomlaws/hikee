@@ -481,8 +481,8 @@ class _HomeScreenState extends State<HomeScreen>
                 '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
             _mapController = Completer<GoogleMapController>();
             _mapController.complete(controller);
-            var stream =
-                Provider.of<CurrentLocation>(context, listen: false).stream;
+            var stream = Provider.of<CurrentLocation>(context, listen: false)
+                .onLocationChanged;
             stream.listen((event) {
               if (_lockPosition) {
                 _goToCurrentLocation();
@@ -655,10 +655,11 @@ class _HomeScreenState extends State<HomeScreen>
   void _showNearestDistancePostDialog() {
     var location =
         Provider.of<CurrentLocation>(context, listen: false).location;
+    location = const LatLng(22.3872078, 114.3777223);
     DialogUtils.show(
         context,
         FutureBuilder<DistancePost?>(
-            future: DistancePostsReader.findClosestDistancePost(location!),
+            future: DistancePostsReader.findClosestDistancePost(location),
             builder: (_, snapshot) {
               var nearestDistancePost = snapshot.data;
               if (snapshot.connectionState != ConnectionState.done) {
@@ -675,7 +676,7 @@ class _HomeScreenState extends State<HomeScreen>
                 );
               }
               var distInKm = GeoUtils.calculateDistance(
-                  nearestDistancePost.location, location);
+                  nearestDistancePost.location, location!);
               return Column(
                 children: [
                   Text(

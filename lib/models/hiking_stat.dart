@@ -33,24 +33,25 @@ class HikingStat extends ChangeNotifier {
   }
 
   bool get isFarAwayFromStart {
+    return false;
     if (route.decodedPath == null) {
       print('decode null');
       return true;
     }
-    if (location.locationData == null) {
+    if (location.location == null) {
       print('location null');
       return true;
     }
     LatLng current = LatLng(
-        location.locationData!.latitude!, location.locationData!.longitude!);
+        location.location!.latitude, location.location!.longitude);
     return GeoUtils.isFarWayFromPoint(current, route.decodedPath![0]);
   }
 
   double get walkedDistance {
     if (route.decodedPath == null) return 0.0;
-    if (location.locationData == null) return 0.0;
+    if (location.location == null) return 0.0;
     LatLng current = LatLng(
-        location.locationData!.latitude!, location.locationData!.longitude!);
+        location.location!.latitude, location.location!.longitude);
     double walked = GeoUtils.getWalkedLength(current, route.decodedPath!);
     //print(current.toString());
     return walked;

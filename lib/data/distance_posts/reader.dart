@@ -1,14 +1,17 @@
 import 'package:csv/csv.dart';
+import 'package:csv/csv_settings_autodetection.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/utils/geo.dart';
 
 class DistancePostsReader {
+  static var d =  FirstOccurrenceSettingsDetector(eols: ['\r\n', '\n']);
   static Future<DistancePost?> findClosestDistancePost(LatLng location) async {
     final data =
         await rootBundle.loadString("assets/data/AFCD_Distance_Post.csv");
-    List<List<dynamic>> rows = const CsvToListConverter().convert(data);
+    List<List<dynamic>> rows =  CsvToListConverter(csvSettingsDetector: d).convert(data);
+    print(rows.length);
     if (rows.length < 2) {
       return null;
     }

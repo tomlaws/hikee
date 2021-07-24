@@ -24,15 +24,15 @@ class MapMarker {
   void _buildMarkers() async {
     if (_startMarker == null)
       BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(), 'assets/images/marker_start.png')
+              ImageConfiguration(size: Size(12,12)), 'assets/images/marker_start.png')
           .then((bd) => _startMarker = bd);
     if (_endMarker == null)
       BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(), 'assets/images/marker_end.png')
+              ImageConfiguration(size: Size(12,12)), 'assets/images/marker_end.png')
           .then((bd) => _endMarker = bd);
     if (_distancePostMarker == null)
       BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(), 'assets/images/marker_distance_post.png')
+              ImageConfiguration(size: Size(12,12)), 'assets/images/marker_distance_post.png')
           .then((bd) => _distancePostMarker = bd);
   }
 
