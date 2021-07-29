@@ -30,7 +30,9 @@ class _LibraryScreenState extends State<LibraryScreen>
   Widget build(BuildContext context) {
     final _LibraryFilter= Provider.of<LibraryFilter>(context);
     final _LibraryDistrict= Provider.of<LibraryDistrict>(context);
+    filterColor = (_LibraryFilter.isEmpty())? Colors.grey : Theme.of(context).primaryColor;
     districtColor = (_LibraryDistrict.isEmpty())? Colors.grey : Theme.of(context).primaryColor;
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -81,8 +83,10 @@ class _LibraryScreenState extends State<LibraryScreen>
                   // Filter Button
                   TextButton(
                       onPressed: () => {
-                            _showFilterDialog(context),
-                            FocusScope.of(context).unfocus()
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FilterPage()))
                           },
                       style: TextButton.styleFrom(
                         primary: filterColor,
@@ -181,69 +185,6 @@ class _LibraryScreenState extends State<LibraryScreen>
           ),
         );
       });
-
-  // Show filter dialog funciton
-  _showFilterDialog(BuildContext context) => showDialog(
-      context: context,
-      builder: (context) {
-        final _LibraryFilter = Provider.of<LibraryFilter>(context);
-        return AlertDialog(
-            title: Text('Filter'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: Wrap(
-                    spacing: 5.0,
-                    runSpacing: 5.0,
-                    children: filterValues
-                        .map((e) => FilterChip(
-                              label: Text(e),
-                              selectedColor: Theme.of(context).primaryColor,
-                              //autofocus: _LibraryFilter.isFiltered(e),
-                              onSelected: (value) {
-                                setState(() {
-                                  value
-                                      ? _LibraryFilter.addFilter(e)
-                                      : _LibraryFilter.removeFilter(e);
-                                  if (_LibraryFilter.isEmpty())
-                                    filterColor = Colors.grey;
-                                  else
-                                    filterColor =
-                                        Theme.of(context).primaryColor;
-                                });
-                              },
-                              selected: _LibraryFilter.isFiltered(e),
-                            ))
-                        .toList(),
-                  ),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Button(
-                          child: Text("Clear"),
-                          backgroundColor: Colors.grey.withOpacity(0.6),
-                          onPressed: () {
-                            setState(() {
-                              _LibraryFilter.clear();
-                              filterColor = Colors.grey;
-                            });
-                          }),
-                    ),
-                    Container(width: 5),
-                    Expanded(
-                      child: Button(
-                          child: Text("Filter"),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          onPressed: () {}),
-                    ),
-                  ],
-                ),
-              ],
-            ));
-      });
 }
 
 // ============Notifier==============
@@ -264,6 +205,7 @@ class LibrarySort extends ChangeNotifier {
 class LibraryFilter extends ChangeNotifier {
   List<String> _selectedFilter;
   LibraryFilter(this._selectedFilter);
+  RangeValues _rangeValues = RangeValues(0, 12);
 
   List<String> get selectedFilter => _selectedFilter;
 
@@ -278,6 +220,15 @@ class LibraryFilter extends ChangeNotifier {
 
   bool isFiltered(String value) => _selectedFilter.contains(value);
 
+  RangeValues getRangeValues(){
+    return _rangeValues;
+  }
+
+  setRangeValues(RangeValues rangeValues){
+    this._rangeValues = rangeValues;
+    notifyListeners();
+  }
+
   addFilter(String value) {
     if (!isFiltered(value)) {
       _selectedFilter.add(value);
@@ -291,6 +242,8 @@ class LibraryFilter extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+
 }
 
 class LibraryDistrict extends ChangeNotifier {
@@ -351,7 +304,7 @@ class _DistrictPageState extends State<DistrictPage> {
             ),
             Wrap(
               spacing: 5.0,
-              runSpacing: 5.0,
+              runSpacing: 2.0,
               children: kowloonValues
                   .map((e) => FilterChip(
                         label: Text(e),
@@ -361,22 +314,20 @@ class _DistrictPageState extends State<DistrictPage> {
                             value
                                 ? _LibraryDistrict.addDistrict(e)
                                 : _LibraryDistrict.removeDistrict(e);
-                            // if (_LibraryDistrict.isEmpty())
-                            //   districtColor = Colors.grey;
-                            // else districtColor = Theme.of(context).primaryColor;
                           });
                         },
                         selected: _LibraryDistrict.isHaveDistrict(e),
                       ))
                   .toList(),
             ),
+            Divider(),
             Text(
               "New Territories :",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             Wrap(
               spacing: 5.0,
-              runSpacing: 5.0,
+              runSpacing: 2.0,
               children: newTerriValues
                   .map((e) => FilterChip(
                         label: Text(e),
@@ -386,22 +337,20 @@ class _DistrictPageState extends State<DistrictPage> {
                             value
                                 ? _LibraryDistrict.addDistrict(e)
                                 : _LibraryDistrict.removeDistrict(e);
-                            // if (_LibraryDistrict.isEmpty())
-                            //  districtColor = Colors.grey;
-                            //else districtColor = Theme.of(context).primaryColor;
                           });
                         },
                         selected: _LibraryDistrict.isHaveDistrict(e),
                       ))
                   .toList(),
             ),
+            Divider(),
             Text(
               "Hong Kong Island :",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             Wrap(
               spacing: 5.0,
-              runSpacing: 5.0,
+              runSpacing: 2.0,
               children: hkIslandValues
                   .map((e) => FilterChip(
                         label: Text(e),
@@ -411,9 +360,6 @@ class _DistrictPageState extends State<DistrictPage> {
                             value
                                 ? _LibraryDistrict.addDistrict(e)
                                 : _LibraryDistrict.removeDistrict(e);
-                            //if (_LibraryDistrict.isEmpty())
-                            // districtColor = Colors.grey;
-                            //else districtColor = Theme.of(context).primaryColor;
                           });
                         },
                         selected: _LibraryDistrict.isHaveDistrict(e),
@@ -446,6 +392,152 @@ class _DistrictPageState extends State<DistrictPage> {
           ],
         ),
       )),
+    );
+  }
+}
+
+class FilterPage extends StatefulWidget {
+  const FilterPage({Key? key}) : super(key: key);
+
+  @override
+  _FilterPageState createState() => _FilterPageState();
+}
+
+class _FilterPageState extends State<FilterPage> {
+  RangeLabels labels = RangeLabels("1", "12");
+
+  @override
+  Widget build(BuildContext context) {
+    final _LibraryFilter = Provider.of<LibraryFilter>(context);
+    return Scaffold(
+      appBar: AppBar(title: Text('Select Filter(s)')),
+      body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Duration (hour) :",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                Row(
+                  children: [
+                    Text("0"),
+                    Expanded(
+                      child: RangeSlider(
+                        activeColor: Theme.of(context).primaryColor,
+                        min: 0,
+                        max: 12,
+                        divisions: 12,
+                        labels: labels,
+                        values: _LibraryFilter.getRangeValues(),
+                        onChanged: (value){
+                          _LibraryFilter.setRangeValues(value);
+                          setState(() {
+                            labels = RangeLabels(value.start.toInt().toString(), value.end.toInt().toString());
+                          });
+                        },
+                      ),
+                    ),
+                    Text("12")
+                  ],
+                ),
+                Divider(),
+                Text(
+                  "View :",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                Wrap(
+                  spacing: 5.0,
+                  runSpacing: 2.0,
+                  children: View
+                      .map((e) => FilterChip(
+                    label: Text(e),
+                    selectedColor: Theme.of(context).primaryColor,
+                    onSelected: (value) {
+                      setState(() {
+                        value
+                            ? _LibraryFilter.addFilter(e)
+                            : _LibraryFilter.removeFilter(e);
+                      });
+                    },
+                    selected: _LibraryFilter.isFiltered(e),
+                  ))
+                      .toList(),
+                ),
+                Divider(),
+                Text(
+                  "Facilities :",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                Wrap(
+                  spacing: 5.0,
+                  runSpacing: 2.0,
+                  children: Facilities
+                      .map((e) => FilterChip(
+                    label: Text(e),
+                    selectedColor: Theme.of(context).primaryColor,
+                    onSelected: (value) {
+                      setState(() {
+                        value
+                            ? _LibraryFilter.addFilter(e)
+                            : _LibraryFilter.removeFilter(e);
+                      });
+                    },
+                    selected: _LibraryFilter.isFiltered(e),
+                  ))
+                      .toList(),
+                ),
+                Divider(),
+                Text(
+                  "Activities :",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                Wrap(
+                  spacing: 5.0,
+                  runSpacing: 2.0,
+                  children: Activities
+                      .map((e) => FilterChip(
+                    label: Text(e),
+                    selectedColor: Theme.of(context).primaryColor,
+                    onSelected: (value) {
+                      setState(() {
+                        value
+                            ? _LibraryFilter.addFilter(e)
+                            : _LibraryFilter.removeFilter(e);
+                      });
+                    },
+                    selected: _LibraryFilter.isFiltered(e),
+                  ))
+                      .toList(),
+                ),
+                Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Button(
+                          child: Text("Clear"),
+                          backgroundColor: Colors.grey.withOpacity(0.6),
+                          onPressed: () {
+                            setState(() {
+                              _LibraryFilter.clear();
+                              //districtColor = Colors.grey;
+                            });
+                          }),
+                    ),
+                    Container(width: 5),
+                    Expanded(
+                      child: Button(
+                          child: Text("Apply"),
+                          backgroundColor: Theme.of(context).primaryColor,
+                          onPressed: () {}),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          )),
     );
   }
 }
