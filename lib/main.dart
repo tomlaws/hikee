@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
-import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
@@ -25,7 +24,6 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PanelPosition()),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
         ChangeNotifierProvider(
           create: (_) => CurrentLocation(),

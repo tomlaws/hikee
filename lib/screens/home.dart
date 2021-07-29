@@ -16,7 +16,6 @@ import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/page_view_state.dart';
-import 'package:hikee/models/panel_position.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
@@ -44,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen>
   bool _lockPosition = true;
   HikingRoute? _activeRoute;
   DistancePost? _nearestDistancePost;
+  ValueNotifier<double> _panelPosition = ValueNotifier(0.0);
   PageController _pageController = PageController(
     initialPage: 0,
   );
@@ -90,20 +90,20 @@ class _HomeScreenState extends State<HomeScreen>
               minHeight: _collapsedPanelHeight,
               color: Colors.transparent,
               onPanelSlide: (position) {
-                Provider.of<PanelPosition>(context, listen: false)
-                    .update(position);
+                _panelPosition.value = position;
               },
               panel: _panel(),
               body: _body()),
         ),
-        Consumer<PanelPosition>(
+        ValueListenableBuilder<double>(
+          valueListenable: _panelPosition,
           builder: (_, panelPosition, __) => Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: IgnorePointer(
               child: Opacity(
-                opacity: (1 - panelPosition.position).clamp(0, 0.75),
+                opacity: (1 - panelPosition).clamp(0, 0.75),
                 child: Container(
                   height: 36,
                   decoration: BoxDecoration(
@@ -277,8 +277,8 @@ class _HomeScreenState extends State<HomeScreen>
     return Container(
       clipBehavior: Clip.none,
       color: Color(0xFF5DB075),
-      child: Consumer2<PanelPosition, ActiveHikingRoute>(
-          builder: (_, posProvider, activeHikingRouteProvider, __) => Stack(
+      child: Consumer<ActiveHikingRoute>(
+          builder: (_, activeHikingRouteProvider, __) => Stack(
                 children: [
                   if (activeHikingRouteProvider.route != null)
                     _map(activeHikingRouteProvider)
@@ -297,54 +297,57 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                   SafeArea(
-                    child: Opacity(
-                        opacity: 1 - posProvider.position,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            DefaultTextStyle(
-                              style: TextStyle(color: Colors.white),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 10),
-                                        height: _panelHeaderHeight,
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          'Good Morning',
-                                          style: TextStyle(fontSize: 32),
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: _panelPosition,
+                      builder: (_, panelPosition, __) => Opacity(
+                          opacity: 1 - panelPosition,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              DefaultTextStyle(
+                                style: TextStyle(color: Colors.white),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 10),
+                                          height: _panelHeaderHeight,
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            'Good Morning',
+                                            style: TextStyle(fontSize: 32),
+                                          ),
                                         ),
-                                      ),
-                                      Button(
-                                        icon: Icon(LineAwesomeIcons.bars,
-                                            color: Colors.white, size: 32),
-                                        backgroundColor: Colors.transparent,
-                                        onPressed: () {},
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                            if (activeHikingRouteProvider.route == null)
-                              Expanded(
-                                  child: Center(
-                                child: Button(
-                                  invert: true,
-                                  child: Text('Discover Routes'),
-                                  onPressed: () {
-                                    widget.switchToTab(1);
-                                  },
+                                        Button(
+                                          icon: Icon(LineAwesomeIcons.bars,
+                                              color: Colors.white, size: 32),
+                                          backgroundColor: Colors.transparent,
+                                          onPressed: () {},
+                                        )
+                                      ],
+                                    )
+                                  ],
                                 ),
-                              ))
-                          ],
-                        )),
+                              ),
+                              if (activeHikingRouteProvider.route == null)
+                                Expanded(
+                                    child: Center(
+                                  child: Button(
+                                    invert: true,
+                                    child: Text('Discover Routes'),
+                                    onPressed: () {
+                                      widget.switchToTab(1);
+                                    },
+                                  ),
+                                ))
+                            ],
+                          )),
+                    ),
                   ),
                   if (activeHikingRouteProvider.route != null)
                     Positioned(
