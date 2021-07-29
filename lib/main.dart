@@ -9,6 +9,7 @@ import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
 import 'package:hikee/screens/library.dart';
+import 'package:hikee/screens/library_example.dart';
 import 'package:hikee/screens/profile.dart';
 import 'package:hikee/services/route.dart';
 import 'package:hikee/utils/map_marker.dart';
@@ -127,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
         switchToTab: (i) => _onTap(i),
       ),
       LibraryScreen(),
+      LibraryExampleScreen(),
       EventsScreen(),
       CommunityScreen(),
       ProfileScreen()
@@ -141,6 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
         items: [
           BottomNavigationBarItem(
               icon: Icon(LineAwesomeIcons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(LineAwesomeIcons.book_open), label: 'Library'),
           BottomNavigationBarItem(
               icon: Icon(LineAwesomeIcons.book_open), label: 'Library'),
           BottomNavigationBarItem(

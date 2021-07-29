@@ -66,7 +66,7 @@ class RouteInfo extends StatelessWidget {
           ),
           Container(width: 8),
           Text(
-            '${route.length.toString()}km',
+            '${(route.length / 1000).toString()}km',
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
           ),
         ],

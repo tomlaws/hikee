@@ -1,0 +1,1 @@
+const API_HOST = 'hikee.azurewebsites.net';

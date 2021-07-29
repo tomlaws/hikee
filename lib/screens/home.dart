@@ -129,7 +129,6 @@ class _HomeScreenState extends State<HomeScreen>
     if (_activeRoute == null) {
       return Container();
     }
-    print('a' + DateTime.now().toString());
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -241,11 +240,7 @@ class _HomeScreenState extends State<HomeScreen>
                     children: _pageIndicators(2, pvs.currentPage),
                   ),
                 ),
-                if ((() {
-                  print(DateTime.now());
-                  return true;
-                })())
-                  Container(),
+                Container(),
                 Expanded(
                   child: PageView(
                     controller: _pageController,
@@ -262,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen>
                         child: _routeInfo(),
                       ),
                       KeepAlivePage(
+                        key: Key(_activeRoute!.id.toString()),
                         child: RouteElevation(
                           routeId: _activeRoute!.id,
                         ),
@@ -593,7 +589,7 @@ class _HomeScreenState extends State<HomeScreen>
         RouteInfo(
           route: _activeRoute!,
           showRouteName: true,
-          hideDistrict: true,
+          hideRegion: true,
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),

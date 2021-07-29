@@ -1,27 +1,33 @@
+import 'dart:convert';
+
+import 'package:hikee/models/region.dart';
+
 class HikingRoute {
   final int id;
-  final String name;
+  final String name_zh;
   final String name_en;
-  final String district;
-  final String district_en;
-  final String description;
+  final int regionId;
+  final Region region;
+  final String description_zh;
   final String description_en;
   final String image;
-  final double difficulty;
-  final double rating;
+  final List<String> images;
+  final int difficulty;
+  final int rating;
   final int duration; // minutes
-  final double length;
+  final int length;
   final String path;
 
   HikingRoute(
       this.id,
-      this.name,
+      this.name_zh,
       this.name_en,
-      this.district,
-      this.district_en,
-      this.description,
+      this.regionId,
+      this.region,
+      this.description_zh,
       this.description_en,
       this.image,
+      this.images,
       this.difficulty,
       this.rating,
       this.duration,
@@ -30,13 +36,14 @@ class HikingRoute {
 
   HikingRoute.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        name = json['name'],
+        name_zh = json['name_zh'],
         name_en = json['name_en'],
-        district = json['district'],
-        district_en = json['district_en'],
-        description = json['description'],
+        regionId = json['regionId'],
+        region = Region.fromJson(json['region']),
+        description_zh = json['description_zh'],
         description_en = json['description_en'],
         image = json['image'],
+        images = List<String>.from(json['images']),
         difficulty = json['difficulty'],
         rating = json['rating'],
         duration = json['duration'],
@@ -45,13 +52,14 @@ class HikingRoute {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'name': name,
+        'name_zh': name_zh,
         'name_en': name_en,
-        'district': district,
-        'district_en': district_en,
-        'description': description,
+        'regionId': regionId,
+        'region': region.toJson(),
+        'description_zh': description_zh,
         'description_en': description_en,
         'image': image,
+        'images': images.toString(),
         'difficulty': difficulty,
         'rating': rating,
         'duration': duration,
