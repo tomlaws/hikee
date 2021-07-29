@@ -60,8 +60,10 @@ class RouteElevation extends StatelessWidget {
       }
       return spots.add(spot);
     });
+    bool _showCurrent = true;
     if (minDist > 1) {
       // far away from route
+      _showCurrent = false;
     }
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
@@ -111,7 +113,7 @@ class RouteElevation extends StatelessWidget {
                       .map((color) => color.withOpacity(0.2))
                       .toList(),
                   spotsLine: BarAreaSpotsLine(
-                      show: true,
+                      show: _showCurrent,
                       flLineStyle: FlLine(color: Colors.blue),
                       checkToShowSpotLine: (FlSpot spot) {
                         return spot == currentSpot;

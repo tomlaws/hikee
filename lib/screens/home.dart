@@ -15,7 +15,6 @@ import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/models/hiking_stat.dart';
-import 'package:hikee/models/page_view_state.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
@@ -44,7 +43,8 @@ class _HomeScreenState extends State<HomeScreen>
   HikingRoute? _activeRoute;
   DistancePost? _nearestDistancePost;
   ValueNotifier<double> _panelPosition = ValueNotifier(0.0);
-  PageController _pageController = PageController(
+  ValueNotifier<double> _panelPage = ValueNotifier(0.0);
+  PageController _panelPageController = PageController(
     initialPage: 0,
   );
 
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _panelPageController.dispose();
     super.dispose();
   }
 
@@ -231,26 +231,19 @@ class _HomeScreenState extends State<HomeScreen>
             }),
           ),
           Expanded(
-            child: ChangeNotifierProvider(
-              create: (_) => PageViewState(),
-              builder: (context, _) => Column(children: [
-                Consumer<PageViewState>(
-                  builder: (context, pvs, ___) => Row(
+            child: Column(children: [
+                ValueListenableBuilder<double>(valueListenable: _panelPage,
+                  builder: (context, panelPage, _) => Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: _pageIndicators(2, pvs.currentPage),
+                    children: _pageIndicators(2, panelPage),
                   ),
                 ),
                 Container(),
                 Expanded(
                   child: PageView(
-                    controller: _pageController,
-                    onPageChanged: (int page) {
-                      Provider.of<PageViewState>(context, listen: false)
-                          .updatePage(page);
-                      // setState(() {
-                      //   _selectPageIndex = page;
-                      // });
-                    },
+                    controller: _panelPageController..addListener(() {
+                      _panelPage.value = _panelPageController.page ?? 0;
+                    }),
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
@@ -265,8 +258,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 ),
-              ]),
-            ),
+              ])
           ),
         ],
       ),
@@ -561,10 +553,10 @@ class _HomeScreenState extends State<HomeScreen>
         CameraUpdate.newLatLngBounds(GeoUtils.getPathBounds(decodedPath), 20));
   }
 
-  List<Widget> _pageIndicators(int total, int selectedindex) {
+  List<Widget> _pageIndicators(int total, double currentPage) {
     List<Widget> list = [];
     for (int i = 0; i < total; i++) {
-      bool isActive = i == selectedindex;
+      bool isActive = i == currentPage.round();
       list.add(Container(
         height: 16,
         width: 16,
