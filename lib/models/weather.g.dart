@@ -9,7 +9,9 @@ part of 'weather.dart';
 Weather _$WeatherFromJson(Map<String, dynamic> json) {
   return Weather(
     icon: (json['icon'] as List<dynamic>).map((e) => e as int).toList(),
-    warningMessage: json['warningMessage'] as String,
+    warningMessage: (json['warningMessage'] as List<dynamic>)
+        .map((e) => e as String)
+        .toList(),
     temperature: json['temperature'] as int,
   );
 }

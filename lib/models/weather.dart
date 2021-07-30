@@ -6,7 +6,7 @@ part 'weather.g.dart';
 @JsonSerializable()
 class Weather {
   final List<int> icon;
-  final String warningMessage;
+  final List<String> warningMessage;
   final int temperature;
 
   Weather(
