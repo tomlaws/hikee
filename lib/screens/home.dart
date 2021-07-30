@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen>
   PageController _panelPageController = PageController(
     initialPage: 0,
   );
-  Weather? _weather;
+  ValueNotifier<Weather?> _weather = ValueNotifier(null);
   Timer? _weatherTimer;
 
   @override
@@ -322,31 +322,47 @@ class _HomeScreenState extends State<HomeScreen>
                                               horizontal: 16, vertical: 10),
                                           height: _panelHeaderHeight,
                                           alignment: Alignment.centerLeft,
-                                          child: _weather != null
-                                              ? Row(
-                                                  children: [
-                                                    ..._weather!.icon
-                                                        .map((no) =>
-                                                            CachedNetworkImage(
-                                                              imageUrl:
-                                                                  'https://www.hko.gov.hk/images/HKOWxIconOutline/pic$no.png',
-                                                              width: 30,
-                                                              height: 30,
-                                                            ))
-                                                        .toList(),
-                                                    Padding(
-                                                      padding: EdgeInsets.only(left: 8),
-                                                      child: Text(
-                                                          '${_weather!.temperature}°C',
-                                                          style: TextStyle(
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                    )
-                                                  ],
-                                                )
-                                              : SizedBox(),
+                                          child:
+                                              ValueListenableBuilder<Weather?>(
+                                                  valueListenable: _weather,
+                                                  builder: (_, weather, __) =>
+                                                      weather != null
+                                                          ? GestureDetector(
+                                                              onTap: () {
+                                                                launch(
+                                                                    'https://www.hko.gov.hk/en/index.html');
+                                                              },
+                                                              child: Row(
+                                                                children: [
+                                                                  ...weather
+                                                                      .icon
+                                                                      .map((no) =>
+                                                                          CachedNetworkImage(
+                                                                            imageUrl:
+                                                                                'https://www.hko.gov.hk/images/HKOWxIconOutline/pic$no.png',
+                                                                            width:
+                                                                                30,
+                                                                            height:
+                                                                                30,
+                                                                          ))
+                                                                      .toList(),
+                                                                  Padding(
+                                                                    padding: EdgeInsets
+                                                                        .only(
+                                                                            left:
+                                                                                8),
+                                                                    child: Text(
+                                                                        '${weather.temperature}°C',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                24,
+                                                                            fontWeight:
+                                                                                FontWeight.bold)),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            )
+                                                          : SizedBox()),
                                         ),
                                         Button(
                                           icon: Icon(LineAwesomeIcons.bars,
@@ -355,7 +371,49 @@ class _HomeScreenState extends State<HomeScreen>
                                           onPressed: () {},
                                         )
                                       ],
-                                    )
+                                    ),
+                                    ValueListenableBuilder<Weather?>(
+                                        valueListenable: _weather,
+                                        builder: (_, weather, __) {
+                                          if (weather != null &&
+                                              weather.warningMessage.length >
+                                                  0) {
+                                            return Container(
+                                              margin: EdgeInsets.only(
+                                                  bottom: 8.0,
+                                                  left: 8.0,
+                                                  right: 8.0),
+                                              padding: EdgeInsets.all(8.0),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.amber),
+                                                  color: Colors.amber
+                                                      .withOpacity(.5),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0)),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.warning, color: Colors.black,),
+                                                  Container(width: 8),
+                                                  Expanded(
+                                                    child: Wrap(
+                                                        children:
+                                                            weather.warningMessage
+                                                                .map((m) => Text(
+                                                                      m,
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .black),
+                                                                    ))
+                                                                .toList()),
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                          return SizedBox();
+                                        })
                                   ],
                                 ),
                               ),
@@ -787,6 +845,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void updateWeather() async {
-    _weather = await weatherService.getWeather();
+    _weather.value = await weatherService.getWeather();
   }
 }
