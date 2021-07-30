@@ -1,7 +1,9 @@
-import 'dart:convert';
-
+import 'package:json_annotation/json_annotation.dart';
 import 'package:hikee/models/region.dart';
 
+part 'route.g.dart';
+
+@JsonSerializable()
 class HikingRoute {
   final int id;
   final String name_zh;
@@ -34,36 +36,7 @@ class HikingRoute {
       this.length,
       this.path);
 
-  HikingRoute.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        name_zh = json['name_zh'],
-        name_en = json['name_en'],
-        regionId = json['regionId'],
-        region = Region.fromJson(json['region']),
-        description_zh = json['description_zh'],
-        description_en = json['description_en'],
-        image = json['image'],
-        images = List<String>.from(json['images']),
-        difficulty = json['difficulty'],
-        rating = json['rating'],
-        duration = json['duration'],
-        length = json['length'],
-        path = json['path'];
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name_zh': name_zh,
-        'name_en': name_en,
-        'regionId': regionId,
-        'region': region.toJson(),
-        'description_zh': description_zh,
-        'description_en': description_en,
-        'image': image,
-        'images': images.toString(),
-        'difficulty': difficulty,
-        'rating': rating,
-        'duration': duration,
-        'length': length,
-        'path': path,
-      };
+  factory HikingRoute.fromJson(Map<String, dynamic> json) =>
+      _$HikingRouteFromJson(json);
+  Map<String, dynamic> toJson() => _$HikingRouteToJson(this);
 }
