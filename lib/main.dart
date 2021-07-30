@@ -11,12 +11,14 @@ import 'package:hikee/screens/library.dart';
 import 'package:hikee/screens/library_example.dart';
 import 'package:hikee/screens/profile.dart';
 import 'package:hikee/services/route.dart';
+import 'package:hikee/services/weather.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 void setupLocator() {
   GetIt.I.registerLazySingleton(() => RouteService());
+  GetIt.I.registerLazySingleton(() => WeatherService());
 }
 
 void main() {

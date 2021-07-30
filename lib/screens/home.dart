@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/keep_alive.dart';
@@ -16,6 +18,8 @@ import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/models/weather.dart';
+import 'package:hikee/services/weather.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
@@ -35,6 +39,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
+  WeatherService get weatherService => GetIt.I<WeatherService>();
   PanelController _pc = PanelController();
   final double _collapsedPanelHeight = kBottomNavigationBarHeight;
   final double _panelHeaderHeight = 60;
@@ -47,14 +52,20 @@ class _HomeScreenState extends State<HomeScreen>
   PageController _panelPageController = PageController(
     initialPage: 0,
   );
+  Weather? _weather;
+  Timer? _weatherTimer;
 
   @override
   void initState() {
     super.initState();
+    updateWeather();
+    _weatherTimer =
+        Timer.periodic(Duration(minutes: 5), (Timer t) => updateWeather());
   }
 
   @override
   void dispose() {
+    _weatherTimer?.cancel();
     _panelPageController.dispose();
     super.dispose();
   }
@@ -231,35 +242,36 @@ class _HomeScreenState extends State<HomeScreen>
             }),
           ),
           Expanded(
-            child: Column(children: [
-                ValueListenableBuilder<double>(valueListenable: _panelPage,
-                  builder: (context, panelPage, _) => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _pageIndicators(2, panelPage),
+              child: Column(children: [
+            ValueListenableBuilder<double>(
+              valueListenable: _panelPage,
+              builder: (context, panelPage, _) => Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: _pageIndicators(2, panelPage),
+              ),
+            ),
+            Container(),
+            Expanded(
+              child: PageView(
+                controller: _panelPageController
+                  ..addListener(() {
+                    _panelPage.value = _panelPageController.page ?? 0;
+                  }),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: _routeInfo(),
                   ),
-                ),
-                Container(),
-                Expanded(
-                  child: PageView(
-                    controller: _panelPageController..addListener(() {
-                      _panelPage.value = _panelPageController.page ?? 0;
-                    }),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: _routeInfo(),
-                      ),
-                      KeepAlivePage(
-                        key: Key(_activeRoute!.id.toString()),
-                        child: RouteElevation(
-                          routeId: _activeRoute!.id,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ])
-          ),
+                  KeepAlivePage(
+                    key: Key(_activeRoute!.id.toString()),
+                    child: RouteElevation(
+                      routeId: _activeRoute!.id,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ])),
         ],
       ),
     );
@@ -310,10 +322,31 @@ class _HomeScreenState extends State<HomeScreen>
                                               horizontal: 16, vertical: 10),
                                           height: _panelHeaderHeight,
                                           alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            'Good Morning',
-                                            style: TextStyle(fontSize: 32),
-                                          ),
+                                          child: _weather != null
+                                              ? Row(
+                                                  children: [
+                                                    ..._weather!.icon
+                                                        .map((no) =>
+                                                            CachedNetworkImage(
+                                                              imageUrl:
+                                                                  'https://www.hko.gov.hk/images/HKOWxIconOutline/pic$no.png',
+                                                              width: 30,
+                                                              height: 30,
+                                                            ))
+                                                        .toList(),
+                                                    Padding(
+                                                      padding: EdgeInsets.only(left: 8),
+                                                      child: Text(
+                                                          '${_weather!.temperature}°C',
+                                                          style: TextStyle(
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                    )
+                                                  ],
+                                                )
+                                              : SizedBox(),
                                         ),
                                         Button(
                                           icon: Icon(LineAwesomeIcons.bars,
@@ -751,5 +784,9 @@ class _HomeScreenState extends State<HomeScreen>
                     Navigator.of(context).pop();
                   })
             ]);
+  }
+
+  void updateWeather() async {
+    _weather = await weatherService.getWeather();
   }
 }

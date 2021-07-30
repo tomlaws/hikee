@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 
 class HttpUtils {
   static get(Uri uri) async {
-    print(uri);
     final res = await http.get(uri, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     });
