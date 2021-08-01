@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/data/districtValues.dart';
-import 'package:hikee/data/routes.dart';
 import 'package:hikee/data/sortValues.dart';
 import 'package:hikee/data/filterValues.dart';
+import 'package:hikee/models/route.dart';
 import 'package:hikee/screens/route.dart';
+import 'package:hikee/services/route.dart';
 import 'package:provider/provider.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -21,17 +23,61 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen>
     with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
-  String sort = '';
-  List<String> filter = [];
-  Color filterColor = Colors.grey;
-  Color districtColor = Colors.grey;
+
+  RouteService get _routeService => GetIt.I<RouteService>();
+  TextEditingController _searchController = TextEditingController(text: '');
+  ScrollController _scrollController = ScrollController();
+
+  List<HikingRoute> _hikingRoutes = [];
+  bool _loading = false;
+  bool _hasMore = true;
+
+  //late Future<List<HikingRoute>> _hikingRoutes;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMore();
+    _scrollController.addListener(() {
+      double diff = _scrollController.position.maxScrollExtent -
+          _scrollController.position.pixels;
+      if (diff < 500 && !_loading && _hasMore) {
+        fetchMore();
+      }
+    });
+  }
+
+  void fetchMore({String? query, int? after, String? sort, String? order}) async {
+    setState(() {
+      _loading = true;
+    });
+    print(sort);
+    print(order);
+    int? after = _hikingRoutes.isEmpty ? null : _hikingRoutes.last.id;
+    List<HikingRoute> routes = await _routeService.getRoutes(query: query, after: after, sort: sort, order: order);
+    if (mounted)
+      print("mounted");
+      setState(() {
+        if (routes.length > 0)
+          _hikingRoutes.addAll(routes);
+        else
+          _hasMore = false;
+        _loading = false;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final _LibraryFilter= Provider.of<LibraryFilter>(context);
-    final _LibraryDistrict= Provider.of<LibraryDistrict>(context);
-    filterColor = (_LibraryFilter.isEmpty())? Colors.grey : Theme.of(context).primaryColor;
-    districtColor = (_LibraryDistrict.isEmpty())? Colors.grey : Theme.of(context).primaryColor;
+    final _libraryFilter = Provider.of<LibraryFilter>(context);
+    final _libraryDistrict = Provider.of<LibraryDistrict>(context);
+    String sortValue = '';
+    List<String> filterValue = [];
+    Color filterColor = (_libraryFilter.isEmpty())
+        ? Colors.grey
+        : Theme.of(context).primaryColor;
+    Color districtColor = (_libraryDistrict.isEmpty())
+        ? Colors.grey
+        : Theme.of(context).primaryColor;
 
     return Scaffold(
       body: SafeArea(
@@ -42,6 +88,7 @@ class _LibraryScreenState extends State<LibraryScreen>
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: TextInput(
+                textEditingController: _searchController,
                 hintText: 'Search...',
               ),
             ),
@@ -63,11 +110,30 @@ class _LibraryScreenState extends State<LibraryScreen>
                 children: <Widget>[
                   //Sort Button
                   TextButton(
-                      onPressed: () => {
-                            _showSortDialog(context),
-                            FocusScope.of(context).unfocus(),
-                            setState(() {})
-                          },
+                      onPressed: () async {
+                        String newSortValue = await _showSortDialog(context);
+                        print(newSortValue);
+                        if (sortValue.compareTo(newSortValue) != 0) {
+                          String? sort;
+                          String? order;
+                          if (newSortValue.compareTo('Length(Shortest to Long)') == 0) {
+                            sort = 'length';
+                            order = 'ASC';
+                          } else if (newSortValue.compareTo('Length(Longest to Short)') == 0) {
+                            sort = 'length';
+                          } else if (newSortValue.compareTo('Difficulty (Lowest to High)') == 0) {
+                            sort = 'difficulty';
+                            order = 'ASC';
+                          } else if (newSortValue.compareTo('Difficulty (Highest to Low)') == 0) {
+                            sort = 'difficulty';
+                          }
+                          setState((){
+                            sortValue = newSortValue;
+                            _hikingRoutes.clear();
+                            fetchMore(sort: sort, order: order);
+                          });
+                        }
+                      },
                       style: TextButton.styleFrom(
                           primary: Theme.of(context).primaryColor),
                       child: Row(
@@ -83,10 +149,10 @@ class _LibraryScreenState extends State<LibraryScreen>
                   // Filter Button
                   TextButton(
                       onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => FilterPage()))
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => FilterPage()))
                           },
                       style: TextButton.styleFrom(
                         primary: filterColor,
@@ -127,26 +193,36 @@ class _LibraryScreenState extends State<LibraryScreen>
             Expanded(
                 child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-              child: CustomScrollView(slivers: [
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    // The builder function returns a ListTile with a title that
-                    // displays the index of the current item.
-                    (context, index) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: HikingRouteTile(
-                          route: HikingRouteData.retrieve()[index],
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverPadding(
+                    padding: EdgeInsets.all(16),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return HikingRouteTile(
+                          route: _hikingRoutes[index],
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => RouteScreen(
-                                    id: HikingRouteData.retrieve()[index].id)));
-                          }),
+                                builder: (_) =>
+                                    RouteScreen(id: _hikingRoutes[index].id)));
+                          },
+                        );
+                      }, childCount: _hikingRoutes.length),
                     ),
-                    // Builds 1000 ListTiles
-                    childCount: HikingRouteData.retrieve().length,
                   ),
-                )
-              ]),
+                  if (_loading && _hasMore)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      fillOverscroll: true,
+                      child: Center(
+                          child: Padding(
+                        padding: const EdgeInsets.only(bottom: 32.0),
+                        child: CircularProgressIndicator(),
+                      )),
+                    ),
+                ],
+              ),
             )),
           ]),
         ),
@@ -176,8 +252,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                             onChanged: (value) {
                               setState(() {});
                               _LibrarySort.updateSort(value!);
-                              Navigator.of(context).pop();
-                              FocusScope.of(context).unfocus();
+                              Navigator.of(context).pop(value);
                             },
                           ))
                       .toList(),
@@ -190,6 +265,7 @@ class _LibraryScreenState extends State<LibraryScreen>
 // ============Notifier==============
 class LibrarySort extends ChangeNotifier {
   String _currentSort = sortValues[0];
+
   LibrarySort();
 
   String get currentSort => _currentSort;
@@ -204,7 +280,9 @@ class LibrarySort extends ChangeNotifier {
 
 class LibraryFilter extends ChangeNotifier {
   List<String> _selectedFilter;
+
   LibraryFilter(this._selectedFilter);
+
   RangeValues _rangeValues = RangeValues(0, 12);
 
   List<String> get selectedFilter => _selectedFilter;
@@ -220,11 +298,11 @@ class LibraryFilter extends ChangeNotifier {
 
   bool isFiltered(String value) => _selectedFilter.contains(value);
 
-  RangeValues getRangeValues(){
+  RangeValues getRangeValues() {
     return _rangeValues;
   }
 
-  setRangeValues(RangeValues rangeValues){
+  setRangeValues(RangeValues rangeValues) {
     this._rangeValues = rangeValues;
     notifyListeners();
   }
@@ -242,12 +320,11 @@ class LibraryFilter extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-
 }
 
 class LibraryDistrict extends ChangeNotifier {
   List<String> _selectedDistrict;
+
   LibraryDistrict(this._selectedDistrict);
 
   List<String> get selectedDistrict => _selectedDistrict;
@@ -289,7 +366,7 @@ class DistrictPage extends StatefulWidget {
 class _DistrictPageState extends State<DistrictPage> {
   @override
   Widget build(BuildContext context) {
-    final _LibraryDistrict = Provider.of<LibraryDistrict>(context);
+    final _libraryDistrict = Provider.of<LibraryDistrict>(context);
     return Scaffold(
       appBar: AppBar(title: Text('Select District(s)')),
       body: SafeArea(
@@ -312,11 +389,11 @@ class _DistrictPageState extends State<DistrictPage> {
                         onSelected: (value) {
                           setState(() {
                             value
-                                ? _LibraryDistrict.addDistrict(e)
-                                : _LibraryDistrict.removeDistrict(e);
+                                ? _libraryDistrict.addDistrict(e)
+                                : _libraryDistrict.removeDistrict(e);
                           });
                         },
-                        selected: _LibraryDistrict.isHaveDistrict(e),
+                        selected: _libraryDistrict.isHaveDistrict(e),
                       ))
                   .toList(),
             ),
@@ -335,11 +412,11 @@ class _DistrictPageState extends State<DistrictPage> {
                         onSelected: (value) {
                           setState(() {
                             value
-                                ? _LibraryDistrict.addDistrict(e)
-                                : _LibraryDistrict.removeDistrict(e);
+                                ? _libraryDistrict.addDistrict(e)
+                                : _libraryDistrict.removeDistrict(e);
                           });
                         },
-                        selected: _LibraryDistrict.isHaveDistrict(e),
+                        selected: _libraryDistrict.isHaveDistrict(e),
                       ))
                   .toList(),
             ),
@@ -358,11 +435,11 @@ class _DistrictPageState extends State<DistrictPage> {
                         onSelected: (value) {
                           setState(() {
                             value
-                                ? _LibraryDistrict.addDistrict(e)
-                                : _LibraryDistrict.removeDistrict(e);
+                                ? _libraryDistrict.addDistrict(e)
+                                : _libraryDistrict.removeDistrict(e);
                           });
                         },
-                        selected: _LibraryDistrict.isHaveDistrict(e),
+                        selected: _libraryDistrict.isHaveDistrict(e),
                       ))
                   .toList(),
             ),
@@ -375,7 +452,7 @@ class _DistrictPageState extends State<DistrictPage> {
                       backgroundColor: Colors.grey.withOpacity(0.6),
                       onPressed: () {
                         setState(() {
-                          _LibraryDistrict.clear();
+                          _libraryDistrict.clear();
                           //districtColor = Colors.grey;
                         });
                       }),
@@ -408,136 +485,131 @@ class _FilterPageState extends State<FilterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _LibraryFilter = Provider.of<LibraryFilter>(context);
+    final _libraryFilter = Provider.of<LibraryFilter>(context);
     return Scaffold(
       appBar: AppBar(title: Text('Select Filter(s)')),
       body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Duration (hour) :",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            Row(
               children: [
-                Text(
-                  "Duration (hour) :",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                Text("0"),
+                Expanded(
+                  child: RangeSlider(
+                    activeColor: Theme.of(context).primaryColor,
+                    min: 0,
+                    max: 12,
+                    divisions: 12,
+                    labels: labels,
+                    values: _libraryFilter.getRangeValues(),
+                    onChanged: (value) {
+                      _libraryFilter.setRangeValues(value);
+                      setState(() {
+                        labels = RangeLabels(value.start.toInt().toString(),
+                            value.end.toInt().toString());
+                      });
+                    },
+                  ),
                 ),
-                Row(
-                  children: [
-                    Text("0"),
-                    Expanded(
-                      child: RangeSlider(
-                        activeColor: Theme.of(context).primaryColor,
-                        min: 0,
-                        max: 12,
-                        divisions: 12,
-                        labels: labels,
-                        values: _LibraryFilter.getRangeValues(),
-                        onChanged: (value){
-                          _LibraryFilter.setRangeValues(value);
-                          setState(() {
-                            labels = RangeLabels(value.start.toInt().toString(), value.end.toInt().toString());
-                          });
-                        },
-                      ),
-                    ),
-                    Text("12")
-                  ],
-                ),
-                Divider(),
-                Text(
-                  "View :",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                Wrap(
-                  spacing: 5.0,
-                  runSpacing: 2.0,
-                  children: View
-                      .map((e) => FilterChip(
+                Text("12")
+              ],
+            ),
+            Divider(),
+            Text(
+              "View :",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            Wrap(
+              spacing: 5.0,
+              runSpacing: 2.0,
+              children: View.map((e) => FilterChip(
                     label: Text(e),
                     selectedColor: Theme.of(context).primaryColor,
                     onSelected: (value) {
                       setState(() {
                         value
-                            ? _LibraryFilter.addFilter(e)
-                            : _LibraryFilter.removeFilter(e);
+                            ? _libraryFilter.addFilter(e)
+                            : _libraryFilter.removeFilter(e);
                       });
                     },
-                    selected: _LibraryFilter.isFiltered(e),
-                  ))
-                      .toList(),
-                ),
-                Divider(),
-                Text(
-                  "Facilities :",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                Wrap(
-                  spacing: 5.0,
-                  runSpacing: 2.0,
-                  children: Facilities
-                      .map((e) => FilterChip(
+                    selected: _libraryFilter.isFiltered(e),
+                  )).toList(),
+            ),
+            Divider(),
+            Text(
+              "Facilities :",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            Wrap(
+              spacing: 5.0,
+              runSpacing: 2.0,
+              children: Facilities.map((e) => FilterChip(
                     label: Text(e),
                     selectedColor: Theme.of(context).primaryColor,
                     onSelected: (value) {
                       setState(() {
                         value
-                            ? _LibraryFilter.addFilter(e)
-                            : _LibraryFilter.removeFilter(e);
+                            ? _libraryFilter.addFilter(e)
+                            : _libraryFilter.removeFilter(e);
                       });
                     },
-                    selected: _LibraryFilter.isFiltered(e),
-                  ))
-                      .toList(),
-                ),
-                Divider(),
-                Text(
-                  "Activities :",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                Wrap(
-                  spacing: 5.0,
-                  runSpacing: 2.0,
-                  children: Activities
-                      .map((e) => FilterChip(
+                    selected: _libraryFilter.isFiltered(e),
+                  )).toList(),
+            ),
+            Divider(),
+            Text(
+              "Activities :",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            Wrap(
+              spacing: 5.0,
+              runSpacing: 2.0,
+              children: Activities.map((e) => FilterChip(
                     label: Text(e),
                     selectedColor: Theme.of(context).primaryColor,
                     onSelected: (value) {
                       setState(() {
                         value
-                            ? _LibraryFilter.addFilter(e)
-                            : _LibraryFilter.removeFilter(e);
+                            ? _libraryFilter.addFilter(e)
+                            : _libraryFilter.removeFilter(e);
                       });
                     },
-                    selected: _LibraryFilter.isFiltered(e),
-                  ))
-                      .toList(),
+                    selected: _libraryFilter.isFiltered(e),
+                  )).toList(),
+            ),
+            Spacer(),
+            Row(
+              children: [
+                Expanded(
+                  child: Button(
+                      child: Text("Clear"),
+                      backgroundColor: Colors.grey.withOpacity(0.6),
+                      onPressed: () {
+                        setState(() {
+                          _libraryFilter.clear();
+                          //districtColor = Colors.grey;
+                        });
+                      }),
                 ),
-                Spacer(),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Button(
-                          child: Text("Clear"),
-                          backgroundColor: Colors.grey.withOpacity(0.6),
-                          onPressed: () {
-                            setState(() {
-                              _LibraryFilter.clear();
-                              //districtColor = Colors.grey;
-                            });
-                          }),
-                    ),
-                    Container(width: 5),
-                    Expanded(
-                      child: Button(
-                          child: Text("Apply"),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          onPressed: () {}),
-                    ),
-                  ],
+                Container(width: 5),
+                Expanded(
+                  child: Button(
+                      child: Text("Apply"),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      onPressed: () {}),
                 ),
               ],
             ),
-          )),
+          ],
+        ),
+      )),
     );
   }
 }
