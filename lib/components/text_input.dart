@@ -4,7 +4,8 @@ import 'package:flutter/widgets.dart';
 class TextInput extends StatefulWidget {
   final String? hintText;
   final TextEditingController? textEditingController;
-  const TextInput({Key? key, this.hintText, this.textEditingController})
+  final bool obscureText;
+  const TextInput({Key? key, this.hintText, this.textEditingController, this.obscureText = false })
       : super(key: key);
 
   @override
@@ -58,6 +59,7 @@ class _TextInputState extends State<TextInput>
                   focusNode: _focus,
                   controller: widget.textEditingController,
                   autofocus: false,
+                  obscureText: widget.obscureText,
                   cursorColor: Theme.of(context).primaryColor,
                   decoration: InputDecoration(
                       contentPadding:

@@ -2,21 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hikee/models/active_hiking_route.dart';
+import 'package:hikee/models/auth.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
+import 'package:hikee/models/me.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
 import 'package:hikee/screens/library.dart';
 import 'package:hikee/screens/library_example.dart';
 import 'package:hikee/screens/profile.dart';
+import 'package:hikee/services/auth.dart';
 import 'package:hikee/services/route.dart';
+import 'package:hikee/services/user.dart';
 import 'package:hikee/services/weather.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 void setupLocator() {
+  GetIt.I.registerLazySingleton(() => AuthService());
+  GetIt.I.registerLazySingleton(() => UserService());
   GetIt.I.registerLazySingleton(() => RouteService());
   GetIt.I.registerLazySingleton(() => WeatherService());
 }
@@ -26,6 +32,20 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) => Auth(),
+          lazy: false,
+        ),
+        ChangeNotifierProxyProvider<Auth, Me>(
+          create: (_) => Me(null),
+          update: (_, auth, me) {
+            if (auth.loggedIn) {
+              return Me(auth);
+            }
+            return Me(null);
+          },
+          lazy: false,
+        ),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
         ChangeNotifierProvider(
           create: (_) => CurrentLocation(),

@@ -8,6 +8,8 @@ class Button extends StatefulWidget {
   final void Function() onPressed;
   final bool invert;
   final Color? backgroundColor;
+  final bool loading;
+  final bool disabled;
   final Icon? icon;
   const Button(
       {Key? key,
@@ -15,6 +17,8 @@ class Button extends StatefulWidget {
       required this.onPressed,
       this.icon,
       this.backgroundColor,
+      this.loading = false,
+      this.disabled = false,
       this.invert = false})
       : super(key: key);
 
@@ -59,32 +63,46 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
             padding:
                 EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16),
             decoration: BoxDecoration(
-                color: widget.backgroundColor != null
-                    ? widget.backgroundColor
-                    : (widget.invert
-                        ? Colors.white
-                        : Theme.of(context).primaryColor),
+                color: (widget.backgroundColor != null
+                        ? widget.backgroundColor!
+                        : (widget.invert
+                            ? Colors.white
+                            : Theme.of(context).primaryColor))
+                    .withOpacity((widget.disabled || widget.loading) ? .75 : 1),
                 borderRadius: BorderRadius.all(Radius.circular(32))),
             child: DefaultTextStyle(
                 style: TextStyle(
-                    color: widget.invert
-                        ? Theme.of(context).primaryColor
-                        : Colors.white,
+                    color: (widget.invert
+                            ? Theme.of(context).primaryColor
+                            : Colors.white)
+                        .withOpacity(
+                            (widget.disabled || widget.loading) ? .75 : 1),
                     fontWeight: FontWeight.bold,
                     letterSpacing: .5),
                 child: Center(
                   widthFactor: 1,
                   heightFactor: 1,
-                  child: widget.icon != null ? widget.icon : widget.child,
+                  child: widget.loading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : (widget.icon != null ? widget.icon : widget.child),
                 )),
           ),
         ),
       ),
       onTap: () {
+        if (widget.loading || widget.disabled) return;
         _controller.reverse();
         widget.onPressed();
       },
       onTapDown: (dp) {
+        if (widget.loading || widget.disabled) return;
         _controller.reverse();
       },
       onTapUp: (dp) {

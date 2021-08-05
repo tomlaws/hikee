@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class HttpUtils {
-  static get(Uri uri) async {
-    final res = await http.get(uri, headers: <String, String>{
+  static get(Uri uri, {String? accessToken}) async {
+    var headers = {
       'Content-Type': 'application/json; charset=UTF-8',
-    });
+    };
+    if (accessToken != null) {
+      headers['Authorization'] = 'Bearer $accessToken';
+    }
+    final res = await http.get(uri, headers: headers);
     return jsonDecode(res.body);
   }
 
