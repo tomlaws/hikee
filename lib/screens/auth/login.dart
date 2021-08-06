@@ -18,8 +18,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  TextInputController _emailController = TextInputController();
+  TextInputController _passwordController = TextInputController();
 
   @override
   void dispose() {
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 TextInput(
                   hintText: 'Email',
-                  textEditingController: _emailController,
+                  controller: _emailController,
                 ),
                 Container(
                   height: 16,
@@ -56,18 +56,30 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextInput(
                   hintText: 'Password',
                   obscureText: true,
-                  textEditingController: _passwordController,
+                  controller: _passwordController,
                 ),
                 Container(
                   height: 32,
                 ),
                 SizedBox(
                   width: 200,
-                  child: MutationBuilder<Token>(
+                  child: MutationBuilder<Token?>(
                     mutation: () {
+                      _emailController.clearError();
+                      if (_emailController.text == ''){
+                        throw _emailController.error = 'Please enter account email';
+                      }
+                       if (_passwordController.text == ''){
+                        throw _passwordController.error = 'Please enter password';
+                      }
                       var email = _emailController.text;
                       var password = _passwordController.text;
                       return context.read<Auth>().signIn(email, password);
+                    },
+                    onDone: (token) {
+                      if (token == null){
+                        _emailController.error = 'Login failed';
+                      }
                     },
                     builder: (mutate, loading) {
                       return Button(

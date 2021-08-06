@@ -103,6 +103,7 @@ class _TextInputState extends State<TextInput>
 }
 
 class TextInputController extends TextEditingController {
+  TextInputController({String? text}) : super(text: text);
   ValueNotifier<String?> _error = ValueNotifier(null);
   set error(String? value) => _error.value = value;
   String? get error => _error.value;

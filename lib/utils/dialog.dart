@@ -17,12 +17,11 @@ class DialogUtils {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (title != null)
+                  if (title != null)...[
                     Align(
                       alignment: Alignment.center,
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 16.0, left: 16, right: 16),
+                        padding: const EdgeInsets.all(16),
                         child: Text(title,
                             style: TextStyle(
                                 fontSize: 20,
@@ -30,6 +29,8 @@ class DialogUtils {
                                 color: Theme.of(context).primaryColor)),
                       ),
                     ),
+                    Divider(height: 1)
+                  ],
                   Container(
                     padding: EdgeInsets.all(16),
                     child: content,
