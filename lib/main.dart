@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
               showUnselectedLabels: false,
               showSelectedLabels: false),
           splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
+          highlightColor: Color(0x0F000000),
           textTheme: GoogleFonts.latoTextTheme(
             Theme.of(context).textTheme.apply(bodyColor: Color(0xFF666666)),
           ),

@@ -3,7 +3,7 @@ import 'package:hikee/components/button.dart';
 
 class DialogUtils {
   static show(context, Widget content,
-      {List<Button> Function(BuildContext)? buttons}) async {
+      {String? title, List<Button> Function(BuildContext)? buttons}) async {
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -17,6 +17,19 @@ class DialogUtils {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  if (title != null)
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 16.0, left: 16, right: 16),
+                        child: Text(title,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor)),
+                      ),
+                    ),
                   Container(
                     padding: EdgeInsets.all(16),
                     child: content,
