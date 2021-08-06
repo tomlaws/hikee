@@ -24,4 +24,16 @@ class HttpUtils {
     );
     return jsonDecode(res.body);
   }
+
+  static patch(Uri uri, Map<String, dynamic> data,
+      {String? accessToken}) async {
+    var headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+    if (accessToken != null) {
+      headers['Authorization'] = 'Bearer $accessToken';
+    }
+    final res = await http.patch(uri, headers: headers, body: jsonEncode(data));
+    return jsonDecode(res.body);
+  }
 }

@@ -79,20 +79,28 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                             (widget.disabled || widget.loading) ? .75 : 1),
                     fontWeight: FontWeight.bold,
                     letterSpacing: .5),
-                child: Center(
-                  widthFactor: 1,
-                  heightFactor: 1,
-                  child: widget.loading
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : (widget.icon != null ? widget.icon : widget.child),
-                )),
+                child: Stack(alignment: Alignment.center, children: [
+                  Positioned.fill(
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: Opacity(
+                      opacity: widget.loading ? 1 : 0,
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )),
+                  Opacity(
+                    opacity: widget.loading ? 0 : 1,
+                    child: (widget.icon != null ? widget.icon : widget.child) ??
+                        SizedBox(),
+                  )
+                ])),
           ),
         ),
       ),

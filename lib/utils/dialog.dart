@@ -3,7 +3,7 @@ import 'package:hikee/components/button.dart';
 
 class DialogUtils {
   static show(context, Widget content,
-      {String? title, List<Button> Function(BuildContext)? buttons}) async {
+      {String? title, List<Widget> Function(BuildContext)? buttons}) async {
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -34,24 +34,25 @@ class DialogUtils {
                     padding: EdgeInsets.all(16),
                     child: content,
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      children: [
-                        if (buttons != null)
-                          ...buttons(context)
-                        else
-                          Button(
-                              child: Text('OK'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              })
-                      ],
-                    ),
-                  )
+                  if (buttons == null || buttons(context).length > 0)
+                    Padding(
+                      padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        children: [
+                          if (buttons != null)
+                            ...buttons(context)
+                          else
+                            Button(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                })
+                        ],
+                      ),
+                    )
                 ],
               ));
         });

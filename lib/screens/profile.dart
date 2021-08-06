@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/change_password.dart';
 import 'package:hikee/components/protected.dart';
-import 'package:hikee/components/text_input.dart';
 import 'package:hikee/models/auth.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:provider/provider.dart';
@@ -43,34 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'Likes': null,
       'Settings': {'Language': null},
       'Account': {
-        'Change Password': (ctx) {
-          DialogUtils.show(
-              context,
-              Column(
-                children: [
-                  TextInput(
-                    hintText: 'Password',
-                    obscureText: true,
-                  ),
-                  Container(height: 16),
-                  TextInput(
-                    hintText: 'Confirm Password',
-                    obscureText: true,
-                  )
-                ],
-              ),
-              title: 'Change Password', buttons: (context) {
-            return [
-              Button(child: Text('CONFIRM'), onPressed: () {}),
-              Button(
-                  child: Text('CANCEL'),
-                  backgroundColor: Colors.grey,
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  })
-            ];
-          });
-        },
+        'Change Password': _changePassword,
         'Delete Account': (ctx) {}
       },
       'Logout': (BuildContext ctx) {
@@ -161,6 +134,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.transparent,
                       child: ListTile(
                         title: Text(key),
+                        trailing: options[key] is Map
+                            ? Icon(Icons.chevron_right)
+                            : null,
                         onTap: () {
                           if (options[key] == null) {
                             return;
@@ -192,5 +168,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       child: Text('settings'),
     );
+  }
+
+  void _changePassword(BuildContext context) {
+    DialogUtils.show(context, ChangePassword(), title: 'Change Password',
+        buttons: (_) {
+      return [];
+    });
   }
 }

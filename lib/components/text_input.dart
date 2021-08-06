@@ -4,8 +4,14 @@ import 'package:flutter/widgets.dart';
 class TextInput extends StatefulWidget {
   final String? hintText;
   final TextEditingController? textEditingController;
+  final TextInputController? controller;
   final bool obscureText;
-  const TextInput({Key? key, this.hintText, this.textEditingController, this.obscureText = false })
+  const TextInput(
+      {Key? key,
+      this.hintText,
+      this.textEditingController,
+      this.controller,
+      this.obscureText = false})
       : super(key: key);
 
   @override
@@ -50,27 +56,57 @@ class _TextInputState extends State<TextInput>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
         animation: _colorTween,
-        builder: (context, child) => Container(
-              decoration: BoxDecoration(
-                  color: _colorTween.value,
-                  border: Border.all(color: _colorTween2.value),
-                  borderRadius: BorderRadius.all(Radius.circular(30))),
-              child: TextField(
-                  focusNode: _focus,
-                  controller: widget.textEditingController,
-                  autofocus: false,
-                  obscureText: widget.obscureText,
-                  cursorColor: Theme.of(context).primaryColor,
-                  decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      hintStyle: TextStyle(color: Color(0xFFC5C5C5)),
-                      hintText: widget.hintText)),
-            ));
+        builder: (context, child) =>
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                decoration: BoxDecoration(
+                    color: _colorTween.value,
+                    border: Border.all(color: _colorTween2.value),
+                    borderRadius: BorderRadius.all(Radius.circular(30))),
+                child: TextField(
+                    focusNode: _focus,
+                    controller:
+                        widget.controller ?? widget.textEditingController,
+                    autofocus: false,
+                    obscureText: widget.obscureText,
+                    cursorColor: Theme.of(context).primaryColor,
+                    decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintStyle: TextStyle(color: Color(0xFFC5C5C5)),
+                        hintText: widget.hintText)),
+              ),
+              if (widget.controller != null)
+                ValueListenableBuilder(
+                    valueListenable: widget.controller!.errorListenable,
+                    builder: (_, error, __) {
+                      if (error == null) return SizedBox();
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(height: 4),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(widget.controller!.error!,
+                                style: TextStyle(color: Colors.red)),
+                          )
+                        ],
+                      );
+                    })
+            ]));
   }
+}
+
+class TextInputController extends TextEditingController {
+  ValueNotifier<String?> _error = ValueNotifier(null);
+  set error(String? value) => _error.value = value;
+  String? get error => _error.value;
+  get errorListenable => _error;
+
+  void clearError() => _error.value = null;
 }
