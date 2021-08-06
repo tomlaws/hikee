@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:hikee/components/community_post_tile.dart';
 import 'package:hikee/screens/community_post.dart';
+import 'package:hikee/screens/create_post.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({Key? key}) : super(key: key);
@@ -113,7 +114,12 @@ class _CommunityScreenState extends State<CommunityScreen>
                         splashRadius: 24,
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CreatePostScreen()));
+                        },
                         icon: Icon(
                           Icons.add,
                           color: Theme.of(context).primaryColor,
@@ -130,21 +136,19 @@ class _CommunityScreenState extends State<CommunityScreen>
 
             // List
             Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return CommunityPostTile(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => CommunityPostScreen(id: 1)));
+                child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      return CommunityPostTile(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => CommunityPostScreen(id: 1)));
+                        },
+                      );
                     },
-                  );
-                },
-                separatorBuilder: (context, index) => const Divider(
-                      height: 0.1,
-                    ),
-                itemCount: 10
-                )
-            )
+                    separatorBuilder: (context, index) => const Divider(
+                          height: 0.1,
+                        ),
+                    itemCount: 10))
           ],
         ),
       ),
