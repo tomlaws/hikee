@@ -148,7 +148,6 @@ class _MyHomePageState extends State<MyHomePage> {
         switchToTab: (i) => _onTap(i),
       ),
       LibraryScreen(),
-      LibraryExampleScreen(),
       EventsScreen(),
       CommunityScreen(),
       ProfileScreen()
@@ -163,8 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
         items: [
           BottomNavigationBarItem(
               icon: Icon(LineAwesomeIcons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(LineAwesomeIcons.book_open), label: 'Library'),
           BottomNavigationBarItem(
               icon: Icon(LineAwesomeIcons.book_open), label: 'Library'),
           BottomNavigationBarItem(
