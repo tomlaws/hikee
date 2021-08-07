@@ -25,25 +25,40 @@ class _LibraryScreenState extends State<LibraryScreen>
   bool get wantKeepAlive => true;
 
   RouteService get _routeService => GetIt.I<RouteService>();
-  TextEditingController _searchController = TextEditingController(text: '');
+  TextEditingController _searchController = TextEditingController(text: "");
   ScrollController _scrollController = ScrollController();
 
   List<HikingRoute> _hikingRoutes = [];
   bool _loading = false;
   bool _hasMore = true;
 
+
+  String query = "";
+  String? sort = "length";
+  String? order = "ASC";
+
   //late Future<List<HikingRoute>> _hikingRoutes;
 
   @override
   void initState() {
     super.initState();
-    fetchMore();
+    fetchMore(query: query, sort: sort, order: order);
     _scrollController.addListener(() {
       double diff = _scrollController.position.maxScrollExtent -
           _scrollController.position.pixels;
       if (diff < 500 && !_loading && _hasMore) {
-        fetchMore();
+        fetchMore(query: query, sort: sort, order: order);
       }
+    });
+    _searchController.addListener(() {
+      String text = _searchController.text;
+      if(query.compareTo(text) != 0) {
+        setState((){
+          query = text;
+          _hikingRoutes.clear();
+          fetchMore(query: query, sort: sort, order: order);
+       });
+     }
     });
   }
 
@@ -70,7 +85,6 @@ class _LibraryScreenState extends State<LibraryScreen>
   Widget build(BuildContext context) {
     final _libraryFilter = Provider.of<LibraryFilter>(context);
     final _libraryDistrict = Provider.of<LibraryDistrict>(context);
-    String sortValue = '';
     List<String> filterValue = [];
     Color filterColor = (_libraryFilter.isEmpty())
         ? Colors.grey
@@ -113,26 +127,35 @@ class _LibraryScreenState extends State<LibraryScreen>
                       onPressed: () async {
                         String newSortValue = await _showSortDialog(context);
                         print(newSortValue);
-                        if (sortValue.compareTo(newSortValue) != 0) {
-                          String? sort;
-                          String? order;
-                          if (newSortValue.compareTo('Length(Shortest to Long)') == 0) {
+                          /*if (newSortValue.compareTo(sortValues[0]) == 0) {
+                            sort = 'name_en';
+                            order = 'ASC';
+                          }
+                          if (newSortValue.compareTo(sortValues[1]) == 0) {
+                            sort = 'name_en';
+                            order = 'DESC';
+                          }*/
+                          if (newSortValue.compareTo(sortValues[0]) == 0) {
                             sort = 'length';
                             order = 'ASC';
-                          } else if (newSortValue.compareTo('Length(Longest to Short)') == 0) {
+                          }
+                          if (newSortValue.compareTo(sortValues[1]) == 0) {
                             sort = 'length';
-                          } else if (newSortValue.compareTo('Difficulty (Lowest to High)') == 0) {
+                            order = 'DESC';
+                          }
+                          if (newSortValue.compareTo(sortValues[2]) == 0) {
                             sort = 'difficulty';
                             order = 'ASC';
-                          } else if (newSortValue.compareTo('Difficulty (Highest to Low)') == 0) {
+                          }
+                          if (newSortValue.compareTo(sortValues[3]) == 0) {
                             sort = 'difficulty';
+                            order = 'DESC';
                           }
                           setState((){
-                            sortValue = newSortValue;
                             _hikingRoutes.clear();
-                            fetchMore(sort: sort, order: order);
+                            fetchMore(query: query, sort: sort, order: order);
                           });
-                        }
+
                       },
                       style: TextButton.styleFrom(
                           primary: Theme.of(context).primaryColor),
