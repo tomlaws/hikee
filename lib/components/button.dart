@@ -50,6 +50,11 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    var buttonColor = (widget.backgroundColor != null
+            ? widget.backgroundColor!
+            : (widget.invert ? Colors.white : Theme.of(context).primaryColor));
+    if (buttonColor != Colors.transparent) 
+        buttonColor.withOpacity((widget.disabled || widget.loading) ? .75 : 1);
     return GestureDetector(
       child: Transform.scale(
         scale: _scale,
@@ -63,12 +68,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
             padding:
                 EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16),
             decoration: BoxDecoration(
-                color: (widget.backgroundColor != null
-                        ? widget.backgroundColor!
-                        : (widget.invert
-                            ? Colors.white
-                            : Theme.of(context).primaryColor))
-                    .withOpacity((widget.disabled || widget.loading) ? .75 : 1),
+                color: buttonColor,
                 borderRadius: BorderRadius.all(Radius.circular(32))),
             child: DefaultTextStyle(
                 style: TextStyle(
