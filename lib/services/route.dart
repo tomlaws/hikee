@@ -12,10 +12,11 @@ class RouteService {
       {String? query, int? after, String? sort, String? order = 'DESC'}) async {
     try {
       Map<String, dynamic> queryParams = {};
-      if (query != null) queryParams['query'] = query;
+      if (query != null && query.length > 0) queryParams['query'] = query;
       if (after != null) queryParams['after'] = after.toString();
       if (sort != null) queryParams['sort'] = sort;
       if (order != null) queryParams['order'] = order;
+      print(queryParams);
       final uri = Uri.https(API_HOST, '/routes', queryParams);
       List<dynamic> routes = await HttpUtils.get(uri);
       return routes.map((r) => HikingRoute.fromJson(r)).toList();
