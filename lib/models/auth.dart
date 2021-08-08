@@ -48,7 +48,6 @@ class Auth extends ChangeNotifier {
 
   Future<Token?> signIn(String email, String password) async {
     Token? token = await _authService.login(email, password);
-
     if (token != null) {
       _token.value = token;
     }

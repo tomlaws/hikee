@@ -66,20 +66,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: MutationBuilder<Token?>(
                     mutation: () {
                       _emailController.clearError();
-                      if (_emailController.text == ''){
-                        throw _emailController.error = 'Please enter account email';
-                      }
-                       if (_passwordController.text == ''){
-                        throw _passwordController.error = 'Please enter password';
-                      }
+                      _passwordController.clearError();
                       var email = _emailController.text;
                       var password = _passwordController.text;
                       return context.read<Auth>().signIn(email, password);
                     },
                     onDone: (token) {
-                      if (token == null){
-                        _emailController.error = 'Login failed';
-                      }
+                    },
+                    onError: (error) {
+                      _emailController.error = error.getFieldError('email');
+                      _passwordController.error = error.getFieldError('password');
+                      if (error.statusCode == 401)
+                        _passwordController.error = 'Incorrect password';
                     },
                     builder: (mutate, loading) {
                       return Button(

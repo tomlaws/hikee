@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hikee/models/auth.dart';
-import 'package:hikee/models/token.dart';
 import 'package:hikee/models/user.dart';
 import 'package:hikee/services/user.dart';
 

@@ -78,13 +78,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: MutationBuilder<Token?>(
                     mutation: () {
                       _emailController.clearError();
-                      if (_emailController.text == '') {
-                        throw _emailController.error = 'Please enter email';
-                      }
-                      if (_passwordController.text == '') {
-                        throw _passwordController.error =
-                            'Please enter password';
-                      }
+                      _passwordController.clearError();
+                      _confirmPasswordController.clearError();
 
                       if (_passwordController.text !=
                           _confirmPasswordController.text) {
@@ -94,6 +89,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       var email = _emailController.text;
                       var password = _passwordController.text;
                       return context.read<Auth>().register(email, password);
+                    },
+                    onError: (error) {
+                      _emailController.error = error.getFieldError('email');
+                      _passwordController.error = error.getFieldError('password');
                     },
                     onDone: (token) {
                       if (token == null) {

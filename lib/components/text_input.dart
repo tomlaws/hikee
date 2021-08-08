@@ -39,9 +39,9 @@ class _TextInputState extends State<TextInput>
 
   @override
   void dispose() {
-    super.dispose();
     _animationController.dispose();
     _focus.dispose();
+    super.dispose();
   }
 
   void _onFocusChange() {
