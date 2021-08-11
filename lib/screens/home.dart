@@ -26,11 +26,11 @@ import 'package:hikee/utils/map_marker.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:routemaster/routemaster.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Function switchToTab;
-  const HomeScreen({Key? key, required this.switchToTab}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen>
       _activeRoute = route;
       if (_activeRoute != null) {
         WidgetsBinding.instance!.addPostFrameCallback((_) {
-          widget.switchToTab(0);
+          Routemaster.of(context).push('/');
           Future.delayed(const Duration(milliseconds: 10), () {
             _focusActiveRoute();
           });
@@ -424,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     invert: true,
                                     child: Text('Discover Routes'),
                                     onPressed: () {
-                                      widget.switchToTab(1);
+                                      Routemaster.of(context).push('/routes');
                                     },
                                   ),
                                 ))
@@ -739,13 +739,13 @@ class _HomeScreenState extends State<HomeScreen>
             TextButton(
               child: const Text('No, thanks'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Routemaster.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Yes'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Routemaster.of(context).pop();
               },
             ),
           ],
@@ -822,7 +822,7 @@ class _HomeScreenState extends State<HomeScreen>
                       child: Text('SHOW IN MAP'),
                       onPressed: () {
                         _showDistancePost(nearestDistancePost);
-                        Navigator.of(context).pop();
+                        Routemaster.of(context).pop();
                       }),
                 ],
               );
@@ -833,13 +833,13 @@ class _HomeScreenState extends State<HomeScreen>
                   backgroundColor: Colors.red,
                   onPressed: () {
                     launch("tel://999");
-                    Navigator.of(context).pop();
+                    Routemaster.of(context).pop();
                   }),
               Button(
                   child: Text('CANCEL'),
                   backgroundColor: Colors.black38,
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Routemaster.of(context).pop();
                   })
             ]);
   }

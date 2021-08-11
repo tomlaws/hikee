@@ -6,9 +6,8 @@ import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/models/auth.dart';
 import 'package:hikee/models/token.dart';
-import 'package:hikee/screens/auth/register.dart';
-import 'package:hikee/services/auth.dart';
 import 'package:provider/provider.dart';
+import 'package:routemaster/routemaster.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -32,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     var auth = context.watch<Auth>();
     if (auth.loggedIn) {
-      Future.microtask(() => Navigator.of(context).pop());
+      Future.microtask(() => Routemaster.of(context).pop());
       return Container();
     }
     return Scaffold(
@@ -71,11 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       var password = _passwordController.text;
                       return context.read<Auth>().signIn(email, password);
                     },
-                    onDone: (token) {
-                    },
+                    onDone: (token) {},
                     onError: (error) {
                       _emailController.error = error.getFieldError('email');
-                      _passwordController.error = error.getFieldError('password');
+                      _passwordController.error =
+                          error.getFieldError('password');
                       if (error.statusCode == 401)
                         _passwordController.error = 'Incorrect password';
                     },
@@ -93,8 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 GestureDetector(
                   child: Text('Or sign up now'),
                   onTap: () {
-                    Navigator.of(context).pushReplacement(
-                        CupertinoPageRoute(builder: (_) => RegisterScreen()));
+                    Routemaster.of(context).replace('/register');
                   },
                 )
               ],

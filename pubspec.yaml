@@ -46,6 +46,7 @@ dependencies:
   shimmer: ^2.0.0
   jwt_decoder: ^2.0.1
   flutter_secure_storage: ^4.2.1
+  routemaster: ^0.10.0-dev2
 
 dev_dependencies:
   flutter_test:

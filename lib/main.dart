@@ -1,17 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hikee/components/login_prompt.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/auth.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/me.dart';
+import 'package:hikee/screens/account.dart';
+import 'package:hikee/screens/auth/login.dart';
+import 'package:hikee/screens/auth/register.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
-import 'package:hikee/screens/library.dart';
-import 'package:hikee/screens/library_example.dart';
-import 'package:hikee/screens/profile.dart';
+import 'package:hikee/screens/route.dart';
+import 'package:hikee/screens/routes.dart';
 import 'package:hikee/services/auth.dart';
 import 'package:hikee/services/route.dart';
 import 'package:hikee/services/user.dart';
@@ -19,6 +23,7 @@ import 'package:hikee/services/weather.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:routemaster/routemaster.dart';
 
 void setupLocator() {
   GetIt.I.registerLazySingleton(() => AuthService());
@@ -75,48 +80,59 @@ void main() {
 const Color themeColor = Color(0xFF5DB075);
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     MapMarker();
-    return MaterialApp(
-        title: 'Hikee',
-        theme: ThemeData(
-          primaryColor: themeColor,
-          bottomNavigationBarTheme: BottomNavigationBarThemeData(
-              backgroundColor: Colors.white,
-              selectedItemColor: themeColor,
-              type: BottomNavigationBarType.fixed,
-              showUnselectedLabels: false,
-              showSelectedLabels: false),
-          splashColor: Colors.transparent,
-          highlightColor: Color(0x0F000000),
-          textTheme: GoogleFonts.latoTextTheme(
-            Theme.of(context).textTheme.apply(bodyColor: Color(0xFF666666)),
-          ),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Hikee',
+      theme: ThemeData(
+        primaryColor: themeColor,
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: Colors.white,
+            selectedItemColor: themeColor,
+            type: BottomNavigationBarType.fixed,
+            showUnselectedLabels: false,
+            showSelectedLabels: false),
+        splashColor: Colors.transparent,
+        highlightColor: Color(0x0F000000),
+        textTheme: GoogleFonts.latoTextTheme(
+          Theme.of(context).textTheme.apply(bodyColor: Color(0xFF666666)),
         ),
-        home: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (OverscrollIndicatorNotification overscroll) {
-              overscroll.disallowGlow();
-              return true;
-            },
-            child: MyHomePage(title: 'Hikee')));
+      ),
+      routerDelegate: RoutemasterDelegate(routesBuilder: _routes),
+      routeInformationParser: RoutemasterParser(),
+    );
+  }
+
+  Widget _protected(BuildContext context, Widget child) {
+    if (context.watch<Auth>().loggedIn) return child;
+    return LoginPrompt();
+  }
+
+  RouteMap _routes(BuildContext context) {
+    return RouteMap(routes: {
+      '/': (route) => TabPage(
+            child: MyHomePage(),
+            paths: ['/home', '/routes', '/events', '/posts', '/profile'],
+          ),
+      '/home': (route) => CupertinoPage(child: HomeScreen()),
+      '/routes': (route) => CupertinoPage(child: RoutesScreen()),
+      '/routes/:id': (route) => CupertinoPage(
+          child: RouteScreen(id: int.parse(route.pathParameters['id']!))),
+      '/events': (route) => CupertinoPage(child: EventsScreen()),
+      '/posts': (route) => CupertinoPage(child: CommunityScreen()),
+      '/profile': (route) {
+        return CupertinoPage(child: _protected(context, ProfileScreen()));
+      },
+      '/login': (route) => CupertinoPage(child: LoginScreen()),
+      '/register': (route) => CupertinoPage(child: RegisterScreen()),
+    });
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -131,31 +147,24 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     this._pageController =
         PageController(initialPage: this._selectedIndex, keepPage: true);
-  }
-
-  void _onTap(int index) {
-    if (_selectedIndex == index) return;
-    setState(() {
-      this._selectedIndex = index;
-      _pageController.jumpToPage(index);
+    Future.microtask(() {
+      final tabPage = TabPage.of(context);
+      tabPage.controller.addListener(() {
+        _pageController.animateToPage(tabPage.controller.index,
+            duration: const Duration(milliseconds: 250), curve: Curves.linear);
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _screens = [
-      HomeScreen(
-        switchToTab: (i) => _onTap(i),
-      ),
-      LibraryScreen(),
-      EventsScreen(),
-      CommunityScreen(),
-      ProfileScreen()
-    ];
+    final tabPage = TabPage.of(context);
     return Scaffold(
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
-        children: _screens,
+        children: [
+          for (final stack in tabPage.stacks) PageStackNavigator(stack: stack),
+        ],
         controller: _pageController,
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -171,8 +180,10 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
               icon: Icon(LineAwesomeIcons.user), label: 'Profile')
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onTap,
+        currentIndex: tabPage.controller.index,
+        onTap: (i) {
+          tabPage.controller.index = i;
+        },
       ),
     );
   }

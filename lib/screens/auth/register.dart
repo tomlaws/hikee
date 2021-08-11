@@ -6,9 +6,9 @@ import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/models/auth.dart';
 import 'package:hikee/models/token.dart';
-import 'package:hikee/screens/auth/login.dart';
 import 'package:hikee/services/auth.dart';
 import 'package:provider/provider.dart';
+import 'package:routemaster/routemaster.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     var auth = context.watch<Auth>();
     if (auth.loggedIn) {
-      Future.microtask(() => Navigator.of(context).pop());
+      Future.microtask(() => Routemaster.of(context).pop());
       return Container();
     }
     return Scaffold(
@@ -113,8 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 GestureDetector(
                   child: Text('Or sign in now'),
                   onTap: () {
-                    Navigator.of(context).pushReplacement(
-                        CupertinoPageRoute(builder: (_) => LoginScreen()));
+                    Routemaster.of(context).replace('/login');
                   },
                 )
               ],

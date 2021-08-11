@@ -13,6 +13,7 @@ import 'package:hikee/services/route.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:provider/provider.dart';
+import 'package:routemaster/routemaster.dart';
 
 class RouteScreen extends StatefulWidget {
   final int id;
@@ -159,8 +160,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                 Provider.of<ActiveHikingRoute>(context,
                                         listen: false)
                                     .selectRoute(route);
-                                Navigator.popUntil(
-                                    context, ModalRoute.withName('/'));
+                                Routemaster.of(context).push('/home');
                               },
                               child: Text('SELECT'),
                             )

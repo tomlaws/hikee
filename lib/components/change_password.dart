@@ -6,6 +6,7 @@ import 'package:hikee/components/text_input.dart';
 import 'package:hikee/models/auth.dart';
 import 'package:hikee/services/user.dart';
 import 'package:provider/provider.dart';
+import 'package:routemaster/routemaster.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
@@ -48,14 +49,14 @@ class _ChangePasswordState extends State<ChangePassword> {
                     mutate();
                   }),
               onDone: (_) {
-                Navigator.of(context).pop();
+                Routemaster.of(context).pop();
+              },
+              onError: (err) {
+                _passwordController.error = err.getFieldError('password');
               },
               mutation: () async {
-                if (_passwordController.text.length < 6 ||
-                    _passwordController.text.length > 20) {
-                  throw _confirmPasswordController.error =
-                      'Length should within 6 and 20';
-                }
+                _passwordController.clearError();
+                _confirmPasswordController.clearError();
                 if (_passwordController.text !=
                     _confirmPasswordController.text) {
                   throw _confirmPasswordController.error =
@@ -70,7 +71,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                 child: Text('CANCEL'),
                 backgroundColor: Colors.grey,
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Routemaster.of(context).pop();
+                  Routemaster.of(context).pop();
                 })
           ],
         ),

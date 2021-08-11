@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/change_password.dart';
 import 'package:hikee/components/protected.dart';
 import 'package:hikee/models/auth.dart';
+import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     Map<String, dynamic> _operations = {
       'Likes': null,
+      'Bookmarks': (BuildContext ctx) {
+        Navigator.of(ctx)
+            .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
+      },
       'Settings': {'Language': null},
       'Account': {
         'Change Password': _changePassword,
@@ -53,16 +59,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _options.value.clear();
     _addToOptions(_operations);
     _page.value = 0;
-    return Protected(
-      child: Scaffold(
-        backgroundColor: Color(0xFFF5F5F5),
-        body: SafeArea(
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: [_list(_operations)],
-          ),
-        ),
+    return SafeArea(
+      child: ListView(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        children: [_list(_operations)],
       ),
     );
   }

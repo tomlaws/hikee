@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
+import 'package:routemaster/routemaster.dart';
 
 class DialogUtils {
   static show(context, Widget content,
@@ -49,7 +50,7 @@ class DialogUtils {
                             Button(
                                 child: Text('OK'),
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  Routemaster.of(context).pop();
                                 })
                         ],
                       ),
