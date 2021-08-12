@@ -27,8 +27,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               )),
           actions: [
             Button(
+              backgroundColor: Colors.transparent,
               onPressed: () {},
-              child: Text('POST'),
+              child: Text('POST', style: TextStyle(color: Theme.of(context).primaryColor),),
             )
           ],
         ),
@@ -38,6 +39,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     backgroundImage: NetworkImage(
@@ -45,6 +47,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   ),
                   Expanded(
                     child: TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
                       cursorColor: Colors.black,
                       decoration: new InputDecoration(
                           border: InputBorder.none,
@@ -54,7 +58,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           disabledBorder: InputBorder.none,
                           contentPadding: EdgeInsets.only(
                               left: 15, bottom: 11, top: 11, right: 15),
-                          hintText: "Say something"),
+                          hintText: "Say something..."),
                     ),
                   ),
                 ],
@@ -67,12 +71,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.image),
-              label: 'Home',
+              label: 'Image',
               backgroundColor: Colors.red,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.camera_alt),
-              label: 'Home',
+              label: 'Photo',
+              backgroundColor: Colors.red,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_emotions),
+              label: 'Emoji',
+              backgroundColor: Colors.red,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.location_on),
+              label: 'Emoji',
               backgroundColor: Colors.red,
             ),
           ],
