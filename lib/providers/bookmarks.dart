@@ -16,14 +16,12 @@ class BookmarksProvider extends PaginationChangeNotifier<Bookmark> {
     Bookmark bookmark = await _bookmarkService.createBookmark(_auth.getToken(),
         routeId: routeId);
     insert(0, bookmark);
-    notifyListeners();
     return bookmark;
   }
 
   deleteBookmark(int bookmarkId) async {
     await _bookmarkService.deleteBookmark(_auth.getToken(), id: bookmarkId);
     delete((element) => element.id == bookmarkId);
-    notifyListeners();
   }
 
   @override

@@ -35,7 +35,7 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
   }
 
   delete(bool Function(T) test) {
-    _items.where(test);
+    _items.removeWhere(test);
     notifyListeners();
   }
 

@@ -43,13 +43,14 @@ class _InfiniteScrollState<T, U> extends State<InfiniteScroll<T, U>> {
 
   @override
   Widget build(BuildContext context) {
-    List<U> items = widget.selector(context.watch<T>());
-    return ListView.builder(
-        padding: EdgeInsets.all(16),
-        controller: _scrollController,
-        itemCount: items.length,
-        itemBuilder: (_, i) {
-          return widget.builder(items[i]);
-        });
+    return Consumer<T>(
+      builder: (_, p, __) => ListView.builder(
+          padding: EdgeInsets.all(16),
+          controller: _scrollController,
+          itemCount: widget.selector(p).length,
+          itemBuilder: (_, i) {
+            return widget.builder(widget.selector(p)[i]);
+          }),
+    );
   }
 }
