@@ -1,3 +1,4 @@
+import 'package:hikee/models/bookmark.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hikee/models/region.dart';
 
@@ -19,22 +20,24 @@ class HikingRoute {
   final int duration; // minutes
   final int length;
   final String path;
+  final Bookmark? bookmark;
 
   HikingRoute(
-      this.id,
-      this.name_zh,
-      this.name_en,
-      this.regionId,
-      this.region,
-      this.description_zh,
-      this.description_en,
-      this.image,
-      this.images,
-      this.difficulty,
-      this.rating,
-      this.duration,
-      this.length,
-      this.path);
+      {required this.id,
+      required this.name_zh,
+      required this.name_en,
+      required this.regionId,
+      required this.region,
+      required this.description_zh,
+      required this.description_en,
+      required this.image,
+      required this.images,
+      required this.difficulty,
+      required this.rating,
+      required this.duration,
+      required this.length,
+      required this.path,
+      this.bookmark});
 
   factory HikingRoute.fromJson(Map<String, dynamic> json) =>
       _$HikingRouteFromJson(json);

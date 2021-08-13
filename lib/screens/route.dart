@@ -8,7 +8,10 @@ import 'package:hikee/components/button.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/components/shimmer.dart';
 import 'package:hikee/models/active_hiking_route.dart';
+import 'package:hikee/models/auth.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/providers/bookmarks.dart';
+import 'package:hikee/services/bookmark.dart';
 import 'package:hikee/services/route.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
@@ -25,14 +28,20 @@ class RouteScreen extends StatefulWidget {
 
 class _RouteScreenState extends State<RouteScreen> {
   RouteService get _routeService => GetIt.I<RouteService>();
-  late Future<HikingRoute> _route;
+  BookmarkService get _bookmarkService => GetIt.I<BookmarkService>();
+  Future<HikingRoute>? _route;
   PageController _carouselController = PageController();
   ValueNotifier<double> _carouselPage = ValueNotifier<double>(0.0);
+  ValueNotifier<bool> _bookmarked = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
-    _route = _routeService.getRoute(widget.id);
+    Future.microtask(() {
+      _route = _routeService.getRoute(widget.id,
+          token: context.read<Auth>().getToken());
+      setState(() {});
+    });
     _carouselController.addListener(() {
       double page = _carouselController.page ?? 0;
       _carouselPage.value = page;
@@ -58,17 +67,44 @@ class _RouteScreenState extends State<RouteScreen> {
                 );
               }
               if (snapshot.data == null) {
-                return Center(
-                  child: Text('Error'),
-                );
+                return SizedBox();
               }
               HikingRoute route = snapshot.data!;
+              _bookmarked.value = route.bookmark != null;
+              print(route.bookmark != null);
               var points = GeoUtils.decodePath(route.path);
               return CustomScrollView(
                 slivers: <Widget>[
                   SliverAppBar(
                     expandedHeight: 250.0,
                     backgroundColor: Colors.white,
+                    actions: [
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _bookmarked,
+                        builder: (_, bookmarked, __) => Button(
+                            backgroundColor: Colors.transparent,
+                            icon: Icon(
+                              bookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_outline,
+                              color: Colors.amber,
+                            ),
+                            onPressed: () {
+                              if (bookmarked) {
+                                context
+                                    .read<BookmarksProvider>()
+                                    .deleteBookmark(route.bookmark!.id);
+                                _bookmarked.value = false;
+                              } else {
+                                context
+                                    .read<BookmarksProvider>()
+                                    .createBookmark(route.id)
+                                    .then((b) => route.bookmark?.id = b.id);
+                                _bookmarked.value = true;
+                              }
+                            }),
+                      )
+                    ],
                     flexibleSpace: Stack(
                       children: <Widget>[
                         Positioned.fill(

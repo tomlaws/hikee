@@ -1,6 +1,8 @@
+import 'package:hikee/api.dart';
 import 'package:hikee/constants.dart';
 import 'package:hikee/models/elevation.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/models/token.dart';
 import 'package:hikee/utils/http.dart';
 
 class RouteService {
@@ -16,8 +18,7 @@ class RouteService {
       if (after != null) queryParams['after'] = after.toString();
       if (sort != null) queryParams['sort'] = sort;
       if (order != null) queryParams['order'] = order;
-      print(queryParams);
-      final uri = Uri.https(API_HOST, '/routes', queryParams);
+      final uri = API.getUri('/routes', queryParams: queryParams);
       List<dynamic> routes = await HttpUtils.get(uri);
       return routes.map((r) => HikingRoute.fromJson(r)).toList();
     } catch (ex) {
@@ -26,15 +27,15 @@ class RouteService {
     }
   }
 
-  Future<HikingRoute> getRoute(int id) async {
-    final uri = Uri.https(API_HOST, '/routes/$id');
-    dynamic route = await HttpUtils.get(uri);
+  Future<HikingRoute> getRoute(int id, {required Future<Token?> token}) async {
+    final uri = API.getUri('/routes/$id');
+    dynamic route = await HttpUtils.get(uri, accessToken: (await token)?.accessToken);
     return HikingRoute.fromJson(route);
   }
 
   Future<List<Elevation>> getElevations(int routeId) async {
     List<dynamic> e =
-        await HttpUtils.get(Uri.https(API_HOST, '/routes/$routeId/elevation'));
+        await HttpUtils.get(API.getUri('/routes/$routeId/elevation'));
     return e.map((e) => Elevation.fromJson(e)).toList();
   }
 }

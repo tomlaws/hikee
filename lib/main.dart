@@ -8,7 +8,9 @@ import 'package:hikee/models/auth.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/me.dart';
+import 'package:hikee/providers/bookmarks.dart';
 import 'package:hikee/screens/account.dart';
+import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/screens/auth/login.dart';
 import 'package:hikee/screens/auth/register.dart';
 import 'package:hikee/screens/community.dart';
@@ -17,6 +19,7 @@ import 'package:hikee/screens/home.dart';
 import 'package:hikee/screens/route.dart';
 import 'package:hikee/screens/routes.dart';
 import 'package:hikee/services/auth.dart';
+import 'package:hikee/services/bookmark.dart';
 import 'package:hikee/services/route.dart';
 import 'package:hikee/services/user.dart';
 import 'package:hikee/services/weather.dart';
@@ -29,6 +32,7 @@ void setupLocator() {
   GetIt.I.registerLazySingleton(() => AuthService());
   GetIt.I.registerLazySingleton(() => UserService());
   GetIt.I.registerLazySingleton(() => RouteService());
+  GetIt.I.registerLazySingleton(() => BookmarkService());
   GetIt.I.registerLazySingleton(() => WeatherService());
 }
 
@@ -50,6 +54,11 @@ void main() {
             return Me(null);
           },
           lazy: false,
+        ),
+        ChangeNotifierProxyProvider<Auth, BookmarksProvider>(
+          create: (context) => BookmarksProvider(auth: context.read<Auth>()),
+          update: (_, auth, bp) => bp!..auth = auth,
+          lazy: true,
         ),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
         ChangeNotifierProvider(
@@ -102,6 +111,7 @@ class MyApp extends StatelessWidget {
       ),
       routerDelegate: RoutemasterDelegate(routesBuilder: _routes),
       routeInformationParser: RoutemasterParser(),
+      backButtonDispatcher: RootBackButtonDispatcher(),
     );
   }
 
@@ -124,6 +134,9 @@ class MyApp extends StatelessWidget {
       '/posts': (route) => CupertinoPage(child: CommunityScreen()),
       '/profile': (route) {
         return CupertinoPage(child: _protected(context, ProfileScreen()));
+      },
+      '/profile/bookmarks': (route) {
+        return CupertinoPage(child: _protected(context, BookmarksPage()));
       },
       '/login': (route) => CupertinoPage(child: LoginScreen()),
       '/register': (route) => CupertinoPage(child: RegisterScreen()),
@@ -150,8 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Future.microtask(() {
       final tabPage = TabPage.of(context);
       tabPage.controller.addListener(() {
-        _pageController.animateToPage(tabPage.controller.index,
-            duration: const Duration(milliseconds: 250), curve: Curves.linear);
+        _pageController.jumpToPage(tabPage.controller.index);
       });
     });
   }

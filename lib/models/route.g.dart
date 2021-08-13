@@ -8,20 +8,23 @@ part of 'route.dart';
 
 HikingRoute _$HikingRouteFromJson(Map<String, dynamic> json) {
   return HikingRoute(
-    json['id'] as int,
-    json['name_zh'] as String,
-    json['name_en'] as String,
-    json['regionId'] as int,
-    Region.fromJson(json['region'] as Map<String, dynamic>),
-    json['description_zh'] as String,
-    json['description_en'] as String,
-    json['image'] as String,
-    (json['images'] as List<dynamic>).map((e) => e as String).toList(),
-    json['difficulty'] as int,
-    json['rating'] as int,
-    json['duration'] as int,
-    json['length'] as int,
-    json['path'] as String,
+    id: json['id'] as int,
+    name_zh: json['name_zh'] as String,
+    name_en: json['name_en'] as String,
+    regionId: json['regionId'] as int,
+    region: Region.fromJson(json['region'] as Map<String, dynamic>),
+    description_zh: json['description_zh'] as String,
+    description_en: json['description_en'] as String,
+    image: json['image'] as String,
+    images: (json['images'] as List<dynamic>).map((e) => e as String).toList(),
+    difficulty: json['difficulty'] as int,
+    rating: json['rating'] as int,
+    duration: json['duration'] as int,
+    length: json['length'] as int,
+    path: json['path'] as String,
+    bookmark: json['bookmark'] == null
+        ? null
+        : Bookmark.fromJson(json['bookmark'] as Map<String, dynamic>),
   );
 }
 
@@ -41,4 +44,5 @@ Map<String, dynamic> _$HikingRouteToJson(HikingRoute instance) =>
       'duration': instance.duration,
       'length': instance.length,
       'path': instance.path,
+      'bookmark': instance.bookmark,
     };
