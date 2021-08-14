@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +9,7 @@ import 'package:hikee/components/protected.dart';
 import 'package:hikee/models/auth.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/utils/dialog.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -20,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ValueNotifier<List<Column>> _options = ValueNotifier([]);
   ValueNotifier<double> _page = ValueNotifier(0);
   PageController _pageController = PageController();
+  File? _avatar;
 
   @override
   void dispose() {
@@ -63,7 +67,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: ListView(
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-        children: [_list(_operations)],
+        children: [
+          Container(
+            height: 16,
+          ),
+          Column(mainAxisSize: MainAxisSize.min, children: [
+            GestureDetector(
+              onTap: () async {
+                final ImagePicker _picker = ImagePicker();
+                final XFile? image =
+                    await _picker.pickImage(source: ImageSource.gallery);
+                if (image == null) return;
+                setState(() {
+                  _avatar = File(image.path);
+                });
+              },
+              child: Container(
+                height: 128,
+                width: 128,
+                decoration: BoxDecoration(
+                    image: _avatar == null
+                        ? null
+                        : DecorationImage(image: FileImage(_avatar!)),
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(64)),
+              ),
+            ),
+          ]),
+          _list(_operations)
+        ],
       ),
     );
   }

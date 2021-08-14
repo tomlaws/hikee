@@ -42,8 +42,12 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-    <string>Application needs to access your current location</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Application needs to access your current location</string>
+	<string>Application needs to access your current location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Application needs to access your current location</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Hikee needs to access your photo library to upload avatar</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Hikee needs to access your camera to upload avatar</string>
 </dict>
 </plist>
