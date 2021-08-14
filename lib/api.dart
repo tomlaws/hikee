@@ -1,7 +1,7 @@
 import 'package:hikee/constants.dart';
 
 class API {
-  static bool dev = true;
+  static bool dev = false;
   static getUri(String path, {Map<String, dynamic>? queryParams}) {
     if (dev) {
       return Uri.http(API_HOST_DEV, path, queryParams);
