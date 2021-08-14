@@ -13,10 +13,7 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
 
   fetch(bool next) async {
     if (!next) {
-      _cursor = null;
-      _loading = false;
-      _hasMore = true;
-      _items.clear();
+      clearState();
     }
     if (_loading || !_hasMore) return;
     _loading = true;
@@ -37,6 +34,13 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
   delete(bool Function(T) test) {
     _items.removeWhere(test);
     notifyListeners();
+  }
+
+  clearState() {
+    _cursor = null;
+    _loading = false;
+    _hasMore = true;
+    _items.clear();
   }
 
   Future<Paginated<T>> get(String? cursor);

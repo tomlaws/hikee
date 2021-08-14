@@ -5,12 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/dialog/route_review.dart';
+import 'package:hikee/components/infinite_scroll.dart';
 import 'package:hikee/components/route_info.dart';
+import 'package:hikee/components/route_review_tile.dart';
 import 'package:hikee/components/shimmer.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/auth.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/models/route_review.dart';
 import 'package:hikee/providers/bookmarks.dart';
+import 'package:hikee/providers/route_reviews.dart';
 import 'package:hikee/services/bookmark.dart';
 import 'package:hikee/services/route.dart';
 import 'package:hikee/utils/geo.dart';
@@ -28,7 +33,6 @@ class RouteScreen extends StatefulWidget {
 
 class _RouteScreenState extends State<RouteScreen> {
   RouteService get _routeService => GetIt.I<RouteService>();
-  BookmarkService get _bookmarkService => GetIt.I<BookmarkService>();
   Future<HikingRoute>? _route;
   PageController _carouselController = PageController();
   ValueNotifier<double> _carouselPage = ValueNotifier<double>(0.0);
@@ -40,6 +44,8 @@ class _RouteScreenState extends State<RouteScreen> {
     Future.microtask(() {
       _route = _routeService.getRoute(widget.id,
           token: context.read<Auth>().getToken());
+      context.read<RouteReviewsProvider>().setRouteId(widget.id);
+      print('routeId: ${widget.id}');
       setState(() {});
     });
     _carouselController.addListener(() {
@@ -71,7 +77,6 @@ class _RouteScreenState extends State<RouteScreen> {
               }
               HikingRoute route = snapshot.data!;
               _bookmarked.value = route.bookmark != null;
-              print(route.bookmark != null);
               var points = GeoUtils.decodePath(route.path);
               return CustomScrollView(
                 slivers: <Widget>[
@@ -307,9 +312,74 @@ class _RouteScreenState extends State<RouteScreen> {
                         )
                       ]),
                     ),
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.all(16),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Divider(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Reviews',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: Theme.of(context)
+                                                .primaryColor)),
+                                    Button(
+                                        backgroundColor: Colors.transparent,
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: Colors.black38,
+                                        ),
+                                        onPressed: () async {
+                                          var res = await routeReviewDialog();
+                                          if (res == null) return;
+                                          String content = res['content'];
+                                          int rating = res['rating'];
+                                          context.read<RouteReviewsProvider>().createRouteReview(widget.id, content, rating);
+                                        })
+                                  ]),
+                              Container(
+                                height: 12,
+                              ),
+                              InfiniteScroll<RouteReviewsProvider, RouteReview>(
+                                  shrinkWrap: true,
+                                  selector: (p) => p.items,
+                                  padding: EdgeInsets.zero,
+                                  builder: (routeReview) {
+                                    return RouteReviewTile(
+                                      routeReview: routeReview,
+                                    );
+                                  },
+                                  fetch: (next) {
+                                    print('fetch next');
+                                    return context
+                                        .read<RouteReviewsProvider>()
+                                        .fetch(next);
+                                  })
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   )
                 ],
               );
             }));
+  }
+
+  Future<Map<String, dynamic>?> routeReviewDialog() async {
+    return await showDialog<Map<String, dynamic>?>(
+      context: context,
+      builder: (BuildContext context) {
+        return RouteReviewDialog();
+      },
+    );
   }
 }

@@ -9,6 +9,7 @@ import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
 import 'package:hikee/models/me.dart';
 import 'package:hikee/providers/bookmarks.dart';
+import 'package:hikee/providers/route_reviews.dart';
 import 'package:hikee/screens/account.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/screens/auth/login.dart';
@@ -57,7 +58,12 @@ void main() {
         ),
         ChangeNotifierProxyProvider<Auth, BookmarksProvider>(
           create: (context) => BookmarksProvider(auth: context.read<Auth>()),
-          update: (_, auth, bp) => bp!..auth = auth,
+          update: (_, auth, p) => p!..auth = auth,
+          lazy: true,
+        ),
+        ChangeNotifierProxyProvider<Auth, RouteReviewsProvider>(
+          create: (context) => RouteReviewsProvider(auth: context.read<Auth>()),
+          update: (_, auth, p) => p!..auth = auth,
           lazy: true,
         ),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
