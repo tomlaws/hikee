@@ -56,6 +56,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
     if (buttonColor != Colors.transparent) 
         buttonColor.withOpacity((widget.disabled || widget.loading) ? .75 : 1);
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       child: Transform.scale(
         scale: _scale,
         child: ConstrainedBox(

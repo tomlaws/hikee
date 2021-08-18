@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:hikee/components/button.dart';
+import 'package:hikee/components/dialog/base.dart';
 import 'package:hikee/components/text_input.dart';
 
-class RouteReviewDialog extends StatefulWidget {
+class RouteReviewDialog extends BaseDialog {
   const RouteReviewDialog({Key? key}) : super(key: key);
 
   @override
@@ -21,54 +23,53 @@ class _RouteReviewDialogState extends State<RouteReviewDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Create review'),
-      content: Column(
+    Widget content = Column(
 //        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RatingBar.builder(
-            itemSize: 24,
-            initialRating: _rating.toDouble(),
-            allowHalfRating: false,
-            itemCount: 5,
-            unratedColor: Colors.grey,
-            itemPadding: EdgeInsets.only(right: 4.0),
-            itemBuilder: (context, _) => Icon(
-              Icons.star,
-              color: Colors.amber,
-            ),
-            updateOnDrag: true,
-            onRatingUpdate: (double value) {
-              setState(() {
-                _rating = value.toInt();
-              });
-            },
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RatingBar.builder(
+          itemSize: 24,
+          initialRating: _rating.toDouble(),
+          allowHalfRating: false,
+          itemCount: 5,
+          unratedColor: Colors.grey,
+          itemPadding: EdgeInsets.only(right: 4.0),
+          itemBuilder: (context, _) => Icon(
+            Icons.star,
+            color: Colors.amber,
           ),
-          Container(
-            height: 8,
-          ),
-          TextInput(controller: _contentController)
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: const Text('Cancel'),
-          onPressed: () {
-            Navigator.of(context).pop(null);
+          updateOnDrag: true,
+          onRatingUpdate: (double value) {
+            setState(() {
+              _rating = value.toInt();
+            });
           },
         ),
-        TextButton(
-          child: const Text('Submit'),
-          onPressed: () {
-            Map<String, dynamic> result = {
-              'content': _contentController.text,
-              'rating': _rating,
-            };
-            Navigator.of(context).pop(result);
-          },
+        Container(
+          height: 8,
         ),
+        TextInput(controller: _contentController)
       ],
     );
+    List<Widget> buttons = [
+      Button(
+        child: const Text('CANCEL'),
+        backgroundColor: Colors.grey,
+        onPressed: () {
+          Navigator.of(context).pop(null);
+        },
+      ),
+      Button(
+        child: const Text('SUBMIT'),
+        onPressed: () {
+          Map<String, dynamic> result = {
+            'content': _contentController.text,
+            'rating': _rating,
+          };
+          Navigator.of(context).pop(result);
+        },
+      ),
+    ];
+    return super.widget.build(context, content, buttons);
   }
 }

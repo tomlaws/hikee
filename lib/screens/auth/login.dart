@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/text_input.dart';
-import 'package:hikee/models/auth.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/token.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var auth = context.watch<Auth>();
+    var auth = context.watch<AuthProvider>();
     if (auth.loggedIn) {
       Future.microtask(() => Routemaster.of(context).pop());
       return Container();
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _passwordController.clearError();
                       var email = _emailController.text;
                       var password = _passwordController.text;
-                      return context.read<Auth>().signIn(email, password);
+                      return context.read<AuthProvider>().signIn(email, password);
                     },
                     onDone: (token) {},
                     onError: (error) {

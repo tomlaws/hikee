@@ -9,9 +9,9 @@ part of 'route_review.dart';
 RouteReview _$RouteReviewFromJson(Map<String, dynamic> json) {
   return RouteReview(
     id: json['id'] as int,
-    userId: json['userId'] as int,
+    reviewerId: json['reviewerId'] as int,
     routeId: json['routeId'] as int,
-    user: User.fromJson(json['user'] as Map<String, dynamic>),
+    reviewer: User.fromJson(json['reviewer'] as Map<String, dynamic>),
     content: json['content'] as String,
     rating: json['rating'] as int,
   );
@@ -20,9 +20,9 @@ RouteReview _$RouteReviewFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$RouteReviewToJson(RouteReview instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'userId': instance.userId,
+      'reviewerId': instance.reviewerId,
       'routeId': instance.routeId,
-      'user': instance.user,
+      'reviewer': instance.reviewer,
       'content': instance.content,
       'rating': instance.rating,
     };

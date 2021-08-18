@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/text_input.dart';
-import 'package:hikee/models/auth.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/token.dart';
 import 'package:hikee/services/auth.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var auth = context.watch<Auth>();
+    var auth = context.watch<AuthProvider>();
     if (auth.loggedIn) {
       Future.microtask(() => Routemaster.of(context).pop());
       return Container();
@@ -88,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                       var email = _emailController.text;
                       var password = _passwordController.text;
-                      return context.read<Auth>().register(email, password);
+                      return context.read<AuthProvider>().register(email, password);
                     },
                     onError: (error) {
                       _emailController.error = error.getFieldError('email');

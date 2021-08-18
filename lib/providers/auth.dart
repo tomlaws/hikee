@@ -6,7 +6,7 @@ import 'package:hikee/models/token.dart';
 import 'package:hikee/services/auth.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-class Auth extends ChangeNotifier {
+class AuthProvider extends ChangeNotifier {
   ValueNotifier<Token?> _token = ValueNotifier(null);
 
   bool get loggedIn => _token.value != null;
@@ -14,7 +14,7 @@ class Auth extends ChangeNotifier {
   final _storage = FlutterSecureStorage();
   AuthService get _authService => GetIt.I<AuthService>();
 
-  Auth() {
+  AuthProvider() {
     _token.addListener(_onTokenChanged);
     Future.wait([
       _storage.read(key: 'accessToken'),
@@ -35,12 +35,14 @@ class Auth extends ChangeNotifier {
   }
 
   void _onTokenChanged() {
-    if (_token.value == null) {
-      _storage.delete(key: 'accessToken');
-      _storage.delete(key: 'refreshToken');
-    } else {
-      _storage.write(key: 'accessToken', value: _token.value!.accessToken);
-      _storage.write(key: 'refreshToken', value: _token.value!.refreshToken);
+    if (!kIsWeb) {
+      if (_token.value == null) {
+        _storage.delete(key: 'accessToken');
+        _storage.delete(key: 'refreshToken');
+      } else {
+        _storage.write(key: 'accessToken', value: _token.value!.accessToken);
+        _storage.write(key: 'refreshToken', value: _token.value!.refreshToken);
+      }
     }
     // redecode token
     notifyListeners();
@@ -68,9 +70,8 @@ class Auth extends ChangeNotifier {
       Token? updatedToken =
           await _authService.refreshAccessToken(_token.value!);
       _token.value = updatedToken;
-    } else {
-      return _token.value;
     }
+    return _token.value;
   }
 
   Future<Token?> register(String email, String password) async {

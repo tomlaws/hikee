@@ -20,4 +20,10 @@ class UserService {
         accessToken: token.accessToken);
     return true;
   }
+  Future<User?> changeNickname(Token token, {required String nickname}) async {
+    var res = await HttpUtils.patch(
+        API.getUri('/users/nickname'), {'nickname': nickname},
+        accessToken: token.accessToken);
+    return User.fromJson(res);
+  }
 }

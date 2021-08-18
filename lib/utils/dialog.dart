@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/dialog/base.dart';
+import 'package:hikee/components/dialog/route_review.dart';
 import 'package:routemaster/routemaster.dart';
 
 class DialogUtils {
   static show(context, Widget content,
-      {String? title, List<Widget> Function(BuildContext)? buttons}) async {
+      {String? title,
+      List<Widget> Function(BuildContext)? buttons,
+      BaseDialog? template}) async {
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -18,7 +22,7 @@ class DialogUtils {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (title != null)...[
+                  if (title != null) ...[
                     Align(
                       alignment: Alignment.center,
                       child: Padding(
@@ -57,6 +61,14 @@ class DialogUtils {
                     )
                 ],
               ));
+        });
+  }
+
+  static template(BuildContext context, Widget template) async {
+    return await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return template;
         });
   }
 }

@@ -1,16 +1,16 @@
 import 'package:get_it/get_it.dart';
-import 'package:hikee/models/auth.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/bookmark.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/providers/pagination_change_notifier.dart';
 import 'package:hikee/services/bookmark.dart';
 
 class BookmarksProvider extends PaginationChangeNotifier<Bookmark> {
-  Auth _auth;
+  AuthProvider _auth;
   set auth(auth) => _auth = auth;
   BookmarkService _bookmarkService = GetIt.I<BookmarkService>();
 
-  BookmarksProvider({required Auth auth}) : _auth = auth;
+  BookmarksProvider({required AuthProvider auth}) : _auth = auth;
 
   Future<Bookmark> createBookmark(int routeId) async {
     Bookmark bookmark = await _bookmarkService.createBookmark(_auth.getToken(),

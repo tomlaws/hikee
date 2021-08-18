@@ -48,7 +48,9 @@ class RouteElevation extends StatelessWidget {
     FlSpot? currentSpot;
     double minDist = double.infinity;
     elevations.asMap().forEach((index, value) {
-      var dist = GeoUtils.calculateDistance(value.location, myLocation!);
+      var dist = 0.0;
+      if (myLocation != null)
+        dist = GeoUtils.calculateDistance(value.location, myLocation);
       double e = value.elevation.roundToDouble();
       maxE = max(e, maxE);
       minE = min(e, minE);

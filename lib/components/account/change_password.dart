@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/text_input.dart';
-import 'package:hikee/models/auth.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/services/user.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
@@ -62,7 +62,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                   throw _confirmPasswordController.error =
                       'Password does not match';
                 }
-                var token = await context.read<Auth>().getToken();
+                var token = await context.read<AuthProvider>().getToken();
                 await _userService.changePassword(token!,
                     password: _passwordController.text);
               },
@@ -71,7 +71,6 @@ class _ChangePasswordState extends State<ChangePassword> {
                 child: Text('CANCEL'),
                 backgroundColor: Colors.grey,
                 onPressed: () {
-                  Routemaster.of(context).pop();
                   Routemaster.of(context).pop();
                 })
           ],

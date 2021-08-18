@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hikee/components/account/change_nickname.dart';
 import 'package:hikee/components/button.dart';
-import 'package:hikee/components/change_password.dart';
+import 'package:hikee/components/account/change_password.dart';
 import 'package:hikee/components/protected.dart';
-import 'package:hikee/models/auth.dart';
+import 'package:hikee/models/user.dart';
+import 'package:hikee/providers/auth.dart';
+import 'package:hikee/providers/me.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:image_picker/image_picker.dart';
@@ -46,18 +49,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> _operations = {
-      'Likes': null,
+      //'Likes': null,
       'Bookmarks': (BuildContext ctx) {
         Navigator.of(ctx)
             .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
       },
       'Settings': {'Language': null},
       'Account': {
+        'Change Nickname': _changeNickname,
         'Change Password': _changePassword,
         'Delete Account': (ctx) {}
       },
       'Logout': (BuildContext ctx) {
-        ctx.read<Auth>().logout();
+        ctx.read<AuthProvider>().logout();
       }
     };
     _options.value.clear();
@@ -82,18 +86,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _avatar = File(image.path);
                 });
               },
-              child: Container(
-                height: 128,
-                width: 128,
-                decoration: BoxDecoration(
-                    image: _avatar == null
-                        ? null
-                        : DecorationImage(image: FileImage(_avatar!)),
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(64)),
-              ),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Container(
+                  height: 128,
+                  width: 128,
+                  decoration: BoxDecoration(
+                      image: _avatar == null
+                          ? null
+                          : DecorationImage(image: FileImage(_avatar!)),
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(64)),
+                )
+              ]),
             ),
           ]),
+          Container(
+            height: 16,
+          ),
+          Selector<MeProvider, User?>(
+            selector: (_, mp) => mp.user,
+            builder: (_, me, __) => Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    height: 48,
+                    child: Center(
+                      child: Text(me?.nickname ?? 'Unnamed',
+                          style: TextStyle(fontSize: 24)),
+                    ),
+                  )
+                ]),
+          ),
           _list(_operations)
         ],
       ),
@@ -201,6 +226,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       child: Text('settings'),
     );
+  }
+
+  void _changeNickname(BuildContext context) {
+    DialogUtils.show(context, ChangeNickname(), title: 'Change Nickname',
+        buttons: (_) {
+      return [];
+    });
   }
 
   void _changePassword(BuildContext context) {

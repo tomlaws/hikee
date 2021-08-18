@@ -4,11 +4,12 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hikee/components/login_prompt.dart';
 import 'package:hikee/models/active_hiking_route.dart';
-import 'package:hikee/models/auth.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
-import 'package:hikee/models/me.dart';
+import 'package:hikee/providers/me.dart';
 import 'package:hikee/providers/bookmarks.dart';
+import 'package:hikee/providers/route.dart';
 import 'package:hikee/providers/route_reviews.dart';
 import 'package:hikee/screens/account.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
@@ -43,26 +44,34 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => Auth(),
+          create: (_) => AuthProvider(),
           lazy: false,
         ),
-        ChangeNotifierProxyProvider<Auth, Me>(
-          create: (_) => Me(null),
-          update: (_, auth, me) {
-            if (auth.loggedIn) {
-              return Me(auth);
-            }
-            return Me(null);
-          },
+        ChangeNotifierProxyProvider<AuthProvider, MeProvider>(
+          create: (context) => MeProvider(authProvider: context.read<AuthProvider>()),
+          update: (_, authProvider, __) => MeProvider(authProvider: authProvider),
           lazy: false,
         ),
-        ChangeNotifierProxyProvider<Auth, BookmarksProvider>(
-          create: (context) => BookmarksProvider(auth: context.read<Auth>()),
-          update: (_, auth, p) => p!..auth = auth,
+        ChangeNotifierProxyProvider<AuthProvider, RouteProvider>(
+          create: (context) =>
+              RouteProvider(authProvider: context.read<AuthProvider>()),
+          update: (_, authProvider, routeProvider) =>
+              RouteProvider(authProvider: authProvider),
           lazy: true,
         ),
-        ChangeNotifierProxyProvider<Auth, RouteReviewsProvider>(
-          create: (context) => RouteReviewsProvider(auth: context.read<Auth>()),
+        ChangeNotifierProxyProvider2<AuthProvider, RouteProvider,
+            RouteReviewsProvider>(
+          create: (context) => RouteReviewsProvider(
+              authProvider: context.read<AuthProvider>(),
+              routeProvider: context.read<RouteProvider>()),
+          update: (_, authProvider, routeProvider, routeReviewsProvider) =>
+              RouteReviewsProvider(
+                  authProvider: authProvider, routeProvider: routeProvider),
+          lazy: true,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, BookmarksProvider>(
+          create: (context) =>
+              BookmarksProvider(auth: context.read<AuthProvider>()),
           update: (_, auth, p) => p!..auth = auth,
           lazy: true,
         ),
@@ -122,7 +131,7 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _protected(BuildContext context, Widget child) {
-    if (context.watch<Auth>().loggedIn) return child;
+    if (context.watch<AuthProvider>().loggedIn) return child;
     return LoginPrompt();
   }
 

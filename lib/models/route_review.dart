@@ -6,17 +6,17 @@ part 'route_review.g.dart';
 @JsonSerializable()
 class RouteReview {
   int id;
-  int userId;
+  int reviewerId;
   int routeId;
-  User user;
+  User reviewer;
   String content;
   int rating;
 
   RouteReview(
       {required this.id,
-      required this.userId,
+      required this.reviewerId,
       required this.routeId,
-      required this.user,
+      required this.reviewer,
       required this.content,
       required this.rating});
 

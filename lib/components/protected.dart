@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
-import 'package:hikee/models/auth.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/screens/auth/login.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +29,7 @@ class _ProtectedState extends State<Protected> {
 
   @override
   Widget build(BuildContext context) {
-    var auth = context.watch<Auth>();
+    var auth = context.watch<AuthProvider>();
     if (auth.loggedIn) {
       return widget.child;
     } else {
