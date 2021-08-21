@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:hikee/api.dart';
 import 'package:hikee/models/token.dart';
 import 'package:hikee/models/user.dart';
@@ -20,10 +22,17 @@ class UserService {
         accessToken: token.accessToken);
     return true;
   }
+
   Future<User?> changeNickname(Token token, {required String nickname}) async {
     var res = await HttpUtils.patch(
         API.getUri('/users/nickname'), {'nickname': nickname},
         accessToken: token.accessToken);
+    return User.fromJson(res);
+  }
+
+  Future<User?> changeIcon(Token token, {required File file}) async {
+    var res = await HttpUtils.patchUpload(API.getUri('/users/icon'),
+        file: file, accessToken: token.accessToken);
     return User.fromJson(res);
   }
 }

@@ -11,6 +11,7 @@ import 'package:hikee/providers/me.dart';
 import 'package:hikee/providers/bookmarks.dart';
 import 'package:hikee/providers/route.dart';
 import 'package:hikee/providers/route_reviews.dart';
+import 'package:hikee/providers/routes.dart';
 import 'package:hikee/screens/account.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/screens/auth/login.dart';
@@ -48,8 +49,10 @@ void main() {
           lazy: false,
         ),
         ChangeNotifierProxyProvider<AuthProvider, MeProvider>(
-          create: (context) => MeProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, __) => MeProvider(authProvider: authProvider),
+          create: (context) =>
+              MeProvider(authProvider: context.read<AuthProvider>()),
+          update: (_, authProvider, __) =>
+              MeProvider(authProvider: authProvider),
           lazy: false,
         ),
         ChangeNotifierProxyProvider<AuthProvider, RouteProvider>(
@@ -59,6 +62,7 @@ void main() {
               RouteProvider(authProvider: authProvider),
           lazy: true,
         ),
+        ChangeNotifierProvider(create: (_) => RoutesProvider()),
         ChangeNotifierProxyProvider2<AuthProvider, RouteProvider,
             RouteReviewsProvider>(
           create: (context) => RouteReviewsProvider(
@@ -92,9 +96,6 @@ void main() {
               }
               return HikingStat(route, loc);
             }),
-        ChangeNotifierProvider(create: (_) => LibrarySort()),
-        ChangeNotifierProvider(create: (_) => LibraryFilter([])),
-        ChangeNotifierProvider(create: (_) => LibraryDistrict([])),
       ],
       child: MyApp(),
     ),
@@ -112,6 +113,14 @@ class MyApp extends StatelessWidget {
       title: 'Hikee',
       theme: ThemeData(
         primaryColor: themeColor,
+        sliderTheme: SliderThemeData(
+            thumbColor: themeColor,
+            activeTrackColor: themeColor,
+            inactiveTrackColor: themeColor.withOpacity(.25),
+            overlayColor: themeColor.withOpacity(.25),
+            valueIndicatorColor: Color(0xFFF5F5F5),
+            valueIndicatorTextStyle: TextStyle(color: Colors.black87),
+            activeTickMarkColor: Colors.white38),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: Colors.white,
             selectedItemColor: themeColor,

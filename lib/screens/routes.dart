@@ -1,16 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get_it/get_it.dart';
+import 'package:hikee/components/account/change_nickname.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
+import 'package:hikee/components/infinite_scroll.dart';
+import 'package:hikee/components/routes_filter.dart';
 import 'package:hikee/components/text_input.dart';
 import 'package:hikee/data/districtValues.dart';
 import 'package:hikee/data/sortValues.dart';
 import 'package:hikee/data/filterValues.dart';
 import 'package:hikee/models/route.dart';
-import 'package:hikee/screens/route.dart';
-import 'package:hikee/services/route.dart';
+import 'package:hikee/providers/route.dart';
+import 'package:hikee/providers/routes.dart';
+import 'package:hikee/utils/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -25,75 +30,41 @@ class _RoutesScreenState extends State<RoutesScreen>
     with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
 
-  RouteService get _routeService => GetIt.I<RouteService>();
   TextEditingController _searchController = TextEditingController(text: "");
-  ScrollController _scrollController = ScrollController();
-
-  List<HikingRoute> _hikingRoutes = [];
-  bool _loading = false;
-  bool _hasMore = true;
-
-  String query = "";
-  String? sort = "length";
-  String? order = "ASC";
-
-  //late Future<List<HikingRoute>> _hikingRoutes;
 
   @override
   void initState() {
     super.initState();
-    fetchMore(query: query, sort: sort, order: order);
-    _scrollController.addListener(() {
-      double diff = _scrollController.position.maxScrollExtent -
-          _scrollController.position.pixels;
-      if (diff < 500 && !_loading && _hasMore) {
-        fetchMore(query: query, sort: sort, order: order);
-      }
-    });
-    _searchController.addListener(() {
-      String text = _searchController.text;
-      if (query.compareTo(text) != 0) {
-        setState(() {
-          query = text;
-          _hikingRoutes.clear();
-          fetchMore(query: query, sort: sort, order: order);
-        });
-      }
-    });
   }
 
-  void fetchMore(
-      {String? query, int? after, String? sort, String? order}) async {
-    setState(() {
-      _loading = true;
-    });
-    print(sort);
-    print(order);
-    int? after = _hikingRoutes.isEmpty ? null : _hikingRoutes.last.id;
-    List<HikingRoute> routes = await _routeService.getRoutes(
-        query: query, after: after, sort: sort, order: order);
-    if (mounted) {
-      setState(() {
-        if (routes.length > 0)
-          _hikingRoutes.addAll(routes);
-        else
-          _hasMore = false;
-        _loading = false;
-      });
-    }
-  }
+  // void fetchMore(
+  //     {String? query, int? after, String? sort, String? order}) async {
+  //   setState(() {
+  //     _loading = true;
+  //   });
+  //   int? after = _hikingRoutes.isEmpty ? null : _hikingRoutes.last.id;
+  //   List<HikingRoute> routes = await _routeService.getRoutes(
+  //       query: query, after: after, sort: sort, order: order);
+  //   if (mounted) {
+  //     setState(() {
+  //       if (routes.length > 0)
+  //         _hikingRoutes.addAll(routes);
+  //       else
+  //         _hasMore = false;
+  //       _loading = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final _libraryFilter = Provider.of<LibraryFilter>(context);
-    final _libraryDistrict = Provider.of<LibraryDistrict>(context);
-    List<String> filterValue = [];
-    Color filterColor = (_libraryFilter.isEmpty())
-        ? Colors.grey
-        : Theme.of(context).primaryColor;
-    Color districtColor = (_libraryDistrict.isEmpty())
-        ? Colors.grey
-        : Theme.of(context).primaryColor;
+    // List<String> filterValue = [];
+    // Color filterColor = (_libraryFilter.isEmpty())
+    //     ? Colors.grey
+    //     : Theme.of(context).primaryColor;
+    // Color districtColor = (_libraryDistrict.isEmpty())
+    //     ? Colors.grey
+    //     : Theme.of(context).primaryColor;
 
     return Scaffold(
       body: SafeArea(
@@ -101,14 +72,16 @@ class _RoutesScreenState extends State<RoutesScreen>
           color: Colors.white,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextInput(
                 textEditingController: _searchController,
                 hintText: 'Search...',
               ),
             ),
             Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -120,180 +93,330 @@ class _RoutesScreenState extends State<RoutesScreen>
                   ),
                 ],
               ),
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  //Sort Button
-                  TextButton(
-                      onPressed: () async {
-                        String newSortValue = await _showSortDialog(context);
-                        print(newSortValue);
-                        /*if (newSortValue.compareTo(sortValues[0]) == 0) {
-                            sort = 'name_en';
-                            order = 'ASC';
-                          }
-                          if (newSortValue.compareTo(sortValues[1]) == 0) {
-                            sort = 'name_en';
-                            order = 'DESC';
-                          }*/
-                        if (newSortValue.compareTo(sortValues[0]) == 0) {
-                          sort = 'length';
-                          order = 'ASC';
-                        }
-                        if (newSortValue.compareTo(sortValues[1]) == 0) {
-                          sort = 'length';
-                          order = 'DESC';
-                        }
-                        if (newSortValue.compareTo(sortValues[2]) == 0) {
-                          sort = 'difficulty';
-                          order = 'ASC';
-                        }
-                        if (newSortValue.compareTo(sortValues[3]) == 0) {
-                          sort = 'difficulty';
-                          order = 'DESC';
-                        }
-                        setState(() {
-                          _hikingRoutes.clear();
-                          fetchMore(query: query, sort: sort, order: order);
-                        });
+                children: [
+                  Expanded(
+                    child: Button(
+                      backgroundColor: Color(0xFFF5F5F5),
+                      child: Selector<RoutesProvider, List<String>>(
+                        selector: (_, p) => [p.sortStr, p.order],
+                        builder: (_, sortAndOrder, __) => Row(
+                          children: [
+                            sortAndOrder[1] == 'DESC'
+                                ? Icon(Icons.sort)
+                                : Transform.rotate(
+                                    angle: 180 * pi / 180,
+                                    child: Icon(Icons.sort)),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  sortAndOrder[0],
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .color),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      onPressed: () {
+                        _showSortMenu();
                       },
-                      style: TextButton.styleFrom(
-                          primary: Theme.of(context).primaryColor),
-                      child: Row(
-                        children: [
-                          Icon(Icons.sort),
-                          Text(
-                            "Sorting",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ],
-                      )),
-
-                  // Filter Button
-                  TextButton(
-                      onPressed: () => {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => FilterPage()))
-                          },
-                      style: TextButton.styleFrom(
-                        primary: filterColor,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.filter_list),
-                          Text(
-                            "Filter",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ],
-                      )),
-
-                  //District Button
-                  TextButton(
-                      onPressed: () => {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DistrictPage()))
-                          },
-                      style: TextButton.styleFrom(
-                        primary: districtColor,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.map),
-                          Text(
-                            "District",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ],
-                      ))
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Button(
+                      backgroundColor: Color(0xFFF5F5F5),
+                      onPressed: () {
+                        _showFilter();
+                      },
+                      child: Text('Filters',
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .color)),
+                    ),
+                  )
                 ],
               ),
             ),
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.grey.withOpacity(0.2),
+            //         spreadRadius: 3,
+            //         blurRadius: 3,
+            //         offset: Offset(0, 6), // changes position of shadow
+            //       ),
+            //     ],
+            //   ),
+            //   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //     children: <Widget>[
+            //       //Sort Button
+            //       TextButton(
+            //           onPressed: () async {
+            //             String newSortValue = await _showSortDialog(context);
+            //             print(newSortValue);
+            //             /*if (newSortValue.compareTo(sortValues[0]) == 0) {
+            //                 sort = 'name_en';
+            //                 order = 'ASC';
+            //               }
+            //               if (newSortValue.compareTo(sortValues[1]) == 0) {
+            //                 sort = 'name_en';
+            //                 order = 'DESC';
+            //               }*/
+            //             if (newSortValue.compareTo(sortValues[0]) == 0) {
+            //               sort = 'length';
+            //               order = 'ASC';
+            //             }
+            //             if (newSortValue.compareTo(sortValues[1]) == 0) {
+            //               sort = 'length';
+            //               order = 'DESC';
+            //             }
+            //             if (newSortValue.compareTo(sortValues[2]) == 0) {
+            //               sort = 'difficulty';
+            //               order = 'ASC';
+            //             }
+            //             if (newSortValue.compareTo(sortValues[3]) == 0) {
+            //               sort = 'difficulty';
+            //               order = 'DESC';
+            //             }
+            //             setState(() {
+            //               _hikingRoutes.clear();
+            //               fetchMore(query: query, sort: sort, order: order);
+            //             });
+            //           },
+            //           style: TextButton.styleFrom(
+            //               primary: Theme.of(context).primaryColor),
+            //           child: Row(
+            //             children: [
+            //               Icon(Icons.sort),
+            //               Text(
+            //                 "Sorting",
+            //                 style: TextStyle(fontSize: 15),
+            //               ),
+            //             ],
+            //           )),
+
+            //       // Filter Button
+            //       TextButton(
+            //           onPressed: () => {
+            //                 Navigator.push(
+            //                     context,
+            //                     MaterialPageRoute(
+            //                         builder: (context) => FilterPage()))
+            //               },
+            //           style: TextButton.styleFrom(
+            //             primary: filterColor,
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               Icon(Icons.filter_list),
+            //               Text(
+            //                 "Filter",
+            //                 style: TextStyle(fontSize: 15),
+            //               ),
+            //             ],
+            //           )),
+
+            //       //District Button
+            //       TextButton(
+            //           onPressed: () => {
+            //                 Navigator.push(
+            //                     context,
+            //                     MaterialPageRoute(
+            //                         builder: (context) => DistrictPage()))
+            //               },
+            //           style: TextButton.styleFrom(
+            //             primary: districtColor,
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               Icon(Icons.map),
+            //               Text(
+            //                 "District",
+            //                 style: TextStyle(fontSize: 15),
+            //               ),
+            //             ],
+            //           ))
+            //     ],
+            //   ),
+            // ),
             Expanded(
-                child: CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.all(16),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return HikingRouteTile(
-                        route: _hikingRoutes[index],
-                        onTap: () {
-                          Routemaster.of(context).push('/routes/${_hikingRoutes[index].id}');
-                        },
-                      );
-                    }, childCount: _hikingRoutes.length),
-                  ),
-                ),
-                if (_loading && _hasMore)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    fillOverscroll: true,
-                    child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.only(bottom: 32.0),
-                      child: CircularProgressIndicator(),
-                    )),
-                  ),
-              ],
-            )),
+              child: InfiniteScroll<RoutesProvider, HikingRoute>(
+                selector: (p) => p.items,
+                builder: (route) {
+                  return HikingRouteTile(
+                    route: route,
+                    onTap: () {
+                      Routemaster.of(context).push('/routes/${route.id}');
+                    },
+                  );
+                },
+                fetch: (next) {
+                  return context.read<RoutesProvider>().fetch(next);
+                },
+              ),
+              //     child: CustomScrollView(
+              //   controller: _scrollController,
+              //   slivers: [
+              //     SliverPadding(
+              //       padding: EdgeInsets.all(16),
+              //       sliver: SliverList(
+              //         delegate: SliverChildBuilderDelegate((context, index) {
+              //           return HikingRouteTile(
+              //             route: _hikingRoutes[index],
+              //             onTap: () {
+              //               Routemaster.of(context).push('/routes/${_hikingRoutes[index].id}');
+              //             },
+              //           );
+              //         }, childCount: _hikingRoutes.length),
+              //       ),
+              //     ),
+              //     if (_loading && _hasMore)
+              //       SliverFillRemaining(
+              //         hasScrollBody: false,
+              //         fillOverscroll: true,
+              //         child: Center(
+              //             child: Padding(
+              //           padding: const EdgeInsets.only(bottom: 32.0),
+              //           child: CircularProgressIndicator(),
+              //         )),
+              //       ),
+              //   ],
+              // )
+            ),
           ]),
         ),
       ),
     );
   }
 
-  // Show sort dialog funciton
-  _showSortDialog(BuildContext context) => showDialog(
-      context: context,
-      builder: (context) {
-        final _LibrarySort = Provider.of<LibrarySort>(context);
-        return AlertDialog(
-          title: Text("Sorting"),
-          content: SingleChildScrollView(
-            child: Container(
-                width: double.infinity,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: sortValues
-                      .map((e) => RadioListTile<String>(
-                            activeColor: Theme.of(context).primaryColor,
-                            title: Text(e),
-                            value: e,
-                            groupValue: _LibrarySort.currentSort,
-                            selected: _LibrarySort.currentSort == e,
-                            onChanged: (value) {
-                              setState(() {});
-                              _LibrarySort.updateSort(value!);
-                              Navigator.of(context).pop(value);
-                            },
-                          ))
-                      .toList(),
-                )),
-          ),
-        );
-      });
-}
+  _showSortMenu() {
+    DialogUtils.show(
+        context,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Text('Sort'),
+            ),
+            Selector<RoutesProvider, String>(
+              selector: (_, p) => p.sort,
+              builder: (_, sort, __) => Row(
+                children: [
+                  Button(
+                    backgroundColor:
+                        sort == 'difficulty' ? null : Color(0xFFF5F5F5),
+                    child: Text('Difficulty',
+                        style: sort == 'difficulty'
+                            ? null
+                            : TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .color)),
+                    onPressed: () {
+                      context.read<RoutesProvider>().sort = 'difficulty';
+                    },
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Button(
+                    backgroundColor:
+                        sort == 'length' ? null : Color(0xFFF5F5F5),
+                    child: Text('Length',
+                        style: sort == 'length'
+                            ? null
+                            : TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .color)),
+                    onPressed: () {
+                      context.read<RoutesProvider>().sort = 'length';
+                    },
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Button(
+                    backgroundColor:
+                        sort == 'duration' ? null : Color(0xFFF5F5F5),
+                    child: Text('Duration',
+                        style: sort == 'duration'
+                            ? null
+                            : TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .color)),
+                    onPressed: () {
+                      context.read<RoutesProvider>().sort = 'duration';
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text('Order'),
+            ),
+            Selector<RoutesProvider, String>(
+              selector: (_, p) => p.order,
+              builder: (_, order, __) => Row(
+                children: [
+                  Button(
+                    backgroundColor: order == 'ASC' ? null : Color(0xFFF5F5F5),
+                    child: Text('Ascending',
+                        style: order == 'ASC'
+                            ? null
+                            : TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .color)),
+                    onPressed: () {
+                      context.read<RoutesProvider>().order = 'ASC';
+                    },
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Button(
+                    backgroundColor: order == 'DESC' ? null : Color(0xFFF5F5F5),
+                    child: Text('Descending',
+                        style: order == 'DESC'
+                            ? null
+                            : TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .color)),
+                    onPressed: () {
+                      context.read<RoutesProvider>().order = 'DESC';
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ));
+  }
 
-// ============Notifier==============
-class LibrarySort extends ChangeNotifier {
-  String _currentSort = sortValues[0];
-
-  LibrarySort();
-
-  String get currentSort => _currentSort;
-
-  updateSort(String value) {
-    if (value != _currentSort) {
-      _currentSort = value;
-      notifyListeners();
-    }
+  _showFilter() {
+    Navigator.of(context).push(CupertinoPageRoute(builder: (_) => RoutesFilter()));
   }
 }
 

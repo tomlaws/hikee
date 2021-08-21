@@ -8,6 +8,7 @@ class Button extends StatefulWidget {
   final void Function() onPressed;
   final bool invert;
   final Color? backgroundColor;
+  final bool secondary;
   final bool loading;
   final bool disabled;
   final Icon? icon;
@@ -17,6 +18,7 @@ class Button extends StatefulWidget {
       required this.onPressed,
       this.icon,
       this.backgroundColor,
+      this.secondary = false,
       this.loading = false,
       this.disabled = false,
       this.invert = false})
@@ -51,33 +53,41 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     var buttonColor = (widget.backgroundColor != null
-            ? widget.backgroundColor!
-            : (widget.invert ? Colors.white : Theme.of(context).primaryColor));
-    if (buttonColor != Colors.transparent) 
-        buttonColor.withOpacity((widget.disabled || widget.loading) ? .75 : 1);
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      child: Transform.scale(
-        scale: _scale,
+        ? widget.backgroundColor!
+        : (widget.invert
+            ? Colors.white
+            : (widget.secondary
+                ? Color(0xFFF5F5F5)
+                : Theme.of(context).primaryColor)));
+    var textColor =
+        (widget.invert ? Theme.of(context).primaryColor : Colors.white)
+            .withOpacity((widget.disabled || widget.loading) ? .75 : 1);
+    if (widget.secondary)
+      textColor = Theme.of(context).textTheme.bodyText1!.color!;
+    if (buttonColor != Colors.transparent)
+      buttonColor.withOpacity((widget.disabled || widget.loading) ? .75 : 1);
+    return Material(
+      borderRadius: BorderRadius.circular(12.0),
+      clipBehavior: Clip.antiAlias,
+      color: buttonColor,
+      child: InkWell(
+        onTap: () {
+          widget.onPressed();
+        },
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: 48,
+            minHeight: 40,
             minWidth: 48,
-            maxHeight: 48,
+            maxHeight: 40,
           ),
           child: Container(
             padding:
                 EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16),
             decoration: BoxDecoration(
-                color: buttonColor,
-                borderRadius: BorderRadius.all(Radius.circular(32))),
+                borderRadius: BorderRadius.all(Radius.circular(10))),
             child: DefaultTextStyle(
                 style: TextStyle(
-                    color: (widget.invert
-                            ? Theme.of(context).primaryColor
-                            : Colors.white)
-                        .withOpacity(
-                            (widget.disabled || widget.loading) ? .75 : 1),
+                    color: textColor,
                     fontWeight: FontWeight.bold,
                     letterSpacing: .5),
                 child: Stack(alignment: Alignment.center, children: [
@@ -105,27 +115,6 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
           ),
         ),
       ),
-      onTap: () {
-        if (widget.loading || widget.disabled) return;
-        _controller.reverse();
-        widget.onPressed();
-      },
-      onTapDown: (dp) {
-        if (widget.loading || widget.disabled) return;
-        _controller.reverse();
-      },
-      onTapUp: (dp) {
-        if (_timer != null) {
-          _timer!.cancel();
-          _timer = null;
-        }
-        _timer = Timer(Duration(milliseconds: 150), () {
-          _controller.fling();
-        });
-      },
-      onTapCancel: () {
-        _controller.fling();
-      },
     );
   }
 

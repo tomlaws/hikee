@@ -6,12 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:hikee/components/account/change_nickname.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/account/change_password.dart';
-import 'package:hikee/components/protected.dart';
 import 'package:hikee/models/user.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/me.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/utils/dialog.dart';
+import 'package:hikee/utils/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -82,9 +82,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final XFile? image =
                     await _picker.pickImage(source: ImageSource.gallery);
                 if (image == null) return;
-                setState(() {
-                  _avatar = File(image.path);
-                });
+                _uploadIcon(File(image.path));
+                // setState(() {
+                //   _avatar = File(image.path);
+                // });
               },
               child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Container(
@@ -240,5 +241,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         buttons: (_) {
       return [];
     });
+  }
+
+  void _uploadIcon(File file) {
+    context.read<MeProvider>().changeIcon(file);
   }
 }

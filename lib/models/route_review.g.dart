@@ -14,6 +14,7 @@ RouteReview _$RouteReviewFromJson(Map<String, dynamic> json) {
     reviewer: User.fromJson(json['reviewer'] as Map<String, dynamic>),
     content: json['content'] as String,
     rating: json['rating'] as int,
+    createdAt: DateTime.parse(json['createdAt'] as String),
   );
 }
 
@@ -25,4 +26,5 @@ Map<String, dynamic> _$RouteReviewToJson(RouteReview instance) =>
       'reviewer': instance.reviewer,
       'content': instance.content,
       'rating': instance.rating,
+      'createdAt': instance.createdAt.toIso8601String(),
     };

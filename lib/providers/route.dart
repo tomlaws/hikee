@@ -11,7 +11,6 @@ class RouteProvider extends ChangeNotifier {
   HikingRoute? get route => _route;
 
   RouteProvider({required AuthProvider authProvider}): _authProvider = authProvider {
-    print('rp');
   }
 
   Future<HikingRoute?> getRoute(int id) async {

@@ -3,7 +3,7 @@ import 'package:hikee/models/paginated.dart';
 
 abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
   List<T> _items = [];
-  get items => _items;
+  List<T> get items => _items;
 
   String? _cursor;
   bool _hasMore = true;
@@ -41,6 +41,7 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
     _loading = false;
     _hasMore = true;
     _items.clear();
+    notifyListeners();
   }
 
   Future<Paginated<T>> get(String? cursor);

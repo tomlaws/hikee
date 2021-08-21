@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hikee/providers/auth.dart';
@@ -32,6 +34,15 @@ class MeProvider extends ChangeNotifier {
   Future<void> changeNickname(String nickname) async {
     User? result = await _userService
         .changeNickname((await _authProvider.getToken())!, nickname: nickname);
+    if (result != null) {
+      _user = result;
+      notifyListeners();
+    }
+  }
+
+  Future<void> changeIcon(File file) async {
+    User? result = await _userService
+        .changeIcon((await _authProvider.getToken())!, file: file);
     if (result != null) {
       _user = result;
       notifyListeners();

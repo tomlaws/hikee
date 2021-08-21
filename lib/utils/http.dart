@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:hikee/models/error/error_response.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
+import 'dart:convert';
 
 class HttpUtils {
   static get(Uri uri, {String? accessToken}) async {
@@ -60,6 +65,23 @@ class HttpUtils {
       headers['Authorization'] = 'Bearer $accessToken';
     }
     final res = await http.delete(uri, headers: headers);
+    if (![200, 201].contains(res.statusCode)) {
+      throw ErrorResponse.fromJson(jsonDecode(res.body));
+    }
+    return jsonDecode(res.body);
+  }
+
+  static patchUpload(Uri uri, {required File file, String? accessToken}) async {
+    final request = http.MultipartRequest('PATCH', uri);
+    if (accessToken != null) {
+      request.headers["Content-Type"] = 'multipart/form-data';
+      request.headers['Authorization'] = 'Bearer $accessToken';
+    }
+    var bytes = await file.readAsBytes();
+    request.files.add(new http.MultipartFile.fromBytes('file', bytes,
+        filename: "icon.${file.path.split(".").last}",
+        contentType: MediaType("image", "${file.path.split(".").last}")));
+    http.Response res = await http.Response.fromStream(await request.send());
     if (![200, 201].contains(res.statusCode)) {
       throw ErrorResponse.fromJson(jsonDecode(res.body));
     }

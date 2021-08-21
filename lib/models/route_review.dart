@@ -11,6 +11,7 @@ class RouteReview {
   User reviewer;
   String content;
   int rating;
+  DateTime createdAt;
 
   RouteReview(
       {required this.id,
@@ -18,7 +19,8 @@ class RouteReview {
       required this.routeId,
       required this.reviewer,
       required this.content,
-      required this.rating});
+      required this.rating,
+      required this.createdAt});
 
   factory RouteReview.fromJson(Map<String, dynamic> json) =>
       _$RouteReviewFromJson(json);

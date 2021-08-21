@@ -6,11 +6,13 @@ class TextInput extends StatefulWidget {
   final TextEditingController? textEditingController;
   final TextInputController? controller;
   final bool obscureText;
+  final int maxLines;
   const TextInput(
       {Key? key,
       this.hintText,
       this.textEditingController,
       this.controller,
+      this.maxLines = 1,
       this.obscureText = false})
       : super(key: key);
 
@@ -62,17 +64,19 @@ class _TextInputState extends State<TextInput>
                 decoration: BoxDecoration(
                     color: _colorTween.value,
                     border: Border.all(color: _colorTween2.value),
-                    borderRadius: BorderRadius.all(Radius.circular(30))),
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
                 child: TextField(
                     focusNode: _focus,
                     controller:
                         widget.controller ?? widget.textEditingController,
                     autofocus: false,
                     obscureText: widget.obscureText,
+                    maxLines: widget.maxLines,
                     cursorColor: Theme.of(context).primaryColor,
                     decoration: InputDecoration(
+                      isDense: true,
                         contentPadding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                         border: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
@@ -91,7 +95,7 @@ class _TextInputState extends State<TextInput>
                         children: [
                           Container(height: 4),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            padding: EdgeInsets.symmetric(horizontal: 0),
                             child: Text(widget.controller!.error!,
                                 style: TextStyle(color: Colors.red)),
                           )

@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/future_selector.dart';
 import 'package:hikee/components/dialog/route_review.dart';
 import 'package:hikee/components/infinite_scroll.dart';
@@ -12,14 +13,13 @@ import 'package:hikee/components/route_info.dart';
 import 'package:hikee/components/route_review_tile.dart';
 import 'package:hikee/components/shimmer.dart';
 import 'package:hikee/models/active_hiking_route.dart';
-import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/models/route_review.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/bookmarks.dart';
 import 'package:hikee/providers/route.dart';
 import 'package:hikee/providers/route_reviews.dart';
-import 'package:hikee/services/bookmark.dart';
-import 'package:hikee/services/route.dart';
+import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:provider/provider.dart';
@@ -71,7 +71,7 @@ class _RouteScreenState extends State<RouteScreen> {
                     actions: [
                       ValueListenableBuilder<bool>(
                         valueListenable: _bookmarked,
-                        builder: (_, bookmarked, __) => Button(
+                        builder: (context, bookmarked, __) => Button(
                             backgroundColor: Colors.transparent,
                             icon: Icon(
                               bookmarked
@@ -80,6 +80,14 @@ class _RouteScreenState extends State<RouteScreen> {
                               color: Colors.amber,
                             ),
                             onPressed: () {
+                              if (!context.read<AuthProvider>().loggedIn) {
+                                DialogUtils.show(
+                                    context,
+                                    Container(
+                                      child: Text('Please login first'),
+                                    ));
+                                return;
+                              }
                               if (bookmarked) {
                                 context
                                     .read<BookmarksProvider>()
@@ -214,9 +222,8 @@ class _RouteScreenState extends State<RouteScreen> {
                                 ),
                               ],
                             )),
-                        Divider(),
                         Container(
-                          height: 16,
+                          height: 8,
                         ),
                         RouteInfo(
                           route: route,
@@ -225,76 +232,76 @@ class _RouteScreenState extends State<RouteScreen> {
                         Container(
                           height: 16,
                         ),
-                        // Container(
-                        //   height: 240,
-                        //   clipBehavior: Clip.antiAlias,
-                        //   decoration: BoxDecoration(
-                        //       borderRadius: BorderRadius.circular(16.0)),
-                        //   child: GoogleMap(
-                        //     mapType: MapType.normal,
-                        //     initialCameraPosition: CameraPosition(
-                        //       target: points[(points.length / 5 * 2).floor()],
-                        //       zoom: 13,
-                        //     ),
-                        //     gestureRecognizers:
-                        //         <Factory<OneSequenceGestureRecognizer>>[
-                        //       new Factory<OneSequenceGestureRecognizer>(
-                        //         () => new EagerGestureRecognizer(),
-                        //       ),
-                        //     ].toSet(),
-                        //     zoomControlsEnabled: true,
-                        //     compassEnabled: false,
-                        //     mapToolbarEnabled: false,
-                        //     tiltGesturesEnabled: false,
-                        //     scrollGesturesEnabled: false,
-                        //     zoomGesturesEnabled: false,
-                        //     rotateGesturesEnabled: false,
-                        //     polylines: [
-                        //       Polyline(
-                        //         polylineId: PolylineId('polyLine1'),
-                        //         color: Colors.amber.shade400,
-                        //         zIndex: 2,
-                        //         width: 4,
-                        //         jointType: JointType.round,
-                        //         startCap: Cap.roundCap,
-                        //         endCap: Cap.roundCap,
-                        //         points: points,
-                        //       ),
-                        //       Polyline(
-                        //         polylineId: PolylineId('polyLine2'),
-                        //         color: Colors.white,
-                        //         width: 6,
-                        //         jointType: JointType.round,
-                        //         startCap: Cap.roundCap,
-                        //         endCap: Cap.roundCap,
-                        //         zIndex: 1,
-                        //         points: points,
-                        //       ),
-                        //     ].toSet(),
-                        //     markers: [
-                        //       Marker(
-                        //         markerId: MarkerId('marker-start'),
-                        //         zIndex: 2,
-                        //         icon: MapMarker().start,
-                        //         position: points.first,
-                        //       ),
-                        //       Marker(
-                        //         markerId: MarkerId('marker-end'),
-                        //         zIndex: 1,
-                        //         icon: MapMarker().end,
-                        //         position: points.last,
-                        //       )
-                        //     ].toSet(),
-                        //     onMapCreated: (GoogleMapController controller) {
-                        //       controller.setMapStyle(
-                        //           '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
+                        Container(
+                          height: 240,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0)),
+                          child: GoogleMap(
+                            mapType: MapType.normal,
+                            initialCameraPosition: CameraPosition(
+                              target: points[(points.length / 5 * 2).floor()],
+                              zoom: 13,
+                            ),
+                            gestureRecognizers:
+                                <Factory<OneSequenceGestureRecognizer>>[
+                              new Factory<OneSequenceGestureRecognizer>(
+                                () => new EagerGestureRecognizer(),
+                              ),
+                            ].toSet(),
+                            zoomControlsEnabled: true,
+                            compassEnabled: false,
+                            mapToolbarEnabled: false,
+                            tiltGesturesEnabled: false,
+                            scrollGesturesEnabled: false,
+                            zoomGesturesEnabled: false,
+                            rotateGesturesEnabled: false,
+                            polylines: [
+                              Polyline(
+                                polylineId: PolylineId('polyLine1'),
+                                color: Colors.amber.shade400,
+                                zIndex: 2,
+                                width: 4,
+                                jointType: JointType.round,
+                                startCap: Cap.roundCap,
+                                endCap: Cap.roundCap,
+                                points: points,
+                              ),
+                              Polyline(
+                                polylineId: PolylineId('polyLine2'),
+                                color: Colors.white,
+                                width: 6,
+                                jointType: JointType.round,
+                                startCap: Cap.roundCap,
+                                endCap: Cap.roundCap,
+                                zIndex: 1,
+                                points: points,
+                              ),
+                            ].toSet(),
+                            markers: [
+                              Marker(
+                                markerId: MarkerId('marker-start'),
+                                zIndex: 2,
+                                icon: MapMarker().start,
+                                position: points.first,
+                              ),
+                              Marker(
+                                markerId: MarkerId('marker-end'),
+                                zIndex: 1,
+                                icon: MapMarker().end,
+                                position: points.last,
+                              )
+                            ].toSet(),
+                            onMapCreated: (GoogleMapController controller) {
+                              controller.setMapStyle(
+                                  '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
 
-                        //       controller.moveCamera(
-                        //           CameraUpdate.newLatLngBounds(
-                        //               GeoUtils.getPathBounds(points), 40));
-                        //     },
-                        //   ),
-                        // )
+                              controller.moveCamera(
+                                  CameraUpdate.newLatLngBounds(
+                                      GeoUtils.getPathBounds(points), 40));
+                            },
+                          ),
+                        )
                       ]),
                     ),
                   ),
@@ -323,34 +330,44 @@ class _RouteScreenState extends State<RouteScreen> {
                                           color: Colors.black38,
                                         ),
                                         onPressed: () async {
-                                          var res = await routeReviewDialog();
-                                          if (res == null) return;
-                                          String content = res['content'];
-                                          int rating = res['rating'];
-                                          context
-                                              .read<RouteReviewsProvider>()
-                                              .createRouteReview(
-                                                  widget.id, content, rating);
+                                          await routeReviewDialog();
                                         })
                                   ]),
                               Container(
-                                height: 12,
+                                height: 4,
                               ),
-                              InfiniteScroll<RouteReviewsProvider, RouteReview>(
-                                  shrinkWrap: true,
-                                  selector: (p) => p.items,
-                                  padding: EdgeInsets.zero,
-                                  builder: (routeReview) {
-                                    return RouteReviewTile(
-                                      routeReview: routeReview,
+                              _reviewList(3),
+                              Selector<RouteReviewsProvider, bool>(
+                                  builder: (context, more, __) {
+                                    if (!more) return SizedBox();
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        child: Button(
+                                            child: Text('Show more'),
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                  CupertinoPageRoute(
+                                                      builder: (_) =>
+                                                          Container(
+                                                            color: Colors.white,
+                                                            child: Column(children: [
+                                                              HikeeAppBar(
+                                                                title: Text(
+                                                                    'Reviews'),
+                                                              ),
+                                                              Padding(
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: _reviewList(null),
+                                                              ),
+                                                            ]),
+                                                          )));
+                                            }),
+                                      ),
                                     );
                                   },
-                                  fetch: (next) {
-                                    print('fetch next');
-                                    return context
-                                        .read<RouteReviewsProvider>()
-                                        .fetch(next);
-                                  })
+                                  selector: (_, p) => p.items.length > 3)
                             ],
                           ),
                         ],
@@ -366,8 +383,27 @@ class _RouteScreenState extends State<RouteScreen> {
     return await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (BuildContext context) {
-        return RouteReviewDialog();
+        return RouteReviewDialog(routeId: widget.id,);
       },
     );
+  }
+
+  Widget _reviewList(int? take) {
+    return InfiniteScroll<RouteReviewsProvider, RouteReview>(
+        take: take,
+        init: take != null,
+        empty: 'No reviews yet',
+        shrinkWrap: true,
+        selector: (p) => p.items,
+        padding: EdgeInsets.zero,
+        separator: SizedBox(height: 8),
+        builder: (routeReview) {
+          return RouteReviewTile(
+            routeReview: routeReview,
+          );
+        },
+        fetch: (next) {
+          return context.read<RouteReviewsProvider>().fetch(next);
+        });
   }
 }

@@ -3,9 +3,13 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/dialog/base.dart';
 import 'package:hikee/components/text_input.dart';
+import 'package:hikee/models/error/error_response.dart';
+import 'package:hikee/providers/route_reviews.dart';
+import 'package:provider/provider.dart';
 
 class RouteReviewDialog extends BaseDialog {
-  const RouteReviewDialog({Key? key}) : super(key: key);
+  const RouteReviewDialog({Key? key, required this.routeId}) : super(key: key);
+  final int routeId;
 
   @override
   _RouteReviewDialogState createState() => _RouteReviewDialogState();
@@ -24,9 +28,13 @@ class _RouteReviewDialogState extends State<RouteReviewDialog> {
   @override
   Widget build(BuildContext context) {
     Widget content = Column(
-//        crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        Text('How would you rate this route?'),
+        SizedBox(
+          height: 8,
+        ),
         RatingBar.builder(
           itemSize: 24,
           initialRating: _rating.toDouble(),
@@ -45,10 +53,14 @@ class _RouteReviewDialogState extends State<RouteReviewDialog> {
             });
           },
         ),
-        Container(
+        SizedBox(
+          height: 16,
+        ),
+        Text('Comment'),
+        SizedBox(
           height: 8,
         ),
-        TextInput(controller: _contentController)
+        TextInput(controller: _contentController, maxLines: 3,)
       ],
     );
     List<Widget> buttons = [
@@ -61,12 +73,23 @@ class _RouteReviewDialogState extends State<RouteReviewDialog> {
       ),
       Button(
         child: const Text('SUBMIT'),
-        onPressed: () {
-          Map<String, dynamic> result = {
-            'content': _contentController.text,
-            'rating': _rating,
-          };
-          Navigator.of(context).pop(result);
+        onPressed: () async {
+          try {
+            Map<String, dynamic> result = {
+              'content': _contentController.text,
+              'rating': _rating,
+            };
+            String content = _contentController.text;
+            int rating = _rating;
+            await context
+                .read<RouteReviewsProvider>()
+                .createRouteReview(widget.routeId, content, rating);
+            Navigator.of(context).pop(result);
+          } catch (ex) {
+            if (ex is ErrorResponse) {
+              _contentController.error = ex.getFieldError('content');
+            }
+          }
         },
       ),
     ];

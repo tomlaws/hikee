@@ -1,5 +1,4 @@
 import 'package:hikee/api.dart';
-import 'package:hikee/constants.dart';
 import 'package:hikee/models/elevation.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/route.dart';
@@ -12,21 +11,38 @@ class RouteService {
   ///
   /// Search function can be achieved with [query] and [after] can be provided for pagination.
   /// For sorting, use [sort] and [order].
-  Future<List<HikingRoute>> getRoutes(
-      {String? query, int? after, String? sort, String? order = 'DESC'}) async {
-    try {
-      Map<String, dynamic> queryParams = {};
-      if (query != null && query.length > 0) queryParams['query'] = query;
-      if (after != null) queryParams['after'] = after.toString();
-      if (sort != null) queryParams['sort'] = sort;
-      if (order != null) queryParams['order'] = order;
-      final uri = API.getUri('/routes', queryParams: queryParams);
-      List<dynamic> routes = await HttpUtils.get(uri);
-      return routes.map((r) => HikingRoute.fromJson(r)).toList();
-    } catch (ex) {
-      print(ex);
-      return [];
-    }
+  Future<Paginated<HikingRoute>> getRoutes(
+      {String? query,
+      String? cursor,
+      String? sort,
+      String? order = 'DESC',
+      int? regionId,
+      int? minDifficulty,
+      int? maxDifficulty,
+      int? minRating,
+      int? maxRating,
+      int? minLength,
+      int? maxLength,
+      int? minDuration,
+      int? maxDuration}) async {
+    Map<String, dynamic> queryParams = {};
+    if (query != null && query.length > 0) queryParams['query'] = query;
+    if (cursor != null) queryParams['cursor'] = cursor;
+    if (sort != null) queryParams['sort'] = sort;
+    if (order != null) queryParams['order'] = order;
+    if (regionId != null) queryParams['regionId'] = regionId.toString();
+    if (minDifficulty != null) queryParams['minDifficulty'] = minDifficulty.toString();
+    if (maxDifficulty != null) queryParams['maxDifficulty'] = maxDifficulty.toString();
+    if (minRating != null) queryParams['minRating'] = minRating.toString();
+    if (maxRating != null) queryParams['maxRating'] = maxRating.toString();
+    if (minDuration != null) queryParams['minDuration'] = minDuration.toString();
+    if (maxDuration != null) queryParams['maxDuration'] = maxDuration.toString();
+    if (minLength != null) queryParams['minLength'] = minLength.toString();
+    if (maxLength != null) queryParams['maxLength'] = maxLength.toString();
+    final uri = API.getUri('/routes', queryParams: queryParams);
+    dynamic paginated = await HttpUtils.get(uri);
+    return Paginated<HikingRoute>.fromJson(
+        paginated, (o) => HikingRoute.fromJson(o as Map<String, dynamic>));
   }
 
   Future<HikingRoute> getRoute(int id, {required Future<Token?> token}) async {
@@ -57,11 +73,9 @@ class RouteService {
       required String content,
       required int rating}) async {
     final uri = API.getUri('/routes/$routeId/reviews');
-    print(uri);
     dynamic review = await HttpUtils.post(
         uri, {'content': content, 'rating': rating},
         accessToken: (await token)?.accessToken);
-    print({'content': content, 'rating': rating});
     return RouteReview.fromJson(review);
   }
 }

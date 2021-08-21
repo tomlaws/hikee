@@ -18,48 +18,49 @@ class DialogUtils {
               ),
               elevation: 0,
               backgroundColor: Colors.white,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (title != null) ...[
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(title,
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).primaryColor)),
+              child: IntrinsicWidth(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (title != null) ...[
+                      Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          child: Text(title,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Theme.of(context).primaryColor)),
+                        ),
                       ),
+                      Divider(height: 1)
+                    ],
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      child: content,
                     ),
-                    Divider(height: 1)
+                    if (buttons == null || buttons(context).length > 0)
+                      Padding(
+                        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: [
+                            if (buttons != null)
+                              ...buttons(context)
+                            else
+                              Button(
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  })
+                          ],
+                        ),
+                      )
                   ],
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    child: content,
-                  ),
-                  if (buttons == null || buttons(context).length > 0)
-                    Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                      child: Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: [
-                          if (buttons != null)
-                            ...buttons(context)
-                          else
-                            Button(
-                                child: Text('OK'),
-                                onPressed: () {
-                                  Routemaster.of(context).pop();
-                                })
-                        ],
-                      ),
-                    )
-                ],
+                ),
               ));
         });
   }
