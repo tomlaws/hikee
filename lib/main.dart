@@ -140,8 +140,13 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _protected(BuildContext context, Widget child) {
-    if (context.watch<AuthProvider>().loggedIn) return child;
-    return LoginPrompt();
+    return Selector<AuthProvider, bool>(
+      selector: (_, p) => p.loggedIn,
+      builder: (_, loggedIn, __) {
+        if (loggedIn) return child;
+        return LoginPrompt();
+      },
+    );
   }
 
   RouteMap _routes(BuildContext context) {

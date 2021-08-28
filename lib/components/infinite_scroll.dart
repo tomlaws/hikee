@@ -7,6 +7,7 @@ class InfiniteScroll<T, U> extends StatefulWidget {
       this.shrinkWrap = false,
       required this.builder,
       required this.selector,
+      required this.loading,
       required this.fetch,
       this.padding = const EdgeInsets.all(16),
       this.take,
@@ -18,6 +19,7 @@ class InfiniteScroll<T, U> extends StatefulWidget {
   final bool shrinkWrap;
   final Widget Function(U item) builder;
   final List<U> Function(T provider) selector;
+  final bool Function(T provider) loading;
   final void Function(bool next) fetch;
   final EdgeInsets padding;
   final int? take;
@@ -67,6 +69,9 @@ class _InfiniteScrollState<T, U> extends State<InfiniteScroll<T, U>> {
       var itemCount = widget.selector(p).length;
       if (widget.take != null) itemCount = itemCount.clamp(0, widget.take!);
       if (itemCount == 0) {
+        if (widget.loading(p)) {
+          return Center(child: CircularProgressIndicator());
+        }
         if (widget.empty is Widget) return widget.empty;
         return Center(child: Text(widget.empty ?? 'Nothing here'));
       }
