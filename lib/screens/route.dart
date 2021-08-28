@@ -334,7 +334,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                         })
                                   ]),
                               Container(
-                                height: 4,
+                                height: 8,
                               ),
                               _reviewList(3),
                               Selector<RouteReviewsProvider, bool>(
@@ -345,7 +345,8 @@ class _RouteScreenState extends State<RouteScreen> {
                                       child: SizedBox(
                                         width: double.infinity,
                                         child: Button(
-                                            child: Text('Show more'),
+                                            child: Text('SHOW MORE'),
+                                            secondary: true,
                                             onPressed: () {
                                               Navigator.of(context).push(
                                                   CupertinoPageRoute(
@@ -358,7 +359,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                                                     'Reviews'),
                                                               ),
                                                               Padding(
-                                                                padding: const EdgeInsets.all(8.0),
+                                                                padding: const EdgeInsets.all(16.0),
                                                                 child: _reviewList(null),
                                                               ),
                                                             ]),

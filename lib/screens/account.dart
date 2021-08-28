@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hikee/components/account/change_language.dart';
 import 'package:hikee/components/account/change_nickname.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/account/change_password.dart';
@@ -12,6 +13,7 @@ import 'package:hikee/providers/me.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/http.dart';
+import 'package:hikee/utils/localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -50,11 +52,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     Map<String, dynamic> _operations = {
       //'Likes': null,
-      'Bookmarks': (BuildContext ctx) {
+      Localization.translate(context, (l) => l.bookmarks): (BuildContext ctx) {
         Navigator.of(ctx)
             .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
       },
-      'Settings': {'Language': null},
+      'Settings': {'Language': _changeLanguage},
       'Account': {
         'Change Nickname': _changeNickname,
         'Change Password': _changePassword,
@@ -245,5 +247,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _uploadIcon(File file) {
     context.read<MeProvider>().changeIcon(file);
+  }
+
+  void _changeLanguage(BuildContext context) {
+    DialogUtils.show(context, ChangeLanguage(), title: 'Change Language',
+        buttons: (_) {
+      return [];
+    });
   }
 }

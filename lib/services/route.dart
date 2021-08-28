@@ -7,7 +7,7 @@ import 'package:hikee/models/token.dart';
 import 'package:hikee/utils/http.dart';
 
 class RouteService {
-  /// Return a list of routes
+  /// Returns a list of routes
   ///
   /// Search function can be achieved with [query] and [after] can be provided for pagination.
   /// For sorting, use [sort] and [order].
@@ -31,12 +31,16 @@ class RouteService {
     if (sort != null) queryParams['sort'] = sort;
     if (order != null) queryParams['order'] = order;
     if (regionId != null) queryParams['regionId'] = regionId.toString();
-    if (minDifficulty != null) queryParams['minDifficulty'] = minDifficulty.toString();
-    if (maxDifficulty != null) queryParams['maxDifficulty'] = maxDifficulty.toString();
+    if (minDifficulty != null)
+      queryParams['minDifficulty'] = minDifficulty.toString();
+    if (maxDifficulty != null)
+      queryParams['maxDifficulty'] = maxDifficulty.toString();
     if (minRating != null) queryParams['minRating'] = minRating.toString();
     if (maxRating != null) queryParams['maxRating'] = maxRating.toString();
-    if (minDuration != null) queryParams['minDuration'] = minDuration.toString();
-    if (maxDuration != null) queryParams['maxDuration'] = maxDuration.toString();
+    if (minDuration != null)
+      queryParams['minDuration'] = minDuration.toString();
+    if (maxDuration != null)
+      queryParams['maxDuration'] = maxDuration.toString();
     if (minLength != null) queryParams['minLength'] = minLength.toString();
     if (maxLength != null) queryParams['maxLength'] = maxLength.toString();
     final uri = API.getUri('/routes', queryParams: queryParams);
@@ -78,4 +82,5 @@ class RouteService {
         accessToken: (await token)?.accessToken);
     return RouteReview.fromJson(review);
   }
+
 }

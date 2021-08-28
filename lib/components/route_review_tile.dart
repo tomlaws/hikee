@@ -37,7 +37,7 @@ class RouteReviewTile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          routeReview.reviewer.nickname ?? 'Unamed',
+                          routeReview.reviewer.nickname,
                           style: TextStyle(fontWeight: FontWeight.bold)
                         ),
                         SizedBox(height: 4),

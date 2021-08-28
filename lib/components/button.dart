@@ -12,6 +12,8 @@ class Button extends StatefulWidget {
   final bool loading;
   final bool disabled;
   final Icon? icon;
+  final double radius;
+
   const Button(
       {Key? key,
       this.child,
@@ -21,7 +23,8 @@ class Button extends StatefulWidget {
       this.secondary = false,
       this.loading = false,
       this.disabled = false,
-      this.invert = false})
+      this.invert = false,
+      this.radius = 12})
       : super(key: key);
 
   @override
@@ -67,7 +70,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
     if (buttonColor != Colors.transparent)
       buttonColor.withOpacity((widget.disabled || widget.loading) ? .75 : 1);
     return Material(
-      borderRadius: BorderRadius.circular(12.0),
+      borderRadius: BorderRadius.circular(widget.radius),
       clipBehavior: Clip.antiAlias,
       color: buttonColor,
       child: InkWell(

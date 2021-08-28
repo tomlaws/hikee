@@ -13,7 +13,7 @@ class RoutesFilter extends StatefulWidget {
 }
 
 class _RoutesFilterState extends State<RoutesFilter> {
-  late ValueNotifier<int?> _regionId;
+  late ValueNotifier<Region?> _region;
   late ValueNotifier<RangeValues> _difficultyRange;
   late ValueNotifier<RangeValues> _ratingRange;
   late ValueNotifier<RangeValues> _durationRange;
@@ -23,7 +23,7 @@ class _RoutesFilterState extends State<RoutesFilter> {
   void initState() {
     super.initState();
     var rp = context.read<RoutesProvider>();
-    _regionId = ValueNotifier(rp.regionId);
+    _region = ValueNotifier(rp.region);
     _difficultyRange = ValueNotifier(
         RangeValues(rp.minDifficulty.toDouble(), rp.maxDifficulty.toDouble()));
     _ratingRange = ValueNotifier(
@@ -36,7 +36,7 @@ class _RoutesFilterState extends State<RoutesFilter> {
 
   @override
   void dispose() {
-    _regionId.dispose();
+    _region.dispose();
     _difficultyRange.dispose();
     _ratingRange.dispose();
     _durationRange.dispose();
@@ -46,7 +46,6 @@ class _RoutesFilterState extends State<RoutesFilter> {
 
   @override
   Widget build(BuildContext context) {
-    var regions = context.read<RoutesProvider>().regions;
     return Container(
       color: Colors.white,
       child: Column(
@@ -68,22 +67,20 @@ class _RoutesFilterState extends State<RoutesFilter> {
                   Wrap(
                     runSpacing: 8.0,
                     spacing: 8.0,
-                    children: regions
-                        .map((id, region) => MapEntry(
-                            id,
-                            ValueListenableBuilder<int?>(
-                              valueListenable: _regionId,
-                              builder: (_, regionId, __) => Button(
-                                  secondary: regionId != id,
-                                  child: Text(region),
+                    children: Region.values
+                        .map((r) => 
+                            ValueListenableBuilder<Region?>(
+                              valueListenable: _region,
+                              builder: (_, region, __) => Button(
+                                  secondary: region != r,
+                                  child: Text(r.name),
                                   onPressed: () {
-                                    if (_regionId.value == id)
-                                      _regionId.value = null;
+                                    if (r == region)
+                                      _region.value = null;
                                     else
-                                      _regionId.value = id;
+                                      _region.value = r;
                                   }),
-                            )))
-                        .values
+                            ))
                         .toList(),
                   ),
                   SizedBox(height: 16),
@@ -96,7 +93,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                   ValueListenableBuilder<RangeValues>(
                     valueListenable: _ratingRange,
                     builder: (_, range, __) => Row(children: [
-                      Text(range.start.round().toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.start.round() ~/ 1000).toString()))),
                       Expanded(
                         child: RangeSlider(
                           values: RangeValues(range.start, range.end),
@@ -112,7 +113,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                           },
                         ),
                       ),
-                      Text(range.end.round().toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.end.round() ~/ 1000).toString()))),
                     ]),
                   ),
                   SizedBox(height: 16),
@@ -125,7 +130,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                   ValueListenableBuilder<RangeValues>(
                     valueListenable: _difficultyRange,
                     builder: (_, range, __) => Row(children: [
-                      Text(range.start.round().toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.start.round() ~/ 1000).toString()))),
                       Expanded(
                         child: RangeSlider(
                           values: RangeValues(range.start, range.end),
@@ -141,7 +150,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                           },
                         ),
                       ),
-                      Text(range.end.round().toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.end.round() ~/ 1000).toString()))),
                     ]),
                   ),
                   SizedBox(height: 16),
@@ -154,7 +167,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                   ValueListenableBuilder<RangeValues>(
                     valueListenable: _durationRange,
                     builder: (_, range, __) => Row(children: [
-                      Text((range.start.round() ~/ 60).toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.start.round() ~/ 1000).toString()))),
                       Expanded(
                         child: RangeSlider(
                           values: RangeValues(range.start, range.end),
@@ -170,7 +187,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                           },
                         ),
                       ),
-                      Text((range.end.round() ~/ 60).toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.end.round() ~/ 1000).toString()))),
                     ]),
                   ),
                   SizedBox(height: 16),
@@ -183,7 +204,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                   ValueListenableBuilder<RangeValues>(
                     valueListenable: _lengthRange,
                     builder: (_, range, __) => Row(children: [
-                      Text((range.start.round() ~/ 1000).toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.start.round() ~/ 1000).toString()))),
                       Expanded(
                         child: RangeSlider(
                           values: RangeValues(range.start, range.end),
@@ -199,7 +224,11 @@ class _RoutesFilterState extends State<RoutesFilter> {
                           },
                         ),
                       ),
-                      Text((range.end.round() ~/ 1000).toString()),
+                      SizedBox(
+                          width: 30,
+                          child: Center(
+                              child: Text(
+                                  (range.end.round() ~/ 1000).toString()))),
                     ]),
                   )
                 ],
@@ -216,7 +245,7 @@ class _RoutesFilterState extends State<RoutesFilter> {
                         child: Text('APPLY'),
                         onPressed: () {
                           context.read<RoutesProvider>().applyFilters(
-                                regionId: _regionId.value,
+                                regionId: _region.value?.id,
                                 minDifficulty:
                                     _difficultyRange.value.start.toInt(),
                                 maxDifficulty:

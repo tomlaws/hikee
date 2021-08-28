@@ -25,7 +25,7 @@ class BookmarksProvider extends PaginationChangeNotifier<Bookmark> {
   }
 
   @override
-  Future<Paginated<Bookmark>> get(cursor) async {
+  Future<Paginated<Bookmark>> get({ String? cursor }) async {
     return await _bookmarkService.getBookmarks(_auth.getToken(), cursor: cursor);
   }
 }
