@@ -1,20 +1,17 @@
 import 'package:get_it/get_it.dart';
+import 'package:hikee/models/order.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/providers/pagination_change_notifier.dart';
 import 'package:hikee/services/route.dart';
-import 'package:tuple/tuple.dart';
 
-class RoutesProvider extends PaginationChangeNotifier<HikingRoute> {
+class RoutesProvider
+    extends AdvancedPaginationChangeNotifier<HikingRoute, HikingRouteSortable> {
   RouteService _routeService = GetIt.I<RouteService>();
-  String _query = '';
-  String get query => query;
-  String _sort = 'length';
-  String get sort => _sort;
-  String _order = 'ASC';
-  String get order => _order;
+
   int? _regionId;
-  int? get regionId => _regionId;
+  Region? get region =>
+      _regionId == null ? null : Region.values[_regionId! + 1];
 
   int _minDifficulty = 1;
   int get minDifficulty => _minDifficulty;
@@ -36,33 +33,20 @@ class RoutesProvider extends PaginationChangeNotifier<HikingRoute> {
   int _maxLength = 20000;
   int get maxLength => _maxLength;
 
-  var _sortMap = {
-    'difficulty': 'Difficulty',
-    'length': 'Length',
-    'duration': 'Duration',
-  };
-  String get sortStr => _sortMap[_sort]!;
-
-  Map<int, String> _regionMap = {
-    1: 'North New Territories',
-    2: 'Hong Kong Island',
-    3: 'Central New Territories',
-    4: 'Sai Kung',
-    5: 'West New Territories',
-    6: 'Lantau'
-  };
-  Map<int, String> get regions => _regionMap;
-  String get regionStr => _regionMap[regionId]!;
-
-  RoutesProvider();
+  RoutesProvider()
+      : super(
+            sortable: HikingRouteSortable.values,
+            defaultSort: HikingRouteSortable.rating,
+            defaultOrder: Order.DESC);
 
   @override
-  Future<Paginated<HikingRoute>> get(cursor) async {
+  Future<Paginated<HikingRoute>> get(
+      {String? cursor, String? query, String? sort, String? order}) async {
     return await _routeService.getRoutes(
         cursor: cursor,
-        query: _query,
-        sort: _sort,
-        order: _order,
+        query: query,
+        sort: sort,
+        order: order,
         regionId: _regionId,
         minDifficulty: _minDifficulty,
         maxDifficulty: _maxDifficulty,
@@ -72,27 +56,6 @@ class RoutesProvider extends PaginationChangeNotifier<HikingRoute> {
         maxDuration: _maxDuration,
         minLength: _minLength,
         maxLength: _maxLength);
-  }
-
-  set sort(String sort) {
-    if (_sort == sort) return;
-    _sort = sort;
-    fetch(false);
-    notifyListeners();
-  }
-
-  set query(String query) {
-    if (_query == query) return;
-    _query = query;
-    fetch(false);
-    notifyListeners();
-  }
-
-  set order(String order) {
-    if (_order == order) return;
-    _order = order;
-    fetch(false);
-    notifyListeners();
   }
 
   void clearFilters() {
@@ -134,5 +97,39 @@ class RoutesProvider extends PaginationChangeNotifier<HikingRoute> {
     _maxDuration = maxDuration;
     fetch(false);
     notifyListeners();
+  }
+}
+
+enum HikingRouteSortable { difficulty, length, duration, rating }
+
+extension HikingRoutesSortableExtension on HikingRouteSortable {
+  String get name {
+    return ['Difficulty', 'Length', 'Duration', 'Rating'][this.index];
+  }
+}
+
+enum Region {
+  NORTH_NEW_TERRITORIES, //1
+  HONG_KONG_ISLAND, //2
+  CENTRAL_NEW_TERRITORIES, //3
+  SAI_KUNG, //4
+  WEST_NEW_TERRITORIES, //5
+  LANTAU //6
+}
+
+extension RegionExtension on Region {
+  String get name {
+    return [
+      'North New Territories',
+      'Hong Kong Island',
+      'Central New Territories',
+      'Sai Kung',
+      'West New Territories',
+      'Lantau'
+    ][this.index];
+  }
+
+  int get id {
+    return this.index + 1;
   }
 }

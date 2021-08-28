@@ -7,11 +7,15 @@ import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
+import 'package:hikee/providers/locale.dart';
 import 'package:hikee/providers/me.dart';
 import 'package:hikee/providers/bookmarks.dart';
 import 'package:hikee/providers/route.dart';
 import 'package:hikee/providers/route_reviews.dart';
 import 'package:hikee/providers/routes.dart';
+import 'package:hikee/providers/topic.dart';
+import 'package:hikee/providers/topic_replies.dart';
+import 'package:hikee/providers/topics.dart';
 import 'package:hikee/screens/account.dart';
 import 'package:hikee/screens/account/bookmarks.dart';
 import 'package:hikee/screens/auth/login.dart';
@@ -19,16 +23,21 @@ import 'package:hikee/screens/auth/register.dart';
 import 'package:hikee/screens/community.dart';
 import 'package:hikee/screens/events.dart';
 import 'package:hikee/screens/home.dart';
+import 'package:hikee/screens/topic.dart';
+import 'package:hikee/screens/topics.dart';
 import 'package:hikee/screens/route.dart';
 import 'package:hikee/screens/routes.dart';
 import 'package:hikee/services/auth.dart';
 import 'package:hikee/services/bookmark.dart';
 import 'package:hikee/services/route.dart';
+import 'package:hikee/services/topic.dart';
 import 'package:hikee/services/user.dart';
 import 'package:hikee/services/weather.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:routemaster/routemaster.dart';
 
 void setupLocator() {
@@ -36,6 +45,7 @@ void setupLocator() {
   GetIt.I.registerLazySingleton(() => UserService());
   GetIt.I.registerLazySingleton(() => RouteService());
   GetIt.I.registerLazySingleton(() => BookmarkService());
+  GetIt.I.registerLazySingleton(() => TopicService());
   GetIt.I.registerLazySingleton(() => WeatherService());
 }
 
@@ -46,6 +56,10 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           create: (_) => AuthProvider(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocaleProvider(),
           lazy: false,
         ),
         ChangeNotifierProxyProvider<AuthProvider, MeProvider>(
@@ -77,6 +91,30 @@ void main() {
           create: (context) =>
               BookmarksProvider(auth: context.read<AuthProvider>()),
           update: (_, auth, p) => p!..auth = auth,
+          lazy: true,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, TopicsProvider>(
+          create: (context) =>
+              TopicsProvider(authProvider: context.read<AuthProvider>()),
+          update: (_, authProvider, topicProvider) =>
+              topicProvider!..update(authProvider: authProvider),
+          lazy: true,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, TopicProvider>(
+          create: (context) =>
+              TopicProvider(authProvider: context.read<AuthProvider>()),
+          update: (_, authProvider, p) =>
+              TopicProvider(authProvider: authProvider),
+          lazy: true,
+        ),
+        ChangeNotifierProxyProvider2<AuthProvider, TopicProvider,
+            TopicRepliesProvider>(
+          create: (context) => TopicRepliesProvider(
+              authProvider: context.read<AuthProvider>(),
+              topicProvider: context.read<TopicProvider>()),
+          update: (_, authProvider, topicProvider, routeReviewsProvider) =>
+              TopicRepliesProvider(
+                  authProvider: authProvider, topicProvider: topicProvider),
           lazy: true,
         ),
         ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
@@ -111,6 +149,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Hikee',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: context.watch<LocaleProvider>().locale,
       theme: ThemeData(
         primaryColor: themeColor,
         sliderTheme: SliderThemeData(
@@ -153,14 +194,16 @@ class MyApp extends StatelessWidget {
     return RouteMap(routes: {
       '/': (route) => TabPage(
             child: MyHomePage(),
-            paths: ['/home', '/routes', '/events', '/posts', '/profile'],
+            paths: ['/home', '/routes', '/events', '/topics', '/profile'],
           ),
       '/home': (route) => CupertinoPage(child: HomeScreen()),
       '/routes': (route) => CupertinoPage(child: RoutesScreen()),
       '/routes/:id': (route) => CupertinoPage(
           child: RouteScreen(id: int.parse(route.pathParameters['id']!))),
       '/events': (route) => CupertinoPage(child: EventsScreen()),
-      '/posts': (route) => CupertinoPage(child: CommunityScreen()),
+      '/topics': (route) => CupertinoPage(child: TopicsPage()),
+      '/topics/:id': (route) => CupertinoPage(
+          child: TopicPage(id: int.parse(route.pathParameters['id']!))),
       '/profile': (route) {
         return CupertinoPage(child: _protected(context, ProfileScreen()));
       },

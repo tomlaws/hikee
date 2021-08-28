@@ -10,8 +10,7 @@ class RouteProvider extends ChangeNotifier {
   HikingRoute? _route;
   HikingRoute? get route => _route;
 
-  RouteProvider({required AuthProvider authProvider}): _authProvider = authProvider {
-  }
+  RouteProvider({required AuthProvider authProvider}): _authProvider = authProvider;
 
   Future<HikingRoute?> getRoute(int id) async {
     _route = await _routeService.getRoute(id, token: _authProvider.getToken());

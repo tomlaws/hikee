@@ -11,18 +11,26 @@ class RouteReviewsProvider extends PaginationChangeNotifier<RouteReview> {
   RouteProvider _routeProvider;
   RouteService _routeService = GetIt.I<RouteService>();
 
-  RouteReviewsProvider({required AuthProvider authProvider, required RouteProvider routeProvider}) : _authProvider = authProvider, _routeProvider = routeProvider;
+  RouteReviewsProvider(
+      {required AuthProvider authProvider,
+      required RouteProvider routeProvider})
+      : _authProvider = authProvider,
+        _routeProvider = routeProvider;
 
   Future<RouteReview> createRouteReview(
       int routeId, String content, int rating) async {
-    RouteReview review = await _routeService.createRouteReview(_authProvider.getToken(),
-        content: content, rating: rating, routeId: routeId);
+    RouteReview review = await _routeService.createRouteReview(
+        _authProvider.getToken(),
+        content: content,
+        rating: rating,
+        routeId: routeId);
     insert(0, review);
     return review;
   }
 
   @override
-  Future<Paginated<RouteReview>> get(cursor) async {
-    return await _routeService.getRouteReviews(_routeProvider.route?.id ?? 1, cursor: cursor);
+  Future<Paginated<RouteReview>> get({cursor}) async {
+    return await _routeService.getRouteReviews(_routeProvider.route?.id ?? 1,
+        cursor: cursor);
   }
 }

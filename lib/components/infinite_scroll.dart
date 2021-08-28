@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hikee/providers/pagination_change_notifier.dart';
 import 'package:provider/provider.dart';
 
-class InfiniteScroll<T, U> extends StatefulWidget {
+class InfiniteScroll<T extends PaginationChangeNotifier, U> extends StatefulWidget {
   const InfiniteScroll(
       {Key? key,
       this.shrinkWrap = false,
       required this.builder,
       required this.selector,
-      required this.loading,
       required this.fetch,
       this.padding = const EdgeInsets.all(16),
       this.take,
@@ -19,7 +19,6 @@ class InfiniteScroll<T, U> extends StatefulWidget {
   final bool shrinkWrap;
   final Widget Function(U item) builder;
   final List<U> Function(T provider) selector;
-  final bool Function(T provider) loading;
   final void Function(bool next) fetch;
   final EdgeInsets padding;
   final int? take;
@@ -34,7 +33,7 @@ class InfiniteScroll<T, U> extends StatefulWidget {
   _InfiniteScrollState<T, U> createState() => _InfiniteScrollState<T, U>();
 }
 
-class _InfiniteScrollState<T, U> extends State<InfiniteScroll<T, U>> {
+class _InfiniteScrollState<T extends PaginationChangeNotifier, U> extends State<InfiniteScroll<T, U>> {
   ScrollController _scrollController = ScrollController();
 
   @override
@@ -69,9 +68,7 @@ class _InfiniteScrollState<T, U> extends State<InfiniteScroll<T, U>> {
       var itemCount = widget.selector(p).length;
       if (widget.take != null) itemCount = itemCount.clamp(0, widget.take!);
       if (itemCount == 0) {
-        if (widget.loading(p)) {
-          return Center(child: CircularProgressIndicator());
-        }
+        if (p.loading) return Center(child: CircularProgressIndicator());
         if (widget.empty is Widget) return widget.empty;
         return Center(child: Text(widget.empty ?? 'Nothing here'));
       }
