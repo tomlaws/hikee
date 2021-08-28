@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:hikee/providers/locale.dart';
+import 'package:provider/provider.dart';
+
 class Region {
   final int id;
   final String name_zh;
@@ -19,4 +23,12 @@ class Region {
         'name_zh': name_zh,
         'name_en': name_en,
       };
+  String region(BuildContext context) {
+    var l = context.read<LocaleProvider>().locale;
+    if (l.countryCode == 'en') {
+      return name_en;
+    } else {
+      return name_zh;
+    }
+  }
 }

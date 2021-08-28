@@ -61,14 +61,14 @@ class _HikingRouteTileState extends State<HikingRouteTile> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(widget.route.name_en,
+                              Text(widget.route.name(context),
                                   maxLines: 1,
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
                               Text(
-                                widget.route.region.name_en,
+                                widget.route.region.region(context),
                                 maxLines: 1,
                                 style: TextStyle(color: Color(0xFFCCCCCC)),
                               ),

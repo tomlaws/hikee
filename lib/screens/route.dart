@@ -396,7 +396,6 @@ class _RouteScreenState extends State<RouteScreen> {
         empty: 'No reviews yet',
         shrinkWrap: true,
         selector: (p) => p.items,
-        loading: (p) => p.loading,
         padding: EdgeInsets.zero,
         separator: SizedBox(height: 8),
         builder: (routeReview) {

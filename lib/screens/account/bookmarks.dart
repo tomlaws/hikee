@@ -28,7 +28,6 @@ class _BookmarksPageState extends State<BookmarksPage> {
             Expanded(
                 child: InfiniteScroll<BookmarksProvider, Bookmark>(
               selector: (p) => p.items,
-              loading: (p) => p.loading,
               builder: (bookmark) {
                 return Container(
                     child: HikingRouteTile(

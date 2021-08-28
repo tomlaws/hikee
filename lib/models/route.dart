@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:hikee/models/bookmark.dart';
+import 'package:hikee/providers/locale.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hikee/models/region.dart';
+import 'package:provider/provider.dart';
 
 part 'route.g.dart';
 
@@ -42,4 +45,22 @@ class HikingRoute {
   factory HikingRoute.fromJson(Map<String, dynamic> json) =>
       _$HikingRouteFromJson(json);
   Map<String, dynamic> toJson() => _$HikingRouteToJson(this);
+
+  String name(BuildContext context) {
+    var l = context.read<LocaleProvider>().locale;
+    if (l.countryCode == 'en') {
+      return name_en;
+    } else {
+      return name_zh;
+    }
+  }
+
+  String description(BuildContext context) {
+    var l = context.read<LocaleProvider>().locale;
+    if (l.countryCode == 'en') {
+      return description_en;
+    } else {
+      return description_zh;
+    }
+  }
 }

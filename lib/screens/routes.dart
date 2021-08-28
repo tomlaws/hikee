@@ -136,7 +136,6 @@ class _RoutesScreenState extends State<RoutesScreen>
             Expanded(
               child: InfiniteScroll<RoutesProvider, HikingRoute>(
                 selector: (p) => p.items,
-                loading: (p) => p.loading,
                 builder: (route) {
                   return HikingRouteTile(
                     route: route,

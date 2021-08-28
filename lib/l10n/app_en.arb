@@ -1,3 +1,8 @@
 {
-  "bookmarks": "Bookmarks"
+  "bookmarks": "Bookmarks",
+  "settings": "Settings",
+  "account": "Account",
+  "logout": "Logout",
+  "language": "Language",
+  "changeLanguage": "Change Language"
 }

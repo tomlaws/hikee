@@ -56,13 +56,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Navigator.of(ctx)
             .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
       },
-      'Settings': {'Language': _changeLanguage},
-      'Account': {
+      Localization.translate(context, (l) => l.settings): {Localization.translate(context, (l) => l.language): _changeLanguage},
+      Localization.translate(context, (l) => l.account): {
         'Change Nickname': _changeNickname,
         'Change Password': _changePassword,
         'Delete Account': (ctx) {}
       },
-      'Logout': (BuildContext ctx) {
+      Localization.translate(context, (l) => l.logout): (BuildContext ctx) {
         ctx.read<AuthProvider>().logout();
       }
     };
@@ -250,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _changeLanguage(BuildContext context) {
-    DialogUtils.show(context, ChangeLanguage(), title: 'Change Language',
+    DialogUtils.show(context, ChangeLanguage(), title: Localization.translate(context, (l) => l.changeLanguage),
         buttons: (_) {
       return [];
     });
