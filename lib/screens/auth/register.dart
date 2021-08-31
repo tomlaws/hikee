@@ -40,6 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return Container();
     }
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

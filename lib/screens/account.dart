@@ -203,17 +203,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 minVerticalPadding: 0,
                 leading: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: SizedBox(
-                    width: 40,
-                    child: Button(
-                        icon: Icon(Icons.chevron_left),
-                        backgroundColor: Colors.white,
-                        onPressed: () {
-                          _pageController.previousPage(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.linear);
-                        }),
-                  ),
+                  child: Button(
+                      icon: Icon(Icons.chevron_left),
+                      backgroundColor: Colors.white,
+                      onPressed: () {
+                        _pageController.previousPage(
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.linear);
+                      }),
                 ),
                 title: Text(header, style: TextStyle()),
               ))
