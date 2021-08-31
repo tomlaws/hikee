@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/dialog/base.dart';
-import 'package:hikee/components/dialog/route_review.dart';
-import 'package:routemaster/routemaster.dart';
 
 class DialogUtils {
   static show(context, Widget content,
@@ -28,14 +26,14 @@ class DialogUtils {
                       Align(
                         alignment: Alignment.center,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.only(left: 16, right: 16, top: 12),
                           child: Text(title,
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Theme.of(context).primaryColor)),
                         ),
                       ),
-                      Divider(height: 1)
+                      //Divider(height: 1)
                     ],
                     Container(
                       padding: EdgeInsets.all(16),

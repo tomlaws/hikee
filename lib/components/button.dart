@@ -79,9 +79,9 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         },
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: 40,
+            minHeight: 44,
             minWidth: 48,
-            maxHeight: 40,
+            maxHeight: 44,
           ),
           child: Container(
             padding:

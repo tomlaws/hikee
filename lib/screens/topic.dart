@@ -7,6 +7,7 @@ import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/models/topic_reply.dart';
 import 'package:hikee/models/user.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/topic.dart';
 import 'package:hikee/providers/topic_replies.dart';
 import 'package:hikee/screens/create_topic.dart';
@@ -22,67 +23,74 @@ class TopicPage extends StatefulWidget {
 }
 
 class _TopicPageState extends State<TopicPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         body: FutureSelector<TopicProvider, Topic>(
-      init: (tp) => tp.getTopic(widget.id),
-      selector: (_, tp) => tp.topic,
-      builder: (_, topic, __) {
-        return Column(children: [
-          HikeeAppBar(title: Text(topic.title)),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                children: [
-                  _post(
-                      user: topic.user,
-                      content: topic.content,
-                      createdAt: topic.createdAt),
-                  SizedBox(height: 16),
-                  InfiniteScroll<TopicRepliesProvider, TopicReply>(
-                      empty: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('No replies yet'),
-                      ),
-                      shrinkWrap: true,
-                      selector: (p) => p.items,
-                      padding: EdgeInsets.zero,
-                      separator: SizedBox(height: 8),
-                      builder: (reply) {
-                        return _post(
-                            user: reply.user,
-                            content: reply.content,
-                            createdAt: reply.createdAt);
-                      },
-                      fetch: (next) {
-                        return context.read<TopicRepliesProvider>().fetch(next);
-                      }),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Button(
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true)
-                              .push(CupertinoPageRoute(
-                                  builder: (_) => CreateTopicPage(
-                                        reply: true,
-                                      )));
-                        },
-                        child: Text('Reply'),
-                      ),
-                    ),
-                  )
-                ],
+          init: (tp) => tp.getTopic(widget.id),
+          selector: (_, tp) => tp.topic,
+          builder: (_, topic, __) {
+            return Column(children: [
+              HikeeAppBar(title: Text(topic.title)),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    children: [
+                      _post(
+                          user: topic.user,
+                          content: topic.content,
+                          createdAt: topic.createdAt),
+                      SizedBox(height: 16),
+                      InfiniteScroll<TopicRepliesProvider, TopicReply>(
+                          empty: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text('No replies yet'),
+                          ),
+                          shrinkWrap: true,
+                          selector: (p) => p.items,
+                          padding: EdgeInsets.zero,
+                          separator: SizedBox(height: 8),
+                          builder: (reply) {
+                            return _post(
+                                user: reply.user,
+                                content: reply.content,
+                                createdAt: reply.createdAt);
+                          },
+                          fetch: (next) {
+                            return context
+                                .read<TopicRepliesProvider>()
+                                .fetch(next);
+                          }),
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Button(
+                            onPressed: () {
+                              context.read<AuthProvider>().mustLogin(context,
+                                  () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .push(CupertinoPageRoute(
+                                        builder: (_) => CreateTopicPage(
+                                              reply: true,
+                                            )));
+                              });
+                            },
+                            child: Text('Reply'),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        ]);
-      },
-    ));
+            ]);
+          },
+        ));
   }
 
   Widget _post(

@@ -24,14 +24,15 @@ class FutureSelector<T, U> extends StatefulWidget {
 }
 
 class _FutureSelectorState<T, U> extends State<FutureSelector<T, U>> {
+  late Future<U?>? future;
   @override
   void initState() {
     super.initState();
+    future = widget.init(context.read<T>());
   }
 
   @override
   Widget build(BuildContext context) {
-    var future = widget.init(context.read<T>());
     return FutureBuilder<Object?>(
       future: future,
       initialData: Loading(),

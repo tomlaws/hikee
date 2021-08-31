@@ -115,7 +115,7 @@ class _TextInputState extends State<TextInput>
                               BoxConstraints(maxHeight: 24, minWidth: 32),
                           isDense: true,
                           contentPadding:
-                              EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                              EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                           border: InputBorder.none,
                           focusedBorder: InputBorder.none,
                           enabledBorder: InputBorder.none,

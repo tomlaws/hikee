@@ -35,14 +35,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: HikeeAppBar(
-        leading: Button(
-          invert: true,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          radius: 0,
-          icon: Icon(Icons.clear),
-        ),
+        closeIcon: Icons.clear,
         title: Text(
           widget.reply ? 'Reply Topic' : 'New Topic',
           style: TextStyle(color: Theme.of(context).primaryColor),
@@ -70,19 +63,17 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
                 Navigator.of(context).pop();
               }
             },
-            builder: (mutate, loading) => Button(
-              loading: loading,
-              invert: true,
-              onPressed: mutate,
-              radius: 0,
-              child: Row(
-                children: [
-                  Icon(Icons.send, color: Theme.of(context).primaryColor, size: 24),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Text(widget.reply ? 'REPLY' : 'POST')
-                ],
+            builder: (mutate, loading) => Padding(
+              padding: EdgeInsets.all(8),
+              child: SizedBox(
+                height: 40,
+                width: 40,
+                child: Button(
+                  loading: loading,
+                  onPressed: mutate,
+                  backgroundColor: Colors.transparent,
+                  icon: Icon(Icons.send, color: Theme.of(context).primaryColor),
+                ),
               ),
             ),
           )

@@ -46,7 +46,7 @@ class _RoutesScreenState extends State<RoutesScreen>
     super.build(context);
     return Scaffold(
       appBar: HikeeAppBar(
-        height: 104,
+        height: 112,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

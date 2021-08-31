@@ -63,15 +63,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Localization.translate(context, (l) => l.login): (BuildContext ctx) {
           Routemaster.of(context).push('/login');
         },
-      Localization.translate(context, (l) => l.settings): {
-        Localization.translate(context, (l) => l.language): _changeLanguage
-      },
       if (loggedIn)
         Localization.translate(context, (l) => l.account): {
           'Change Nickname': _changeNickname,
           'Change Password': _changePassword,
           'Delete Account': (ctx) {}
         },
+      Localization.translate(context, (l) => l.settings): {
+        Localization.translate(context, (l) => l.language): _changeLanguage
+      },
       if (loggedIn)
         Localization.translate(context, (l) => l.logout): (BuildContext ctx) {
           ctx.read<AuthProvider>().logout();
@@ -215,8 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }),
                   ),
                 ),
-                title:
-                    Text(header, style: TextStyle()),
+                title: Text(header, style: TextStyle()),
               ))
         ],
         ...ListTile.divideTiles(
@@ -270,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _changeLanguage(BuildContext context) {
     DialogUtils.show(context, ChangeLanguage(),
-        title: Localization.translate(context, (l) => l.changeLanguage),
+        title: Localization.translate(context, (l) => l.language),
         buttons: (_) {
       return [];
     });

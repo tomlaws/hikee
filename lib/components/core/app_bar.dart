@@ -11,13 +11,15 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       required this.title,
       this.leading,
       this.actions,
-      this.height = 56})
+      this.height = 60,
+      this.closeIcon })
       : super(key: key);
 
   final Widget title;
   final Widget? leading;
   final List<Widget>? actions;
   final double height;
+  final IconData? closeIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +34,14 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleTextStyle: TextStyle(fontSize: 12),
       title: title,
       leading: leading ??
-          (Navigator.canPop(context)
-              ? Button(
-                  backgroundColor: Colors.transparent,
-                  icon: Icon(Icons.chevron_left),
-                  onPressed: () => Navigator.of(context).pop(),
+          (ModalRoute.of(context)!.canPop
+              ? Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Button(
+                    backgroundColor: Colors.transparent,
+                    icon: Icon(closeIcon ?? Icons.chevron_left),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
                 )
               : null),
       automaticallyImplyLeading: false,
@@ -44,7 +49,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       shadowColor: Colors.black26,
       toolbarHeight: height,
-      titleSpacing: title is Text ? 6 : 0,
+      titleSpacing: 0,
     );
   }
 

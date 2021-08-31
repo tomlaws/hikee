@@ -155,7 +155,7 @@ class MyApp extends StatelessWidget {
       locale: locale,
       theme: ThemeData(
         primaryColor: themeColor,
-        primaryTextTheme: TextTheme(headline6: TextStyle(color: themeColor)),
+        primaryTextTheme: TextTheme(headline6: TextStyle(color: themeColor, fontSize: 18)),
         //appBarTheme: AppBarTheme(textTheme: Theme.of(context).textTheme.apply(displayColor:Colors.red)),
         sliderTheme: SliderThemeData(
             thumbColor: themeColor,

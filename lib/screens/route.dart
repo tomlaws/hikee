@@ -80,26 +80,21 @@ class _RouteScreenState extends State<RouteScreen> {
                               color: Colors.amber,
                             ),
                             onPressed: () {
-                              if (!context.read<AuthProvider>().loggedIn) {
-                                DialogUtils.show(
-                                    context,
-                                    Container(
-                                      child: Text('Please login first'),
-                                    ));
-                                return;
-                              }
-                              if (bookmarked) {
-                                context
-                                    .read<BookmarksProvider>()
-                                    .deleteBookmark(route.bookmark!.id);
-                                _bookmarked.value = false;
-                              } else {
-                                context
-                                    .read<BookmarksProvider>()
-                                    .createBookmark(route.id)
-                                    .then((b) => route.bookmark?.id = b.id);
-                                _bookmarked.value = true;
-                              }
+                              context.read<AuthProvider>().mustLogin(context,
+                                  () {
+                                if (bookmarked) {
+                                  context
+                                      .read<BookmarksProvider>()
+                                      .deleteBookmark(route.bookmark!.id);
+                                  _bookmarked.value = false;
+                                } else {
+                                  context
+                                      .read<BookmarksProvider>()
+                                      .createBookmark(route.id)
+                                      .then((b) => route.bookmark?.id = b.id);
+                                  _bookmarked.value = true;
+                                }
+                              });
                             }),
                       )
                     ],
@@ -348,21 +343,25 @@ class _RouteScreenState extends State<RouteScreen> {
                                             child: Text('SHOW MORE'),
                                             secondary: true,
                                             onPressed: () {
-                                              Navigator.of(context).push(
-                                                  CupertinoPageRoute(
-                                                      builder: (_) =>
-                                                          Container(
+                                              Navigator.of(context)
+                                                  .push(CupertinoPageRoute(
+                                                      builder: (_) => Container(
                                                             color: Colors.white,
-                                                            child: Column(children: [
-                                                              HikeeAppBar(
-                                                                title: Text(
-                                                                    'Reviews'),
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.all(16.0),
-                                                                child: _reviewList(null),
-                                                              ),
-                                                            ]),
+                                                            child: Column(
+                                                                children: [
+                                                                  HikeeAppBar(
+                                                                    title: Text(
+                                                                        'Reviews'),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                    child:
+                                                                        _reviewList(
+                                                                            null),
+                                                                  ),
+                                                                ]),
                                                           )));
                                             }),
                                       ),
@@ -384,7 +383,9 @@ class _RouteScreenState extends State<RouteScreen> {
     return await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (BuildContext context) {
-        return RouteReviewDialog(routeId: widget.id,);
+        return RouteReviewDialog(
+          routeId: widget.id,
+        );
       },
     );
   }
