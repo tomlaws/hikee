@@ -16,6 +16,7 @@ import 'package:hikee/utils/http.dart';
 import 'package:hikee/utils/localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:routemaster/routemaster.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -50,80 +51,92 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var loggedIn = context.select<AuthProvider, bool>((p) => p.loggedIn);
     Map<String, dynamic> _operations = {
-      //'Likes': null,
-      Localization.translate(context, (l) => l.bookmarks): (BuildContext ctx) {
-        Navigator.of(ctx)
-            .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
+      if (loggedIn)
+        Localization.translate(context, (l) => l.bookmarks):
+            (BuildContext ctx) {
+          Navigator.of(ctx)
+              .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
+        }
+      else
+        Localization.translate(context, (l) => l.login): (BuildContext ctx) {
+          Routemaster.of(context).push('/login');
+        },
+      Localization.translate(context, (l) => l.settings): {
+        Localization.translate(context, (l) => l.language): _changeLanguage
       },
-      Localization.translate(context, (l) => l.settings): {Localization.translate(context, (l) => l.language): _changeLanguage},
-      Localization.translate(context, (l) => l.account): {
-        'Change Nickname': _changeNickname,
-        'Change Password': _changePassword,
-        'Delete Account': (ctx) {}
-      },
-      Localization.translate(context, (l) => l.logout): (BuildContext ctx) {
-        ctx.read<AuthProvider>().logout();
-      }
+      if (loggedIn)
+        Localization.translate(context, (l) => l.account): {
+          'Change Nickname': _changeNickname,
+          'Change Password': _changePassword,
+          'Delete Account': (ctx) {}
+        },
+      if (loggedIn)
+        Localization.translate(context, (l) => l.logout): (BuildContext ctx) {
+          ctx.read<AuthProvider>().logout();
+        }
     };
     _options.value.clear();
     _addToOptions(_operations);
     _page.value = 0;
-    return SafeArea(
-      child: ListView(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        children: [
-          Container(
-            height: 16,
-          ),
-          Column(mainAxisSize: MainAxisSize.min, children: [
-            GestureDetector(
-              onTap: () async {
-                final ImagePicker _picker = ImagePicker();
-                final XFile? image =
-                    await _picker.pickImage(source: ImageSource.gallery);
-                if (image == null) return;
-                _uploadIcon(File(image.path));
-                // setState(() {
-                //   _avatar = File(image.path);
-                // });
-              },
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                Container(
-                  height: 128,
-                  width: 128,
-                  decoration: BoxDecoration(
-                      image: _avatar == null
-                          ? null
-                          : DecorationImage(image: FileImage(_avatar!)),
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(64)),
-                )
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: ListView(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          children: [
+            if (loggedIn) ...[
+              Container(
+                height: 16,
+              ),
+              Column(mainAxisSize: MainAxisSize.min, children: [
+                GestureDetector(
+                  onTap: () async {
+                    final ImagePicker _picker = ImagePicker();
+                    final XFile? image =
+                        await _picker.pickImage(source: ImageSource.gallery);
+                    if (image == null) return;
+                    _uploadIcon(File(image.path));
+                  },
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Container(
+                      height: 128,
+                      width: 128,
+                      decoration: BoxDecoration(
+                          image: _avatar == null
+                              ? null
+                              : DecorationImage(image: FileImage(_avatar!)),
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(64)),
+                    )
+                  ]),
+                ),
               ]),
-            ),
-          ]),
-          Container(
-            height: 16,
-          ),
-          Selector<MeProvider, User?>(
-            selector: (_, mp) => mp.user,
-            builder: (_, me, __) => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    height: 48,
-                    child: Center(
-                      child: Text(me?.nickname ?? 'Unnamed',
-                          style: TextStyle(fontSize: 24)),
-                    ),
-                  )
-                ]),
-          ),
-          _list(_operations)
-        ],
+              Container(
+                height: 16,
+              ),
+              Selector<MeProvider, User?>(
+                selector: (_, mp) => mp.user,
+                builder: (_, me, __) => Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        height: 48,
+                        child: Center(
+                          child: Text(me?.nickname ?? 'Unnamed',
+                              style: TextStyle(fontSize: 24)),
+                        ),
+                      )
+                    ]),
+              ),
+            ],
+            _list(_operations)
+          ],
+        ),
       ),
     );
   }
@@ -141,7 +154,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         var height = leftHeight + (rightHeight - leftHeight) * per;
         return Container(
           decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(16.0)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(.1), blurRadius: 3)
+              ]),
           clipBehavior: Clip.antiAlias,
           margin: EdgeInsets.all(16),
           height: height,
@@ -150,9 +167,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             valueListenable: _options,
             builder: (_, options, __) => PageView(
                 children: options
-                    .map((e) => SingleChildScrollView(
-                          child: e,
-                        ))
+                    .asMap()
+                    .map((i, e) => MapEntry(
+                        i,
+                        Opacity(
+                          opacity: (1 - (value - i).abs()).clamp(0, 1),
+                          child: SingleChildScrollView(
+                            child: e,
+                          ),
+                        )))
+                    .values
                     .toList(),
                 controller: _pageController),
           ),
@@ -176,16 +200,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ListTile(
                 horizontalTitleGap: 0,
                 contentPadding: EdgeInsets.all(0),
-                leading: Button(
-                    icon: Icon(Icons.chevron_left),
-                    backgroundColor: Colors.white,
-                    onPressed: () {
-                      _pageController.previousPage(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.linear);
-                    }),
+                minVerticalPadding: 0,
+                leading: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: SizedBox(
+                    width: 40,
+                    child: Button(
+                        icon: Icon(Icons.chevron_left),
+                        backgroundColor: Colors.white,
+                        onPressed: () {
+                          _pageController.previousPage(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.linear);
+                        }),
+                  ),
+                ),
                 title:
-                    Text(header, style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(header, style: TextStyle()),
               ))
         ],
         ...ListTile.divideTiles(
@@ -219,18 +250,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ];
   }
 
-  Widget _likes() {
-    return Container(
-      child: Text('likes'),
-    );
-  }
-
-  Widget _settings() {
-    return Container(
-      child: Text('settings'),
-    );
-  }
-
   void _changeNickname(BuildContext context) {
     DialogUtils.show(context, ChangeNickname(), title: 'Change Nickname',
         buttons: (_) {
@@ -250,7 +269,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _changeLanguage(BuildContext context) {
-    DialogUtils.show(context, ChangeLanguage(), title: Localization.translate(context, (l) => l.changeLanguage),
+    DialogUtils.show(context, ChangeLanguage(),
+        title: Localization.translate(context, (l) => l.changeLanguage),
         buttons: (_) {
       return [];
     });

@@ -48,19 +48,17 @@ class HikingRoute {
 
   String name(BuildContext context) {
     var l = context.read<LocaleProvider>().locale;
-    if (l.countryCode == 'en') {
-      return name_en;
-    } else {
-      return name_zh;
-    }
+    return {
+      Locale('en'): name_en,
+      Locale('zh'): name_zh
+    }[l]!;
   }
 
   String description(BuildContext context) {
     var l = context.read<LocaleProvider>().locale;
-    if (l.countryCode == 'en') {
-      return description_en;
-    } else {
-      return description_zh;
-    }
+    return {
+      Locale('en'): description_en,
+      Locale('zh'): description_zh
+    }[l]!;
   }
 }

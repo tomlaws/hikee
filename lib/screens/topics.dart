@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/community_post_tile.dart';
 import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/infinite_scroll.dart';
-import 'package:hikee/components/text_input.dart';
+import 'package:hikee/components/core/infinite_scroll.dart';
+import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/topic_tile.dart';
 import 'package:hikee/models/order.dart';
 import 'package:hikee/models/topic.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/topics.dart';
 import 'package:hikee/screens/create_topic.dart';
 import 'package:hikee/utils/dialog.dart';
@@ -36,8 +37,10 @@ class _TopicsPageState extends State<TopicsPage>
     return Scaffold(
       floatingActionButton: Button(
         onPressed: () {
-          Navigator.of(context, rootNavigator: true)
-              .push(CupertinoPageRoute(builder: (_) => CreateTopicPage()));
+          context.read<AuthProvider>().mustLogin(context, () {
+            Navigator.of(context, rootNavigator: true)
+                .push(CupertinoPageRoute(builder: (_) => CreateTopicPage()));
+          });
         },
         icon: Icon(Icons.add, color: Colors.white),
       ),
@@ -63,7 +66,9 @@ class _TopicsPageState extends State<TopicsPage>
                           },
                         ),
                       ),
-                      SizedBox(width: 8,),
+                      SizedBox(
+                        width: 8,
+                      ),
                       SizedBox(
                         width: 120,
                         child: Button(

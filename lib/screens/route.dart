@@ -8,10 +8,10 @@ import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/future_selector.dart';
 import 'package:hikee/components/dialog/route_review.dart';
-import 'package:hikee/components/infinite_scroll.dart';
+import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/components/route_review_tile.dart';
-import 'package:hikee/components/shimmer.dart';
+import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/models/route_review.dart';
@@ -172,7 +172,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    route.name_en,
+                                    route.name(context),
                                     style: TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
@@ -182,7 +182,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                     height: 4,
                                   ),
                                   Text(
-                                    route.region.name_en,
+                                    route.region.name(context),
                                     style: TextStyle(
                                         fontSize: 16, color: Color(0xFFAAAAAA)),
                                   ),
@@ -217,7 +217,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                   height: 12,
                                 ),
                                 Text(
-                                  route.description_en,
+                                  route.description(context),
                                   style: TextStyle(height: 1.6),
                                 ),
                               ],

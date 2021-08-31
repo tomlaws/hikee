@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/dialog/base.dart';
-import 'package:hikee/components/text_input.dart';
+import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/error/error_response.dart';
 import 'package:hikee/providers/route_reviews.dart';
 import 'package:provider/provider.dart';

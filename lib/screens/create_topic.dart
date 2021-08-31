@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/mutation_builder.dart';
-import 'package:hikee/components/text_input.dart';
+import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/models/topic_reply.dart';
 import 'package:hikee/providers/topic_replies.dart';
@@ -33,6 +33,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: HikeeAppBar(
         leading: Button(
           invert: true,
@@ -40,11 +41,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
             Navigator.of(context).pop();
           },
           radius: 0,
-          child: Row(
-            children: [
-              Icon(Icons.clear, color: Theme.of(context).primaryColor),
-            ],
-          ),
+          icon: Icon(Icons.clear),
         ),
         title: Text(
           widget.reply ? 'Reply Topic' : 'New Topic',
@@ -65,7 +62,6 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
               }
             },
             onDone: (topicOrReply) {
-              print(topicOrReply.runtimeType);
               if (topicOrReply is TopicReply) {
                 Navigator.of(context, rootNavigator: true).pop();
               }
@@ -81,7 +77,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
               radius: 0,
               child: Row(
                 children: [
-                  Icon(Icons.send, color: Theme.of(context).primaryColor),
+                  Icon(Icons.send, color: Theme.of(context).primaryColor, size: 24),
                   SizedBox(
                     width: 8,
                   ),
@@ -97,31 +93,23 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
         child: Column(
           children: [
             if (!widget.reply)
-              TextInput(
-                controller: _titleController,
-                hintText: "Title",
-                radius: 0,
-                transparent: true,
+              Padding(
+                padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                child: TextInput(
+                  controller: _titleController,
+                  hintText: "Title",
+                ),
               ),
-            Divider(
-              height: 1,
-            ),
             Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextInput(
-                      controller: _contentController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      hintText: "Say something...",
-                      expand: true,
-                      radius: 0,
-                      transparent: true,
-                    ),
-                  ),
-                ],
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: TextInput(
+                  controller: _contentController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  hintText: "Say something...",
+                  expand: true,
+                ),
               ),
             ),
             SafeArea(

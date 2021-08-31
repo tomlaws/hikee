@@ -21,15 +21,14 @@ class _TopicTileState extends State<TopicTile> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(width: 1, color:Colors.black.withOpacity(.05)),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 6)]
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(.1), blurRadius: 3)]
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+                padding: EdgeInsets.only(top: 16.0, left: 16, right: 16, bottom: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -90,12 +89,11 @@ class _TopicTileState extends State<TopicTile> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(bottom: 8.0, left: 12, right: 12),
+                padding: EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
                 child: Text(
                     widget.topic.title,
                     maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 18)),
+                    overflow: TextOverflow.ellipsis,),
               )
             ],
           ),

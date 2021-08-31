@@ -10,7 +10,7 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
   String? _cursor;
   bool _hasMore = true;
   get hasMore => _hasMore;
-  bool _loading = false;
+  bool _loading = true;
   get loading => _loading;
 
   fetch(bool next) async {

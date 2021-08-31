@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
-import 'package:hikee/components/text_input.dart';
+import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/providers/me.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';

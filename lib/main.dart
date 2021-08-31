@@ -146,14 +146,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     MapMarker();
+    var locale = context.watch<LocaleProvider>().locale;
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Hikee',
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: context.watch<LocaleProvider>().locale,
+      locale: locale,
       theme: ThemeData(
         primaryColor: themeColor,
+        primaryTextTheme: TextTheme(headline6: TextStyle(color: themeColor)),
+        //appBarTheme: AppBarTheme(textTheme: Theme.of(context).textTheme.apply(displayColor:Colors.red)),
         sliderTheme: SliderThemeData(
             thumbColor: themeColor,
             activeTrackColor: themeColor,
@@ -205,7 +208,7 @@ class MyApp extends StatelessWidget {
       '/topics/:id': (route) => CupertinoPage(
           child: TopicPage(id: int.parse(route.pathParameters['id']!))),
       '/profile': (route) {
-        return CupertinoPage(child: _protected(context, ProfileScreen()));
+        return CupertinoPage(child: ProfileScreen());
       },
       '/profile/bookmarks': (route) {
         return CupertinoPage(child: _protected(context, BookmarksPage()));

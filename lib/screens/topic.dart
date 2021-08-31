@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/future_selector.dart';
-import 'package:hikee/components/infinite_scroll.dart';
+import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/models/topic_reply.dart';
 import 'package:hikee/models/user.dart';
@@ -25,6 +25,7 @@ class _TopicPageState extends State<TopicPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         body: FutureSelector<TopicProvider, Topic>(
       init: (tp) => tp.getTopic(widget.id),
       selector: (_, tp) => tp.topic,
@@ -40,7 +41,7 @@ class _TopicPageState extends State<TopicPage> {
                       user: topic.user,
                       content: topic.content,
                       createdAt: topic.createdAt),
-                  SizedBox(height: 8),
+                  SizedBox(height: 16),
                   InfiniteScroll<TopicRepliesProvider, TopicReply>(
                       empty: Padding(
                         padding: EdgeInsets.all(16),
@@ -95,9 +96,8 @@ class _TopicPageState extends State<TopicPage> {
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(width: 1, color: Colors.black.withOpacity(.05)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 6)
+            BoxShadow(color: Colors.black.withOpacity(.1), blurRadius: 3)
           ]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +122,7 @@ class _TopicPageState extends State<TopicPage> {
             ],
           ),
           SizedBox(
-            height: 16,
+            height: 8,
           ),
           Text(content)
         ],

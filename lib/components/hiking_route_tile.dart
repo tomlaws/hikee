@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:hikee/components/shimmer.dart';
+import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/route.dart';
 
 class HikingRouteTile extends StatefulWidget {
@@ -68,7 +68,7 @@ class _HikingRouteTileState extends State<HikingRouteTile> {
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
                               Text(
-                                widget.route.region.region(context),
+                                widget.route.region.name(context),
                                 maxLines: 1,
                                 style: TextStyle(color: Color(0xFFCCCCCC)),
                               ),

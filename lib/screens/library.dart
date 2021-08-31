@@ -4,7 +4,7 @@
 // import 'package:get_it/get_it.dart';
 // import 'package:hikee/components/button.dart';
 // import 'package:hikee/components/hiking_route_tile.dart';
-// import 'package:hikee/components/text_input.dart';
+// import 'package:hikee/components/core/text_input.dart';
 // import 'package:hikee/data/districtValues.dart';
 // import 'package:hikee/data/sortValues.dart';
 // import 'package:hikee/data/filterValues.dart';

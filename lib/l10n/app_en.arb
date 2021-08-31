@@ -2,7 +2,9 @@
   "bookmarks": "Bookmarks",
   "settings": "Settings",
   "account": "Account",
+  "login": "Login",
   "logout": "Logout",
   "language": "Language",
-  "changeLanguage": "Change Language"
+  "changeLanguage": "Change Language",
+  "reply": "Reply"
 }

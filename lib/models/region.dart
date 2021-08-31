@@ -23,9 +23,9 @@ class Region {
         'name_zh': name_zh,
         'name_en': name_en,
       };
-  String region(BuildContext context) {
+  String name(BuildContext context) {
     var l = context.read<LocaleProvider>().locale;
-    if (l.countryCode == 'en') {
+    if (l == Locale('en')) {
       return name_en;
     } else {
       return name_zh;

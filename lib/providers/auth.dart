@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hikee/models/token.dart';
 import 'package:hikee/services/auth.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:routemaster/routemaster.dart';
 
 class AuthProvider extends ChangeNotifier {
   ValueNotifier<Token?> _token = ValueNotifier(null);
@@ -80,5 +81,13 @@ class AuthProvider extends ChangeNotifier {
       _token.value = token;
     }
     return token;
+  }
+
+  void mustLogin<T>(BuildContext context, void Function() action) {
+    if (!loggedIn) {
+      Routemaster.of(context).push('/login');
+    } else {
+      action();
+    }
   }
 }

@@ -10,7 +10,7 @@
 // import 'package:hikee/components/hiking_route_tile.dart';
 // import 'package:hikee/components/mountain_deco.dart';
 // import 'package:hikee/components/sliding_up_panel.dart';
-// import 'package:hikee/components/text_input.dart';
+// import 'package:hikee/components/core/text_input.dart';
 // import 'package:hikee/data/routes.dart';
 // import 'package:hikee/models/active_hiking_route.dart';
 // import 'package:hikee/models/panel_position.dart';

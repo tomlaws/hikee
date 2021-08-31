@@ -3,17 +3,53 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
-// ignore: non_constant_identifier_names
-PreferredSizeWidget HikeeAppBar({Key? key, required Widget title, Widget? leading, List<Widget>? actions, double height = 56}) {
+import 'package:hikee/components/button.dart';
+
+class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const HikeeAppBar(
+      {Key? key,
+      required this.title,
+      this.leading,
+      this.actions,
+      this.height = 56})
+      : super(key: key);
+
+  final Widget title;
+  final Widget? leading;
+  final List<Widget>? actions;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
     return AppBar(
+      iconTheme: IconThemeData(color: Colors.green, size: 24),
+      // shape: RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.vertical(
+      //     bottom: Radius.circular(12),
+      //   ),
+      // ),
+      elevation: 2,
+      titleTextStyle: TextStyle(fontSize: 12),
       title: title,
-      leading: leading,
+      leading: leading ??
+          (Navigator.canPop(context)
+              ? Button(
+                  backgroundColor: Colors.transparent,
+                  icon: Icon(Icons.chevron_left),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : null),
+      automaticallyImplyLeading: false,
       actions: actions,
       backgroundColor: Colors.white,
       shadowColor: Colors.black26,
       toolbarHeight: height,
       titleSpacing: title is Text ? 6 : 0,
     );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(height);
 }
 // class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
 //   const HikeeAppBar({Key? key, required this.title, this.leading, this.actions, this.height = 56})

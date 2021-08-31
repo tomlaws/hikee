@@ -26,7 +26,6 @@ class TimeUtils {
       {bool numericDates = true}) {
     final date2 = DateTime.now();
     final difference = date2.difference(dateTime);
-    print(dateTime.toLocal());
 
     if ((difference.inDays / 7).floor() >= 1) {
       return (numericDates) ? '1 week ago' : 'Last week';

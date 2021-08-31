@@ -22,7 +22,7 @@ class _LoginPromptState extends State<LoginPrompt> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Login to enjoy hiking',
+          'Join Hikee now',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         Container(height: 32),
@@ -32,6 +32,16 @@ class _LoginPromptState extends State<LoginPrompt> {
               child: Text('LOGIN'),
               onPressed: () {
                 Routemaster.of(context).push('/login');
+              }),
+        ),
+        
+        Container(height: 16),
+        SizedBox(
+          width: 200,
+          child: Button(
+              child: Text('SIGN UP'),
+              onPressed: () {
+                Routemaster.of(context).push('/register');
               }),
         )
       ],

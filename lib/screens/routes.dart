@@ -3,18 +3,14 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hikee/components/account/change_nickname.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
-import 'package:hikee/components/infinite_scroll.dart';
+import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/components/routes_filter.dart';
-import 'package:hikee/components/text_input.dart';
-import 'package:hikee/data/districtValues.dart';
-import 'package:hikee/data/sortValues.dart';
-import 'package:hikee/data/filterValues.dart';
+import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/order.dart';
 import 'package:hikee/models/route.dart';
-import 'package:hikee/providers/route.dart';
 import 'package:hikee/providers/routes.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:provider/provider.dart';
@@ -49,12 +45,11 @@ class _RoutesScreenState extends State<RoutesScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          color: Colors.white,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SizedBox(height: 8),
+      appBar: HikeeAppBar(
+        height: 104,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextInput(
@@ -67,19 +62,11 @@ class _RoutesScreenState extends State<RoutesScreen>
                 },
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 3,
-                    blurRadius: 3,
-                    offset: Offset(0, 6), // changes position of shadow
-                  ),
-                ],
-              ),
+            SizedBox(
+              height: 8,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Expanded(
@@ -133,23 +120,26 @@ class _RoutesScreenState extends State<RoutesScreen>
                 ],
               ),
             ),
-            Expanded(
-              child: InfiniteScroll<RoutesProvider, HikingRoute>(
-                selector: (p) => p.items,
-                builder: (route) {
-                  return HikingRouteTile(
-                    route: route,
-                    onTap: () {
-                      Routemaster.of(context).push('/routes/${route.id}');
-                    },
-                  );
+          ],
+        ),
+      ),
+      body: SafeArea(
+        child: Container(
+          color: Colors.white,
+          child: InfiniteScroll<RoutesProvider, HikingRoute>(
+            selector: (p) => p.items,
+            builder: (route) {
+              return HikingRouteTile(
+                route: route,
+                onTap: () {
+                  Routemaster.of(context).push('/routes/${route.id}');
                 },
-                fetch: (next) {
-                  return context.read<RoutesProvider>().fetch(next);
-                },
-              ),
-            ),
-          ]),
+              );
+            },
+            fetch: (next) {
+              return context.read<RoutesProvider>().fetch(next);
+            },
+          ),
         ),
       ),
     );
@@ -167,25 +157,28 @@ class _RoutesScreenState extends State<RoutesScreen>
             ),
             Selector<RoutesProvider, HikingRouteSortable>(
               selector: (_, p) => p.sort,
-              builder: (_, sort, __) => Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                children: HikingRouteSortable.values
-                    .map((e) => Button(
-                          backgroundColor: sort == e ? null : Color(0xFFF5F5F5),
-                          child: Text(e.name,
-                              style: sort == e
-                                  ? null
-                                  : TextStyle(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .color)),
-                          onPressed: () {
-                            context.read<RoutesProvider>().sort = e;
-                          },
-                        ))
-                    .toList(),
+              builder: (_, sort, __) => IntrinsicWidth(
+                child: Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: HikingRouteSortable.values
+                      .map((e) => Button(
+                            backgroundColor:
+                                sort == e ? null : Color(0xFFF5F5F5),
+                            child: Text(e.name,
+                                style: sort == e
+                                    ? null
+                                    : TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1!
+                                            .color)),
+                            onPressed: () {
+                              context.read<RoutesProvider>().sort = e;
+                            },
+                          ))
+                      .toList(),
+                ),
               ),
             ),
             Padding(
