@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/dropdown.dart';
 import 'package:hikee/components/keep_alive.dart';
 import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/route_elevation.dart';
@@ -364,12 +365,13 @@ class _HomeScreenState extends State<HomeScreen>
                                                             )
                                                           : SizedBox()),
                                         ),
-                                        Button(
-                                          icon: Icon(LineAwesomeIcons.bars,
-                                              color: Colors.white, size: 32),
-                                          backgroundColor: Colors.transparent,
-                                          onPressed: () {},
-                                        )
+                                        DropdownMenu(),
+                                        // Button(
+                                        //   icon: Icon(LineAwesomeIcons.bars,
+                                        //       color: Colors.white, size: 32),
+                                        //   backgroundColor: Colors.transparent,
+                                        //   onPressed: () {},
+                                        // )
                                       ],
                                     ),
                                     ValueListenableBuilder<Weather?>(
@@ -394,19 +396,22 @@ class _HomeScreenState extends State<HomeScreen>
                                                           8.0)),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.warning, color: Colors.black,),
+                                                  Icon(
+                                                    Icons.warning,
+                                                    color: Colors.black,
+                                                  ),
                                                   Container(width: 8),
                                                   Expanded(
                                                     child: Wrap(
-                                                        children:
-                                                            weather.warningMessage
-                                                                .map((m) => Text(
-                                                                      m,
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .black),
-                                                                    ))
-                                                                .toList()),
+                                                        children: weather
+                                                            .warningMessage
+                                                            .map((m) => Text(
+                                                                  m,
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .black),
+                                                                ))
+                                                            .toList()),
                                                   )
                                                 ],
                                               ),
