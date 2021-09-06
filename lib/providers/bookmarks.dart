@@ -6,26 +6,30 @@ import 'package:hikee/providers/pagination_change_notifier.dart';
 import 'package:hikee/services/bookmark.dart';
 
 class BookmarksProvider extends PaginationChangeNotifier<Bookmark> {
-  AuthProvider _auth;
-  set auth(auth) => _auth = auth;
+  AuthProvider _authProvider;
   BookmarkService _bookmarkService = GetIt.I<BookmarkService>();
 
-  BookmarksProvider({required AuthProvider auth}) : _auth = auth;
+  BookmarksProvider({required AuthProvider authProvider}) : _authProvider = authProvider;
+
+  update({required AuthProvider authProvider}) {
+    this._authProvider = authProvider;
+  }
 
   Future<Bookmark> createBookmark(int routeId) async {
-    Bookmark bookmark = await _bookmarkService.createBookmark(_auth.getToken(),
+    Bookmark bookmark = await _bookmarkService.createBookmark(_authProvider.getToken(),
         routeId: routeId);
     insert(0, bookmark);
     return bookmark;
   }
 
   deleteBookmark(int bookmarkId) async {
-    await _bookmarkService.deleteBookmark(_auth.getToken(), id: bookmarkId);
+    await _bookmarkService.deleteBookmark(_authProvider.getToken(), id: bookmarkId);
     delete((element) => element.id == bookmarkId);
   }
 
   @override
   Future<Paginated<Bookmark>> get({ String? cursor }) async {
-    return await _bookmarkService.getBookmarks(_auth.getToken(), cursor: cursor);
+    return await _bookmarkService.getBookmarks(_authProvider.getToken(), cursor: cursor);
   }
+
 }

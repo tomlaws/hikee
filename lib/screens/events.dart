@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hikee/components/events/card.dart';
+import 'package:hikee/components/core/future_selector.dart';
 import 'package:hikee/components/events/h_list.dart';
 import 'package:hikee/models/event.dart';
+import 'package:hikee/models/paginated.dart';
+import 'package:hikee/providers/events.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({Key? key}) : super(key: key);
@@ -14,19 +16,17 @@ class EventsScreen extends StatefulWidget {
 class _EventsScreenState extends State<EventsScreen>
     with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
-  final items = List<Event>.generate(
-      6, (i) => Event('Testing event', new DateTime.now()));
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        top: false,
-        child: ListView(
+      body: FutureSelector<EventsProvider,Paginated<Event>>(
+        init: (p) => p.get(),
+        builder: (_, paginated, __) => ListView(
           children: [
-            HorizontalList(items),
             Padding(
-              padding: EdgeInsets.fromLTRB(18, 24, 0, 18),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
               child: Text(
                 'Category',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
@@ -40,7 +40,7 @@ class _EventsScreenState extends State<EventsScreen>
               // color: Colors.green,
               width: MediaQuery.of(context).size.width,
               child: ListView(
-                padding: EdgeInsets.only(left: 18),
+                padding: EdgeInsets.symmetric(horizontal: 18),
                 physics: AlwaysScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 children: [
@@ -88,28 +88,14 @@ class _EventsScreenState extends State<EventsScreen>
                 ],
               ),
             ),
-            Container(
-              height: 300,
-              margin: EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  'https://i.imgur.com/IyHBcKj.jpg',
-                  fit: BoxFit.cover,
-                ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+              child: Text(
+                'Latest',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
               ),
             ),
-            Container(
-              height: 300,
-              margin: EdgeInsets.symmetric(horizontal: 18, vertical: 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  'https://i.imgur.com/IyHBcKj.jpg',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            HorizontalList(paginated.data),
           ],
         ),
       ),

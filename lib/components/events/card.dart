@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/models/event.dart';
 
@@ -25,12 +26,10 @@ class _EventCardState extends State<EventCard> {
                   Container(
                     height: 350,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        'https://i.imgur.com/IyHBcKj.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                        borderRadius: BorderRadius.circular(20),
+                        child: CachedNetworkImage(
+                            imageUrl: widget.event.route.image,
+                            fit: BoxFit.cover)),
                   ),
                   Positioned(
                     top: 0,
@@ -53,36 +52,6 @@ class _EventCardState extends State<EventCard> {
                         height: 100,
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         child: Container()
-                        // Stack(
-                        //   children: [
-                        //     Container(
-                        //       height: 50,
-                        //       width: 50,
-                        //       decoration: BoxDecoration(
-                        //         shape: BoxShape.circle,
-                        //         color: Colors.black,
-                        //       ),
-                        //     ),
-                        //     Container(
-                        //       margin: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                        //       height: 50,
-                        //       width: 50,
-                        //       decoration: BoxDecoration(
-                        //         shape: BoxShape.circle,
-                        //         color: Colors.black,
-                        //       ),
-                        //     ),
-                        //     Container(
-                        //       height: 50,
-                        //       width: 50,
-                        //       decoration: BoxDecoration(
-                        //         shape: BoxShape.circle,
-                        //         color: Colors.black,
-                        //       ),
-                        //     )
-
-                        //   ],
-                        // ),
                         ),
                   )
                 ],
@@ -108,7 +77,7 @@ class _EventCardState extends State<EventCard> {
               width: 200,
               padding: EdgeInsets.all(18),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -122,11 +91,12 @@ class _EventCardState extends State<EventCard> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 16,),
                   Row(
                     children: [
                       Flexible(
                         child: Text(
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Leo at phasellus cras pellentesque. Vel vel eu purus ornare orci',
+                          widget.event.description,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: TextStyle(

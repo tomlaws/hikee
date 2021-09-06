@@ -16,7 +16,6 @@ class HorizontalList extends StatefulWidget {
 
 class _HorizontalListState extends State<HorizontalList> {
   int _current = 0;
-  final CarouselController _controller = CarouselController();
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -30,7 +29,7 @@ class _HorizontalListState extends State<HorizontalList> {
               height: 460,
               viewportFraction: 0.85,
               initialPage: 0,
-              enableInfiniteScroll: true,
+              enableInfiniteScroll: false,
               reverse: false,
               autoPlay: false,
               autoPlayCurve: Curves.fastOutSlowIn,

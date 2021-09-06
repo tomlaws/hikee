@@ -8,13 +8,13 @@ class FutureSelector<T, U> extends StatefulWidget {
   const FutureSelector({
     Key? key,
     required this.init,
-    required this.selector,
+    this.selector,
     required this.builder,
     this.onNull,
     this.loader,
   }) : super(key: key);
   final Future<U?>? Function(T) init;
-  final U? Function(BuildContext, T) selector;
+  final U? Function(BuildContext, T)? selector;
   final Widget Function(BuildContext, U, Widget?) builder;
   final Widget? onNull;
   final Widget? loader;
@@ -43,7 +43,9 @@ class _FutureSelectorState<T, U> extends State<FutureSelector<T, U>> {
           );
         }
         return Selector<T, U>(
-            selector: (context, t) => widget.selector(context, t)!,
+            selector: (context, t) => widget.selector == null
+                ? snapshot.data as U
+                : widget.selector!(context, t)!,
             builder: widget.builder);
       },
     );
