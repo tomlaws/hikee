@@ -44,69 +44,67 @@ class _TopicsPageState extends State<TopicsPage>
         },
         icon: Icon(Icons.add, color: Colors.white),
       ),
+      appBar: HikeeAppBar(
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextInput(
+                  textEditingController: _searchController,
+                  hintText: 'Search...',
+                  textInputAction: TextInputAction.search,
+                  icon: Icon(Icons.search),
+                  onSubmitted: (q) {
+                    context.read<TopicsProvider>().query = q;
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              SizedBox(
+                width: 120,
+                child: Button(
+                  backgroundColor: Color(0xFFF5F5F5),
+                  child: Selector<TopicsProvider, Tuple2<TopicSortable, Order>>(
+                    selector: (_, p) => Tuple2(p.sort, p.order),
+                    builder: (_, sortAndOrder, __) => Row(
+                      children: [
+                        sortAndOrder.item2 == Order.DESC
+                            ? Icon(Icons.sort)
+                            : Transform.rotate(
+                                angle: 180 * pi / 180, child: Icon(Icons.sort)),
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              sortAndOrder.item1.name,
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .color),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  onPressed: () {
+                    _showSortMenu();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Container(
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HikeeAppBar(
-                title: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextInput(
-                          textEditingController: _searchController,
-                          hintText: 'Search...',
-                          textInputAction: TextInputAction.search,
-                          icon: Icon(Icons.search),
-                          onSubmitted: (q) {
-                            context.read<TopicsProvider>().query = q;
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      SizedBox(
-                        width: 120,
-                        child: Button(
-                          backgroundColor: Color(0xFFF5F5F5),
-                          child: Selector<TopicsProvider,
-                              Tuple2<TopicSortable, Order>>(
-                            selector: (_, p) => Tuple2(p.sort, p.order),
-                            builder: (_, sortAndOrder, __) => Row(
-                              children: [
-                                sortAndOrder.item2 == Order.DESC
-                                    ? Icon(Icons.sort)
-                                    : Transform.rotate(
-                                        angle: 180 * pi / 180,
-                                        child: Icon(Icons.sort)),
-                                Expanded(
-                                  child: Center(
-                                    child: Text(
-                                      sortAndOrder.item1.name,
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .color),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          onPressed: () {
-                            _showSortMenu();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
               Expanded(
                 child: InfiniteScroll<TopicsProvider, Topic>(
                   selector: (p) => p.items,

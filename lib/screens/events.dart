@@ -1,10 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/future_selector.dart';
+import 'package:hikee/components/core/text_input.dart';
+import 'package:hikee/components/event_tile.dart';
 import 'package:hikee/components/events/h_list.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/providers/events.dart';
+import 'package:hikee/screens/search.dart';
+import 'package:provider/provider.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({Key? key}) : super(key: key);
@@ -15,13 +21,36 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen>
     with AutomaticKeepAliveClientMixin {
+  @override
   bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
-      body: FutureSelector<EventsProvider,Paginated<Event>>(
+      appBar: HikeeAppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextInput(
+                  hintText: 'Search...',
+                  textInputAction: TextInputAction.search,
+                  icon: Icon(Icons.search),
+                  onTap: () {
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (_) =>
+                            SearchPage<EventsProvider, Event>(builder: (event) {
+                              return EventTile(event: event);
+                            })));
+                  }),
+            ),
+          ],
+        ),
+      ),
+      body: FutureSelector<EventsProvider, Paginated<Event>>(
         init: (p) => p.get(),
         builder: (_, paginated, __) => ListView(
           children: [

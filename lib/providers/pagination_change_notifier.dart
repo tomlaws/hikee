@@ -12,6 +12,8 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
   get hasMore => _hasMore;
   bool _loading = true;
   get loading => _loading;
+  int _fetchCount = 0;
+  get fetchCount => _fetchCount; 
 
   fetch(bool next) async {
     if (!next) {
@@ -19,6 +21,7 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
     }
     if (_loading || !_hasMore) return;
     _loading = true;
+    _fetchCount++;
     notifyListeners();
     Paginated<T> paginated = await get(cursor: _cursor);
     _hasMore = paginated.hasMore;
@@ -43,6 +46,7 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
     _loading = false;
     _hasMore = true;
     _items.clear();
+    _fetchCount = 0;
     notifyListeners();
   }
 
@@ -77,6 +81,7 @@ abstract class AdvancedPaginationChangeNotifier<T, U>
     }
     if (_loading || !_hasMore) return;
     _loading = true;
+    _fetchCount++;
     notifyListeners();
     Paginated<T> paginated =
         await get(cursor: _cursor, sort: _sort, order: _order, query: _query);

@@ -15,6 +15,8 @@ class TextInput extends StatefulWidget {
   final double radius;
   final bool transparent;
   final String? label;
+  final Function? onTap;
+  final bool autoFocus;
 
   const TextInput(
       {Key? key,
@@ -30,7 +32,9 @@ class TextInput extends StatefulWidget {
       this.expand = false,
       this.radius = 12,
       this.transparent = false,
-      this.label})
+      this.label,
+      this.onTap,
+      this.autoFocus = false})
       : super(key: key);
 
   @override
@@ -41,7 +45,6 @@ class _TextInputState extends State<TextInput>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation _colorTween;
-  //late Animation _colorTween2;
   FocusNode _focus = FocusNode();
 
   @override
@@ -51,8 +54,6 @@ class _TextInputState extends State<TextInput>
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     _colorTween = ColorTween(begin: Color(0xFFF2F2F2), end: Color(0xFFECECEC))
         .animate(_animationController);
-    // _colorTween2 = ColorTween(begin: Color(0xFFECECEC), end: Color(0xFFE2E2E2))
-    //     .animate(_animationController);
     _focus.addListener(_onFocusChange);
   }
 
@@ -66,6 +67,10 @@ class _TextInputState extends State<TextInput>
   void _onFocusChange() {
     if (_focus.hasFocus) {
       _animationController.forward();
+      if (widget.onTap != null) {
+        widget.onTap!();
+        _focus.unfocus();
+      }
     } else {
       _animationController.reverse();
     }
@@ -96,7 +101,7 @@ class _TextInputState extends State<TextInput>
                           widget.controller ?? widget.textEditingController,
                       textInputAction: widget.textInputAction,
                       onSubmitted: widget.onSubmitted,
-                      autofocus: false,
+                      autofocus: widget.autoFocus,
                       obscureText: widget.obscureText,
                       maxLines: widget.maxLines,
                       keyboardType: widget.keyboardType,

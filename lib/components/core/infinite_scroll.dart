@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hikee/providers/pagination_change_notifier.dart';
 import 'package:provider/provider.dart';
 
-class InfiniteScroll<T extends PaginationChangeNotifier, U> extends StatefulWidget {
+class InfiniteScroll<T extends PaginationChangeNotifier, U>
+    extends StatefulWidget {
   const InfiniteScroll(
       {Key? key,
       this.shrinkWrap = false,
@@ -13,6 +14,7 @@ class InfiniteScroll<T extends PaginationChangeNotifier, U> extends StatefulWidg
       this.take,
       this.separator,
       this.empty,
+      this.initial,
       this.init = true})
       : super(key: key);
 
@@ -27,13 +29,18 @@ class InfiniteScroll<T extends PaginationChangeNotifier, U> extends StatefulWidg
   /// Widget to be shown when the list is empty
   /// String will be converted into Text widget
   final dynamic empty;
+
+  /// Widget to be shown when the search is not initiated
+  /// String will be converted into Text widget
+  final dynamic initial;
   final bool init;
 
   @override
   _InfiniteScrollState<T, U> createState() => _InfiniteScrollState<T, U>();
 }
 
-class _InfiniteScrollState<T extends PaginationChangeNotifier, U> extends State<InfiniteScroll<T, U>> {
+class _InfiniteScrollState<T extends PaginationChangeNotifier, U>
+    extends State<InfiniteScroll<T, U>> {
   ScrollController _scrollController = ScrollController();
 
   @override
@@ -67,6 +74,11 @@ class _InfiniteScrollState<T extends PaginationChangeNotifier, U> extends State<
     return Consumer<T>(builder: (_, p, __) {
       var itemCount = widget.selector(p).length;
       if (widget.take != null) itemCount = itemCount.clamp(0, widget.take!);
+      if (p.fetchCount == 0) {
+        if (widget.initial is Widget) return widget.initial;
+        if (widget.initial is Text) return Center(child: Text(widget.initial));
+        return Container();
+      }
       if (itemCount == 0) {
         if (p.loading) return Center(child: CircularProgressIndicator());
         if (widget.empty is Widget) return widget.empty;
