@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/models/loading.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:provider/provider.dart';
 
 /// Combines future builder & selector
@@ -24,17 +25,23 @@ class FutureSelector<T, U> extends StatefulWidget {
 }
 
 class _FutureSelectorState<T, U> extends State<FutureSelector<T, U>> {
-  late Future<U?>? future;
+  late Future<U?>? _future;
+  bool _loggedIn = false;
   @override
   void initState() {
     super.initState();
-    future = widget.init(context.read<T>());
+    _future = widget.init(context.read<T>());
   }
 
   @override
   Widget build(BuildContext context) {
+    var loggedIn = context.watch<AuthProvider>().loggedIn;
+    if (_loggedIn != loggedIn) {
+      _loggedIn = loggedIn;
+      _future = widget.init(context.read<T>());
+    }
     return FutureBuilder<Object?>(
-      future: future,
+      future: _future,
       initialData: Loading(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

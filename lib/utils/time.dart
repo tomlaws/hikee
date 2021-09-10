@@ -47,4 +47,5 @@ class TimeUtils {
       return 'Just now';
     }
   }
+
 }

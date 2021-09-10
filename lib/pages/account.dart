@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hikee/components/account/change_language.dart';
 import 'package:hikee/components/account/change_nickname.dart';
+import 'package:hikee/components/avatar.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/account/change_password.dart';
 import 'package:hikee/models/user.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/me.dart';
-import 'package:hikee/screens/account/bookmarks.dart';
+import 'package:hikee/pages/account/bookmarks.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/http.dart';
 import 'package:hikee/utils/localization.dart';
@@ -101,16 +102,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _uploadIcon(File(image.path));
                   },
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Container(
-                      height: 128,
-                      width: 128,
-                      decoration: BoxDecoration(
-                          image: _avatar == null
-                              ? null
-                              : DecorationImage(image: FileImage(_avatar!)),
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(64)),
-                    )
+                    Selector<MeProvider, User?>(
+                        selector: (_, mp) => mp.user,
+                        builder: (_, me, __) => Avatar(
+                              user: me!,
+                              height: 128,
+                            ))
                   ]),
                 ),
               ]),

@@ -10,7 +10,7 @@ import 'package:hikee/models/order.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/topics.dart';
-import 'package:hikee/screens/create_topic.dart';
+import 'package:hikee/pages/create_topic.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
@@ -109,7 +109,7 @@ class _TopicsPageState extends State<TopicsPage>
                 child: InfiniteScroll<TopicsProvider, Topic>(
                   selector: (p) => p.items,
                   separator: SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   builder: (topic) {
                     return TopicTile(

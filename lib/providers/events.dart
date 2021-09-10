@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:hikee/models/event.dart';
+import 'package:hikee/models/event_category.dart';
 import 'package:hikee/models/order.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/paginated.dart';
@@ -39,6 +40,10 @@ class EventsProvider
       {String? cursor, String? query, String? sort, String? order}) async {
     return await _eventService.getEvents(_authProvider.getToken(),
         cursor: cursor, query: query, sort: sort, order: order);
+  }
+
+  Future<List<EventCategory>> getCategories() {
+    return _eventService.getEventCategories();
   }
 }
 

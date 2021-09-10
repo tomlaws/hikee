@@ -13,6 +13,7 @@ class Button extends StatefulWidget {
   final bool disabled;
   final Icon? icon;
   final double radius;
+  final EdgeInsets? padding;
 
   const Button(
       {Key? key,
@@ -24,7 +25,8 @@ class Button extends StatefulWidget {
       this.loading = false,
       this.disabled = false,
       this.invert = false,
-      this.radius = 12})
+      this.radius = 12,
+      this.padding})
       : super(key: key);
 
   @override
@@ -32,24 +34,8 @@ class Button extends StatefulWidget {
 }
 
 class _ButtonState extends State<Button> with TickerProviderStateMixin {
-  double _scale = 1;
-  late AnimationController _controller;
-  Timer? _timer;
-
   @override
   void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      lowerBound: 0.9,
-      upperBound: 1.0,
-      value: 1,
-      duration: Duration(milliseconds: 150),
-    );
-    _controller.addListener(() {
-      setState(() {
-        _scale = _controller.value;
-      });
-    });
     super.initState();
   }
 
@@ -69,6 +55,9 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
       textColor = Theme.of(context).textTheme.bodyText1!.color!;
     if (buttonColor != Colors.transparent)
       buttonColor.withOpacity((widget.disabled || widget.loading) ? .75 : 1);
+
+    EdgeInsets padding = widget.padding ??
+        EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16);
     return Material(
       borderRadius: BorderRadius.circular(widget.radius),
       clipBehavior: Clip.antiAlias,
@@ -79,13 +68,12 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         },
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: 44,
+            minHeight: 48,
             minWidth: 48,
-            maxHeight: 44,
+            maxHeight: 48,
           ),
           child: Container(
-            padding:
-                EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16),
+            padding: padding,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10))),
             child: DefaultTextStyle(
@@ -123,8 +111,6 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    if (_timer != null) _timer!.cancel();
-    _controller.dispose();
     super.dispose();
   }
 }

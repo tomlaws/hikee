@@ -10,10 +10,12 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
   String? _cursor;
   bool _hasMore = true;
   get hasMore => _hasMore;
+  int _totalCount = 0;
+  get totalCount => _totalCount;
   bool _loading = true;
   get loading => _loading;
   int _fetchCount = 0;
-  get fetchCount => _fetchCount; 
+  get fetchCount => _fetchCount;
 
   fetch(bool next) async {
     if (!next) {
@@ -26,6 +28,7 @@ abstract class PaginationChangeNotifier<T> extends ChangeNotifier {
     Paginated<T> paginated = await get(cursor: _cursor);
     _hasMore = paginated.hasMore;
     _cursor = paginated.cursor;
+    _totalCount = paginated.totalCount;
     _loading = false;
     _items.addAll(paginated.data);
     notifyListeners();

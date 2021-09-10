@@ -6,34 +6,34 @@ import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/token.dart';
+import 'package:hikee/services/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  TextInputController _emailController = TextInputController();
-  TextInputController _passwordController = TextInputController();
+class _RegisterScreenState extends State<RegisterScreen> {
+  AuthService get authService => GetIt.I<AuthService>();
+  TextInputController _emailController = TextInputController(text: '');
+  TextInputController _passwordController = TextInputController(text: '');
+  TextInputController _confirmPasswordController =
+      TextInputController(text: '');
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    var auth = context.watch<AuthProvider>();
-    if (auth.loggedIn) {
-      Future.microtask(() => Routemaster.of(context).pop());
-      return Container();
-    }
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -59,6 +59,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                 ),
                 Container(
+                  height: 16,
+                ),
+                TextInput(
+                  hintText: 'Confirm password',
+                  obscureText: true,
+                  controller: _confirmPasswordController,
+                ),
+                Container(
                   height: 32,
                 ),
                 SizedBox(
@@ -67,21 +75,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     mutation: () {
                       _emailController.clearError();
                       _passwordController.clearError();
+                      _confirmPasswordController.clearError();
+
+                      if (_passwordController.text !=
+                          _confirmPasswordController.text) {
+                        throw _confirmPasswordController.error =
+                            'Password does not match';
+                      }
                       var email = _emailController.text;
                       var password = _passwordController.text;
-                      return context.read<AuthProvider>().signIn(email, password);
+                      return context
+                          .read<AuthProvider>()
+                          .register(email, password);
                     },
-                    onDone: (token) {},
                     onError: (error) {
                       _emailController.error = error.getFieldError('email');
                       _passwordController.error =
                           error.getFieldError('password');
-                      if (error.statusCode == 401)
-                        _passwordController.error = 'Incorrect password';
+                    },
+                    onDone: (token) {
+                      if (token != null) {
+                        Routemaster.of(context).pop();
+                      }
                     },
                     builder: (mutate, loading) {
                       return Button(
-                          child: Text('LOGIN'),
+                          child: Text('REGISTER'),
                           loading: loading,
                           onPressed: mutate);
                     },
@@ -91,9 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 16,
                 ),
                 GestureDetector(
-                  child: Text('Or sign up now'),
+                  child: Text('Or sign in now'),
                   onTap: () {
-                    Routemaster.of(context).replace('/register');
+                    Routemaster.of(context).replace('/login');
                   },
                 )
               ],

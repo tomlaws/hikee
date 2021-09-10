@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/route.dart';
+import 'package:routemaster/routemaster.dart';
 
 class HikingRouteTile extends StatefulWidget {
   final HikingRoute route;
@@ -19,7 +20,13 @@ class _HikingRouteTileState extends State<HikingRouteTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: () {
+        if (widget.onTap != null) {
+          widget.onTap!();
+          return;
+        }
+        Routemaster.of(context).push('/routes/${widget.route.id}');
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Container(
           margin: EdgeInsets.only(bottom: 12),

@@ -131,9 +131,6 @@ class _RoutesScreenState extends State<RoutesScreen>
             builder: (route) {
               return HikingRouteTile(
                 route: route,
-                onTap: () {
-                  Routemaster.of(context).push('/routes/${route.id}');
-                },
               );
             },
             fetch: (next) {

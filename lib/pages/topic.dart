@@ -10,7 +10,7 @@ import 'package:hikee/models/user.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/topic.dart';
 import 'package:hikee/providers/topic_replies.dart';
-import 'package:hikee/screens/create_topic.dart';
+import 'package:hikee/pages/create_topic.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +23,6 @@ class TopicPage extends StatefulWidget {
 }
 
 class _TopicPageState extends State<TopicPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

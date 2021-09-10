@@ -1,13 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/models/event.dart';
+import 'package:routemaster/routemaster.dart';
 
 class EventCard extends StatefulWidget {
   final Event event;
-  final bool? featured;
   final int? index;
-  EventCard({Key? key, required this.event, this.featured, this.index})
-      : super(key: key);
+  EventCard({Key? key, required this.event, this.index}) : super(key: key);
 
   @override
   _EventCardState createState() => _EventCardState();
@@ -16,8 +15,11 @@ class EventCard extends StatefulWidget {
 class _EventCardState extends State<EventCard> {
   @override
   Widget build(BuildContext context) {
-    if (widget.featured == true)
-      return Stack(
+    return InkWell(
+      onTap: () {
+        Routemaster.of(context).push('/events/${widget.event.id}');
+      },
+      child: Stack(
         children: [
           Stack(
             children: [
@@ -51,8 +53,7 @@ class _EventCardState extends State<EventCard> {
                         ),
                         height: 100,
                         padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: Container()
-                        ),
+                        child: Container()),
                   )
                 ],
               ),
@@ -91,7 +92,9 @@ class _EventCardState extends State<EventCard> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16,),
+                  SizedBox(
+                    height: 16,
+                  ),
                   Row(
                     children: [
                       Flexible(
@@ -110,8 +113,7 @@ class _EventCardState extends State<EventCard> {
             ),
           )
         ],
-      );
-    else
-      return Container();
+      ),
+    );
   }
 }

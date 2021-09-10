@@ -14,6 +14,7 @@ Paginated<T> _$PaginatedFromJson<T>(
     data: (json['data'] as List<dynamic>).map(fromJsonT).toList(),
     hasMore: json['hasMore'] as bool,
     cursor: json['cursor'] as String?,
+    totalCount: json['totalCount'] as int,
   );
 }
 
@@ -25,4 +26,5 @@ Map<String, dynamic> _$PaginatedToJson<T>(
       'data': instance.data.map(toJsonT).toList(),
       'hasMore': instance.hasMore,
       'cursor': instance.cursor,
+      'totalCount': instance.totalCount,
     };

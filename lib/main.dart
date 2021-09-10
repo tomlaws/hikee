@@ -7,6 +7,8 @@ import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/hiking_stat.dart';
+import 'package:hikee/providers/event.dart';
+import 'package:hikee/providers/event_participations.dart';
 import 'package:hikee/providers/events.dart';
 import 'package:hikee/providers/locale.dart';
 import 'package:hikee/providers/me.dart';
@@ -17,16 +19,17 @@ import 'package:hikee/providers/routes.dart';
 import 'package:hikee/providers/topic.dart';
 import 'package:hikee/providers/topic_replies.dart';
 import 'package:hikee/providers/topics.dart';
-import 'package:hikee/screens/account.dart';
-import 'package:hikee/screens/account/bookmarks.dart';
-import 'package:hikee/screens/auth/login.dart';
-import 'package:hikee/screens/auth/register.dart';
-import 'package:hikee/screens/events.dart';
-import 'package:hikee/screens/home.dart';
-import 'package:hikee/screens/topic.dart';
-import 'package:hikee/screens/topics.dart';
-import 'package:hikee/screens/route.dart';
-import 'package:hikee/screens/routes.dart';
+import 'package:hikee/pages/account.dart';
+import 'package:hikee/pages/account/bookmarks.dart';
+import 'package:hikee/pages/auth/login.dart';
+import 'package:hikee/pages/auth/register.dart';
+import 'package:hikee/pages/event.dart';
+import 'package:hikee/pages/events.dart';
+import 'package:hikee/pages/home.dart';
+import 'package:hikee/pages/topic.dart';
+import 'package:hikee/pages/topics.dart';
+import 'package:hikee/pages/route.dart';
+import 'package:hikee/pages/routes.dart';
 import 'package:hikee/services/auth.dart';
 import 'package:hikee/services/bookmark.dart';
 import 'package:hikee/services/event.dart';
@@ -102,6 +105,21 @@ void main() {
               eventsProvider!..update(authProvider: authProvider),
           lazy: true,
         ),
+        ChangeNotifierProxyProvider<AuthProvider, EventProvider>(
+          create: (context) =>
+              EventProvider(authProvider: context.read<AuthProvider>()),
+          update: (_, authProvider, eventProvider) =>
+              eventProvider!..update(authProvider: authProvider),
+          lazy: true,
+        ),
+        ChangeNotifierProxyProvider<EventProvider, EventParticipationsProvider>(
+          create: (context) => EventParticipationsProvider(
+              eventProvider: context.read<EventProvider>()),
+          update: (_, eventProvider, eventParticipationsProvider) =>
+              eventParticipationsProvider!
+                ..update(eventProvider: eventProvider),
+          lazy: true,
+        ),
         ChangeNotifierProxyProvider<AuthProvider, TopicsProvider>(
           create: (context) =>
               TopicsProvider(authProvider: context.read<AuthProvider>()),
@@ -164,7 +182,8 @@ class MyApp extends StatelessWidget {
       locale: locale,
       theme: ThemeData(
         primaryColor: themeColor,
-        primaryTextTheme: TextTheme(headline6: TextStyle(color: themeColor, fontSize: 18)),
+        primaryTextTheme:
+            TextTheme(headline6: TextStyle(color: themeColor, fontSize: 18)),
         //appBarTheme: AppBarTheme(textTheme: Theme.of(context).textTheme.apply(displayColor:Colors.red)),
         sliderTheme: SliderThemeData(
             thumbColor: themeColor,
@@ -213,6 +232,8 @@ class MyApp extends StatelessWidget {
       '/routes/:id': (route) => CupertinoPage(
           child: RouteScreen(id: int.parse(route.pathParameters['id']!))),
       '/events': (route) => CupertinoPage(child: EventsScreen()),
+      '/events/:id': (route) => CupertinoPage(
+          child: EventPage(id: int.parse(route.pathParameters['id']!))),
       '/topics': (route) => CupertinoPage(child: TopicsPage()),
       '/topics/:id': (route) => CupertinoPage(
           child: TopicPage(id: int.parse(route.pathParameters['id']!))),

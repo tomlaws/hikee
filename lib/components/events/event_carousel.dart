@@ -1,30 +1,28 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:hikee/components/events/card.dart';
+import 'package:hikee/components/events/event_card.dart';
 import 'package:hikee/models/event.dart';
 
-class HorizontalList extends StatefulWidget {
+class EventCarousel extends StatefulWidget {
   final List<Event> items;
-  HorizontalList(
+  EventCarousel(
     this.items, {
     Key? key,
   }) : super(key: key);
 
   @override
-  _HorizontalListState createState() => _HorizontalListState();
+  _EventCarouselState createState() => _EventCarouselState();
 }
 
-class _HorizontalListState extends State<HorizontalList> {
+class _EventCarouselState extends State<EventCarousel> {
   int _current = 0;
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         CarouselSlider(
-            items: List<EventCard>.generate(
-                widget.items.length,
-                (index) =>
-                    EventCard(featured: true, event: widget.items[index])),
+            items: List<EventCard>.generate(widget.items.length,
+                (index) => EventCard(event: widget.items[index])),
             options: CarouselOptions(
               height: 460,
               viewportFraction: 0.85,
@@ -42,7 +40,7 @@ class _HorizontalListState extends State<HorizontalList> {
               scrollDirection: Axis.horizontal,
             )),
         Positioned(
-          bottom: -9,
+          bottom: 0,
           left: 0,
           right: 0,
           child: Row(

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hikee/screens/faq/faq.dart';
+import 'package:hikee/pages/faq/faq.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class DropdownMenu extends StatefulWidget {

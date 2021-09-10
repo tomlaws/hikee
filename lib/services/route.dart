@@ -82,5 +82,4 @@ class RouteService {
         accessToken: (await token)?.accessToken);
     return RouteReview.fromJson(review);
   }
-
 }

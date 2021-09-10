@@ -15,7 +15,7 @@
 // import 'package:hikee/models/active_hiking_route.dart';
 // import 'package:hikee/models/panel_position.dart';
 // import 'package:hikee/models/route.dart';
-// import 'package:hikee/screens/route.dart';
+// import 'package:hikee/pages/route.dart';
 // import 'package:provider/provider.dart';
 // import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 // import 'package:location/location.dart';

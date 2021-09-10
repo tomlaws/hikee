@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:hikee/components/community_post_tile.dart';
-import 'package:hikee/screens/community_post.dart';
-import 'package:hikee/screens/create_post.dart';
+import 'package:hikee/pages/community_post.dart';
+import 'package:hikee/pages/create_post.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({Key? key}) : super(key: key);

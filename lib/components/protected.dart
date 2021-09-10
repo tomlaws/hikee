@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/providers/auth.dart';
-import 'package:hikee/screens/auth/login.dart';
+import 'package:hikee/pages/auth/login.dart';
 import 'package:provider/provider.dart';
 
 class Protected extends StatefulWidget {
@@ -36,7 +36,10 @@ class _ProtectedState extends State<Protected> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Login to enjoy hiking', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+          Text(
+            'Login to enjoy hiking',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          ),
           Container(height: 32),
           SizedBox(
             width: 200,

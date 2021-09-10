@@ -5,7 +5,7 @@ import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/models/bookmark.dart';
 import 'package:hikee/providers/bookmarks.dart';
-import 'package:hikee/screens/route.dart';
+import 'package:hikee/pages/route.dart';
 import 'package:provider/provider.dart';
 
 class BookmarksPage extends StatefulWidget {

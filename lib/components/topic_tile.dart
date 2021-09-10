@@ -20,7 +20,7 @@ class _TopicTileState extends State<TopicTile> {
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(16.0),
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(.1), blurRadius: 3)]
           ),
           child: Column(

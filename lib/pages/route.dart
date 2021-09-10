@@ -206,8 +206,10 @@ class _RouteScreenState extends State<RouteScreen> {
                               children: [
                                 Text('Description',
                                     style: TextStyle(
-                                        fontSize: 18,
-                                        color: Theme.of(context).primaryColor)),
+                                      fontSize: 18,
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    )),
                                 Container(
                                   height: 12,
                                 ),
@@ -316,8 +318,9 @@ class _RouteScreenState extends State<RouteScreen> {
                                     Text('Reviews',
                                         style: TextStyle(
                                             fontSize: 18,
-                                            color: Theme.of(context)
-                                                .primaryColor)),
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold)),
                                     Button(
                                         backgroundColor: Colors.transparent,
                                         icon: Icon(

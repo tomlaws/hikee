@@ -83,11 +83,12 @@ class AuthProvider extends ChangeNotifier {
     return token;
   }
 
-  void mustLogin<T>(BuildContext context, void Function() action) {
+  T? mustLogin<T>(BuildContext context, Function() action) {
     if (!loggedIn) {
       Routemaster.of(context).push('/login');
+      return null;
     } else {
-      action();
+      return action();
     }
   }
 }
