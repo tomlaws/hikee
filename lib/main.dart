@@ -112,12 +112,17 @@ void main() {
               eventProvider!..update(authProvider: authProvider),
           lazy: true,
         ),
-        ChangeNotifierProxyProvider<EventProvider, EventParticipationsProvider>(
+        ChangeNotifierProxyProvider2<AuthProvider, EventProvider,
+            EventParticipationsProvider>(
           create: (context) => EventParticipationsProvider(
+              authProvider: context.read<AuthProvider>(),
               eventProvider: context.read<EventProvider>()),
-          update: (_, eventProvider, eventParticipationsProvider) =>
-              eventParticipationsProvider!
-                ..update(eventProvider: eventProvider),
+          update:
+              (_, authProvider, eventProvider, eventParticipationsProvider) =>
+                  eventParticipationsProvider!
+                    ..update(
+                        authProvider: authProvider,
+                        eventProvider: eventProvider),
           lazy: true,
         ),
         ChangeNotifierProxyProvider<AuthProvider, TopicsProvider>(

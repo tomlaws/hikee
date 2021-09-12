@@ -117,13 +117,8 @@ class _EventPageState extends State<EventPage> {
                               color: Theme.of(context).primaryColor)),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: event.participantCount == 0
-                            ? Center(
-                                child: Opacity(
-                                    opacity: .75,
-                                    child: Text('No participants yet')))
-                            : SizedBox(
-                                height: 32, child: _participantList(true)),
+                        child:
+                            SizedBox(height: 32, child: _participantList(true)),
                       )
                     ],
                   ),
@@ -142,12 +137,12 @@ class _EventPageState extends State<EventPage> {
                         bool joined = event.joined ?? false;
                         if (joined) {
                           return context
-                              .read<EventProvider>()
-                              .quitEvent(event.id);
+                              .read<EventParticipationsProvider>()
+                              .quitEvent();
                         }
                         return context
-                            .read<EventProvider>()
-                            .joinEvent(event.id);
+                            .read<EventParticipationsProvider>()
+                            .joinEvent();
                       });
                     },
                     builder: (mutate, loading) {

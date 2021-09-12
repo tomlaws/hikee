@@ -9,6 +9,10 @@ class EventProvider extends ChangeNotifier {
   EventService _eventService = GetIt.I<EventService>();
   Event? _event;
   Event? get event => _event;
+  set event(e) {
+    _event = e;
+    notifyListeners();
+  }
 
   EventProvider({required AuthProvider authProvider})
       : _authProvider = authProvider;
@@ -19,18 +23,6 @@ class EventProvider extends ChangeNotifier {
 
   Future<Event?> getEvent(int id) async {
     _event = await _eventService.getEvent(id, token: _authProvider.getToken());
-    notifyListeners();
-    return _event;
-  }
-
-  Future<Event?> joinEvent(int id) async {
-    _event = await _eventService.joinEvent(id, token: _authProvider.getToken());
-    notifyListeners();
-    return _event;
-  }
-
-  Future<Event?> quitEvent(int id) async {
-    _event = await _eventService.quitEvent(id, token: _authProvider.getToken());
     notifyListeners();
     return _event;
   }
