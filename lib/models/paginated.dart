@@ -20,4 +20,9 @@ class Paginated<T> {
       _$PaginatedFromJson(json, fromJsonT);
   Map<String, dynamic> toJson(Object? Function(T) toJsonT) =>
       _$PaginatedToJson(this, toJsonT);
+
+  /// Create a new object after concatenation
+  Paginated<T> concat(Paginated<T> another) {
+    return new Paginated(data: [...this.data, ...another.data], hasMore: another.hasMore, cursor: another.cursor, totalCount: another.totalCount);
+  }
 }

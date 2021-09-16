@@ -4,6 +4,7 @@ import 'package:hikee/components/button.dart';
 import 'package:hikee/components/community_post_tile.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroll.dart';
+import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/topic_tile.dart';
 import 'package:hikee/models/order.dart';
@@ -11,21 +12,23 @@ import 'package:hikee/models/topic.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/topics.dart';
 import 'package:hikee/pages/create_topic.dart';
+import 'package:hikee/riverpods/topics.dart';
 import 'package:hikee/utils/dialog.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 import 'dart:math';
 
 import 'package:tuple/tuple.dart';
 
-class TopicsPage extends StatefulWidget {
+class TopicsPage extends ConsumerStatefulWidget  {
   const TopicsPage({Key? key}) : super(key: key);
 
   @override
   _TopicsPageState createState() => _TopicsPageState();
 }
 
-class _TopicsPageState extends State<TopicsPage>
+class _TopicsPageState extends ConsumerState<TopicsPage>
     with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
 
@@ -63,38 +66,38 @@ class _TopicsPageState extends State<TopicsPage>
               SizedBox(
                 width: 8,
               ),
-              SizedBox(
-                width: 120,
-                child: Button(
-                  backgroundColor: Color(0xFFF5F5F5),
-                  child: Selector<TopicsProvider, Tuple2<TopicSortable, Order>>(
-                    selector: (_, p) => Tuple2(p.sort, p.order),
-                    builder: (_, sortAndOrder, __) => Row(
-                      children: [
-                        sortAndOrder.item2 == Order.DESC
-                            ? Icon(Icons.sort)
-                            : Transform.rotate(
-                                angle: 180 * pi / 180, child: Icon(Icons.sort)),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              sortAndOrder.item1.name,
-                              style: TextStyle(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .color),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  onPressed: () {
-                    _showSortMenu();
-                  },
-                ),
-              ),
+              // SizedBox(
+              //   width: 120,
+              //   child: Button(
+              //     backgroundColor: Color(0xFFF5F5F5),
+              //     child: Selector<TopicsProvider, Tuple2<TopicSortable, Order>>(
+              //       selector: (_, p) => Tuple2(p.sort, p.order),
+              //       builder: (_, sortAndOrder, __) => Row(
+              //         children: [
+              //           sortAndOrder.item2 == Order.DESC
+              //               ? Icon(Icons.sort)
+              //               : Transform.rotate(
+              //                   angle: 180 * pi / 180, child: Icon(Icons.sort)),
+              //           Expanded(
+              //             child: Center(
+              //               child: Text(
+              //                 sortAndOrder.item1.name,
+              //                 style: TextStyle(
+              //                     color: Theme.of(context)
+              //                         .textTheme
+              //                         .bodyText1!
+              //                         .color),
+              //               ),
+              //             ),
+              //           )
+              //         ],
+              //       ),
+              //     ),
+              //     onPressed: () {
+              //       _showSortMenu();
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -106,8 +109,8 @@ class _TopicsPageState extends State<TopicsPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: InfiniteScroll<TopicsProvider, Topic>(
-                  selector: (p) => p.items,
+                child: InfiniteScroller<Topic>(
+                  provider: topicsProvider,
                   separator: SizedBox(
                     height: 16,
                   ),
@@ -118,10 +121,7 @@ class _TopicsPageState extends State<TopicsPage>
                         Routemaster.of(context).push('/topics/${topic.id}');
                       },
                     );
-                  },
-                  fetch: (next) {
-                    return context.read<TopicsProvider>().fetch(next);
-                  },
+                  }
                 ),
               ),
             ],

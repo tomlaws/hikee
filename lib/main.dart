@@ -38,6 +38,7 @@ import 'package:hikee/services/topic.dart';
 import 'package:hikee/services/user.dart';
 import 'package:hikee/services/weather.dart';
 import 'package:hikee/utils/map_marker.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -55,121 +56,7 @@ void setupLocator() {
 
 void main() {
   setupLocator();
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
-          lazy: false,
-        ),
-        ChangeNotifierProvider(
-          create: (_) => LocaleProvider(),
-          lazy: false,
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, MeProvider>(
-          create: (context) =>
-              MeProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, __) =>
-              MeProvider(authProvider: authProvider),
-          lazy: false,
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, RouteProvider>(
-          create: (context) =>
-              RouteProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, routeProvider) =>
-              RouteProvider(authProvider: authProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProvider(create: (_) => RoutesProvider()),
-        ChangeNotifierProxyProvider2<AuthProvider, RouteProvider,
-            RouteReviewsProvider>(
-          create: (context) => RouteReviewsProvider(
-              authProvider: context.read<AuthProvider>(),
-              routeProvider: context.read<RouteProvider>()),
-          update: (_, authProvider, routeProvider, routeReviewsProvider) =>
-              RouteReviewsProvider(
-                  authProvider: authProvider, routeProvider: routeProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, BookmarksProvider>(
-          create: (context) =>
-              BookmarksProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, bookmarksProvider) =>
-              bookmarksProvider!..update(authProvider: authProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, EventsProvider>(
-          create: (context) =>
-              EventsProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, eventsProvider) =>
-              eventsProvider!..update(authProvider: authProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, EventProvider>(
-          create: (context) =>
-              EventProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, eventProvider) =>
-              eventProvider!..update(authProvider: authProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProxyProvider2<AuthProvider, EventProvider,
-            EventParticipationsProvider>(
-          create: (context) => EventParticipationsProvider(
-              authProvider: context.read<AuthProvider>(),
-              eventProvider: context.read<EventProvider>()),
-          update:
-              (_, authProvider, eventProvider, eventParticipationsProvider) =>
-                  eventParticipationsProvider!
-                    ..update(
-                        authProvider: authProvider,
-                        eventProvider: eventProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, TopicsProvider>(
-          create: (context) =>
-              TopicsProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, topicProvider) =>
-              topicProvider!..update(authProvider: authProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, TopicProvider>(
-          create: (context) =>
-              TopicProvider(authProvider: context.read<AuthProvider>()),
-          update: (_, authProvider, p) =>
-              TopicProvider(authProvider: authProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProxyProvider2<AuthProvider, TopicProvider,
-            TopicRepliesProvider>(
-          create: (context) => TopicRepliesProvider(
-              authProvider: context.read<AuthProvider>(),
-              topicProvider: context.read<TopicProvider>()),
-          update: (_, authProvider, topicProvider, routeReviewsProvider) =>
-              TopicRepliesProvider(
-                  authProvider: authProvider, topicProvider: topicProvider),
-          lazy: true,
-        ),
-        ChangeNotifierProvider(create: (_) => ActiveHikingRoute()),
-        ChangeNotifierProvider(
-          create: (_) => CurrentLocation(),
-          lazy: false,
-        ),
-        ChangeNotifierProxyProvider2<ActiveHikingRoute, CurrentLocation,
-                HikingStat>(
-            create: (BuildContext context) => HikingStat(
-                Provider.of<ActiveHikingRoute>(context, listen: false),
-                Provider.of<CurrentLocation>(context, listen: false)),
-            update: (BuildContext context, ActiveHikingRoute route,
-                CurrentLocation loc, HikingStat? prev) {
-              if (prev != null) {
-                return prev..update(route, loc);
-              }
-              return HikingStat(route, loc);
-            }),
-      ],
-      child: MyApp(),
-    ),
-  );
+  runApp(ProviderScope(child: MyApp()));
 }
 
 const Color themeColor = Color(0xFF5DB075);
@@ -178,7 +65,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     MapMarker();
-    var locale = context.watch<LocaleProvider>().locale;
+    var locale = Locale('zh');
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Hikee',
@@ -262,7 +149,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
 
   late PageController _pageController;
 

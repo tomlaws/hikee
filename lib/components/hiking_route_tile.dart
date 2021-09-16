@@ -4,9 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:routemaster/routemaster.dart';
 
-class HikingRouteTile extends StatefulWidget {
+class HikingRouteTile extends ConsumerStatefulWidget {
   final HikingRoute route;
   final void Function()? onTap;
   const HikingRouteTile({Key? key, required this.route, this.onTap})
@@ -16,7 +17,7 @@ class HikingRouteTile extends StatefulWidget {
   _HikingRouteTileState createState() => _HikingRouteTileState();
 }
 
-class _HikingRouteTileState extends State<HikingRouteTile> {
+class _HikingRouteTileState extends ConsumerState<HikingRouteTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -68,14 +69,14 @@ class _HikingRouteTileState extends State<HikingRouteTile> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(widget.route.name(context),
+                              Text(widget.route.name(ref),
                                   maxLines: 1,
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
                               Text(
-                                widget.route.region.name(context),
+                                widget.route.region.name(ref),
                                 maxLines: 1,
                                 style: TextStyle(color: Color(0xFFCCCCCC)),
                               ),

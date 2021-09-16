@@ -22,10 +22,11 @@ import 'package:hikee/providers/route_reviews.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 
-class RouteScreen extends StatefulWidget {
+class RouteScreen extends ConsumerStatefulWidget {
   final int id;
   const RouteScreen({Key? key, required this.id}) : super(key: key);
 
@@ -33,7 +34,7 @@ class RouteScreen extends StatefulWidget {
   _RouteScreenState createState() => _RouteScreenState();
 }
 
-class _RouteScreenState extends State<RouteScreen> {
+class _RouteScreenState extends ConsumerState<RouteScreen> {
   PageController _carouselController = PageController();
   ValueNotifier<double> _carouselPage = ValueNotifier<double>(0.0);
   ValueNotifier<bool> _bookmarked = ValueNotifier<bool>(false);
@@ -167,7 +168,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    route.name(context),
+                                    route.name(ref),
                                     style: TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
@@ -177,7 +178,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                     height: 4,
                                   ),
                                   Text(
-                                    route.region.name(context),
+                                    route.region.name(ref),
                                     style: TextStyle(
                                         fontSize: 16, color: Color(0xFFAAAAAA)),
                                   ),
@@ -186,9 +187,6 @@ class _RouteScreenState extends State<RouteScreen> {
                             ),
                             Button(
                               onPressed: () {
-                                Provider.of<ActiveHikingRoute>(context,
-                                        listen: false)
-                                    .selectRoute(route);
                                 Routemaster.of(context).push('/home');
                               },
                               child: Text('SELECT'),
@@ -214,7 +212,7 @@ class _RouteScreenState extends State<RouteScreen> {
                                   height: 12,
                                 ),
                                 Text(
-                                  route.description(context),
+                                  route.description(ref),
                                   style: TextStyle(height: 1.6),
                                 ),
                               ],
