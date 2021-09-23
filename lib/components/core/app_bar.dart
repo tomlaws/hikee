@@ -10,19 +10,24 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       {Key? key,
       required this.title,
       this.leading,
+      this.canPop,
       this.actions,
+      this.elevation = 2,
       this.height = 60,
-      this.closeIcon })
+      this.closeIcon})
       : super(key: key);
 
   final Widget title;
   final Widget? leading;
+  final bool? canPop;
   final List<Widget>? actions;
+  final double? elevation;
   final double height;
   final IconData? closeIcon;
 
   @override
   Widget build(BuildContext context) {
+    var backButton = canPop != null ? canPop! : ModalRoute.of(context)!.canPop;
     return AppBar(
       iconTheme: IconThemeData(color: Colors.green, size: 24),
       // shape: RoundedRectangleBorder(
@@ -30,13 +35,13 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       //     bottom: Radius.circular(12),
       //   ),
       // ),
-      elevation: 2,
+      elevation: elevation,
       titleTextStyle: TextStyle(fontSize: 12),
       title: title,
       leading: leading ??
-          (ModalRoute.of(context)!.canPop
+          (backButton
               ? Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                   child: Button(
                     backgroundColor: Colors.transparent,
                     icon: Icon(closeIcon ?? Icons.chevron_left),

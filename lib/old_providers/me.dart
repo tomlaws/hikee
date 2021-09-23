@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/models/user.dart';
 import 'package:hikee/services/user.dart';
 

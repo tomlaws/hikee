@@ -4,7 +4,7 @@ import 'package:hikee/components/button.dart';
 import 'package:hikee/components/dialog/base.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/error/error_response.dart';
-import 'package:hikee/providers/route_reviews.dart';
+import 'package:hikee/old_providers/route_reviews.dart';
 import 'package:provider/provider.dart';
 
 class RouteReviewDialog extends BaseDialog {

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/controllers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/models/token.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
@@ -19,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextInputController _emailController = TextInputController();
   TextInputController _passwordController = TextInputController();
+  AuthController _authController = Get.put(AuthController());
 
   @override
   void dispose() {
@@ -64,9 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _passwordController.clearError();
                       var email = _emailController.text;
                       var password = _passwordController.text;
-                      return context
-                          .read<AuthProvider>()
-                          .signIn(email, password);
+                      return _authController.signIn(email, password);
                     },
                     onDone: (token) {
                       if (token != null) {

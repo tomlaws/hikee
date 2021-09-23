@@ -6,8 +6,8 @@ import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/models/topic_reply.dart';
-import 'package:hikee/providers/topic_replies.dart';
-import 'package:hikee/providers/topics.dart';
+import 'package:hikee/old_providers/topic_replies.dart';
+import 'package:hikee/old_providers/topics.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 

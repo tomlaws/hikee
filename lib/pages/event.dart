@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hikee/components/avatar.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/calendar_date.dart';
@@ -8,36 +9,35 @@ import 'package:hikee/components/core/future_selector.dart';
 import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/components/mutation_builder.dart';
+import 'package:hikee/controllers/event.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/models/event_participation.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/providers/event.dart';
+import 'package:hikee/old_providers/auth.dart';
+import 'package:hikee/old_providers/event.dart';
 import 'package:hikee/pages/route.dart';
-import 'package:hikee/providers/event_participations.dart';
+import 'package:hikee/old_providers/event_participations.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class EventPage extends StatefulWidget {
-  const EventPage({Key? key, required this.id}) : super(key: key);
-  final int id;
+  const EventPage({Key? key}) : super(key: key);
 
   @override
   _EventPageState createState() => _EventPageState();
 }
 
 class _EventPageState extends State<EventPage> {
+  final EventController _eventController = Get.put(EventController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: HikeeAppBar(
-        title: Text(context.watch<EventProvider>().event?.name ?? ''),
-      ),
-      body: FutureSelector<EventProvider, Event>(
-        init: (p) => p.getEvent(widget.id),
-        selector: (_, p) => p.event,
-        builder: (_, event, __) {
+        backgroundColor: Colors.white,
+        appBar: HikeeAppBar(
+          title: Obx(() => Text(_eventController.state?.name ?? '')),
+        ),
+        body: _eventController.obx((event) {
           return Column(children: [
             Expanded(
               child: SingleChildScrollView(
@@ -49,7 +49,7 @@ class _EventPageState extends State<EventPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 0.0),
                         child: HikingRouteTile(
-                          route: event.route,
+                          route: event!.route,
                           onTap: () {
                             Navigator.of(context).push(CupertinoPageRoute(
                                 builder: (_) =>
@@ -161,8 +161,9 @@ class _EventPageState extends State<EventPage> {
             )
           ]);
         },
-      ),
-    );
+            onLoading: Center(
+              child: CircularProgressIndicator(),
+            )));
   }
 
   Widget _participantList(bool summary) {

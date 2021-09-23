@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/providers/pagination_change_notifier.dart';
+import 'package:hikee/old_providers/pagination_change_notifier.dart';
 import 'package:provider/provider.dart';
 
 class InfiniteScroll<T extends PaginationChangeNotifier, U>

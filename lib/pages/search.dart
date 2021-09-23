@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/providers/pagination_change_notifier.dart';
+import 'package:hikee/old_providers/pagination_change_notifier.dart';
 import 'package:provider/provider.dart';
 
 class SearchPage<P extends AdvancedPaginationChangeNotifier<T, dynamic>, T>

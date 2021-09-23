@@ -13,6 +13,7 @@ class Button extends StatefulWidget {
   final bool disabled;
   final Icon? icon;
   final double radius;
+  final double minWidth;
   final EdgeInsets? padding;
 
   const Button(
@@ -26,6 +27,7 @@ class Button extends StatefulWidget {
       this.disabled = false,
       this.invert = false,
       this.radius = 12,
+      this.minWidth = 48,
       this.padding})
       : super(key: key);
 
@@ -69,7 +71,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: 48,
-            minWidth: 48,
+            minWidth: widget.minWidth,
             maxHeight: 48,
           ),
           child: Container(

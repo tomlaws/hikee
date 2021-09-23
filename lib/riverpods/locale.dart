@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final localeProvider = StateNotifierProvider<HikeeLocale, Locale>((ref) {
-  return HikeeLocale();
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+  return LocaleNotifier();
 });
 
-class HikeeLocale extends StateNotifier<Locale> {
-  HikeeLocale() : super(Locale('zh'));
+class LocaleNotifier extends StateNotifier<Locale> {
+  LocaleNotifier() : super(Locale('zh'));
 
   set locale(Locale locale) {
     state = locale;

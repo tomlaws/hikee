@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/services/user.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';

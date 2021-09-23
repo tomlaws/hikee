@@ -1,19 +1,29 @@
-import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/route.dart';
-import 'package:hikee/services/route.dart';
+import 'package:hikee/providers/shared/base.dart';
 
-class RouteProvider extends ChangeNotifier {
-  AuthProvider _authProvider;
-  RouteService _routeService = GetIt.I<RouteService>();
-  HikingRoute? _route;
-  HikingRoute? get route => _route;
+class RouteProvider extends BaseProvider {
+  Future<HikingRoute> getRoute(int id) async =>
+      await get('routes/$id').then((value) => HikingRoute.fromJson(value.body));
 
-  RouteProvider({required AuthProvider authProvider}): _authProvider = authProvider;
+  Future<Paginated<HikingRoute>> getRoutes(Map<String, dynamic>? query) async {
+    return await get('routes', query: query).then((value) {
+      return Paginated<HikingRoute>.fromJson(
+          value.body, (o) => HikingRoute.fromJson(o as Map<String, dynamic>));
+    });
+  }
 
-  Future<HikingRoute?> getRoute(int id) async {
-    _route = await _routeService.getRoute(id, token: _authProvider.getToken());
-    return _route;
+  Future<Paginated<HikingRoute>> getPopularRoutes() async {
+    var query = {'sort': 'rating', 'order': 'DESC'};
+    return await get('routes', query: query).then((value) {
+      return Paginated<HikingRoute>.fromJson(
+          value.body, (o) => HikingRoute.fromJson(o as Map<String, dynamic>));
+    });
+  }
+
+  Future<HikingRoute> getFeaturedRoute() async {
+    return await get('routes/featured').then((value) {
+      return HikingRoute.fromJson(value.body);
+    });
   }
 }

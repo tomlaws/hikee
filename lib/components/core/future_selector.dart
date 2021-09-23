@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/models/loading.dart';
 import 'package:hikee/models/route.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:provider/provider.dart';
 
 /// Combines future builder & selector

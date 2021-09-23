@@ -1,11 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/models/event_participation.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/route_review.dart';
-import 'package:hikee/providers/event.dart';
-import 'package:hikee/providers/pagination_change_notifier.dart';
+import 'package:hikee/old_providers/event.dart';
+import 'package:hikee/old_providers/pagination_change_notifier.dart';
 import 'package:hikee/services/event.dart';
 
 class EventParticipationsProvider

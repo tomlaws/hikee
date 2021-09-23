@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/pages/auth/login.dart';
 import 'package:provider/provider.dart';
 

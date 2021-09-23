@@ -1,50 +1,55 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/route.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:routemaster/routemaster.dart';
 
-class HikingRouteTile extends ConsumerStatefulWidget {
+class HikingRouteTile extends StatelessWidget {
   final HikingRoute route;
   final void Function()? onTap;
-  const HikingRouteTile({Key? key, required this.route, this.onTap})
+  final double width;
+  final double aspectRatio;
+  const HikingRouteTile(
+      {Key? key,
+      required this.route,
+      this.onTap,
+      this.width = double.infinity,
+      this.aspectRatio = 16 / 9})
       : super(key: key);
 
-  @override
-  _HikingRouteTileState createState() => _HikingRouteTileState();
-}
-
-class _HikingRouteTileState extends ConsumerState<HikingRouteTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (widget.onTap != null) {
-          widget.onTap!();
+        if (onTap != null) {
+          onTap!();
           return;
         }
-        Routemaster.of(context).push('/routes/${widget.route.id}');
+        Get.toNamed('/route', id: 1, arguments: {'id': route.id});
       },
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
-          margin: EdgeInsets.only(bottom: 12),
+          width: width,
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-          child: Container(
-            height: 180,
-            width: double.infinity,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: AspectRatio(
+            //height: 180,
+            //width: width,
+            aspectRatio: aspectRatio,
             child: CachedNetworkImage(
               placeholder: (_, __) => Shimmer(),
-              imageUrl: widget.route.image,
+              imageUrl: route.image,
               imageBuilder: (_, image) {
                 return Stack(children: [
                   Positioned.fill(
-                    child: Image(
-                      image: image,
-                      fit: BoxFit.cover,
+                    child: Hero(
+                      transitionOnUserGestures: true,
+                      tag: 'route-${route.id}-image',
+                      child: Image(
+                        image: image,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -69,14 +74,14 @@ class _HikingRouteTileState extends ConsumerState<HikingRouteTile> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(widget.route.name(ref),
+                              Text(route.name_en,
                                   maxLines: 1,
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
                               Text(
-                                widget.route.region.name(ref),
+                                route.region.name_en,
                                 maxLines: 1,
                                 style: TextStyle(color: Color(0xFFCCCCCC)),
                               ),
@@ -84,7 +89,7 @@ class _HikingRouteTileState extends ConsumerState<HikingRouteTile> {
                                 height: 16,
                                 child: RatingBar.builder(
                                   itemSize: 16,
-                                  initialRating: widget.route.rating.toDouble(),
+                                  initialRating: route.rating.toDouble(),
                                   allowHalfRating: true,
                                   itemCount: 5,
                                   unratedColor: Colors.white.withOpacity(.5),

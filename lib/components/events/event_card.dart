@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hikee/models/event.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -17,7 +18,7 @@ class _EventCardState extends State<EventCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Routemaster.of(context).push('/events/${widget.event.id}');
+        Get.toNamed('/event', id: 2, arguments: {'id': widget.event.id});
       },
       child: Stack(
         children: [
@@ -27,6 +28,7 @@ class _EventCardState extends State<EventCard> {
                 children: [
                   Container(
                     height: 350,
+                    width: double.infinity,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: CachedNetworkImage(

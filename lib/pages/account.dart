@@ -3,17 +3,18 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:hikee/components/account/change_language.dart';
 import 'package:hikee/components/account/change_nickname.dart';
 import 'package:hikee/components/avatar.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/account/change_password.dart';
+import 'package:hikee/controllers/auth.dart';
 import 'package:hikee/models/user.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/providers/me.dart';
+import 'package:hikee/old_providers/auth.dart';
+import 'package:hikee/old_providers/me.dart';
 import 'package:hikee/pages/account/bookmarks.dart';
 import 'package:hikee/utils/dialog.dart';
-import 'package:hikee/utils/http.dart';
 import 'package:hikee/utils/localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final _authController = Get.put(AuthController());
+
   ValueNotifier<List<Column>> _options = ValueNotifier([]);
   ValueNotifier<double> _page = ValueNotifier(0);
   PageController _pageController = PageController();
@@ -52,90 +55,92 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var loggedIn = context.select<AuthProvider, bool>((p) => p.loggedIn);
-    Map<String, dynamic> _operations = {
-      if (loggedIn)
-        Localization.translate(context, (l) => l.bookmarks):
-            (BuildContext ctx) {
-          Navigator.of(ctx)
-              .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
-        }
-      else
-        Localization.translate(context, (l) => l.login): (BuildContext ctx) {
-          Routemaster.of(context).push('/login');
+    return Obx(() {
+      var loggedIn = _authController.loggedIn.value;
+      Map<String, dynamic> _operations = {
+        if (loggedIn)
+          Localization.translate(context, (l) => l.bookmarks):
+              (BuildContext ctx) {
+            Navigator.of(ctx)
+                .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
+          }
+        else
+          Localization.translate(context, (l) => l.login): (BuildContext ctx) {
+            Routemaster.of(context).push('/login');
+          },
+        if (loggedIn)
+          Localization.translate(context, (l) => l.account): {
+            'Change Nickname': _changeNickname,
+            'Change Password': _changePassword,
+            'Delete Account': (ctx) {}
+          },
+        Localization.translate(context, (l) => l.settings): {
+          Localization.translate(context, (l) => l.language): _changeLanguage
         },
-      if (loggedIn)
-        Localization.translate(context, (l) => l.account): {
-          'Change Nickname': _changeNickname,
-          'Change Password': _changePassword,
-          'Delete Account': (ctx) {}
-        },
-      Localization.translate(context, (l) => l.settings): {
-        Localization.translate(context, (l) => l.language): _changeLanguage
-      },
-      if (loggedIn)
-        Localization.translate(context, (l) => l.logout): (BuildContext ctx) {
-          ctx.read<AuthProvider>().logout();
-        }
-    };
-    _options.value.clear();
-    _addToOptions(_operations);
-    _page.value = 0;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          children: [
-            if (loggedIn) ...[
-              Container(
-                height: 16,
-              ),
-              Column(mainAxisSize: MainAxisSize.min, children: [
-                GestureDetector(
-                  onTap: () async {
-                    final ImagePicker _picker = ImagePicker();
-                    final XFile? image =
-                        await _picker.pickImage(source: ImageSource.gallery);
-                    if (image == null) return;
-                    _uploadIcon(File(image.path));
-                  },
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Selector<MeProvider, User?>(
-                        selector: (_, mp) => mp.user,
-                        builder: (_, me, __) => Avatar(
-                              user: me!,
-                              height: 128,
-                            ))
-                  ]),
+        if (loggedIn)
+          Localization.translate(context, (l) => l.logout): (BuildContext ctx) {
+            ctx.read<AuthProvider>().logout();
+          }
+      };
+      _options.value.clear();
+      _addToOptions(_operations);
+      _page.value = 0;
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            children: [
+              if (loggedIn) ...[
+                Container(
+                  height: 16,
                 ),
-              ]),
-              Container(
-                height: 16,
-              ),
-              Selector<MeProvider, User?>(
-                selector: (_, mp) => mp.user,
-                builder: (_, me, __) => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        height: 48,
-                        child: Center(
-                          child: Text(me?.nickname ?? 'Unnamed',
-                              style: TextStyle(fontSize: 24)),
-                        ),
-                      )
+                Column(mainAxisSize: MainAxisSize.min, children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final ImagePicker _picker = ImagePicker();
+                      final XFile? image =
+                          await _picker.pickImage(source: ImageSource.gallery);
+                      if (image == null) return;
+                      _uploadIcon(File(image.path));
+                    },
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Obx(() => _authController.me.value != null
+                          ? Avatar(
+                              user: _authController.me.value!,
+                              height: 128,
+                            )
+                          : CircularProgressIndicator())
                     ]),
-              ),
+                  ),
+                ]),
+                Container(
+                  height: 16,
+                ),
+                // Selector<MeProvider, User?>(
+                //   selector: (_, mp) => mp.user,
+                //   builder: (_, me, __) => Row(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       mainAxisSize: MainAxisSize.max,
+                //       children: [
+                //         Container(
+                //           height: 48,
+                //           child: Center(
+                //             child: Text(me?.nickname ?? 'Unnamed',
+                //                 style: TextStyle(fontSize: 24)),
+                //           ),
+                //         )
+                //       ]),
+                // ),
+              ],
+              _list(_operations)
             ],
-            _list(_operations)
-          ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _list(Map<String, dynamic> options) {

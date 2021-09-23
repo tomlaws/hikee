@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/community_post_tile.dart';
 import 'package:hikee/components/core/app_bar.dart';
@@ -7,21 +8,18 @@ import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/topic_tile.dart';
+import 'package:hikee/controllers/topics.dart';
 import 'package:hikee/models/order.dart';
 import 'package:hikee/models/topic.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/providers/topics.dart';
+import 'package:hikee/old_providers/auth.dart';
+import 'package:hikee/old_providers/topics.dart';
 import 'package:hikee/pages/create_topic.dart';
-import 'package:hikee/riverpods/topics.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
-import 'dart:math';
 
-import 'package:tuple/tuple.dart';
-
-class TopicsPage extends ConsumerStatefulWidget  {
+class TopicsPage extends ConsumerStatefulWidget {
   const TopicsPage({Key? key}) : super(key: key);
 
   @override
@@ -32,6 +30,7 @@ class _TopicsPageState extends ConsumerState<TopicsPage>
     with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
 
+  final TopicsController _topicsController = Get.put(TopicsController());
   TextEditingController _searchController = TextEditingController(text: "");
 
   @override
@@ -109,20 +108,18 @@ class _TopicsPageState extends ConsumerState<TopicsPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: InfiniteScroller<Topic>(
-                  provider: topicsProvider,
-                  separator: SizedBox(
-                    height: 16,
-                  ),
-                  builder: (topic) {
-                    return TopicTile(
-                      topic: topic,
-                      onTap: () {
-                        Routemaster.of(context).push('/topics/${topic.id}');
-                      },
-                    );
-                  }
-                ),
+                child: InfiniteScroller<TopicsController, Topic>(
+                    separator: SizedBox(
+                      height: 16,
+                    ),
+                    builder: (topic) {
+                      return TopicTile(
+                        topic: topic,
+                        onTap: () {
+                          Routemaster.of(context).push('/topics/${topic.id}');
+                        },
+                      );
+                    }),
               ),
             ],
           ),

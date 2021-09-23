@@ -1,19 +1,12 @@
-import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
+import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/topic.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/services/topic.dart';
+import 'package:hikee/providers/shared/base.dart';
 
-class TopicProvider extends ChangeNotifier {
-  AuthProvider _authProvider;
-  TopicService _topicService = GetIt.I<TopicService>();
-  Topic? _topic;
-  Topic? get topic => _topic;
-
-  TopicProvider({required AuthProvider authProvider}): _authProvider = authProvider;
-  
-  Future<Topic?> getTopic(int id) async {
-    _topic = await _topicService.getTopic(id);
-    return _topic;
+class TopicProvider extends BaseProvider {
+  Future<Paginated<Topic>> getTopics(Map<String, dynamic>? query) async {
+    return await get('topics', query: query).then((value) {
+      return Paginated<Topic>.fromJson(
+          value.body, (o) => Topic.fromJson(o as Map<String, dynamic>));
+    });
   }
 }

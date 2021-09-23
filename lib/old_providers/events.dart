@@ -2,9 +2,9 @@ import 'package:get_it/get_it.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/models/event_category.dart';
 import 'package:hikee/models/order.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/models/paginated.dart';
-import 'package:hikee/providers/pagination_change_notifier.dart';
+import 'package:hikee/old_providers/pagination_change_notifier.dart';
 import 'package:hikee/services/event.dart';
 
 class EventsProvider

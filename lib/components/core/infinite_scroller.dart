@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/models/topic.dart';
+import 'package:get/get.dart';
+import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/paginated.dart';
-import 'package:hikee/providers/pagination_change_notifier.dart';
-import 'package:hikee/riverpods/paginated_state_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:provider/provider.dart';
 
-class InfiniteScroller<T> extends ConsumerStatefulWidget {
+class InfiniteScroller<U> extends StatefulWidget {
   const InfiniteScroller({
     Key? key,
-    required this.provider,
     this.shrinkWrap = false,
     required this.builder,
+    required this.controller,
     this.padding = const EdgeInsets.all(16),
+    this.firstFetch = true,
     this.take,
     this.overflowBuilder,
     this.separator,
@@ -21,16 +20,18 @@ class InfiniteScroller<T> extends ConsumerStatefulWidget {
     this.initial,
   }) : super(key: key);
 
-  final StateNotifierProvider<PaginatedStateNotifier<Paginated<T>?>,
-      Paginated<T>?> provider;
   final bool shrinkWrap;
-  final Widget Function(T item) builder;
+  final Widget Function(U item) builder;
+  final PaginationController<Paginated<U>> controller;
   final EdgeInsets padding;
   final int? take;
 
   /// When number of items is greater than take, the last showing item will be built with [overflowBuilder]
-  final Widget Function(T item, int displayCount, int totalCount)?
+  final Widget Function(U item, int displayCount, int totalCount)?
       overflowBuilder;
+
+  /// Whether to fetch for the first time
+  final bool firstFetch;
 
   /// Widget used to separate items
   final Widget? separator;
@@ -47,25 +48,25 @@ class InfiniteScroller<T> extends ConsumerStatefulWidget {
   final dynamic initial;
 
   @override
-  _InfiniteScrollerState<T> createState() => _InfiniteScrollerState<T>();
+  _InfiniteScrollerState<U> createState() => _InfiniteScrollerState<U>();
 }
 
-class _InfiniteScrollerState<T> extends ConsumerState<InfiniteScroller<T>> {
+class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
   ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    ref.read(widget.provider.notifier).next();
+    if (widget.firstFetch) widget.controller.next();
     _scrollController.addListener(() {
       if (widget.take != null) {
-        var len = ref.read(widget.provider.notifier).state?.data.length;
+        var len = widget.controller.state?.data.length;
         if (len != null && len >= widget.take!) return;
       }
       double diff = _scrollController.position.maxScrollExtent -
           _scrollController.position.pixels;
       if (diff < 500) {
-        ref.read(widget.provider.notifier).next();
+        widget.controller.next();
       }
     });
   }
@@ -78,45 +79,51 @@ class _InfiniteScrollerState<T> extends ConsumerState<InfiniteScroller<T>> {
 
   @override
   Widget build(BuildContext context) {
-    var data = ref.watch(widget.provider);
-    var items = data?.data ?? [];
-    var itemCount = items.length;
-    if (widget.take != null) {
-      itemCount = itemCount.clamp(0, widget.take!);
-    }
-    return widget.separator != null
-        ? ListView.separated(
-            scrollDirection:
-                widget.horizontal ? Axis.horizontal : Axis.vertical,
-            shrinkWrap: widget.shrinkWrap,
-            padding: widget.padding,
-            controller: _scrollController,
-            itemCount: itemCount,
-            separatorBuilder: (_, __) => widget.separator!,
-            itemBuilder: (_, i) {
-              // if (widget.take != null &&
-              //     i == widget.take! - 1 &&
-              //     widget.overflowBuilder != null) {
-              //   return widget.overflowBuilder!(
-              //       widget.selector(p)[i], itemCount, p.totalCount);
-              // }
-              return widget.builder(items[i]);
-            })
-        : ListView.builder(
-            scrollDirection:
-                widget.horizontal ? Axis.horizontal : Axis.vertical,
-            shrinkWrap: widget.shrinkWrap,
-            padding: widget.padding,
-            controller: _scrollController,
-            itemCount: itemCount,
-            itemBuilder: (_, i) {
-              // if (widget.take != null &&
-              //     i == widget.take! - 1 &&
-              //     widget.overflowBuilder != null) {
-              //   return widget.overflowBuilder!(
-              //       widget.selector(p)[i], itemCount, p.totalCount);
-              // }
-              return widget.builder(items[i]);
-            });
+    return widget.controller.obx((state) {
+      var data = state;
+      var items = data?.data ?? [];
+      var itemCount = items.length;
+      if (widget.take != null) {
+        itemCount = itemCount.clamp(0, widget.take!);
+      }
+      return widget.separator != null
+          ? ListView.separated(
+              scrollDirection:
+                  widget.horizontal ? Axis.horizontal : Axis.vertical,
+              shrinkWrap: widget.shrinkWrap,
+              padding: widget.padding,
+              controller: _scrollController,
+              itemCount: itemCount,
+              separatorBuilder: (_, __) => widget.separator!,
+              itemBuilder: (_, i) {
+                // if (widget.take != null &&
+                //     i == widget.take! - 1 &&
+                //     widget.overflowBuilder != null) {
+                //   return widget.overflowBuilder!(
+                //       widget.selector(p)[i], itemCount, p.totalCount);
+                // }
+                return widget.builder(items[i]);
+              })
+          : ListView.builder(
+              scrollDirection:
+                  widget.horizontal ? Axis.horizontal : Axis.vertical,
+              shrinkWrap: widget.shrinkWrap,
+              padding: widget.padding,
+              controller: _scrollController,
+              itemCount: itemCount,
+              itemBuilder: (_, i) {
+                // if (widget.take != null &&
+                //     i == widget.take! - 1 &&
+                //     widget.overflowBuilder != null) {
+                //   return widget.overflowBuilder!(
+                //       widget.selector(p)[i], itemCount, p.totalCount);
+                // }
+                return widget.builder(items[i]);
+              });
+    },
+        onLoading: Center(
+          child: CircularProgressIndicator(),
+        ),
+        onEmpty: SizedBox());
   }
 }

@@ -5,12 +5,12 @@ import 'package:hikee/riverpods/paginated_state_notifier.dart';
 import 'package:hikee/utils/http.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final routesProvider = StateNotifierProvider<Routes, Paginated<HikingRoute>?>((ref) {
-  return Routes(ref);
+final routesProvider = StateNotifierProvider<RoutesNotifier, Paginated<HikingRoute>?>((ref) {
+  return RoutesNotifier(ref);
 });
 
-class Routes extends PaginatedStateNotifier<Paginated<HikingRoute>?> {
-  Routes(this.ref) : super(null);
+class RoutesNotifier extends PaginatedStateNotifier<Paginated<HikingRoute>?> {
+  RoutesNotifier(this.ref) : super(null);
 
   final ProviderRefBase ref;
 

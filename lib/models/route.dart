@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/models/bookmark.dart';
-import 'package:hikee/providers/locale.dart';
+import 'package:hikee/old_providers/locale.dart';
 import 'package:hikee/riverpods/locale.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:json_annotation/json_annotation.dart';

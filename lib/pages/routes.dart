@@ -1,22 +1,15 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
-import 'package:hikee/components/core/infinite_scroll.dart';
 import 'package:hikee/components/routes_filter.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/models/order.dart';
+import 'package:hikee/controllers/routes.dart';
 import 'package:hikee/models/route.dart';
-import 'package:hikee/providers/routes.dart';
-import 'package:hikee/riverpods/routes.dart';
-import 'package:hikee/utils/dialog.dart';
-import 'package:routemaster/routemaster.dart';
-import 'package:tuple/tuple.dart';
 
 class RoutesScreen extends StatefulWidget {
   const RoutesScreen({Key? key}) : super(key: key);
@@ -30,6 +23,7 @@ class _RoutesScreenState extends State<RoutesScreen>
   bool get wantKeepAlive => true;
 
   TextEditingController _searchController = TextEditingController(text: "");
+  final _routesController = Get.put(RoutesController());
 
   @override
   void initState() {
@@ -127,8 +121,7 @@ class _RoutesScreenState extends State<RoutesScreen>
       body: SafeArea(
         child: Container(
           color: Colors.white,
-          child: InfiniteScroller<HikingRoute>(
-            provider: routesProvider,
+          child: InfiniteScroller<RoutesController, HikingRoute>(
             builder: (route) {
               return HikingRouteTile(
                 route: route,

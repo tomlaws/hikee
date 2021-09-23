@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/models/bookmark.dart';
 import 'package:hikee/models/paginated.dart';
-import 'package:hikee/providers/pagination_change_notifier.dart';
+import 'package:hikee/old_providers/pagination_change_notifier.dart';
 import 'package:hikee/services/bookmark.dart';
 
 class BookmarksProvider extends PaginationChangeNotifier<Bookmark> {

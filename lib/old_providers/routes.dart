@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hikee/models/order.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/models/paginated.dart';
-import 'package:hikee/providers/pagination_change_notifier.dart';
+import 'package:hikee/old_providers/pagination_change_notifier.dart';
 import 'package:hikee/services/route.dart';
 
 class RoutesProvider

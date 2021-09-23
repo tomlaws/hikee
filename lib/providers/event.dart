@@ -1,29 +1,34 @@
-import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
-import 'package:hikee/providers/auth.dart';
 import 'package:hikee/models/event.dart';
-import 'package:hikee/services/event.dart';
+import 'package:hikee/models/event_category.dart';
+import 'package:hikee/models/paginated.dart';
+import 'package:hikee/providers/shared/base.dart';
 
-class EventProvider extends ChangeNotifier {
-  AuthProvider _authProvider;
-  EventService _eventService = GetIt.I<EventService>();
-  Event? _event;
-  Event? get event => _event;
-  set event(e) {
-    _event = e;
-    notifyListeners();
+class EventProvider extends BaseProvider {
+  Future<Event> getEvent(int id) async =>
+      await get('events/$id').then((value) => Event.fromJson(value.body));
+
+  Future<Paginated<Event>> getEvents(Map<String, dynamic>? query) async {
+    return await get('events', query: query).then((value) {
+      return Paginated<Event>.fromJson(
+          value.body, (o) => Event.fromJson(o as Map<String, dynamic>));
+    });
   }
 
-  EventProvider({required AuthProvider authProvider})
-      : _authProvider = authProvider;
-
-  update({required AuthProvider authProvider}) {
-    this._authProvider = authProvider;
+  Future<List<EventCategory>> getCategories() async {
+    List<EventCategory> categories =
+        ((await get('events/categories')).body as List<dynamic>)
+            .map((c) => EventCategory.fromJson(c))
+            .toList();
+    return categories;
   }
 
-  Future<Event?> getEvent(int id) async {
-    _event = await _eventService.getEvent(id, token: _authProvider.getToken());
-    notifyListeners();
-    return _event;
+  Future<Event> joinEvent(int id) async {
+    var res = await post('events/$id/participations', {});
+    return Event.fromJson(res.body);
+  }
+
+  Future<Event> quitEvent(int id) async {
+    var res = await delete('events/$id/participations');
+    return Event.fromJson(res.body);
   }
 }
