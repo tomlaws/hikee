@@ -4,17 +4,21 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/pages/route/route_binding.dart';
+import 'package:hikee/pages/route/route_page.dart';
 
 class HikingRouteTile extends StatelessWidget {
   final HikingRoute route;
   final void Function()? onTap;
   final double width;
   final double aspectRatio;
+  final double radius;
   const HikingRouteTile(
       {Key? key,
       required this.route,
       this.onTap,
       this.width = double.infinity,
+      this.radius = 8,
       this.aspectRatio = 16 / 9})
       : super(key: key);
 
@@ -26,13 +30,18 @@ class HikingRouteTile extends StatelessWidget {
           onTap!();
           return;
         }
-        Get.toNamed('/route', id: 1, arguments: {'id': route.id});
+        Get.to(RoutePage(),
+            transition: Transition.cupertino,
+            arguments: {'id': route.id},
+            binding: RouteBinding());
+        //Get.toNamed('/route', id: 1, arguments: {'id': route.id});
       },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           width: width,
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          decoration:
+              BoxDecoration(borderRadius: BorderRadius.circular(radius)),
           child: AspectRatio(
             //height: 180,
             //width: width,

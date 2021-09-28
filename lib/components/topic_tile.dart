@@ -19,16 +19,18 @@ class _TopicTileState extends State<TopicTile> {
         onTap: widget.onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(.1), blurRadius: 3)]
-          ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(.1), blurRadius: 3)
+              ]),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.only(top: 16.0, left: 16, right: 16, bottom: 8),
+                padding:
+                    EdgeInsets.only(top: 16.0, left: 16, right: 16, bottom: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -91,9 +93,10 @@ class _TopicTileState extends State<TopicTile> {
               Container(
                 padding: EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
                 child: Text(
-                    widget.topic.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,),
+                  widget.topic.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               )
             ],
           ),

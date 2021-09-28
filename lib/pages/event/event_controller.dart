@@ -13,15 +13,10 @@ class EventController extends GetxController with StateMixin<Event> {
     append(() => () => _eventProvider.getEvent(id));
   }
 
-  Future<Event> joinEvent() async {
-    Event e = await _eventProvider.joinEvent(id);
-    change(e, status: RxStatus.success());
-    return e;
-  }
-
-  Future<Event> quitEvent() async {
-    Event e = await _eventProvider.quitEvent(id);
-    change(e, status: RxStatus.success());
-    return e;
+  void setJoined(bool joined) {
+    if (state == null) return;
+    state!.joined = joined;
+    state!.participantCount += joined ? 1 : -1;
+    change(state, status: RxStatus.success());
   }
 }

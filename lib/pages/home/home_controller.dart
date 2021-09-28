@@ -5,6 +5,10 @@ import 'package:hikee/components/event_tile.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/pages/account/account_binding.dart';
+import 'package:hikee/pages/account/account_page.dart';
+import 'package:hikee/pages/account/events/account_events_binding.dart';
+import 'package:hikee/pages/account/events/account_events_page.dart';
 import 'package:hikee/pages/compass/compass_binding.dart';
 import 'package:hikee/pages/compass/compass_page.dart';
 import 'package:hikee/pages/event/event_binding.dart';
@@ -13,6 +17,8 @@ import 'package:hikee/pages/events/events_binding.dart';
 import 'package:hikee/pages/events/events_controller.dart';
 import 'package:hikee/pages/events/events_page.dart';
 import 'package:hikee/pages/route/route_binding.dart';
+import 'package:hikee/pages/route/route_events/route_events_binding.dart';
+import 'package:hikee/pages/route/route_events/route_events_page.dart';
 import 'package:hikee/pages/route/route_page.dart';
 import 'package:hikee/pages/routes/routes_binding.dart';
 import 'package:hikee/pages/routes/routes_controller.dart';
@@ -33,7 +39,8 @@ class HomeController extends GetxController {
     },
     1: {
       '/': [() => RoutesPage(), RoutesBinding()],
-      '/route': [() => RoutePage(), RouteBinding()],
+      // '/route': [() => RoutePage(), RouteBinding()],
+      // '/route-events': [() => RouteEventsPage(), RouteEventsBinding()],
       '/search': [
         () => SearchPage<RoutesController, HikingRoute>(
               key: Key('routes'),
@@ -45,7 +52,7 @@ class HomeController extends GetxController {
     },
     2: {
       '/': [() => EventsPage(), EventsBinding()],
-      '/event': [() => EventPage(), EventBinding()],
+      //'/event': [() => EventPage(), EventBinding()],
       '/search': [
         () => SearchPage<EventsController, Event>(
               key: Key('events'),
@@ -59,7 +66,8 @@ class HomeController extends GetxController {
       '/': [() => TopicsPage(), TopicsBinding()],
     },
     4: {
-      //'/account': [AccountPage, AccountBinding],
+      '/': [() => AccountPage(), AccountBinding()],
+      '/events': [() => AccountEventsPage(), AccountEventsBinding()],
     }
   };
 

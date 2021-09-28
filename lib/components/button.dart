@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 
 class Button extends StatefulWidget {
   final Widget? child;
@@ -101,7 +102,14 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                   )),
                   Opacity(
                     opacity: widget.loading ? 0 : 1,
-                    child: (widget.icon != null ? widget.icon : widget.child) ??
+                    child: (widget.icon != null
+                            ? IconTheme(
+                                data: IconThemeData(
+                                    color: widget.secondary
+                                        ? Get.theme.primaryColor
+                                        : Get.theme.primaryColor),
+                                child: widget.icon!)
+                            : widget.child) ??
                         SizedBox(),
                   )
                 ])),

@@ -11,14 +11,14 @@ import 'package:hikee/models/token.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginPageState extends State<LoginPage> {
   TextInputController _emailController = TextInputController();
   TextInputController _passwordController = TextInputController();
   AuthController _authController = Get.put(AuthController());

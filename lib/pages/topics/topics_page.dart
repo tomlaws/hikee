@@ -23,95 +23,155 @@ class TopicsPage extends GetView<TopicsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Button(
-        onPressed: () {
-          context.read<AuthProvider>().mustLogin(context, () {
-            Navigator.of(context, rootNavigator: true)
-                .push(CupertinoPageRoute(builder: (_) => CreateTopicPage()));
-          });
-        },
-        icon: Icon(Icons.add, color: Colors.white),
-      ),
-      appBar: HikeeAppBar(
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextInput(
-                  textEditingController: _searchController,
-                  hintText: 'Search...',
-                  textInputAction: TextInputAction.search,
-                  icon: Icon(Icons.search),
-                  onSubmitted: (q) {
-                    context.read<TopicsProvider>().query = q;
-                  },
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              // SizedBox(
-              //   width: 120,
-              //   child: Button(
-              //     backgroundColor: Color(0xFFF5F5F5),
-              //     child: Selector<TopicsProvider, Tuple2<TopicSortable, Order>>(
-              //       selector: (_, p) => Tuple2(p.sort, p.order),
-              //       builder: (_, sortAndOrder, __) => Row(
-              //         children: [
-              //           sortAndOrder.item2 == Order.DESC
-              //               ? Icon(Icons.sort)
-              //               : Transform.rotate(
-              //                   angle: 180 * pi / 180, child: Icon(Icons.sort)),
-              //           Expanded(
-              //             child: Center(
-              //               child: Text(
-              //                 sortAndOrder.item1.name,
-              //                 style: TextStyle(
-              //                     color: Theme.of(context)
-              //                         .textTheme
-              //                         .bodyText1!
-              //                         .color),
-              //               ),
-              //             ),
-              //           )
-              //         ],
-              //       ),
-              //     ),
-              //     onPressed: () {
-              //       _showSortMenu();
-              //     },
-              //   ),
-              // ),
-            ],
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: InfiniteScroller<Topic>(
-                    controller: Get.find<TopicsController>(),
-                    separator: SizedBox(
-                      height: 16,
+      backgroundColor: Colors.white,
+      // floatingActionButton: Button(
+      //   onPressed: () {
+      //     context.read<AuthProvider>().mustLogin(context, () {
+      //       Navigator.of(context, rootNavigator: true)
+      //           .push(CupertinoPageRoute(builder: (_) => CreateTopicPage()));
+      //     });
+      //   },
+      //   icon: Icon(Icons.add, color: Colors.white),
+      // ),
+      // appBar: HikeeAppBar(
+      //   elevation: 0,
+      //   title: Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      //     child: Row(
+      //       children: [
+      //         Expanded(
+      //           child: TextInput(
+      //             textEditingController: _searchController,
+      //             hintText: 'Search...',
+      //             textInputAction: TextInputAction.search,
+      //             icon: Icon(Icons.search),
+      //             onSubmitted: (q) {
+      //               context.read<TopicsProvider>().query = q;
+      //             },
+      //           ),
+      //         ),
+      //         SizedBox(
+      //           width: 8,
+      //         ),
+      //         // SizedBox(
+      //         //   width: 120,
+      //         //   child: Button(
+      //         //     backgroundColor: Color(0xFFF5F5F5),
+      //         //     child: Selector<TopicsProvider, Tuple2<TopicSortable, Order>>(
+      //         //       selector: (_, p) => Tuple2(p.sort, p.order),
+      //         //       builder: (_, sortAndOrder, __) => Row(
+      //         //         children: [
+      //         //           sortAndOrder.item2 == Order.DESC
+      //         //               ? Icon(Icons.sort)
+      //         //               : Transform.rotate(
+      //         //                   angle: 180 * pi / 180, child: Icon(Icons.sort)),
+      //         //           Expanded(
+      //         //             child: Center(
+      //         //               child: Text(
+      //         //                 sortAndOrder.item1.name,
+      //         //                 style: TextStyle(
+      //         //                     color: Theme.of(context)
+      //         //                         .textTheme
+      //         //                         .bodyText1!
+      //         //                         .color),
+      //         //               ),
+      //         //             ),
+      //         //           )
+      //         //         ],
+      //         //       ),
+      //         //     ),
+      //         //     onPressed: () {
+      //         //       _showSortMenu();
+      //         //     },
+      //         //   ),
+      //         // ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      body: CustomScrollView(
+        controller: controller.scrollController,
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 76.0,
+            collapsedHeight: 60.0,
+            pinned: true,
+            elevation: 2,
+            backgroundColor: Colors.white,
+            flexibleSpace: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextInput(
+                      textEditingController: _searchController,
+                      hintText: 'Search...',
+                      textInputAction: TextInputAction.search,
+                      icon: Icon(Icons.search),
+                      onSubmitted: (q) {
+                        context.read<TopicsProvider>().query = q;
+                      },
                     ),
-                    builder: (topic) {
-                      return TopicTile(
-                        topic: topic,
-                        onTap: () {
-                          Routemaster.of(context).push('/topics/${topic.id}');
-                        },
-                      );
-                    }),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [Text('test')],
+              ),
+            ),
+          ),
+          SliverList(
+              delegate: SliverChildListDelegate([
+            InfiniteScroller<Topic>(
+                controller: controller,
+                shrinkWrap: true,
+                separator: SizedBox(
+                  height: 16,
+                ),
+                padding:
+                    EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+                builder: (topic) {
+                  return TopicTile(
+                    topic: topic,
+                    onTap: () {
+                      Routemaster.of(context).push('/topics/${topic.id}');
+                    },
+                  );
+                })
+          ]))
+        ],
       ),
+      // body: SafeArea(
+      //   child: Container(
+      //     color: Colors.white,
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         Expanded(
+      //           child: InfiniteScroller<Topic>(
+      //               controller: Get.find<TopicsController>(),
+      //               separator: SizedBox(
+      //                 height: 16,
+      //               ),
+      //               builder: (topic) {
+      //                 return TopicTile(
+      //                   topic: topic,
+      //                   onTap: () {
+      //                     Routemaster.of(context).push('/topics/${topic.id}');
+      //                   },
+      //                 );
+      //               }),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
 

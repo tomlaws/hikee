@@ -37,12 +37,19 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
         false); // Make sure UI updates first, then set fetchingMore to false, otherwise UI will fetch next page again
   }
 
-  clear() {
+  _clear() {
+    cursor = null;
+    fetchingMore = false;
     change(null, status: RxStatus.loading());
   }
 
+  refetch() {
+    _clear();
+    next();
+  }
+
   set query(String query) {
-    clear();
+    _clear();
     _query = query;
     next();
   }

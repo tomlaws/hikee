@@ -34,19 +34,16 @@ class SearchPage<T extends PaginationController<Paginated<U>>, U>
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: Hero(
-                  tag: 'search',
-                  child: TextInput(
-                    textEditingController: _searchController.searchController,
-                    hintText: 'Search...',
-                    textInputAction: TextInputAction.search,
-                    icon: Icon(Icons.search),
-                    autoFocus: true,
-                    onSubmitted: (q) {
-                      _controller.query = q;
-                      _searchController.searched.value = true;
-                    },
-                  ),
+                child: TextInput(
+                  textEditingController: _searchController.searchController,
+                  hintText: 'Search...',
+                  textInputAction: TextInputAction.search,
+                  icon: Icon(Icons.search),
+                  autoFocus: true,
+                  onSubmitted: (q) {
+                    _controller.query = q;
+                    _searchController.searched.value = true;
+                  },
                 ),
               ),
             ],

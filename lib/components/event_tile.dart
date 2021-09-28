@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:hikee/components/calendar_date.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/event.dart';
+import 'package:hikee/pages/event/event_binding.dart';
+import 'package:hikee/pages/event/event_page.dart';
 
 class EventTile extends StatelessWidget {
   final Event event;
@@ -23,11 +25,15 @@ class EventTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (onTap != null) {
-          onTap!();
-          return;
-        }
-        Get.toNamed('/event', id: 2, arguments: {'id': event.id});
+        // if (onTap != null) {
+        //   onTap!();
+        //   return;
+        // }
+        //Get.toNamed('/event', id: 2, arguments: {'id': event.id});
+        Get.to(EventPage(),
+            transition: Transition.cupertino,
+            arguments: {'id': event.id},
+            binding: EventBinding());
       },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(

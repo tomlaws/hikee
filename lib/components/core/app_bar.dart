@@ -9,6 +9,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HikeeAppBar(
       {Key? key,
       required this.title,
+      this.pinned = false,
       this.leading,
       this.canPop,
       this.actions,
@@ -18,6 +19,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       : super(key: key);
 
   final Widget title;
+  final bool pinned;
   final Widget? leading;
   final bool? canPop;
   final List<Widget>? actions;

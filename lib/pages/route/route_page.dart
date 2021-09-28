@@ -1,21 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/route_info.dart';
 import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/old_providers/route_reviews.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/home/home_controller.dart';
 import 'package:hikee/pages/route/route_controller.dart';
-import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/map_marker.dart';
-import 'package:provider/provider.dart';
+import 'package:hikee/pages/route/route_events/route_events_binding.dart';
+import 'package:hikee/pages/route/route_events/route_events_page.dart';
+import 'package:hikee/utils/time.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:routemaster/routemaster.dart';
 
 class RoutePage extends GetView<RouteController> {
@@ -134,7 +130,9 @@ class RoutePage extends GetView<RouteController> {
                                         fontWeight: FontWeight.bold,
                                         color: Theme.of(context).primaryColor),
                                   ),
-                              onLoading: Shimmer()),
+                              onLoading: Shimmer(
+                                fontSize: 24,
+                              )),
                           Container(
                             height: 4,
                           ),
@@ -144,44 +142,117 @@ class RoutePage extends GetView<RouteController> {
                                     style: TextStyle(
                                         fontSize: 16, color: Color(0xFFAAAAAA)),
                                   ),
-                              onLoading: Shimmer()),
+                              onLoading: Shimmer(
+                                fontSize: 16,
+                              )),
                         ],
                       ),
-                      Container(
-                        height: 12,
+                      SizedBox(
+                        height: 16,
                       ),
-                      Divider(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 48,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Stack(clipBehavior: Clip.none, children: [
+                                Positioned(
+                                  left: 0,
+                                  top: 0,
+                                  child: Icon(
+                                    LineAwesomeIcons.ruler,
+                                    size: 72,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 8),
+                                    child: controller.obx(
+                                        (route) => Text(
+                                              '${(route!.length / 1000).toString()}km',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black38),
+                                            ),
+                                        onLoading: Shimmer(
+                                          height: 30,
+                                        )),
+                                  ),
+                                )
+                              ]),
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Container(
+                              height: 48,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Stack(clipBehavior: Clip.none, children: [
+                                Positioned(
+                                  left: 0,
+                                  top: 0,
+                                  child: Icon(
+                                    LineAwesomeIcons.clock,
+                                    size: 72,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Padding(
+                                        padding: EdgeInsets.only(right: 8),
+                                        child: controller.obx(
+                                            (route) => Text(
+                                                  TimeUtils.formatMinutes(
+                                                      route!.duration),
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black38),
+                                                ),
+                                            onLoading: Shimmer(
+                                              height: 30,
+                                            ))))
+                              ]),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // controller.obx(
+                      //     (state) => RouteInfo(
+                      //           route: state!,
+                      //           showRouteName: false,
+                      //         ),
+                      //     onLoading: SizedBox()),
                       Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Description',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                              Container(
-                                height: 12,
-                              ),
-                              controller.obx(
-                                  (state) => Text(
-                                        state!.description_en,
-                                        style: TextStyle(height: 1.6),
-                                      ),
-                                  onLoading: SizedBox()),
-                            ],
-                          )),
-                      Container(
-                        height: 8,
-                      ),
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Text('Description',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ))),
                       controller.obx(
-                          (state) => RouteInfo(
-                                route: state!,
-                                showRouteName: false,
+                          (state) => Text(
+                                state!.description_en,
+                                strutStyle: StrutStyle(
+                                  height: 1.6,
+                                ),
                               ),
-                          onLoading: SizedBox()),
+                          onLoading: Shimmer(
+                            fontSize: 16,
+                          )),
                       Container(
                         height: 16,
                       ),
@@ -338,32 +409,36 @@ class RoutePage extends GetView<RouteController> {
               ],
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: Button(
-                  radius: 0,
-                  onPressed: () {
-                    HomeController hc = Get.find<HomeController>();
-                    hc.switchTab(0);
-                    CompassController cc = Get.find<CompassController>();
-                    cc.selectRoute(controller.state!);
-                  },
-                  child: Text('SELECT ROUTE'),
+          if (!(Get.arguments['hideButtons'] == true))
+            Row(
+              children: [
+                Expanded(
+                  child: Button(
+                    radius: 0,
+                    onPressed: () {
+                      HomeController hc = Get.find<HomeController>();
+                      hc.switchTab(0);
+                      CompassController cc = Get.find<CompassController>();
+                      cc.selectRoute(controller.state!);
+                    },
+                    child: Text('SELECT ROUTE'),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Button(
-                  radius: 0,
-                  backgroundColor: Colors.teal,
-                  onPressed: () {
-                    Routemaster.of(context).push('/home');
-                  },
-                  child: Text('FIND EVENTS'),
+                Expanded(
+                  child: Button(
+                    radius: 0,
+                    backgroundColor: Colors.teal,
+                    onPressed: () {
+                      Get.to(RouteEventsPage(),
+                          transition: Transition.cupertino,
+                          arguments: {'id': Get.arguments['id']},
+                          binding: RouteEventsBinding());
+                    },
+                    child: Text('FIND EVENTS'),
+                  ),
                 ),
-              ),
-            ],
-          )
+              ],
+            )
         ]));
   }
 

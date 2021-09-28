@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/keep_alive.dart';
+import 'package:hikee/controllers/auth.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import 'home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
+  final _authController = Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
     var pageView = PageView(
@@ -33,7 +36,11 @@ class HomePage extends GetView<HomeController> {
 
     return Scaffold(
         extendBodyBehindAppBar: true,
-        body: pageView,
+        body: Obx(() {
+          // ensures rebuild everything if login state changed
+          var loggedIn = _authController.loggedIn.value;
+          return pageView;
+        }),
         bottomNavigationBar: Obx(
           () => BottomNavigationBar(
             items: [

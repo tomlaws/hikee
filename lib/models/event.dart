@@ -11,8 +11,8 @@ class Event {
   final List<EventCategory> categories;
   final String description;
   final HikingRoute route;
-  final int participantCount;
-  final bool? joined;
+  int participantCount;
+  bool? joined;
   final DateTime date;
   final DateTime createdAt;
 

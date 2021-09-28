@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/login_prompt.dart';
+import 'package:hikee/messages.dart';
 import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/pages/home/home_binding.dart';
 import 'package:hikee/pages/home/home_page.dart';
@@ -24,10 +25,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Hikee',
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: locale,
         theme: Themes.light,
+        translations: Messages(),
+        locale: Locale('en', 'US'),
         home: HomePage(),
         initialBinding: HomeBinding());
   }

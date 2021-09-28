@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/paginated.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class InfiniteScroller<U> extends StatefulWidget {
   const InfiniteScroller({
     Key? key,
     this.shrinkWrap = false,
     required this.builder,
-    required this.controller,
+    this.controller,
+    this.controllerBuilder,
     this.padding = const EdgeInsets.all(16),
     this.firstFetch = true,
     this.take,
@@ -22,7 +22,8 @@ class InfiniteScroller<U> extends StatefulWidget {
 
   final bool shrinkWrap;
   final Widget Function(U item) builder;
-  final PaginationController<Paginated<U>> controller;
+  final PaginationController<Paginated<U>>? controller;
+  final PaginationController<Paginated<U>> Function()? controllerBuilder;
   final EdgeInsets padding;
   final int? take;
 
@@ -53,20 +54,26 @@ class InfiniteScroller<U> extends StatefulWidget {
 
 class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
   ScrollController _scrollController = ScrollController();
+  late PaginationController<Paginated<U>> controller;
 
   @override
   void initState() {
     super.initState();
-    if (widget.firstFetch) widget.controller.next();
+    if (widget.controllerBuilder != null) {
+      Get.lazyPut(widget.controllerBuilder!);
+    }
+    controller =
+        widget.controller ?? Get.find<PaginationController<Paginated<U>>>();
+    if (widget.firstFetch) controller.next();
     _scrollController.addListener(() {
       if (widget.take != null) {
-        var len = widget.controller.state?.data.length;
+        var len = controller.state?.data.length;
         if (len != null && len >= widget.take!) return;
       }
       double diff = _scrollController.position.maxScrollExtent -
           _scrollController.position.pixels;
       if (diff < 500) {
-        widget.controller.next();
+        controller.next();
       }
     });
   }
@@ -79,15 +86,22 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.controller.obx((state) {
+    return controller.obx((state) {
       var data = state;
       var items = data?.data ?? [];
       var itemCount = items.length;
       if (widget.take != null) {
         itemCount = itemCount.clamp(0, widget.take!);
       }
+      if (itemCount == 0 && widget.empty != null) {
+        if (widget.empty is String) {
+          return Text(widget.empty);
+        }
+        return widget.empty;
+      }
       return widget.separator != null
           ? ListView.separated(
+              clipBehavior: Clip.none,
               scrollDirection:
                   widget.horizontal ? Axis.horizontal : Axis.vertical,
               shrinkWrap: widget.shrinkWrap,
@@ -96,15 +110,16 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
               itemCount: itemCount,
               separatorBuilder: (_, __) => widget.separator!,
               itemBuilder: (_, i) {
-                // if (widget.take != null &&
-                //     i == widget.take! - 1 &&
-                //     widget.overflowBuilder != null) {
-                //   return widget.overflowBuilder!(
-                //       widget.selector(p)[i], itemCount, p.totalCount);
-                // }
+                if (widget.take != null &&
+                    i == widget.take! - 1 &&
+                    widget.overflowBuilder != null) {
+                  return widget.overflowBuilder!(
+                      items[i], itemCount - 1, data?.totalCount ?? 0);
+                }
                 return widget.builder(items[i]);
               })
           : ListView.builder(
+              clipBehavior: Clip.none,
               scrollDirection:
                   widget.horizontal ? Axis.horizontal : Axis.vertical,
               shrinkWrap: widget.shrinkWrap,
@@ -112,12 +127,12 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
               controller: _scrollController,
               itemCount: itemCount,
               itemBuilder: (_, i) {
-                // if (widget.take != null &&
-                //     i == widget.take! - 1 &&
-                //     widget.overflowBuilder != null) {
-                //   return widget.overflowBuilder!(
-                //       widget.selector(p)[i], itemCount, p.totalCount);
-                // }
+                if (widget.take != null &&
+                    i == widget.take! - 1 &&
+                    widget.overflowBuilder != null) {
+                  return widget.overflowBuilder!(
+                      items[i], itemCount, data?.totalCount ?? 0);
+                }
                 return widget.builder(items[i]);
               });
     },

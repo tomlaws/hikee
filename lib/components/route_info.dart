@@ -31,7 +31,7 @@ class RouteInfo extends StatelessWidget {
               child: Text(
                 route.name_en,
                 maxLines: 2,
-                style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+                style: TextStyle(),
               ),
             ),
           ],
@@ -51,7 +51,7 @@ class RouteInfo extends StatelessWidget {
               route.region.name_en,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+              style: TextStyle(),
             ),
           ],
         ),
@@ -67,7 +67,7 @@ class RouteInfo extends StatelessWidget {
           Container(width: 8),
           Text(
             '${(route.length / 1000).toString()}km',
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+            style: TextStyle(),
           ),
         ],
       ),
@@ -82,7 +82,7 @@ class RouteInfo extends StatelessWidget {
           Container(width: 8),
           Text(
             TimeUtils.formatMinutes(route.duration),
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+            style: TextStyle(),
           ),
         ],
       ),
