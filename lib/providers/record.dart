@@ -12,9 +12,11 @@ class RecordProvider extends BaseProvider {
 
   Future<Record> createRecord(
       {required DateTime date, required int time, required int routeId}) async {
-    return await post(
-            'records', {'date': date, 'time': time, 'routeId': routeId})
-        .then((value) {
+    return await post('records', {
+      'date': date.toString(),
+      'time': time,
+      'routeId': routeId
+    }).then((value) {
       return Record.fromJson(value.body);
     });
   }
