@@ -25,7 +25,7 @@ class RouteController extends GetxController with StateMixin<HikingRoute> {
   }
 
   Future<HikingRoute> loadRoute() async {
-    int id = Get.arguments['id'];
+    int id = int.parse(Get.parameters['routeId'] ?? Get.parameters['id'] ?? '');
     var route = await _routeProvider.getRoute(id);
     bookmarked.value = route.bookmark != null;
     points.value = GeoUtils.decodePath(route.path);

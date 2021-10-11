@@ -30,10 +30,9 @@ class HikingRouteTile extends StatelessWidget {
           onTap!();
           return;
         }
-        Get.to(RoutePage(),
-            transition: Transition.cupertino,
-            arguments: {'id': route.id},
-            binding: RouteBinding());
+        Get.toNamed(
+          '/routes/${route.id}',
+        );
         //Get.toNamed('/route', id: 1, arguments: {'id': route.id});
       },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

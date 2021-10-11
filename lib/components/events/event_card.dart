@@ -2,7 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/models/event.dart';
-import 'package:routemaster/routemaster.dart';
+import 'package:hikee/pages/event/event_binding.dart';
+import 'package:hikee/pages/event/event_page.dart';
 
 class EventCard extends StatefulWidget {
   final Event event;
@@ -18,7 +19,11 @@ class _EventCardState extends State<EventCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.toNamed('/event', id: 2, arguments: {'id': widget.event.id});
+        Get.to(EventPage(),
+            transition: Transition.cupertino,
+            arguments: {'id': widget.event.id},
+            binding: EventBinding());
+        //Get.toNamed('/event', id: 2, arguments: {'id': widget.event.id});
       },
       child: Stack(
         children: [

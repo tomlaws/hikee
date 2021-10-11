@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
@@ -95,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     onDone: (token) {
                       if (token != null) {
-                        Routemaster.of(context).pop();
+                        Get.back();
                       }
                     },
                     builder: (mutate, loading) {
@@ -112,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 GestureDetector(
                   child: Text('Or sign in now'),
                   onTap: () {
-                    Routemaster.of(context).replace('/login');
+                    Get.replace('/login');
                   },
                 )
               ],

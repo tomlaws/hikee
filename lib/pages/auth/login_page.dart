@@ -1,34 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/controllers/auth.dart';
-import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/models/token.dart';
-import 'package:provider/provider.dart';
-import 'package:routemaster/routemaster.dart';
+import 'package:hikee/pages/auth/login_controller.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends GetView<LoginController> {
   const LoginPage({Key? key}) : super(key: key);
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  TextInputController _emailController = TextInputController();
-  TextInputController _passwordController = TextInputController();
-  AuthController _authController = Get.put(AuthController());
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 TextInput(
                   hintText: 'Email',
-                  controller: _emailController,
+                  controller: controller.emailController,
                 ),
                 Container(
                   height: 16,
@@ -54,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextInput(
                   hintText: 'Password',
                   obscureText: true,
-                  controller: _passwordController,
+                  controller: controller.passwordController,
                 ),
                 Container(
                   height: 32,
@@ -63,23 +43,21 @@ class _LoginPageState extends State<LoginPage> {
                   width: 200,
                   child: MutationBuilder<Token?>(
                     mutation: () {
-                      _emailController.clearError();
-                      _passwordController.clearError();
-                      var email = _emailController.text;
-                      var password = _passwordController.text;
-                      return _authController.signIn(email, password);
+                      return controller.signIn();
                     },
                     onDone: (token) {
                       if (token != null) {
-                        Routemaster.of(context).pop();
+                        Get.back();
                       }
                     },
                     onError: (error) {
-                      _emailController.error = error.getFieldError('email');
-                      _passwordController.error =
+                      controller.emailController.error =
+                          error.getFieldError('email');
+                      controller.passwordController.error =
                           error.getFieldError('password');
                       if (error.statusCode == 401)
-                        _passwordController.error = 'Incorrect password';
+                        controller.passwordController.error =
+                            'Incorrect password';
                     },
                     builder: (mutate, loading) {
                       return Button(
@@ -95,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   child: Text('Or sign up now'),
                   onTap: () {
-                    Routemaster.of(context).replace('/register');
+                    Get.replace('/register');
                   },
                 )
               ],

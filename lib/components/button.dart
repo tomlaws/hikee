@@ -16,6 +16,7 @@ class Button extends StatefulWidget {
   final double radius;
   final double minWidth;
   final EdgeInsets? padding;
+  final bool safeArea;
 
   const Button(
       {Key? key,
@@ -29,6 +30,7 @@ class Button extends StatefulWidget {
       this.invert = false,
       this.radius = 12,
       this.minWidth = 48,
+      this.safeArea = false,
       this.padding})
       : super(key: key);
 
@@ -56,8 +58,10 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
             .withOpacity((widget.disabled || widget.loading) ? .75 : 1);
     if (widget.secondary)
       textColor = Theme.of(context).textTheme.bodyText1!.color!;
-    if (buttonColor != Colors.transparent)
-      buttonColor.withOpacity((widget.disabled || widget.loading) ? .75 : 1);
+    if (buttonColor != Colors.transparent) {
+      buttonColor.withOpacity((widget.loading) ? .75 : 1);
+      if (widget.disabled) buttonColor = Colors.black26;
+    }
 
     EdgeInsets padding = widget.padding ??
         EdgeInsets.symmetric(horizontal: widget.icon != null ? 0 : 16);
@@ -69,50 +73,56 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         onTap: () {
           widget.onPressed();
         },
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: 48,
-            minWidth: widget.minWidth,
-            maxHeight: 48,
-          ),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: DefaultTextStyle(
-                style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: .5),
-                child: Stack(alignment: Alignment.center, children: [
-                  Positioned.fill(
-                      child: Align(
-                    alignment: Alignment.center,
-                    child: Opacity(
-                      opacity: widget.loading ? 1 : 0,
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+        child: SafeArea(
+          top: false,
+          bottom: widget.safeArea,
+          left: widget.safeArea,
+          right: widget.safeArea,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: 48,
+              minWidth: widget.minWidth,
+              maxHeight: 48,
+            ),
+            child: Container(
+              padding: padding,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: DefaultTextStyle(
+                  style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: .5),
+                  child: Stack(alignment: Alignment.center, children: [
+                    Positioned.fill(
+                        child: Align(
+                      alignment: Alignment.center,
+                      child: Opacity(
+                        opacity: widget.loading ? 1 : 0,
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                  )),
-                  Opacity(
-                    opacity: widget.loading ? 0 : 1,
-                    child: (widget.icon != null
-                            ? IconTheme(
-                                data: IconThemeData(
-                                    color: widget.secondary
-                                        ? Get.theme.primaryColor
-                                        : Get.theme.primaryColor),
-                                child: widget.icon!)
-                            : widget.child) ??
-                        SizedBox(),
-                  )
-                ])),
+                    )),
+                    Opacity(
+                      opacity: widget.loading ? 0 : 1,
+                      child: (widget.icon != null
+                              ? IconTheme(
+                                  data: IconThemeData(
+                                      color: widget.secondary
+                                          ? Get.theme.primaryColor
+                                          : Get.theme.primaryColor),
+                                  child: widget.icon!)
+                              : widget.child) ??
+                          SizedBox(),
+                    )
+                  ])),
+            ),
           ),
         ),
       ),

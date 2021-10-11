@@ -118,14 +118,14 @@ class TopicsPage extends GetView<TopicsController> {
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [Text('test')],
-              ),
-            ),
-          ),
+          // SliverToBoxAdapter(
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          //     child: Row(
+          //       children: [Text('test')],
+          //     ),
+          //   ),
+          // ),
           SliverList(
               delegate: SliverChildListDelegate([
             InfiniteScroller<Topic>(

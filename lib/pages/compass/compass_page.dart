@@ -155,9 +155,9 @@ class CompassPage extends GetView<CompassController> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              controller.isFarAwayFromStart.value
-                                  ? 'You\'re far away from the route'
-                                  : 'You\'re now at the start of the route',
+                              controller.isCloseToStart.value
+                                  ? 'You\'re now at the start of the route'
+                                  : 'You\'re far away from the route',
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -166,9 +166,9 @@ class CompassPage extends GetView<CompassController> {
                             Opacity(
                                 opacity: .5,
                                 child: Text(
-                                    controller.isFarAwayFromStart.value
-                                        ? 'Please reach to the starting point first'
-                                        : 'Swipe up to get start!',
+                                    controller.isCloseToStart.value
+                                        ? 'Swipe up to get start!'
+                                        : 'Please reach to the starting point first',
                                     style: TextStyle(fontSize: 12)))
                           ],
                         ),
@@ -539,7 +539,7 @@ class CompassPage extends GetView<CompassController> {
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
           child: Obx(() {
-            bool closeEnough = !controller.isFarAwayFromStart.value;
+            bool closeEnough = controller.isCloseToStart.value;
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -558,14 +558,23 @@ class CompassPage extends GetView<CompassController> {
                       })
                 else
                   Button(
-                      child: Text('EMERGENCY'),
-                      backgroundColor: Colors.red,
-                      onPressed: () async {
-                        _showNearestDistancePostDialog();
+                      child: Text('FINISH ROUTE'),
+                      disabled: !controller.isCloseToGoal.value,
+                      onPressed: () {
+                        controller.finishRoute();
                       }),
+                // else
+                //   Button(
+                //       icon:
+                //           Icon(LineAwesomeIcons.first_aid, color: Colors.white),
+                //       backgroundColor: Colors.red[400],
+                //       onPressed: () async {
+                //         _showNearestDistancePostDialog();
+                //       }),
                 Container(width: 16),
                 Button(
                     child: Text('QUIT ROUTE'),
+                    backgroundColor: Colors.brown[300],
                     onPressed: () {
                       controller.quitRoute();
                     })

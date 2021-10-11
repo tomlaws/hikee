@@ -22,7 +22,7 @@ class AuthProvider extends BaseProvider {
     return _tokenManager.token = Token.fromJson(res.body);
   }
 
-  Future<User?> getMe() async {
+  Future<User> getMe() async {
     var res = await get('users/me');
     return User.fromJson(res.body);
   }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AccountController extends GetxController {
   var options = Rx<List<Column>>([]);
@@ -24,5 +25,12 @@ class AccountController extends GetxController {
   void onClose() {
     pageController.dispose();
     super.onClose();
+  }
+
+  void promptUploadIcon() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    //_uploadIcon(File(image.path));
   }
 }

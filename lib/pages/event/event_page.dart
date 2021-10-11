@@ -1,3 +1,4 @@
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,13 +41,8 @@ class EventPage extends GetView<EventController> {
                       radius: 0,
                       route: event!.route,
                       onTap: () {
-                        Get.to(RoutePage(),
-                            transition: Transition.cupertino,
-                            arguments: {
-                              'id': event.route.id,
-                              'hideButtons': true
-                            },
-                            binding: RouteBinding());
+                        Get.toNamed('/routes/${event.route.id}',
+                            arguments: {'hideButtons': true});
                       },
                     ),
                     Padding(
@@ -75,7 +71,7 @@ class EventPage extends GetView<EventController> {
                                       children: [
                                         Text(
                                             DateFormat('hh:mm a')
-                                                .format(event.date),
+                                                .format(event.date.toLocal()),
                                             style: TextStyle(
                                               fontSize: 16,
                                             )),
@@ -95,7 +91,22 @@ class EventPage extends GetView<EventController> {
                                 ),
                                 Button(
                                   secondary: true,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    var startDate = controller.state!.date;
+                                    var endDate = startDate.add(Duration(
+                                        minutes:
+                                            controller.state!.route.duration));
+                                    final Event event = Event(
+                                        title: controller.state?.name ?? '',
+                                        description:
+                                            controller.state?.description ?? '',
+                                        location:
+                                            controller.state?.route.name_en ??
+                                                '',
+                                        startDate: startDate,
+                                        endDate: endDate);
+                                    Add2Calendar.addEvent2Cal(event);
+                                  },
                                   icon: Icon(
                                     Icons.event,
                                   ),
@@ -163,6 +174,7 @@ class EventPage extends GetView<EventController> {
                         onPressed: () {
                           mutate();
                         },
+                        safeArea: true,
                         child: Text(joined ? 'QUIT' : 'JOIN'),
                       );
                     },

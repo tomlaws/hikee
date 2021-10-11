@@ -6,20 +6,14 @@ import 'package:hikee/components/hiking_route_tile.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/pages/account/account_binding.dart';
-import 'package:hikee/pages/account/account_page.dart';
+import 'package:hikee/pages/account/old_account_page.dart';
 import 'package:hikee/pages/account/events/account_events_binding.dart';
 import 'package:hikee/pages/account/events/account_events_page.dart';
 import 'package:hikee/pages/compass/compass_binding.dart';
 import 'package:hikee/pages/compass/compass_page.dart';
-import 'package:hikee/pages/event/event_binding.dart';
-import 'package:hikee/pages/event/event_page.dart';
 import 'package:hikee/pages/events/events_binding.dart';
 import 'package:hikee/pages/events/events_controller.dart';
 import 'package:hikee/pages/events/events_page.dart';
-import 'package:hikee/pages/route/route_binding.dart';
-import 'package:hikee/pages/route/route_events/route_events_binding.dart';
-import 'package:hikee/pages/route/route_events/route_events_page.dart';
-import 'package:hikee/pages/route/route_page.dart';
 import 'package:hikee/pages/routes/routes_binding.dart';
 import 'package:hikee/pages/routes/routes_controller.dart';
 import 'package:hikee/pages/routes/routes_page.dart';
@@ -39,28 +33,9 @@ class HomeController extends GetxController {
     },
     1: {
       '/': [() => RoutesPage(), RoutesBinding()],
-      // '/route': [() => RoutePage(), RouteBinding()],
-      // '/route-events': [() => RouteEventsPage(), RouteEventsBinding()],
-      '/search': [
-        () => SearchPage<RoutesController, HikingRoute>(
-              key: Key('routes'),
-              builder: (route) => HikingRouteTile(route: route),
-              controllerBuilder: () => RoutesController(),
-            ),
-        SearchBinding()
-      ],
     },
     2: {
       '/': [() => EventsPage(), EventsBinding()],
-      //'/event': [() => EventPage(), EventBinding()],
-      '/search': [
-        () => SearchPage<EventsController, Event>(
-              key: Key('events'),
-              builder: (event) => EventTile(event: event),
-              controllerBuilder: () => EventsController(),
-            ),
-        SearchBinding()
-      ],
     },
     3: {
       '/': [() => TopicsPage(), TopicsBinding()],
@@ -75,10 +50,6 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     pageController = PageController(initialPage: currentTabIndex.value);
-    // pageController.addListener(() {
-    //   currentTabIndex.value =
-    //       pageController.page?.round() ?? currentTabIndex.value;
-    // });
   }
 
   void switchTab(int i) {

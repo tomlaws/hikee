@@ -40,10 +40,11 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: elevation,
       titleTextStyle: TextStyle(fontSize: 12),
       title: title,
+      leadingWidth: 44 + 8 * 2,
       leading: leading ??
           (backButton
               ? Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Button(
                     backgroundColor: Colors.transparent,
                     icon: Icon(closeIcon ?? Icons.chevron_left),

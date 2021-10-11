@@ -10,7 +10,7 @@ class BaseProvider extends GetConnect {
   @override
   void onInit() {
     super.onInit();
-    httpClient.baseUrl = 'http://10.0.2.2:3000/';
+    httpClient.baseUrl = 'http://127.0.0.1:3000/';
     httpClient.addRequestModifier<void>((request) async {
       //print(request.url.path);
       if (request.url.path.contains('/auth')) return request;
@@ -37,8 +37,18 @@ class BaseProvider extends GetConnect {
   }
 
   Future<void> _refreshToken() async {
+    Duration remainingTime =
+        JwtDecoder.getRemainingTime(_tokenManager.token!.refreshToken);
+    if (remainingTime < Duration(minutes: 1)) {
+      //refresh
+      print('Refresh token expired. Logout now');
+      _tokenManager.token = null;
+      throw new Exception('Refresh token expired');
+      //return;
+    }
     var res = await post(
         'auth/refresh', {'refreshToken': _tokenManager.token!.refreshToken});
+    print(res.body);
     Token updatedToken = Token.fromJson((_tokenManager.token!
           ..updateAccessToken(res.body['accessToken']))
         .toJson());

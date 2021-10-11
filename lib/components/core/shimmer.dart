@@ -8,6 +8,7 @@ class Shimmer extends StatelessWidget {
       this.enabled = true,
       this.width,
       this.height,
+      this.radius,
       this.fontSize})
       : super(key: key);
 
@@ -15,6 +16,7 @@ class Shimmer extends StatelessWidget {
   final bool enabled;
   final double? width;
   final double? height;
+  final double? radius;
   final double? fontSize;
 
   @override
@@ -33,7 +35,8 @@ class Shimmer extends StatelessWidget {
                 ? BoxConstraints.expand()
                 : null,
             decoration: BoxDecoration(
-                color: Colors.black, borderRadius: BorderRadius.circular(8)),
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(radius ?? 8)),
             width: width,
             height: renderHeight,
           ),

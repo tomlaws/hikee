@@ -49,5 +49,7 @@
 	<string>Hikee needs to access your photo library to upload avatar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Hikee needs to access your camera to upload avatar</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Hikee needs to access your calendar to add event schedule</string>
 </dict>
 </plist>

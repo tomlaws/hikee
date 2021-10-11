@@ -409,17 +409,19 @@ class RoutePage extends GetView<RouteController> {
               ],
             ),
           ),
-          if (!(Get.arguments['hideButtons'] == true))
+          if (!(Get.arguments?['hideButtons'] == true))
             Row(
               children: [
                 Expanded(
                   child: Button(
                     radius: 0,
+                    safeArea: true,
                     onPressed: () {
                       HomeController hc = Get.find<HomeController>();
                       hc.switchTab(0);
                       CompassController cc = Get.find<CompassController>();
                       cc.selectRoute(controller.state!);
+                      Get.back();
                     },
                     child: Text('SELECT ROUTE'),
                   ),
@@ -427,6 +429,7 @@ class RoutePage extends GetView<RouteController> {
                 Expanded(
                   child: Button(
                     radius: 0,
+                    safeArea: true,
                     backgroundColor: Colors.teal,
                     onPressed: () {
                       Get.to(RouteEventsPage(),

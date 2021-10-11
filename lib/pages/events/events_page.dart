@@ -16,7 +16,6 @@ class EventsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //super.build(context);
-    controller.next();
     return Scaffold(
       backgroundColor: Colors.white,
       body: ListView(
@@ -158,6 +157,9 @@ class EventsPage extends StatelessWidget {
                   fontSize: 24,
                   color: Theme.of(context).primaryColor),
             ),
+          ),
+          SizedBox(
+            height: 16,
           ),
           controller.obx((state) => EventCarousel(state!.data),
               onLoading: Center(

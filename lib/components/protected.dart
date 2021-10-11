@@ -1,57 +1,45 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
-import 'package:hikee/old_providers/auth.dart';
-import 'package:hikee/pages/auth/login.dart';
-import 'package:provider/provider.dart';
+import 'package:hikee/models/user.dart';
+import 'package:hikee/providers/auth.dart';
 
-class Protected extends StatefulWidget {
-  const Protected({Key? key, required this.child}) : super(key: key);
-
-  final Widget child;
-
-  @override
-  _ProtectedState createState() => _ProtectedState();
-}
-
-class _ProtectedState extends State<Protected> {
-  @override
-  void initState() {
-    super.initState();
-    // var auth = context.read<Auth>();
-    // if (!auth.loggedIn) {
-    //   Future(() {
-    //     Navigator.of(context)
-    //         .push(CupertinoPageRoute(builder: (_) => LoginScreen()));
-    //   });
-    // }
-  }
+class Protected extends StatelessWidget {
+  final Widget Function(BuildContext context)? unauthenticatedBuilder;
+  final Widget Function(BuildContext context, Future<User> Function() getMe)
+      authenticatedBuilder;
+  Protected({this.unauthenticatedBuilder, required this.authenticatedBuilder});
 
   @override
   Widget build(BuildContext context) {
-    var auth = context.watch<AuthProvider>();
-    if (auth.loggedIn) {
-      return widget.child;
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Login to enjoy hiking',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-          ),
-          Container(height: 32),
-          SizedBox(
-            width: 200,
-            child: Button(
-                child: Text('LOGIN'),
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(CupertinoPageRoute(builder: (_) => LoginScreen()));
-                }),
-          )
-        ],
-      );
-    }
+    final authProvider = Get.put(AuthProvider());
+    return Obx(() {
+      if (authProvider.loggedIn.value) {
+        return authenticatedBuilder(context, authProvider.getMe);
+      } else {
+        if (unauthenticatedBuilder != null) {
+          return unauthenticatedBuilder!(context);
+        }
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Login to enjoy hiking',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            Container(height: 32),
+            SizedBox(
+              width: 200,
+              child: Button(
+                  child: Text('LOGIN'),
+                  onPressed: () {
+                    Get.toNamed('/login');
+                  }),
+            )
+          ],
+        );
+      }
+    });
   }
 }

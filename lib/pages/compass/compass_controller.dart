@@ -27,7 +27,8 @@ class CompassController extends GetxController {
   Timer? _timer;
   final elapsed = 0.obs;
   final walkedDistance = 0.0.obs;
-  final isFarAwayFromStart = false.obs;
+  final isCloseToStart = false.obs;
+  final isCloseToGoal = false.obs;
 
   // UI
   final double collapsedPanelHeight = kBottomNavigationBarHeight;
@@ -43,9 +44,12 @@ class CompassController extends GetxController {
     _positionStream =
         Geolocator.getPositionStream().listen((Position position) {
       currentLocation.value = LatLng(position.latitude, position.longitude);
-      if (activeRoute.value != null)
-        isFarAwayFromStart.value = GeoUtils.isFarWayFromPoint(
-            currentLocation.value!, activeRoute.value!.decodedPath[0]);
+      if (activeRoute.value != null) {
+        isCloseToStart.value = GeoUtils.isCloseToPoint(
+            currentLocation.value!, activeRoute.value!.decodedPath.first);
+        isCloseToGoal.value = GeoUtils.isCloseToPoint(
+            currentLocation.value!, activeRoute.value!.decodedPath.last);
+      }
       if (lockPosition) {
         goToCurrentLocation();
       }
@@ -125,7 +129,10 @@ class CompassController extends GetxController {
   void focusActiveRoute() async {
     var decodedPath = activeRoute.value!.decodedPath;
     lockPosition = false;
-    //print('focus');
+    print({
+      'start': activeRoute.value!.decodedPath.first,
+      'end': activeRoute.value!.decodedPath.last
+    });
     final GoogleMapController controller = await mapController.future;
     controller.moveCamera(
         CameraUpdate.newLatLngBounds(GeoUtils.getPathBounds(decodedPath), 20));
@@ -157,6 +164,8 @@ class CompassController extends GetxController {
       prefs.setString('activeRoute', encoded);
       activeRoute.value = ActiveHikingRoute(
           route: route, decodedPath: decodedPath, startTime: null);
+      isCloseToStart.value = GeoUtils.isCloseToPoint(
+          currentLocation.value!, activeRoute.value!.decodedPath[0]);
     } catch (ex) {
       print(ex);
     }
@@ -172,8 +181,9 @@ class CompassController extends GetxController {
           route: activeRoute.value!.route,
           decodedPath: activeRoute.value!.decodedPath,
           startTime: startTime);
+      isCloseToGoal.value = false;
       if (currentLocation.value != null)
-        isFarAwayFromStart.value = GeoUtils.isFarWayFromPoint(
+        isCloseToStart.value = GeoUtils.isCloseToPoint(
             currentLocation.value!, activeRoute.value!.decodedPath[0]);
     } catch (ex) {
       print(ex);
@@ -190,5 +200,13 @@ class CompassController extends GetxController {
     } catch (ex) {
       print(ex);
     }
+  }
+
+  finishRoute() async {
+    //upload stats
+
+    //elapsed;
+    // walkedDistanc
+    quitRoute();
   }
 }

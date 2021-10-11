@@ -2,6 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/keep_alive.dart';
 import 'package:hikee/controllers/auth.dart';
+import 'package:hikee/controllers/event_categories.dart';
+import 'package:hikee/pages/account/account_controller.dart';
+import 'package:hikee/pages/account/account_page.dart';
+import 'package:hikee/pages/compass/compass_controller.dart';
+import 'package:hikee/pages/compass/compass_page.dart';
+import 'package:hikee/pages/compass/weather_controller.dart';
+import 'package:hikee/pages/events/events_controller.dart';
+import 'package:hikee/pages/events/events_page.dart';
+import 'package:hikee/pages/routes/featured_route_controller.dart';
+import 'package:hikee/pages/routes/popular_routes_controller.dart';
+import 'package:hikee/pages/routes/routes_page.dart';
+import 'package:hikee/pages/topics/topics_controller.dart';
+import 'package:hikee/pages/topics/topics_page.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import 'home_controller.dart';
@@ -33,7 +46,24 @@ class HomePage extends GetView<HomeController> {
             ),
           )),
         ));
-
+    Get.lazyPut(() => CompassController());
+    Get.lazyPut(() => WeatherController());
+    Get.lazyPut(() => PopularRoutesController());
+    Get.lazyPut(() => FeaturedRouteController());
+    Get.lazyPut(() => EventsController());
+    Get.lazyPut(() => EventCategoriesController());
+    Get.lazyPut(() => TopicsController());
+    Get.lazyPut(() => AccountController());
+    pageView = PageView(
+        controller: controller.pageController,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          KeepAlivePage(child: CompassPage()),
+          RoutesPage(),
+          EventsPage(),
+          TopicsPage(),
+          AccountPage()
+        ]);
     return Scaffold(
         extendBodyBehindAppBar: true,
         body: Obx(() {

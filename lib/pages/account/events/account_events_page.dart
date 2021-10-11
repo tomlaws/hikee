@@ -15,6 +15,12 @@ class AccountEventsPage extends GetView<AccountEventsController> {
       ),
       body: InfiniteScroller<Event>(
         controller: controller,
+        empty: Center(
+          child: Text('No participated events'),
+        ),
+        separator: SizedBox(
+          height: 16,
+        ),
         builder: (event) {
           return EventTile(
             event: event,

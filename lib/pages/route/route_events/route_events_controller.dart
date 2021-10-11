@@ -6,17 +6,17 @@ import 'package:hikee/providers/event.dart';
 
 class RouteEventsController extends PaginationController<Paginated<Event>> {
   final _eventProvider = Get.put(EventProvider());
-  late int _routeId;
+  late int routeId;
 
   @override
   void onInit() {
     super.onInit();
-    _routeId = Get.arguments['id'];
+    routeId = Get.arguments['id'];
   }
 
   @override
   Future<Paginated<Event>> fetch(Map<String, dynamic> query) {
-    query['routeId'] = _routeId.toString();
+    query['routeId'] = routeId.toString();
     return _eventProvider.getEvents(query);
   }
 }

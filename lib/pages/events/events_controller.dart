@@ -11,6 +11,7 @@ class EventsController extends PaginationController<Paginated<Event>> {
   @override
   void onInit() {
     super.onInit();
+    next();
   }
 
   @override

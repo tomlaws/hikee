@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/hiking_route_tile.dart';
+import 'package:hikee/controllers/routes.dart';
+import 'package:hikee/models/route.dart';
 import 'package:hikee/pages/routes/featured_route_controller.dart';
 import 'package:hikee/pages/routes/popular_routes_controller.dart';
+import 'package:hikee/pages/search/search_controller.dart';
+import 'package:hikee/pages/search/search_page.dart';
 
 class RoutesPage extends StatelessWidget {
   final _popularRoutesController = Get.find<PopularRoutesController>();
@@ -28,7 +32,12 @@ class RoutesPage extends StatelessWidget {
                         textInputAction: TextInputAction.search,
                         icon: Icon(Icons.search),
                         onTap: () {
-                          Get.toNamed('/search', id: 1);
+                          Get.to(SearchPage<HikingRoute>(
+                              tag: 'search-routes',
+                              controller: Get.put(RoutesController(),
+                                  tag: 'search-routes'),
+                              builder: (route) =>
+                                  HikingRouteTile(route: route)));
                         }),
                   ),
                 ),

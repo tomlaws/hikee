@@ -23,6 +23,20 @@ class EventProvider extends BaseProvider {
     return categories;
   }
 
+  Future<Event> createEvent(
+      {required String name,
+      required String description,
+      required DateTime date,
+      required int routeId}) async {
+    var res = await post('events', {
+      'name': name,
+      'description': description,
+      'date': date.toString(),
+      'routeId': routeId
+    });
+    return Event.fromJson(res.body);
+  }
+
   Future<EventParticipation> joinEvent(int id) async {
     var res = await post('events/$id/participations', {});
     return EventParticipation.fromJson(res.body);

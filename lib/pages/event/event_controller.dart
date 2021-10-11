@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:hikee/pages/account/events/account_events_controller.dart';
 import 'package:hikee/providers/event.dart';
 import 'package:hikee/models/event.dart';
 
@@ -9,7 +10,7 @@ class EventController extends GetxController with StateMixin<Event> {
   @override
   void onInit() {
     super.onInit();
-    id = Get.arguments['id'];
+    id = Get.arguments['routeId'] ?? Get.arguments['id'];
     append(() => () => _eventProvider.getEvent(id));
   }
 
@@ -18,5 +19,8 @@ class EventController extends GetxController with StateMixin<Event> {
     state!.joined = joined;
     state!.participantCount += joined ? 1 : -1;
     change(state, status: RxStatus.success());
+    //
+    final accountEventsController = Get.find<AccountEventsController>();
+    accountEventsController.refetch();
   }
 }

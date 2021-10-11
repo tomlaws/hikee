@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/old_providers/locale.dart';
-import 'package:hikee/riverpods/locale.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 
 class Region {
@@ -25,12 +23,12 @@ class Region {
         'name_zh': name_zh,
         'name_en': name_en,
       };
-  String name(WidgetRef ref) {
-    var l = ref.read(localeProvider);
-    if (l == Locale('en')) {
-      return name_en;
-    } else {
-      return name_zh;
-    }
-  }
+  // String name(WidgetRef ref) {
+  //   var l = ref.read(localeProvider);
+  //   if (l == Locale('en')) {
+  //     return name_en;
+  //   } else {
+  //     return name_zh;
+  //   }
+  // }
 }

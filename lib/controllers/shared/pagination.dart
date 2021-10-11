@@ -10,6 +10,11 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
   String? order = 'DESC';
   bool fetchingMore = false;
 
+  @override
+  onInit() {
+    super.onInit();
+  }
+
   Map<String, dynamic> getQueryParams() {
     Map<String, dynamic> queryParams = {};
     if (_query != null && _query!.length > 0) queryParams['query'] = _query;

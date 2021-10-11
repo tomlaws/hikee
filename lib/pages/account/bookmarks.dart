@@ -32,13 +32,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                 return Container(
                     child: HikingRouteTile(
                   route: bookmark.route!,
-                  onTap: () {
-                    //Routemaster.of(context).push('/routes/${bookmark.routeId}');
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (_) => RouteScreen(
-                              id: bookmark.route!.id,
-                            )));
-                  },
+                  onTap: () {},
                 ));
               },
               fetch: (next) => context.read<BookmarksProvider>().fetch(next),

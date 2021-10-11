@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_input.dart';
@@ -7,59 +8,113 @@ import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/pages/search/search_controller.dart';
 
-class SearchPage<T extends PaginationController<Paginated<U>>, U>
-    extends StatelessWidget {
-  late SearchController _searchController;
-  late T _controller;
+class SearchPage<U> extends StatefulWidget {
+  const SearchPage(
+      {Key? key,
+      required this.tag,
+      required this.builder,
+      required this.controller})
+      : super(key: key);
 
+  @override
+  _SearchPageState<U> createState() => _SearchPageState<U>();
+
+  final String tag;
   final Widget Function(U item) builder;
-  final T Function() controllerBuilder;
-  SearchPage({Key? key, required this.builder, required this.controllerBuilder})
-      : super(key: key) {
-    Get.lazyPut(() => SearchController(), tag: 'search-$key');
-    Get.lazyPut(controllerBuilder, tag: 'search-$key-source');
+  final PaginationController<Paginated<U>> controller;
+}
 
-    _searchController = Get.find<SearchController>(tag: 'search-$key');
-    _controller = Get.find<T>(tag: 'search-$key-source');
-  }
+class _SearchPageState<U> extends State<SearchPage<U>> {
+  late SearchController<U> _searchController;
 
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => SearchController<U>(), tag: widget.tag);
+    _searchController = Get.find<SearchController<U>>(tag: widget.tag);
+    _searchController.loadHistory(widget.tag);
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: HikeeAppBar(
           elevation: 2,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          title: Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextInput(
-                  textEditingController: _searchController.searchController,
-                  hintText: 'Search...',
-                  textInputAction: TextInputAction.search,
-                  icon: Icon(Icons.search),
-                  autoFocus: true,
-                  onSubmitted: (q) {
-                    _controller.query = q;
-                    _searchController.searched.value = true;
-                  },
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: TextInput(
+                    textEditingController: _searchController.searchController,
+                    hintText: 'Search...',
+                    textInputAction: TextInputAction.search,
+                    icon: Icon(Icons.search),
+                    autoFocus: true,
+                    onSubmitted: (q) {
+                      widget.controller.query = q;
+                      _searchController.addHistory(widget.tag, q);
+                      _searchController.searched.value = true;
+                    },
+                  ),
                 ),
               ),
+              Container(
+                height: 44,
+                width: 44,
+                margin: EdgeInsets.only(right: 8),
+                child: Button(
+                  onPressed: () {},
+                  backgroundColor: Colors.transparent,
+                  icon: Icon(
+                    Icons.filter_list_alt,
+                    size: 18,
+                  ),
+                ),
+              )
             ],
           ),
         ),
-        body: Obx(() => _searchController.searched.value
-            ? InfiniteScroller<U>(
-                controller: _controller,
-                firstFetch: false,
-                separator: SizedBox(
-                  height: 8,
-                ),
-                builder: (item) {
-                  return builder(item);
+        body: Obx(() => _searchController.showHistory.value
+            ? ListView.separated(
+                itemBuilder: (_, i) {
+                  return InkWell(
+                    child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Opacity(opacity: .5, child: Icon(Icons.history)),
+                            SizedBox(
+                              width: 16,
+                            ),
+                            Expanded(child: Text(_searchController.history[i]))
+                          ],
+                        )),
+                    onTap: () {
+                      _searchController.searchController.text =
+                          _searchController.history[i];
+                      widget.controller.query = _searchController.history[i];
+                      _searchController.addHistory(
+                          widget.tag, _searchController.history[i]);
+                      _searchController.searched.value = true;
+                      FocusScope.of(context).unfocus();
+                    },
+                  );
                 },
-              )
-            : SizedBox()));
+                separatorBuilder: (_, i) => Divider(
+                      height: 0,
+                    ),
+                itemCount: _searchController.history.length)
+            : _searchController.searched.value
+                ? InfiniteScroller<U>(
+                    controller: widget.controller,
+                    firstFetch: false,
+                    empty: Center(
+                      child: Text('No results found'),
+                    ),
+                    separator: SizedBox(
+                      height: 16,
+                    ),
+                    builder: (item) {
+                      return widget.builder(item);
+                    },
+                  )
+                : SizedBox()));
   }
 }
