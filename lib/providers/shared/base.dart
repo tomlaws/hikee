@@ -48,7 +48,6 @@ class BaseProvider extends GetConnect {
     }
     var res = await post(
         'auth/refresh', {'refreshToken': _tokenManager.token!.refreshToken});
-    print(res.body);
     Token updatedToken = Token.fromJson((_tokenManager.token!
           ..updateAccessToken(res.body['accessToken']))
         .toJson());

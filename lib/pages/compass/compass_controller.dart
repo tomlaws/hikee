@@ -9,6 +9,8 @@ import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/models/route.dart';
+import 'package:hikee/providers/auth.dart';
+import 'package:hikee/providers/record.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,6 +38,9 @@ class CompassController extends GetxController {
   final panelPage = 0.0.obs;
   final double panelHeaderHeight = 60;
   bool lockPosition = true;
+
+  AuthProvider _authProvider = Get.put(AuthProvider());
+  RecordProvider _recordProvider = Get.put(RecordProvider());
 
   @override
   void onInit() {
@@ -203,10 +208,16 @@ class CompassController extends GetxController {
   }
 
   finishRoute() async {
-    //upload stats
-
-    //elapsed;
-    // walkedDistanc
-    quitRoute();
+    if (_authProvider.loggedIn.value) {
+      //upload stats
+      var time = elapsed.value;
+      var routeId = activeRoute.value!.route.id;
+      var msse = activeRoute.value!.startTime!;
+      await _recordProvider.createRecord(
+          date: DateTime.fromMillisecondsSinceEpoch(msse),
+          time: time,
+          routeId: routeId);
+    }
+    await quitRoute();
   }
 }
