@@ -7,6 +7,7 @@ import 'package:hikee/components/protected.dart';
 import 'package:hikee/models/record.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/models/user.dart';
+import 'package:get/get.dart';
 import 'package:hikee/pages/account/account_controller.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
@@ -191,7 +192,9 @@ class AccountPage extends GetView<AccountController> {
                     child: Column(
                       children: [
                         MenuListTile(
-                          onTap: () {},
+                          onTap: () {
+                            Get.toNamed('/records');
+                          },
                           title: "Records",
                           icon: Icon(
                             LineAwesomeIcons.trophy,
