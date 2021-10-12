@@ -5,14 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hikee/components/button.dart';
 import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/models/active_hiking_route.dart';
 import 'package:hikee/models/distance_post.dart';
+import 'package:hikee/models/record.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/record.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/time.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CompassController extends GetxController {
   Rxn<ActiveHikingRoute> activeRoute = Rxn<ActiveHikingRoute>();
@@ -105,7 +110,7 @@ class CompassController extends GetxController {
         CameraPosition(
           bearing: 0,
           target: currentLocation.value!,
-          zoom: 14.0,
+          zoom: 17.0,
         ),
       ));
     } catch (e) {
@@ -212,12 +217,75 @@ class CompassController extends GetxController {
       //upload stats
       var time = elapsed.value;
       var routeId = activeRoute.value!.route.id;
+      var routeName = activeRoute.value!.route.name_en;
       var msse = activeRoute.value!.startTime!;
-      await _recordProvider.createRecord(
-          date: DateTime.fromMillisecondsSinceEpoch(msse),
-          time: time,
-          routeId: routeId);
+      var date = DateTime.fromMillisecondsSinceEpoch(msse);
+      Record record = await _recordProvider.createRecord(
+          date: date, time: time, routeId: routeId);
+      print(record.toJson());
+      Get.defaultDialog(
+        title: "Congratulations, you've completed the route!",
+        content: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(16)),
+                child: Row(
+                  children: [
+                    Icon(
+                      LineAwesomeIcons.award,
+                      size: 48,
+                      color: Colors.amber[700],
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(routeName),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Time Used'),
+                  Text(TimeUtils.formatSeconds(elapsed.value))
+                ],
+              )
+            ],
+          ),
+        ),
+        actions: [
+          Button(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text('DISMISS'),
+          )
+        ],
+      );
     }
-    await quitRoute();
+    //await quitRoute();
+  }
+
+  void googleMapDir() {
+    if (currentLocation.value == null) return;
+    var origin =
+        '${currentLocation.value!.latitude.toString()},${currentLocation.value!.longitude.toString()}';
+    var destination =
+        '${activeRoute.value!.decodedPath.first.latitude.toString()},${activeRoute.value!.decodedPath.first.longitude.toString()}';
+    //print(
+    //    'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=transit');
+    launch(
+        'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=transit');
   }
 }

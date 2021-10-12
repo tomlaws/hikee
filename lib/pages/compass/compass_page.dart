@@ -611,6 +611,7 @@ class CompassPage extends GetView<CompassController> {
             TextButton(
               child: const Text('Yes'),
               onPressed: () {
+                controller.googleMapDir();
                 Get.back();
               },
             ),
