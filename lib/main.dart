@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
       title: 'Hikee',
       theme: Themes.light,
       translations: Messages(),
+      defaultTransition: Transition.cupertino,
       locale: Locale('en', 'US'),
       initialRoute: '/',
       getPages: [
