@@ -10,7 +10,7 @@ class BaseProvider extends GetConnect {
   @override
   void onInit() {
     super.onInit();
-    httpClient.baseUrl = 'http://127.0.0.1:3000/';
+    httpClient.baseUrl = 'http://10.0.2.2:3000/';
     httpClient.addRequestModifier<void>((request) async {
       //print(request.url.path);
       if (request.url.path.contains('/auth')) return request;
