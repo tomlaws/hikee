@@ -15,6 +15,7 @@ import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/record.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
+import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -213,68 +214,95 @@ class CompassController extends GetxController {
   }
 
   finishRoute() async {
-    if (_authProvider.loggedIn.value) {
-      //upload stats
-      var time = elapsed.value;
-      var routeId = activeRoute.value!.route.id;
-      var routeName = activeRoute.value!.route.name_en;
-      var msse = activeRoute.value!.startTime!;
-      var date = DateTime.fromMillisecondsSinceEpoch(msse);
-      Record record = await _recordProvider.createRecord(
-          date: date, time: time, routeId: routeId);
-      print(record.toJson());
-      Get.defaultDialog(
-        title: "Congratulations, you've completed the route!",
-        content: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    color: Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(16)),
-                child: Row(
-                  children: [
-                    Icon(
-                      LineAwesomeIcons.award,
-                      size: 48,
-                      color: Colors.amber[700],
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Text(routeName),
-                        ],
+    try {
+      if (_authProvider.loggedIn.value) {
+        //upload stats
+        var time = elapsed.value;
+        var routeId = activeRoute.value!.route.id;
+        var routeName = activeRoute.value!.route.name_en;
+        var distance = activeRoute.value!.route.length;
+        var msse = activeRoute.value!.startTime!;
+        var date = DateTime.fromMillisecondsSinceEpoch(msse);
+        Record record = await _recordProvider.createRecord(
+            date: date, time: time, routeId: routeId);
+        Get.defaultDialog(
+          title: "Congratulations, you've completed the route!",
+          content: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      color: Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        LineAwesomeIcons.award,
+                        size: 48,
+                        color: Colors.amber[700],
                       ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(routeName),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Start Time'),
+                    Text(DateFormat('yyyy-MM-dd HH:mm').format(date))
+                  ],
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Time Used'),
+                    Text(TimeUtils.formatSeconds(elapsed.value))
+                  ],
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Distance'),
+                    Text(
+                      '${(distance / 1000).toString()}km',
                     )
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Time Used'),
-                  Text(TimeUtils.formatSeconds(elapsed.value))
-                ],
-              )
-            ],
+                SizedBox(
+                  height: 8,
+                ),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          Button(
-            onPressed: () {
-              Get.back();
-            },
-            child: Text('DISMISS'),
-          )
-        ],
-      );
-    }
-    //await quitRoute();
+          actions: [
+            Button(
+              onPressed: () {
+                Get.back();
+              },
+              child: Text('DISMISS'),
+            )
+          ],
+        );
+      }
+    } catch (ex) {}
+    await quitRoute();
   }
 
   void googleMapDir() {
