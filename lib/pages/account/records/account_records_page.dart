@@ -18,6 +18,17 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
             child: SafeArea(
               child: Column(
                 children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Records',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Theme.of(context).primaryColor))
+                    ],
+                  ),
                   Column(
                     children: [
                       RecordListTile(
