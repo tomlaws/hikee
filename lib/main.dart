@@ -4,10 +4,14 @@ import 'package:get/get.dart';
 import 'package:hikee/components/login_prompt.dart';
 import 'package:hikee/messages.dart';
 import 'package:hikee/old_providers/auth.dart';
+import 'package:hikee/pages/account/records/account_records_binding.dart';
+import 'package:hikee/pages/account/records/account_records_page.dart';
 import 'package:hikee/pages/auth/login_binding.dart';
 import 'package:hikee/pages/auth/login_page.dart';
 import 'package:hikee/pages/home/home_binding.dart';
 import 'package:hikee/pages/home/home_page.dart';
+import 'package:hikee/pages/record/record_binding.dart';
+import 'package:hikee/pages/record/record_page.dart';
 import 'package:hikee/pages/route/route_binding.dart';
 import 'package:hikee/pages/route/route_page.dart';
 import 'package:hikee/pages/search/search_binding.dart';
@@ -42,6 +46,16 @@ class MyApp extends StatelessWidget {
           name: '/routes/:id',
           page: () => RoutePage(),
           binding: RouteBinding(),
+        ),
+        GetPage(
+          name: '/records/:id',
+          page: () => RecordPage(),
+          binding: RecordBinding(),
+        ),
+        GetPage(
+          name: '/records',
+          page: () => AccountRecordsPage(),
+          binding: AccountRecordsBinding(),
         ),
         GetPage(
             name: '/login', page: () => LoginPage(), binding: LoginBinding()),
