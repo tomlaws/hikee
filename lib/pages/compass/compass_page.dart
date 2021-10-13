@@ -44,6 +44,51 @@ class CompassPage extends GetView<CompassController> {
               panel: Obx(() => _panel()),
               body: _body(context)),
         ),
+        AnimatedBuilder(
+          animation: controller.tooltipController,
+          builder: (_, __) => Positioned(
+              bottom: controller.panelPosition.value *
+                      (296 - controller.collapsedPanelHeight) +
+                  controller.collapsedPanelHeight +
+                  10 +
+                  controller.alpha.value,
+              left: 0,
+              child: Obx(
+                () => controller.started.value && controller.isCloseToGoal.value
+                    ? Opacity(
+                        opacity:
+                            (1 - controller.panelPosition.value).clamp(0, 1),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                  color: Colors.green.shade800,
+                                  borderRadius: BorderRadius.circular(16.0)),
+                              child: Text('Swipe up to finish the route!',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(left: 32),
+                              child: ClipPath(
+                                clipper: TriangleClipper(),
+                                child: Container(
+                                  color: Colors.green.shade800,
+                                  height: 10,
+                                  width: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox(),
+              )),
+        ),
         Positioned(
           bottom: 0,
           left: 0,
@@ -197,8 +242,11 @@ class CompassPage extends GetView<CompassController> {
                   ),
                   KeepAlivePage(
                     key: Key(controller.activeRoute.value!.route.id.toString()),
-                    child: RouteElevation(
-                      routeId: controller.activeRoute.value!.route.id,
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: RouteElevation(
+                        routeId: controller.activeRoute.value!.route.id,
+                      ),
                     ),
                   )
                 ],
@@ -300,39 +348,65 @@ class CompassPage extends GetView<CompassController> {
                               _weatherController.obx((weather) {
                                 if (weather != null &&
                                     weather.warningMessage.length > 0) {
-                                  return Container(
-                                    margin: EdgeInsets.only(
-                                        bottom: 8.0, left: 8.0, right: 8.0),
-                                    padding: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.amber),
-                                        color: Colors.amber.withOpacity(.5),
-                                        borderRadius:
-                                            BorderRadius.circular(8.0)),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.warning,
-                                          color: Colors.black,
-                                        ),
-                                        Container(width: 8),
-                                        Expanded(
-                                          child: Wrap(
-                                              children: weather.warningMessage
-                                                  .map((m) => Text(
-                                                        m,
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.black),
-                                                      ))
-                                                  .toList()),
-                                        )
-                                      ],
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Get.defaultDialog(
+                                          title: 'Warning',
+                                          content: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Text(
+                                                  weather.warningMessage
+                                                      .join('\n'),
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 16,
+                                              ),
+                                              Button(
+                                                onPressed: () {
+                                                  Get.back();
+                                                },
+                                                child: Text('DISMISS'),
+                                              )
+                                            ],
+                                          ));
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: 8.0, left: 8.0, right: 8.0),
+                                      padding: EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.amber),
+                                          color: Colors.amber.withOpacity(.8),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0)),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                              weather.warningMessage.join('\n'),
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                              maxLines: 1),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Text('Tap to view more details...',
+                                              style: TextStyle(
+                                                  color: Colors.black))
+                                        ],
+                                      ),
                                     ),
                                   );
                                 }
                                 return SizedBox();
-                              })
+                              }),
                             ],
                           ),
                         ),
@@ -711,4 +785,18 @@ class CompassPage extends GetView<CompassController> {
                   })
             ]);
   }
+}
+
+class TriangleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(size.width, 0.0);
+    path.lineTo(size.width / 2, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(TriangleClipper oldClipper) => false;
 }

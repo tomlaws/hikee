@@ -2,43 +2,42 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:hikee/models/current_location.dart';
 import 'package:hikee/models/elevation.dart';
-import 'package:hikee/services/route.dart';
+import 'package:hikee/pages/compass/compass_controller.dart';
+import 'package:hikee/providers/route.dart';
 import 'package:hikee/utils/geo.dart';
-import 'package:provider/provider.dart';
 
-class RouteElevation extends StatelessWidget {
+class RouteElevationController extends GetxController
+    with StateMixin<List<Elevation>> {}
+
+class RouteElevation extends GetView<RouteElevationController> {
+  final RouteElevationController controller =
+      Get.put(RouteElevationController());
+  final RouteProvider _routeProvider = Get.put(RouteProvider());
+  final CompassController _compassController = Get.put(CompassController());
+
   final int routeId;
-  RouteElevation({Key? key, required this.routeId}) : super(key: key);
+
+  RouteElevation({Key? key, required this.routeId}) : super(key: key) {
+    controller.append(() => () => _routeProvider.getElevations(routeId));
+  }
 
   final List<Color> gradientColors = [
     const Color(0xff23b6e6),
     const Color(0xff02d39a),
   ];
-  RouteService get routeService => GetIt.I<RouteService>();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Elevation>>(
-        future: routeService.getElevations(routeId),
-        builder: (_, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.data == null) {
-            return Center(
-              child: Text('Error while getting elevations'),
-            );
-          }
-          return Consumer<CurrentLocation>(
-              builder: (_, currentLocationProvider, __) {
-            LatLng? _myLocation = currentLocationProvider.location;
-            return _graph(snapshot.data!, myLocation: _myLocation);
-          });
-        });
+    return controller.obx((state) {
+      LatLng? _myLocation = _compassController.currentLocation.value;
+      return _graph(state!, myLocation: _myLocation);
+    },
+        onLoading: Center(
+          child: CircularProgressIndicator(),
+        ));
   }
 
   Widget _graph(List<Elevation> elevations, {LatLng? myLocation}) {
@@ -60,15 +59,17 @@ class RouteElevation extends StatelessWidget {
         currentSpot = spot;
         minDist = dist;
       }
-      return spots.add(spot);
+      // limits number of spot rendered, otherwise the line is not curvy enough
+      if (index % (elevations.length / 32).round() == 0) return spots.add(spot);
     });
+    int interval = ((maxE - minE) / 6).round();
     bool _showCurrent = true;
     if (minDist > 1) {
       // far away from route
       _showCurrent = false;
     }
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+      //margin: EdgeInsets.only(left: 8, right: 16, top: 16, bottom: 16),
       child: LineChart(LineChartData(
           gridData: FlGridData(
             show: false,
@@ -77,7 +78,7 @@ class RouteElevation extends StatelessWidget {
           axisTitleData: FlAxisTitleData(
               show: true,
               leftTitle: AxisTitle(
-                  showTitle: true,
+                  showTitle: false,
                   titleText: 'Elevation',
                   textStyle: TextStyle(color: Colors.blueGrey))),
           titlesData: FlTitlesData(
@@ -89,22 +90,21 @@ class RouteElevation extends StatelessWidget {
               showTitles: true,
               getTextStyles: (value) => const TextStyle(
                 color: Color(0xff67727d),
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontSize: 12,
               ),
-              interval: 100,
-              reservedSize: 28,
-              margin: 12,
+              interval: interval.toDouble(),
+              //reservedSize: 24,
+              //margin: 6,
             ),
           ),
-          maxY: maxE + 48.0,
+          maxY: maxE,
           minY: minE,
           lineBarsData: [
             LineChartBarData(
               spots: spots,
               isCurved: true,
               colors: gradientColors,
-              barWidth: 3,
+              barWidth: 1,
               isStrokeCapRound: true,
               dotData: FlDotData(
                 show: false,

@@ -6,6 +6,8 @@ const Color themeColor = Color(0xFF5DB075);
 class Themes {
   static final light = ThemeData.light().copyWith(
     primaryColor: themeColor,
+    backgroundColor: Colors.white,
+    scaffoldBackgroundColor: Colors.white,
     primaryTextTheme:
         TextTheme(headline6: TextStyle(color: themeColor, fontSize: 18)),
     //appBarTheme: AppBarTheme(textTheme: Theme.of(context).textTheme.apply(displayColor:Colors.red)),

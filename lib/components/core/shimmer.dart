@@ -7,7 +7,7 @@ class Shimmer extends StatelessWidget {
       this.child,
       this.enabled = true,
       this.width,
-      this.height,
+      this.height = 17.5,
       this.radius,
       this.fontSize})
       : super(key: key);
@@ -15,7 +15,7 @@ class Shimmer extends StatelessWidget {
   final Widget? child;
   final bool enabled;
   final double? width;
-  final double? height;
+  final double height;
   final double? radius;
   final double? fontSize;
 

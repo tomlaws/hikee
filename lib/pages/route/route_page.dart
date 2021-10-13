@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
-import 'package:hikee/components/route_info.dart';
+import 'package:hikee/components/map.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/home/home_controller.dart';
@@ -12,7 +12,6 @@ import 'package:hikee/pages/route/route_events/route_events_binding.dart';
 import 'package:hikee/pages/route/route_events/route_events_page.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:routemaster/routemaster.dart';
 
 class RoutePage extends GetView<RouteController> {
   @override
@@ -256,81 +255,20 @@ class RoutePage extends GetView<RouteController> {
                       Container(
                         height: 16,
                       ),
-                      // Container(
-                      //     height: 240,
-                      //     clipBehavior: Clip.antiAlias,
-                      //     decoration: BoxDecoration(
-                      //         borderRadius: BorderRadius.circular(16.0)),
-                      //     child: Obx(
-                      //       () => GoogleMap(
-                      //         mapType: MapType.normal,
-                      //         initialCameraPosition: CameraPosition(
-                      //           target: controller.points.value![
-                      //               (controller.points.value!.length / 5 * 2)
-                      //                   .floor()],
-                      //           zoom: 13,
-                      //         ),
-                      //         gestureRecognizers:
-                      //             <Factory<OneSequenceGestureRecognizer>>[
-                      //           new Factory<OneSequenceGestureRecognizer>(
-                      //             () => new EagerGestureRecognizer(),
-                      //           ),
-                      //         ].toSet(),
-                      //         zoomControlsEnabled: true,
-                      //         compassEnabled: false,
-                      //         mapToolbarEnabled: false,
-                      //         tiltGesturesEnabled: false,
-                      //         scrollGesturesEnabled: false,
-                      //         zoomGesturesEnabled: false,
-                      //         rotateGesturesEnabled: false,
-                      //         polylines: [
-                      //           Polyline(
-                      //             polylineId: PolylineId('polyLine1'),
-                      //             color: Colors.amber.shade400,
-                      //             zIndex: 2,
-                      //             width: 4,
-                      //             jointType: JointType.round,
-                      //             startCap: Cap.roundCap,
-                      //             endCap: Cap.roundCap,
-                      //             points: controller.points.value!,
-                      //           ),
-                      //           Polyline(
-                      //             polylineId: PolylineId('polyLine2'),
-                      //             color: Colors.white,
-                      //             width: 6,
-                      //             jointType: JointType.round,
-                      //             startCap: Cap.roundCap,
-                      //             endCap: Cap.roundCap,
-                      //             zIndex: 1,
-                      //             points: controller.points.value!,
-                      //           ),
-                      //         ].toSet(),
-                      //         markers: [
-                      //           Marker(
-                      //             markerId: MarkerId('marker-start'),
-                      //             zIndex: 2,
-                      //             icon: MapMarker().start,
-                      //             position: controller.points.value!.first,
-                      //           ),
-                      //           Marker(
-                      //             markerId: MarkerId('marker-end'),
-                      //             zIndex: 1,
-                      //             icon: MapMarker().end,
-                      //             position: controller.points.value!.last,
-                      //           )
-                      //         ].toSet(),
-                      //         onMapCreated: (GoogleMapController mapController) {
-                      //           mapController.setMapStyle(
-                      //               '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
-
-                      //           mapController.moveCamera(
-                      //               CameraUpdate.newLatLngBounds(
-                      //                   GeoUtils.getPathBounds(
-                      //                       controller.points.value!),
-                      //                   40));
-                      //         },
-                      //       ),
-                      //     ))
+                      Container(
+                          height: 240,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0)),
+                          child: controller.obx(
+                              (state) => HikeeMap(
+                                  target: controller.points.value![
+                                      (controller.points.value!.length / 5 * 2)
+                                          .floor()],
+                                  path: controller.points.value!),
+                              onLoading: Shimmer(
+                                height: 240,
+                              )))
                     ]),
                   ),
                 ),

@@ -20,7 +20,8 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class CompassController extends GetxController {
+class CompassController extends GetxController
+    with SingleGetTickerProviderMixin {
   Rxn<ActiveHikingRoute> activeRoute = Rxn<ActiveHikingRoute>();
   Completer<GoogleMapController> mapController = Completer();
   PanelController panelController = PanelController();
@@ -37,6 +38,7 @@ class CompassController extends GetxController {
   final walkedDistance = 0.0.obs;
   final isCloseToStart = false.obs;
   final isCloseToGoal = false.obs;
+  final started = false.obs;
 
   // UI
   final double collapsedPanelHeight = kBottomNavigationBarHeight;
@@ -44,6 +46,10 @@ class CompassController extends GetxController {
   final panelPage = 0.0.obs;
   final double panelHeaderHeight = 60;
   bool lockPosition = true;
+
+  // tooltip
+  late AnimationController tooltipController;
+  late Animation<int> alpha;
 
   AuthProvider _authProvider = Get.put(AuthProvider());
   RecordProvider _recordProvider = Get.put(RecordProvider());
@@ -72,6 +78,7 @@ class CompassController extends GetxController {
 
     // start timer when active route is started
     activeRoute.listen((route) {
+      started.value = route?.isStarted ?? false;
       if (route == null || !route.isStarted) {
         elapsed.value = 0;
         if (_timer != null) {
@@ -90,6 +97,13 @@ class CompassController extends GetxController {
         });
       }
     });
+
+    tooltipController = AnimationController(
+        duration: const Duration(milliseconds: 1500), vsync: this);
+    Animation<double> curve =
+        CurvedAnimation(parent: tooltipController, curve: Curves.easeInOutSine);
+    alpha = IntTween(begin: 0, end: 15).animate(curve);
+    tooltipController.repeat(reverse: true);
   }
 
   @override

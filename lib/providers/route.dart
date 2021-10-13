@@ -1,3 +1,4 @@
+import 'package:hikee/models/elevation.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/route.dart';
 import 'package:hikee/providers/shared/base.dart';
@@ -10,6 +11,12 @@ class RouteProvider extends BaseProvider {
     return await get('routes', query: query).then((value) {
       return Paginated<HikingRoute>.fromJson(
           value.body, (o) => HikingRoute.fromJson(o as Map<String, dynamic>));
+    });
+  }
+
+  Future<List<Elevation>> getElevations(int routeId) async {
+    return await get('routes/$routeId/elevation').then((value) {
+      return (value.body as List).map((e) => Elevation.fromJson(e)).toList();
     });
   }
 

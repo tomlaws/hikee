@@ -17,15 +17,14 @@ class RecordListTile extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           boxShadow: [
             BoxShadow(
-                offset: Offset(0, 0), blurRadius: 64, color: Color(0x09000000))
+                blurRadius: 1, spreadRadius: 1, color: Colors.grey.shade200)
           ],
         ),
-        height: 100,
-        padding: EdgeInsets.all(32),
-        margin: EdgeInsets.only(top: 16, left: 16, right: 16),
+        height: 80,
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
             Icon(
@@ -51,6 +50,7 @@ class RecordListTile extends StatelessWidget {
                 child: Text(
                   '${(record.route.length / 1000).toString()}km',
                   style: TextStyle(fontSize: 16),
+                  maxLines: 2,
                 ),
               ),
             )

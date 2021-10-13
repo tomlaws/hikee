@@ -4,7 +4,7 @@ import 'package:hikee/providers/shared/base.dart';
 
 class RecordProvider extends BaseProvider {
   Future<Paginated<Record>> getMyRecords(Map<String, dynamic>? query) async {
-    return await get('me/records', query: query).then((value) {
+    return await get('users/records', query: query).then((value) {
       return Paginated<Record>.fromJson(
           value.body, (o) => Record.fromJson(o as Map<String, dynamic>));
     });
@@ -17,6 +17,12 @@ class RecordProvider extends BaseProvider {
       'time': time,
       'routeId': routeId
     }).then((value) {
+      return Record.fromJson(value.body);
+    });
+  }
+
+  Future<Record> getRecord(int id) async {
+    return await get('records/$id').then((value) {
       return Record.fromJson(value.body);
     });
   }
