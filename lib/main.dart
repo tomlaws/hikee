@@ -65,18 +65,6 @@ class MyApp extends StatelessWidget {
             page: () => RegisterPage(),
             binding: RegisterBinding()),
       ],
-      //home: HomePage(),
-      //initialBinding: HomeBinding()
     );
   }
-
-  // Widget _protected(BuildContext context, Widget child) {
-  //   return Selector<AuthProvider, bool>(
-  //     selector: (_, p) => p.loggedIn,
-  //     builder: (_, loggedIn, __) {
-  //       if (loggedIn) return child;
-  //       return LoginPrompt();
-  //     },
-  //   );
-  // }
 }

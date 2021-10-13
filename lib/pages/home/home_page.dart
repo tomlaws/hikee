@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/keep_alive.dart';
-import 'package:hikee/controllers/auth.dart';
-import 'package:hikee/controllers/event_categories.dart';
+import 'package:hikee/controllers/shared/auth.dart';
+import 'package:hikee/pages/events/event_categories.dart';
 import 'package:hikee/pages/account/account_controller.dart';
 import 'package:hikee/pages/account/account_page.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';

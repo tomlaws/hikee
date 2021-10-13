@@ -95,7 +95,7 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
       }
       if (itemCount == 0 && widget.empty != null) {
         if (widget.empty is String) {
-          return Text(widget.empty);
+          return Center(child: Text(widget.empty));
         }
         return widget.empty;
       }

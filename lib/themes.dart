@@ -5,6 +5,9 @@ const Color themeColor = Color(0xFF5DB075);
 
 class Themes {
   static final light = ThemeData.light().copyWith(
+    colorScheme: ColorScheme.light(
+      primary: themeColor,
+    ),
     primaryColor: themeColor,
     backgroundColor: Colors.white,
     scaffoldBackgroundColor: Colors.white,

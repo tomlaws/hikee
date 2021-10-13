@@ -7,9 +7,8 @@ import 'package:hikee/components/account/change_nickname.dart';
 import 'package:hikee/components/account/change_password.dart';
 import 'package:hikee/components/avatar.dart';
 import 'package:hikee/components/button.dart';
-import 'package:hikee/controllers/auth.dart';
+import 'package:hikee/controllers/shared/auth.dart';
 import 'package:hikee/pages/account/account_controller.dart';
-import 'package:hikee/pages/auth/login_page.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:image_picker/image_picker.dart';
 

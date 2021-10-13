@@ -33,7 +33,10 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
     else
       change(state, status: RxStatus.loading());
     var newData = await fetch(getQueryParams());
-    if (newData?.data.length == 0) return;
+    if (newData?.data.length == 0) {
+      change(newData, status: RxStatus.success());
+      return;
+    }
     if (state != null)
       change(state?.concat(newData as Paginated) as T?,
           status: RxStatus.success());

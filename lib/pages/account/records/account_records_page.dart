@@ -23,6 +23,7 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
               separator: SizedBox(
                 height: 16,
               ),
+              empty: 'No records',
               builder: (record) {
                 return RecordListTile(record: record);
               }),

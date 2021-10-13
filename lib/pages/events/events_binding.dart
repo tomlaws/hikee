@@ -1,4 +1,4 @@
-import 'package:hikee/controllers/event_categories.dart';
+import 'package:hikee/pages/events/event_categories.dart';
 import 'package:get/get.dart';
 import 'package:hikee/pages/events/events_controller.dart';
 

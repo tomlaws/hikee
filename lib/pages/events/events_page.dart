@@ -6,9 +6,8 @@ import 'package:get/get.dart';
 import 'package:hikee/components/core/section_button.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/events/event_carousel.dart';
-import 'package:hikee/controllers/event_categories.dart';
+import 'package:hikee/pages/events/event_categories.dart';
 import 'package:hikee/pages/events/events_controller.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class EventsPage extends StatelessWidget {
   final controller = Get.find<EventsController>();
