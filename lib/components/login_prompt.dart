@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
-import 'package:routemaster/routemaster.dart';
 
 class LoginPrompt extends StatefulWidget {
   const LoginPrompt({Key? key}) : super(key: key);
@@ -28,21 +27,12 @@ class _LoginPromptState extends State<LoginPrompt> {
         Container(height: 32),
         SizedBox(
           width: 200,
-          child: Button(
-              child: Text('LOGIN'),
-              onPressed: () {
-                Routemaster.of(context).push('/login');
-              }),
+          child: Button(child: Text('LOGIN'), onPressed: () {}),
         ),
-        
         Container(height: 16),
         SizedBox(
           width: 200,
-          child: Button(
-              child: Text('SIGN UP'),
-              onPressed: () {
-                Routemaster.of(context).push('/register');
-              }),
+          child: Button(child: Text('SIGN UP'), onPressed: () {}),
         )
       ],
     );

@@ -5,7 +5,6 @@ import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/protected.dart';
 import 'package:hikee/models/record.dart';
-import 'package:hikee/models/route.dart';
 import 'package:hikee/pages/account/records/account_records_controller.dart';
 
 class AccountRecordsPage extends GetView<AccountRecordsController> {

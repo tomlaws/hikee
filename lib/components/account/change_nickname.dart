@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/old_providers/me.dart';
-import 'package:provider/provider.dart';
-import 'package:routemaster/routemaster.dart';
 
 class ChangeNickname extends StatefulWidget {
   const ChangeNickname({Key? key}) : super(key: key);
@@ -37,23 +34,21 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                   onPressed: () {
                     mutate();
                   }),
-              onDone: (_) {
-                Routemaster.of(context).pop();
-              },
+              onDone: (_) {},
               onError: (err) {
                 _nicknameController.error = err.getFieldError('nickname');
               },
               mutation: () async {
                 _nicknameController.clearError();
-                await context.read<MeProvider>().changeNickname(_nicknameController.text);
+                //await context
+                //   .read<MeProvider>()
+                //  .changeNickname(_nicknameController.text);
               },
             ),
             Button(
                 child: Text('CANCEL'),
                 backgroundColor: Colors.grey,
-                onPressed: () {
-                  Routemaster.of(context).pop();
-                })
+                onPressed: () {})
           ],
         ),
       ],

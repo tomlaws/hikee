@@ -3,6 +3,7 @@ import 'package:hikee/manager/token.dart';
 import 'package:hikee/models/error/error_response.dart';
 import 'package:hikee/models/token.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BaseProvider extends GetConnect {
   static TokenManager _tokenManager = TokenManager();
@@ -10,9 +11,10 @@ class BaseProvider extends GetConnect {
   @override
   void onInit() {
     super.onInit();
-    httpClient.baseUrl = 'http://10.0.2.2:3000/';
+    httpClient.baseUrl = dotenv.env['API_ENDPOINT_DEV'] ??
+        dotenv.env['API_ENDPOINT'] ??
+        "https://hikee.azurewebsites.net/";
     httpClient.addRequestModifier<void>((request) async {
-      //print(request.url.path);
       if (request.url.path.contains('/auth')) return request;
       if (_tokenManager.token != null) {
         var accessToken = _tokenManager.token!.accessToken;

@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:hikee/models/bookmark.dart';
-import 'package:hikee/old_providers/locale.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hikee/models/region.dart';
-import 'package:provider/provider.dart';
 
 part 'route.g.dart';
 

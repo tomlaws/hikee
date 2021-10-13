@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/old_providers/locale.dart';
 import 'package:provider/provider.dart';
 
 class Region {

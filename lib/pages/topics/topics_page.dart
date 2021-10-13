@@ -1,20 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/topic_tile.dart';
-import 'package:hikee/models/order.dart';
 import 'package:hikee/models/topic.dart';
-import 'package:hikee/old_providers/auth.dart';
-import 'package:hikee/old_providers/topics.dart';
-import 'package:hikee/pages/create_topic.dart';
 import 'package:hikee/pages/topics/topics_controller.dart';
-import 'package:hikee/utils/dialog.dart';
-import 'package:provider/provider.dart';
-import 'package:routemaster/routemaster.dart';
 
 class TopicsPage extends GetView<TopicsController> {
   final TextEditingController _searchController =
@@ -110,7 +101,7 @@ class TopicsPage extends GetView<TopicsController> {
                       textInputAction: TextInputAction.search,
                       icon: Icon(Icons.search),
                       onSubmitted: (q) {
-                        context.read<TopicsProvider>().query = q;
+                        //context.read<TopicsProvider>().query = q;
                       },
                     ),
                   ),
@@ -140,7 +131,7 @@ class TopicsPage extends GetView<TopicsController> {
                   return TopicTile(
                     topic: topic,
                     onTap: () {
-                      Routemaster.of(context).push('/topics/${topic.id}');
+                      //Routemaster.of(context).push('/topics/${topic.id}');
                     },
                   );
                 })

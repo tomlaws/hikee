@@ -1,5 +1,3 @@
-const API_HOST = 'hikee.azurewebsites.net';
-const API_HOST_DEV = '10.0.3.2:3000';
 const HKO_ICONS_CAPTIONS = {
   50: 'Sunny',
   51: 'Sunny Periods',

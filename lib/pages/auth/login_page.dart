@@ -45,20 +45,8 @@ class LoginPage extends GetView<LoginController> {
                     mutation: () {
                       return controller.signIn();
                     },
-                    onDone: (token) {
-                      if (token != null) {
-                        Get.back();
-                      }
-                    },
-                    onError: (error) {
-                      controller.emailController.error =
-                          error.getFieldError('email');
-                      controller.passwordController.error =
-                          error.getFieldError('password');
-                      if (error.statusCode == 401)
-                        controller.passwordController.error =
-                            'Incorrect password';
-                    },
+                    onDone: controller.onDone,
+                    onError: controller.onError,
                     builder: (mutate, loading) {
                       return Button(
                           child: Text('LOGIN'),
@@ -73,7 +61,7 @@ class LoginPage extends GetView<LoginController> {
                 GestureDetector(
                   child: Text('Or sign up now'),
                   onTap: () {
-                    Get.replace('/register');
+                    Get.offNamed('/register');
                   },
                 )
               ],

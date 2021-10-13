@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:hikee/components/account/record_list_tile.dart';
 import 'package:hikee/components/avatar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/protected.dart';
-import 'package:hikee/models/record.dart';
-import 'package:hikee/models/route.dart';
 import 'package:hikee/models/user.dart';
 import 'package:get/get.dart';
 import 'package:hikee/pages/account/account_controller.dart';
@@ -23,6 +20,9 @@ class AccountPage extends GetView<AccountController> {
             child: SafeArea(
               child: Column(
                 children: [
+                  SizedBox(
+                    height: 16,
+                  ),
                   Column(mainAxisSize: MainAxisSize.min, children: [
                     GestureDetector(
                       onTap: () async {
@@ -225,6 +225,17 @@ class AccountPage extends GetView<AccountController> {
                           title: "Privacy",
                           icon: Icon(
                             LineAwesomeIcons.cogs,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                        MenuListTile(
+                          onTap: () {
+                            controller.logout();
+                          },
+                          title: "Logout",
+                          icon: Icon(
+                            LineAwesomeIcons.door_open,
                             size: 32,
                             color: Colors.black26,
                           ),

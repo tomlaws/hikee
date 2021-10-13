@@ -279,6 +279,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.2"
+  flutter_dotenv:
+    dependency: "direct main"
+    description:
+      name: flutter_dotenv
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.2"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -644,13 +651,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  routemaster:
-    dependency: "direct main"
-    description:
-      name: routemaster
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.10.0-dev2"
   rxdart:
     dependency: transitive
     description:

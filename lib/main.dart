@@ -1,25 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/login_prompt.dart';
 import 'package:hikee/messages.dart';
-import 'package:hikee/old_providers/auth.dart';
 import 'package:hikee/pages/account/records/account_records_binding.dart';
 import 'package:hikee/pages/account/records/account_records_page.dart';
 import 'package:hikee/pages/auth/login_binding.dart';
 import 'package:hikee/pages/auth/login_page.dart';
+import 'package:hikee/pages/auth/register.dart';
+import 'package:hikee/pages/auth/register_binding.dart';
 import 'package:hikee/pages/home/home_binding.dart';
 import 'package:hikee/pages/home/home_page.dart';
 import 'package:hikee/pages/record/record_binding.dart';
 import 'package:hikee/pages/record/record_page.dart';
 import 'package:hikee/pages/route/route_binding.dart';
 import 'package:hikee/pages/route/route_page.dart';
-import 'package:hikee/pages/search/search_binding.dart';
-import 'package:hikee/pages/search/search_page.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/map_marker.dart';
 
-void main() {
+Future main() async {
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
@@ -60,6 +60,10 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
             name: '/login', page: () => LoginPage(), binding: LoginBinding()),
+        GetPage(
+            name: '/register',
+            page: () => RegisterPage(),
+            binding: RegisterBinding()),
       ],
       //home: HomePage(),
       //initialBinding: HomeBinding()

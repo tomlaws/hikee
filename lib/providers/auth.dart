@@ -26,4 +26,14 @@ class AuthProvider extends BaseProvider {
     var res = await get('users/me');
     return User.fromJson(res.body);
   }
+
+  Future<Token?> register(String email, String password) async {
+    var res =
+        await post('auth/register', {'email': email, 'password': password});
+    return _tokenManager.token = Token.fromJson(res.body);
+  }
+
+  void logout() {
+    _tokenManager.token = null;
+  }
 }

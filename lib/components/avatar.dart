@@ -19,7 +19,11 @@ class Avatar extends StatelessWidget {
             borderRadius: BorderRadius.circular(height / 2.0),
             color: Colors.white),
         child: user.icon == null
-            ? SizedBox()
+            ? Container(
+                decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(height / 2)),
+              )
             : CachedNetworkImage(
                 placeholder: (_, __) => Shimmer(),
                 imageUrl: user.icon!,

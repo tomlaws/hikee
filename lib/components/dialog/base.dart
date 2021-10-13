@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hikee/components/button.dart';
-import 'package:routemaster/routemaster.dart';
 
 abstract class BaseDialog extends StatefulWidget {
   const BaseDialog({Key? key}) : super(key: key);
@@ -32,11 +31,7 @@ abstract class BaseDialog extends StatefulWidget {
                       if (buttons != null)
                         ...buttons
                       else
-                        Button(
-                            child: Text('OK'),
-                            onPressed: () {
-                              Routemaster.of(context).pop();
-                            })
+                        Button(child: Text('OK'), onPressed: () {})
                     ],
                   ),
                 )
