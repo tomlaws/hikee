@@ -8,12 +8,20 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class BaseProvider extends GetConnect {
   static TokenManager _tokenManager = TokenManager();
 
+  String getUrl() {
+    try {
+      var endpoint = (dotenv.env['API_ENDPOINT_DEV'] ??
+        dotenv.env['API_ENDPOINT'])!;
+        return endpoint;
+    } catch (ex) {
+      return 'https://hikee.azurewebsites.net/';
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
-    httpClient.baseUrl = dotenv.env['API_ENDPOINT_DEV'] ??
-        dotenv.env['API_ENDPOINT'] ??
-        "https://hikee.azurewebsites.net/";
+    httpClient.baseUrl = getUrl();
     httpClient.addRequestModifier<void>((request) async {
       if (request.url.path.contains('/auth')) return request;
       if (_tokenManager.token != null) {

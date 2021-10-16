@@ -19,7 +19,9 @@ import 'package:hikee/themes.dart';
 import 'package:hikee/utils/map_marker.dart';
 
 Future main() async {
+  try {
   await dotenv.load(fileName: ".env");
+  } catch (ex) {}
   runApp(MyApp());
 }
 
