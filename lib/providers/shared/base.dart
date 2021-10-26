@@ -3,19 +3,15 @@ import 'package:hikee/manager/token.dart';
 import 'package:hikee/models/error/error_response.dart';
 import 'package:hikee/models/token.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_flavor/flutter_flavor.dart';
 
 class BaseProvider extends GetConnect {
   static TokenManager _tokenManager = TokenManager();
 
   String getUrl() {
-    try {
-      var endpoint = (dotenv.env['API_ENDPOINT_DEV'] ??
-        dotenv.env['API_ENDPOINT'])!;
-        return endpoint;
-    } catch (ex) {
-      return 'https://hikee.azurewebsites.net/';
-    }
+    var endpoint = FlavorConfig.instance.variables["API_ENDPOINT"] ??
+        "https://ew325bz0yi.execute-api.ap-southeast-1.amazonaws.com/dev/";
+    return endpoint;
   }
 
   @override

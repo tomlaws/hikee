@@ -3,11 +3,20 @@
    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+   <uses-permission android:name="android.permission.WAKE_LOCK"/>
    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
    <uses-permission android:name="android.permission.READ_CALENDAR" />
    <application
         android:label="hikee"
         android:icon="@mipmap/ic_launcher">
+        <service android:name="rekab.app.background_locator.IsolateHolderService"
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:exported="true"
+            android:foregroundServiceType = "location"/>
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
          <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyB1wPKIhijH59heI4MQ8-tRfKCJKnsc_TA"/>
         <activity

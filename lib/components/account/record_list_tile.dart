@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/models/record.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:hikee/utils/geo.dart';
+import 'package:intl/intl.dart';
 
 class RecordListTile extends StatelessWidget {
   final Record record;
@@ -26,34 +27,38 @@ class RecordListTile extends StatelessWidget {
         height: 80,
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              LineAwesomeIcons.mountain,
-              color: Theme.of(context).primaryColor,
-              size: 32,
-            ),
-            Container(
-              width: 24,
-            ),
+            // Icon(
+            //   LineAwesomeIcons.mountain,
+            //   color: Theme.of(context).primaryColor,
+            //   size: 32,
+            // ),
+            // Container(
+            //   width: 24,
+            // ),
             Expanded(
               child: Text(
-                record.route.name_en,
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black),
+                record.name,
               ),
             ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${(record.route.length / 1000).toString()}km',
-                  style: TextStyle(fontSize: 16),
-                  maxLines: 2,
-                ),
-              ),
-            )
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    DateFormat('yyyy-MM-dd').format(record.date),
+                    style: TextStyle(color: Colors.black45),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    '${(GeoUtils.getPathLength(encodedPath: record.userPath))}km',
+                    maxLines: 2,
+                    style: TextStyle(color: Colors.black45),
+                  ),
+                ])
           ],
         ),
       ),

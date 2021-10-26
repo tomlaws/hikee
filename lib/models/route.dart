@@ -18,7 +18,7 @@ class HikingRoute {
   final int difficulty;
   final int rating;
   final int duration; // minutes
-  final int length;
+  final int length; //meters
   final String path;
   final Bookmark? bookmark;
 

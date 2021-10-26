@@ -1,12 +1,17 @@
 import 'dart:math' show sin, cos, sqrt, asin, pi;
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:get/get_utils/src/extensions/double_extensions.dart';
+import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GeoUtils {
+  static String encodePath(List<LatLng> points) {
+    return encodePolyline(points.map((e) => [e.latitude, e.longitude]).toList(),
+        accuracyExponent: 5);
+  }
+
   static List<LatLng> decodePath(String encoded) {
-    PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> result = polylinePoints.decodePolyline(encoded);
-    return result.map((e) => LatLng(e.latitude, e.longitude)).toList();
+    var result = decodePolyline(encoded, accuracyExponent: 5);
+    return result.map((e) => LatLng(e[0].toDouble(), e[1].toDouble())).toList();
   }
 
   static double calculateDistance(LatLng location1, LatLng location2) {
@@ -30,7 +35,7 @@ class GeoUtils {
     for (int i = 0; i < points.length - 1; i++) {
       dist += calculateDistance(points[i], points[i + 1]);
     }
-    return dist;
+    return dist.toPrecision(2);
   }
 
   static LatLngBounds getPathBounds(List<LatLng> path) {
@@ -64,7 +69,7 @@ class GeoUtils {
   }
 
   static bool isCloseToPoint(LatLng location, LatLng point) {
-    return calculateDistance(location, point) <= 0.15; // smaller than 150meters
+    return calculateDistance(location, point) <= 0.10; // smaller than 100meters
   }
 
   static List<LatLng> truncatePathByLocation(
@@ -83,13 +88,13 @@ class GeoUtils {
 
   static double getWalkedLength(LatLng myLocation, List<LatLng> path) {
     var walked = truncatePathByLocation(path, myLocation);
-    return double.parse(getPathLength(path: walked).toStringAsFixed(3));
+    return double.parse(getPathLength(path: walked).toStringAsFixed(2));
   }
 
   static String formatDistance(double km) {
     if (km < 0) {
-      return (km * 1000).toStringAsFixed(0) + ' m';
+      return (km * 1000).toStringAsFixed(0) + 'm';
     }
-    return km.toStringAsFixed(2) + ' km';
+    return km.toStringAsFixed(2) + 'km';
   }
 }

@@ -41,47 +41,61 @@ class RoutesPage extends StatelessWidget {
                   ),
                 ),
               ),
+              SizedBox(height: 8),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                 child: Text(
                   'Popular',
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      color: Theme.of(context).primaryColor),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 24,
+                  ),
                 ),
               ),
-              ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 260 / (16 / 9) + 32),
-                child: _popularRoutesController.obx(
-                    (state) => ListView.separated(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: state?.length ?? 0,
-                          itemBuilder: (_, i) {
-                            return HikingRouteTile(
-                                route: state![i], width: 260);
-                          },
-                          separatorBuilder: (_, __) => SizedBox(
-                            width: 16,
-                          ),
+              _popularRoutesController.obx(
+                  (state) => SingleChildScrollView(
+                        clipBehavior: Clip.none,
+                        padding: EdgeInsets.all(16),
+                        scrollDirection: Axis.horizontal,
+                        child: Wrap(
+                          spacing: 16,
+                          children: state!
+                              .map((e) => HikingRouteTile(route: e, width: 240))
+                              .toList(),
                         ),
-                    onLoading: CircularProgressIndicator(),
-                    onEmpty: Center(
-                      child: Text('not found'),
-                    )),
-              ),
+                      ),
+                  onLoading: CircularProgressIndicator(),
+                  onEmpty: Center(
+                    child: Text('not found'),
+                  )),
+              // _popularRoutesController.obx(
+              //     (state) => ListView.separated(
+              //           padding:
+              //               EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              //           shrinkWrap: true,
+              //           scrollDirection: Axis.horizontal,
+              //           itemCount: state?.length ?? 0,
+              //           itemBuilder: (_, i) {
+              //             return HikingRouteTile(route: state![i], width: 260);
+              //           },
+              //           separatorBuilder: (_, __) => SizedBox(
+              //             width: 16,
+              //           ),
+              //         ),
+              //     onLoading: CircularProgressIndicator(),
+              //     onEmpty: Center(
+              //       child: Text('not found'),
+              //     )),
               //Container(height: 98, child: SizedBox()),
+              SizedBox(height: 8),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   'Featured',
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      color: Theme.of(context).primaryColor),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                  ),
                 ),
               ),
               Padding(

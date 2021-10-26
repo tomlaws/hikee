@@ -19,7 +19,7 @@ class TimeUtils {
     int minutes = (seconds / 60).floor();
     int hour = (minutes / 60).floor();
     return (minutes > 0 ? formatMinutes(minutes) : '') +
-        (minutes < 1 || (remainder != 0 && hour < 1) ? ' ${remainder}s' : '');
+        (minutes < 1 || (remainder != 0 && hour < 1) ? '${remainder}s' : '');
   }
 
   static String timeAgoSinceDate(DateTime dateTime,
@@ -47,5 +47,4 @@ class TimeUtils {
       return 'Just now';
     }
   }
-
 }

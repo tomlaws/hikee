@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
 
 class HikeeMap extends StatelessWidget {
-  const HikeeMap({Key? key, required this.target, this.path}) : super(key: key);
-  final LatLng target;
+  const HikeeMap({Key? key, this.target, this.path}) : super(key: key);
+  final LatLng? target;
   final List<LatLng>? path;
 
   @override
   Widget build(BuildContext context) {
+    if (path == null && target == null) {
+      return Shimmer();
+    }
     return GoogleMap(
       mapType: MapType.normal,
       initialCameraPosition: CameraPosition(
-        target: target,
+        target: target ?? path?.first ?? LatLng(22.3117312, 114.2259712),
         zoom: 14,
       ),
       // gestureRecognizers:
@@ -69,12 +73,15 @@ class HikeeMap extends StatelessWidget {
               )
             ].toSet()
           : const <Marker>{},
-      onMapCreated: (GoogleMapController mapController) {
-        mapController.setMapStyle(
+      onMapCreated: (GoogleMapController mapController) async {
+        await mapController.setMapStyle(
             '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
+
         if (path != null) {
-          mapController.moveCamera(
-              CameraUpdate.newLatLngBounds(GeoUtils.getPathBounds(path!), 40));
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            mapController.moveCamera(CameraUpdate.newLatLngBounds(
+                GeoUtils.getPathBounds(path!), 40));
+          });
         }
       },
     );

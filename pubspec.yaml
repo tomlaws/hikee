@@ -33,16 +33,14 @@ dependencies:
   cupertino_icons: ^1.0.2
   line_awesome_flutter: ^1.1.0-nullsafety
   google_fonts: ^2.1.0
-  provider: ^5.0.0
   google_maps_flutter: ^2.0.8
   carousel_slider: ^4.0.0
   flutter_rating_bar: ^4.0.0
-  flutter_polyline_points: ^1.0.0
-  fl_chart: ^0.36.2
+  google_polyline_algorithm: ^3.1.0
+  fl_chart: ^0.40.2
   csv: ^5.0.0
   url_launcher: ^6.0.9
   get_it: ^7.2.0
-  geolocator: ^7.3.1
   cached_network_image: ^3.1.0
   shimmer: ^2.0.0
   jwt_decoder: ^2.0.1
@@ -52,7 +50,12 @@ dependencies:
   intl: ^0.17.0
   get: ^4.3.8
   add_2_calendar: ^2.1.1
-  flutter_dotenv: ^5.0.2
+  flutter_flavor: ^3.0.3
+  background_locator: ^1.6.6
+  permission_handler: ^8.2.5
+  readmore: ^2.1.0
+  marquee: ^2.2.0
+  auto_size_text: ^3.0.0-nullsafety.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -72,12 +75,18 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - .env
     - assets/images/marker_start.png
     - assets/images/marker_end.png
     - assets/images/marker_distance_post.png
     - assets/data/
-
+  fonts:
+    - family: Gilroy
+      fonts:
+        - asset: fonts/Gilroy-Regular.otf
+        - asset: fonts/Gilroy-Medium.otf
+          weight: 500
+        - asset: fonts/Gilroy-Bold.otf
+          weight: 700
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

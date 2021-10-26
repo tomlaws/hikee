@@ -1,8 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:isolate';
+import 'dart:ui';
 
+import 'package:background_locator/location_dto.dart';
+import 'package:background_locator/settings/android_settings.dart';
+import 'package:background_locator/settings/ios_settings.dart';
+import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
@@ -14,11 +19,15 @@ import 'package:hikee/models/route.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/record.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/location_callback_handler.dart';
+import 'package:hikee/utils/location_service_repository.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:background_locator/background_locator.dart';
 
 class CompassController extends GetxController
     with SingleGetTickerProviderMixin {
@@ -28,7 +37,6 @@ class CompassController extends GetxController
   PageController panelPageController = PageController(
     initialPage: 0,
   );
-  late StreamSubscription<Position> _positionStream;
 
   // Data
   final currentLocation = Rxn<LatLng>();
@@ -36,9 +44,14 @@ class CompassController extends GetxController
   Timer? _timer;
   final elapsed = 0.obs;
   final walkedDistance = 0.0.obs;
+  final walkedPath = RxList<LatLng>();
+  final heading = 0.0.obs;
   final isCloseToStart = false.obs;
   final isCloseToGoal = false.obs;
   final started = false.obs;
+  final altitudes = RxList<double>();
+  final speed = 0.0.obs;
+  final estimatedFinishTime = 0.obs;
 
   // UI
   final double collapsedPanelHeight = kBottomNavigationBarHeight;
@@ -54,28 +67,17 @@ class CompassController extends GetxController
   AuthProvider _authProvider = Get.put(AuthProvider());
   RecordProvider _recordProvider = Get.put(RecordProvider());
 
+  ReceivePort port = ReceivePort();
+
   @override
   void onInit() {
     super.onInit();
+
     _loadRoute();
-    _positionStream =
-        Geolocator.getPositionStream().listen((Position position) {
-      currentLocation.value = LatLng(position.latitude, position.longitude);
-      if (activeRoute.value != null) {
-        isCloseToStart.value = GeoUtils.isCloseToPoint(
-            currentLocation.value!, activeRoute.value!.decodedPath.first);
-        isCloseToGoal.value = GeoUtils.isCloseToPoint(
-            currentLocation.value!, activeRoute.value!.decodedPath.last);
-      }
-      if (lockPosition) {
-        goToCurrentLocation();
-      }
-    });
     panelPageController
       ..addListener(() {
         panelPage.value = panelPageController.page ?? 0;
       });
-
     // start timer when active route is started
     activeRoute.listen((route) {
       started.value = route?.isStarted ?? false;
@@ -91,10 +93,13 @@ class CompassController extends GetxController
               (activeRoute.value?.startTime ??
                   DateTime.now().millisecondsSinceEpoch);
           elapsed.value = ((s / 1000).floor());
-          if (currentLocation.value != null)
-            walkedDistance.value = GeoUtils.getWalkedLength(
-                currentLocation.value!, activeRoute.value!.decodedPath);
         });
+      }
+      // location tracking
+      if (route == null) {
+        stopLocationTracking();
+      } else {
+        startLocationTracking();
       }
     });
 
@@ -104,16 +109,34 @@ class CompassController extends GetxController
         CurvedAnimation(parent: tooltipController, curve: Curves.easeInOutSine);
     alpha = IntTween(begin: 0, end: 15).animate(curve);
     tooltipController.repeat(reverse: true);
+
+    // For location tracking
+    if (IsolateNameServer.lookupPortByName(
+            LocationServiceRepository.isolateName) !=
+        null) {
+      IsolateNameServer.removePortNameMapping(
+          LocationServiceRepository.isolateName);
+    }
+
+    IsolateNameServer.registerPortWithName(
+        port.sendPort, LocationServiceRepository.isolateName);
+    port.listen((dynamic data) {
+      if (data != null) onLocationChange(data);
+    });
+    initPlatformState();
   }
 
   @override
   void onClose() {
-    _positionStream.cancel();
     panelPageController.dispose();
     if (_timer != null) {
       _timer!.cancel();
     }
     super.onClose();
+  }
+
+  Future<void> initPlatformState() async {
+    await BackgroundLocator.initialize();
   }
 
   Future<void> goToCurrentLocation() async {
@@ -176,6 +199,19 @@ class CompassController extends GetxController
               route: route, decodedPath: decodedPath, startTime: startTime);
         }
       }
+      if (prefs.containsKey('walkedPath')) {
+        String s = prefs.getString('walkedPath')!;
+        walkedPath.value = (jsonDecode(s) as List<dynamic>)
+            .map((e) => LatLng.fromJson(e)!)
+            .toList();
+
+        walkedDistance.value = GeoUtils.getPathLength(path: walkedPath);
+      }
+      if (prefs.containsKey('altitudes')) {
+        String s = prefs.getString('altitudes')!;
+        altitudes.value =
+            (jsonDecode(s) as List<dynamic>).map((e) => e as double).toList();
+      }
     } catch (ex) {
       print(ex);
     }
@@ -207,9 +243,12 @@ class CompassController extends GetxController
           decodedPath: activeRoute.value!.decodedPath,
           startTime: startTime);
       isCloseToGoal.value = false;
-      if (currentLocation.value != null)
+      if (currentLocation.value != null) {
         isCloseToStart.value = GeoUtils.isCloseToPoint(
             currentLocation.value!, activeRoute.value!.decodedPath[0]);
+        walkedPath.add(currentLocation.value!);
+      }
+      updateNotification(0);
     } catch (ex) {
       print(ex);
     }
@@ -238,7 +277,12 @@ class CompassController extends GetxController
         var msse = activeRoute.value!.startTime!;
         var date = DateTime.fromMillisecondsSinceEpoch(msse);
         Record record = await _recordProvider.createRecord(
-            date: date, time: time, routeId: routeId);
+            date: date,
+            time: time,
+            name: routeName,
+            path: activeRoute.value!.route.path,
+            userPath: walkedPath.toList(),
+            altitudes: altitudes);
         Get.defaultDialog(
           title: "Congratulations, you've completed the route!",
           content: Padding(
@@ -316,7 +360,7 @@ class CompassController extends GetxController
         );
       }
     } catch (ex) {}
-    await quitRoute();
+    //await quitRoute();
   }
 
   void googleMapDir() {
@@ -329,5 +373,107 @@ class CompassController extends GetxController
     //    'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=transit');
     launch(
         'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=transit');
+  }
+
+  Future<bool> _checkLocationPermission() async {
+    final access = await Permission.location.status;
+    switch (access) {
+      case PermissionStatus.limited:
+      case PermissionStatus.permanentlyDenied:
+      case PermissionStatus.denied:
+      case PermissionStatus.restricted:
+        if (await Permission.locationAlways.request().isGranted) {
+          return true;
+        } else {
+          return false;
+        }
+      case PermissionStatus.granted:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  Future<void> startLocationTracking() async {
+    if (!await _checkLocationPermission()) {
+      return;
+    }
+    Map<String, dynamic> data = {'countInit': 1};
+    return await BackgroundLocator.registerLocationUpdate(
+        LocationCallbackHandler.callback,
+        initCallback: LocationCallbackHandler.initCallback,
+        initDataCallback: data,
+        disposeCallback: LocationCallbackHandler.disposeCallback,
+        iosSettings: IOSSettings(
+            accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
+        autoStop: false,
+        androidSettings: AndroidSettings(
+            accuracy: LocationAccuracy.NAVIGATION,
+            interval: 5,
+            distanceFilter: 0,
+            client: LocationClient.google,
+            androidNotificationSettings: AndroidNotificationSettings(
+                notificationChannelName: 'Location tracking',
+                notificationTitle: 'Hikee',
+                notificationMsg: 'Hikee navigation is active',
+                notificationBigMsg: 'Route selected. Tap to see more details.',
+                notificationIconColor: Colors.grey,
+                notificationTapCallback:
+                    LocationCallbackHandler.notificationCallback)));
+  }
+
+  void stopLocationTracking() {
+    BackgroundLocator.unRegisterLocationUpdate();
+    walkedPath.clear();
+    walkedDistance.value = 0;
+    SharedPreferences.getInstance().then((instance) {
+      instance.remove('walkedPath');
+      instance.remove('altitudes');
+    });
+  }
+
+  Future<void> onLocationChange(LocationDto location) async {
+    LatLng latlng = LatLng(location.latitude, location.longitude);
+    currentLocation.value = latlng;
+    heading.value = location.heading;
+    updateSpeed();
+    if (started.value) {
+      walkedPath.add(latlng);
+      walkedDistance.value = GeoUtils.getPathLength(path: walkedPath);
+      updateNotification(walkedDistance.value);
+      if (location.altitude != 0) altitudes.add(location.altitude);
+      SharedPreferences.getInstance().then((instance) {
+        instance.setString('walkedPath',
+            jsonEncode(walkedPath.map((element) => element.toJson()).toList()));
+        instance.setString('altitudes', jsonEncode(altitudes));
+      });
+    }
+    if (activeRoute.value != null) {
+      isCloseToStart.value = GeoUtils.isCloseToPoint(
+          currentLocation.value!, activeRoute.value!.decodedPath.first);
+      isCloseToGoal.value = GeoUtils.isCloseToPoint(
+          currentLocation.value!, activeRoute.value!.decodedPath.last);
+    }
+    if (lockPosition) {
+      goToCurrentLocation();
+    }
+  }
+
+  void updateNotification(double km) {
+    BackgroundLocator.updateNotificationText(
+        bigMsg: "You've walked ${km.toString()} km");
+  }
+
+  void updateSpeed() {
+    var kmps = (walkedDistance.value / elapsed.value);
+    if (elapsed.value == 0.0 || kmps == 0.0 || kmps.isInfinite || kmps.isNaN)
+      estimatedFinishTime.value = activeRoute.value!.route.duration * 60;
+    else {
+      speed.value = kmps * 3600; //km per sec to km per hour
+      var remamingLength =
+          activeRoute.value!.route.length - walkedDistance.value;
+      estimatedFinishTime.value =
+          (remamingLength * 0.001 / kmps).round(); // in secs
+    }
   }
 }

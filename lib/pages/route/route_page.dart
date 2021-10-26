@@ -10,8 +10,13 @@ import 'package:hikee/pages/home/home_controller.dart';
 import 'package:hikee/pages/route/route_controller.dart';
 import 'package:hikee/pages/route/route_events/route_events_binding.dart';
 import 'package:hikee/pages/route/route_events/route_events_page.dart';
+import 'package:hikee/themes.dart';
+import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:marquee/marquee.dart';
+import 'package:readmore/readmore.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class RoutePage extends GetView<RouteController> {
   @override
@@ -20,261 +25,490 @@ class RoutePage extends GetView<RouteController> {
         extendBodyBehindAppBar: true,
         body: Column(children: [
           Expanded(
-            child: CustomScrollView(
-              slivers: <Widget>[
-                SliverAppBar(
-                  expandedHeight: 250.0,
-                  backgroundColor: Colors.white,
-                  actions: [
-                    controller.obx((state) {
-                      var bookmarked = state!.bookmark != null;
-                      return Button(
-                          backgroundColor: Colors.transparent,
-                          icon: Icon(
-                            bookmarked
-                                ? Icons.bookmark
-                                : Icons.bookmark_outline,
-                            color: bookmarked
-                                ? Colors.amber
-                                : Colors.amber.shade100,
-                          ),
-                          onPressed: () {
-                            // context.read<AuthProvider>().mustLogin(context, () {
-                            //   if (bookmarked) {
-                            //     context
-                            //         .read<BookmarksProvider>()
-                            //         .deleteBookmark(route.bookmark!.id);
-                            //     _bookmarked.value = false;
-                            //   } else {
-                            //     context
-                            //         .read<BookmarksProvider>()
-                            //         .createBookmark(route.id)
-                            //         .then((b) => route.bookmark?.id = b.id);
-                            //     _bookmarked.value = true;
-                            //   }
-                            // }
-                            // );
-                          });
-                    }, onLoading: SizedBox())
-                  ],
-                  flexibleSpace: Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                          child: controller.obx((state) {
-                        var images = state!.images
-                            .map((img) => CachedNetworkImage(
-                                  placeholder: (_, __) => Shimmer(),
-                                  imageUrl: img,
-                                  fit: BoxFit.cover,
-                                ))
-                            .toList();
-                        return PageView(
-                          controller: controller.carouselController,
-                          children: images,
-                        );
-                      }, onLoading: SizedBox())),
-                      Positioned(
-                        bottom: 8,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: controller.obx((state) {
-                            return SizedBox(
-                              height: 8,
-                              child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  separatorBuilder: (_, __) => Container(
-                                        width: 8,
-                                      ),
-                                  itemCount: state!.images.length,
-                                  itemBuilder: (_, i) {
-                                    return Obx(
-                                      () => AnimatedContainer(
-                                        duration:
-                                            const Duration(milliseconds: 250),
-                                        width: 8,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            color: controller.carouselPage
-                                                        .round() ==
-                                                    i
-                                                ? Theme.of(context).primaryColor
-                                                : Colors.black38,
-                                            borderRadius:
-                                                BorderRadius.circular(4.0)),
-                                      ),
-                                    );
-                                  }),
-                            );
-                          }, onLoading: SizedBox()),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.all(16.0),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      Column(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // SliverAppBar(
+                  //   expandedHeight: 250.0,
+                  //   backgroundColor: Colors.white,
+                  //   automaticallyImplyLeading: false,
+                  //   leadingWidth: 36 + 18,
+                  //   leading: Container(
+                  //     padding: const EdgeInsets.only(left: 16.0),
+                  //     margin: EdgeInsets.symmetric(vertical: 8),
+                  //     child: Button(
+                  //         height: 36,
+                  //         backgroundColor: Colors.white,
+                  //         minWidth: 36,
+                  //         radius: 36,
+                  //         icon: Icon(
+                  //           Icons.chevron_left,
+                  //           color: Colors.black87,
+                  //           size: 20,
+                  //         ),
+                  //         onPressed: Get.back),
+                  //   ),
+                  //   actions: [
+                  //     controller.obx((state) {
+                  //       var bookmarked = state!.bookmark != null;
+                  //       return Container(
+                  //         padding: const EdgeInsets.only(right: 16.0),
+                  //         margin: EdgeInsets.symmetric(vertical: 8),
+                  //         width: 36 + 18,
+                  //         child: Button(
+                  //             backgroundColor: Colors.white,
+                  //             radius: 36,
+                  //             height: 36,
+                  //             minWidth: 36,
+                  //             icon: Icon(
+                  //               bookmarked
+                  //                   ? Icons.bookmark
+                  //                   : Icons.bookmark_outline,
+                  //               color: Colors.black87,
+                  //               size: 20,
+                  //             ),
+                  //             onPressed: () {}),
+                  //       );
+                  //     }, onLoading: SizedBox())
+                  //   ],
+                  //   flexibleSpace: Stack(
+                  //     children: <Widget>[
+                  //       Positioned.fill(
+                  //           child: controller.obx((state) {
+                  //         var images = state!.images
+                  //             .map((img) => CachedNetworkImage(
+                  //                   placeholder: (_, __) => Shimmer(),
+                  //                   imageUrl: img,
+                  //                   fit: BoxFit.cover,
+                  //                 ))
+                  //             .toList();
+                  //         return Container(
+                  //           clipBehavior: Clip.antiAlias,
+                  //           margin: EdgeInsets.symmetric(horizontal: 8),
+                  //           decoration: BoxDecoration(
+                  //               borderRadius: BorderRadius.vertical(
+                  //                   bottom: Radius.circular(16))),
+                  //           child: PageView(
+                  //             controller: controller.carouselController,
+                  //             children: images,
+                  //           ),
+                  //         );
+                  //       }, onLoading: SizedBox())),
+                  //       Positioned(
+                  //         bottom: 8,
+                  //         left: 0,
+                  //         right: 0,
+                  //         child: Center(
+                  //           child: controller.obx((state) {
+                  //             return SizedBox(
+                  //               height: 8,
+                  //               child: ListView.separated(
+                  //                   scrollDirection: Axis.horizontal,
+                  //                   shrinkWrap: true,
+                  //                   separatorBuilder: (_, __) => Container(
+                  //                         width: 8,
+                  //                       ),
+                  //                   itemCount: state!.images.length,
+                  //                   itemBuilder: (_, i) {
+                  //                     return Obx(
+                  //                       () => AnimatedContainer(
+                  //                         duration:
+                  //                             const Duration(milliseconds: 250),
+                  //                         width: 8,
+                  //                         height: 8,
+                  //                         decoration: BoxDecoration(
+                  //                             color: controller.carouselPage
+                  //                                         .round() ==
+                  //                                     i
+                  //                                 ? Theme.of(context).primaryColor
+                  //                                 : Colors.black38,
+                  //                             borderRadius:
+                  //                                 BorderRadius.circular(4.0)),
+                  //                       ),
+                  //                     );
+                  //                   }),
+                  //             );
+                  //           }, onLoading: SizedBox()),
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
+                  Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          controller.obx(
-                              (state) => Text(
-                                    state!.name_en,
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor),
+                          SafeArea(
+                            child: Stack(
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  SizedBox(
+                                    height: 280,
+                                    child: controller.obx((state) {
+                                      var images = state!.images
+                                          .map((img) => CachedNetworkImage(
+                                                placeholder: (_, __) =>
+                                                    Shimmer(),
+                                                imageUrl: img,
+                                                fit: BoxFit.cover,
+                                              ))
+                                          .toList();
+                                      return Container(
+                                        clipBehavior: Clip.antiAlias,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
+                                        child: PageView(
+                                          controller:
+                                              controller.carouselController,
+                                          children: images,
+                                        ),
+                                      );
+                                    }, onLoading: SizedBox()),
                                   ),
-                              onLoading: Shimmer(
-                                fontSize: 24,
-                              )),
-                          Container(
-                            height: 4,
+                                  Positioned(
+                                      bottom: -40,
+                                      left: 16,
+                                      right: 16,
+                                      child: Container(
+                                        padding: EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                            boxShadow: [Themes.shadow],
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            controller.obx(
+                                                (state) => AutoSizeText(
+                                                    state!.name_en,
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                    maxLines: 1,
+                                                    overflowReplacement:
+                                                        SizedBox(
+                                                      height: 22,
+                                                      child: Marquee(
+                                                        blankSpace: 20.0,
+                                                        fadingEdgeStartFraction:
+                                                            .2,
+                                                        fadingEdgeEndFraction:
+                                                            .2,
+                                                        pauseAfterRound:
+                                                            Duration(
+                                                                seconds: 1),
+                                                        velocity: 24.0,
+                                                        text: state.name_en,
+                                                        style: TextStyle(
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    )),
+                                                onLoading: Shimmer(
+                                                  fontSize: 18,
+                                                )),
+                                            SizedBox(height: 8),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(
+                                                        LineAwesomeIcons
+                                                            .map_marker,
+                                                        size: 12,
+                                                        color:
+                                                            Color(0xFFAAAAAA)),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    controller.obx(
+                                                        (state) => Text(
+                                                              state!.region
+                                                                  .name_en,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                            ),
+                                                        onLoading: Shimmer(
+                                                          fontSize: 12,
+                                                        )),
+                                                    SizedBox(
+                                                      width: 16,
+                                                    ),
+                                                    Icon(LineAwesomeIcons.star,
+                                                        size: 12,
+                                                        color:
+                                                            Color(0xFFAAAAAA)),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    controller.obx(
+                                                        (state) => Text(
+                                                              state!.rating
+                                                                  .toString(),
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                            ),
+                                                        onLoading: Shimmer(
+                                                          fontSize: 12,
+                                                        )),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 4),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(LineAwesomeIcons.ruler,
+                                                        size: 12,
+                                                        color:
+                                                            Color(0xFFAAAAAA)),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    controller.obx(
+                                                        (state) => Text(
+                                                              GeoUtils.formatDistance(
+                                                                  state!.length /
+                                                                      1000),
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                            ),
+                                                        onLoading: Shimmer(
+                                                          fontSize: 12,
+                                                        )),
+                                                    SizedBox(
+                                                      width: 16,
+                                                    ),
+                                                    Icon(LineAwesomeIcons.clock,
+                                                        size: 12,
+                                                        color:
+                                                            Color(0xFFAAAAAA)),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    controller.obx(
+                                                        (state) => Text(
+                                                              TimeUtils
+                                                                  .formatMinutes(
+                                                                      state!
+                                                                          .duration),
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                            ),
+                                                        onLoading: Shimmer(
+                                                          fontSize: 12,
+                                                        )),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      )),
+                                  Positioned(
+                                    top: 16,
+                                    left: 16,
+                                    child: Button(
+                                        height: 36,
+                                        backgroundColor: Colors.white,
+                                        minWidth: 36,
+                                        radius: 36,
+                                        icon: Icon(
+                                          Icons.chevron_left,
+                                          color: Colors.black87,
+                                          size: 20,
+                                        ),
+                                        onPressed: Get.back),
+                                  ),
+                                  Positioned(
+                                      top: 16,
+                                      right: 16,
+                                      child: controller.obx((state) {
+                                        var bookmarked =
+                                            state!.bookmark != null;
+                                        return Button(
+                                            backgroundColor: Colors.white,
+                                            radius: 36,
+                                            height: 36,
+                                            minWidth: 36,
+                                            icon: Icon(
+                                              bookmarked
+                                                  ? Icons.bookmark
+                                                  : Icons.bookmark_outline,
+                                              color: Colors.black87,
+                                              size: 20,
+                                            ),
+                                            onPressed: () {});
+                                      }, onLoading: SizedBox())),
+                                ]),
                           ),
+                          SizedBox(
+                            height: 48,
+                          ),
+                          // Row(
+                          //   children: [
+                          //     Expanded(
+                          //       child: Container(
+                          //         height: 48,
+                          //         clipBehavior: Clip.hardEdge,
+                          //         decoration: BoxDecoration(
+                          //             color: Colors.grey[100],
+                          //             borderRadius: BorderRadius.circular(8)),
+                          //         child:
+                          //             Stack(clipBehavior: Clip.none, children: [
+                          //           Positioned(
+                          //             left: 0,
+                          //             top: 0,
+                          //             child: Icon(
+                          //               LineAwesomeIcons.ruler,
+                          //               size: 72,
+                          //               color: Colors.black12,
+                          //             ),
+                          //           ),
+                          //           Align(
+                          //             alignment: Alignment.centerRight,
+                          //             child: Padding(
+                          //               padding: EdgeInsets.only(right: 8),
+                          //               child: controller.obx(
+                          //                   (route) => Text(
+                          //                         '${(route!.length / 1000).toString()}km',
+                          //                         style: TextStyle(
+                          //                             fontSize: 16,
+                          //                             fontWeight:
+                          //                                 FontWeight.bold,
+                          //                             color: Colors.black38),
+                          //                       ),
+                          //                   onLoading: Shimmer(
+                          //                     height: 30,
+                          //                   )),
+                          //             ),
+                          //           )
+                          //         ]),
+                          //       ),
+                          //     ),
+                          //     SizedBox(width: 16),
+                          //     Expanded(
+                          //       child: Container(
+                          //         height: 48,
+                          //         clipBehavior: Clip.hardEdge,
+                          //         decoration: BoxDecoration(
+                          //             color: Colors.grey[100],
+                          //             borderRadius: BorderRadius.circular(8)),
+                          //         child:
+                          //             Stack(clipBehavior: Clip.none, children: [
+                          //           Positioned(
+                          //             left: 0,
+                          //             top: 0,
+                          //             child: Icon(
+                          //               LineAwesomeIcons.clock,
+                          //               size: 72,
+                          //               color: Colors.black12,
+                          //             ),
+                          //           ),
+                          //           Align(
+                          //               alignment: Alignment.centerRight,
+                          //               child: Padding(
+                          //                   padding: EdgeInsets.only(right: 8),
+                          //                   child: controller.obx(
+                          //                       (route) => Text(
+                          //                             TimeUtils.formatMinutes(
+                          //                                 route!.duration),
+                          //                             style: TextStyle(
+                          //                                 fontSize: 16,
+                          //                                 fontWeight:
+                          //                                     FontWeight.bold,
+                          //                                 color:
+                          //                                     Colors.black38),
+                          //                           ),
+                          //                       onLoading: Shimmer(
+                          //                         height: 30,
+                          //                       ))))
+                          //         ]),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // controller.obx(
+                          //     (state) => RouteInfo(
+                          //           route: state!,
+                          //           showRouteName: false,
+                          //         ),
+                          //     onLoading: SizedBox()),
+                          Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text('Description',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ))),
                           controller.obx(
-                              (state) => Text(
-                                    state!.region.name_en,
+                              (state) => ReadMoreText(
+                                    state!.description_en,
+                                    trimLines: 3,
+                                    colorClickableText: Colors.pink,
+                                    trimMode: TrimMode.Line,
+                                    trimCollapsedText: 'Show more',
+                                    trimExpandedText: 'Show less',
                                     style: TextStyle(
-                                        fontSize: 16, color: Color(0xFFAAAAAA)),
+                                        height: 1.6,
+                                        color: Get.theme.textTheme.bodyText1
+                                                ?.color ??
+                                            Colors.black),
+                                    moreStyle: TextStyle(
+                                      color: Get.theme.colorScheme.secondary,
+                                    ),
+                                    lessStyle: TextStyle(
+                                        color: Get.theme.colorScheme.secondary),
                                   ),
                               onLoading: Shimmer(
                                 fontSize: 16,
                               )),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 48,
-                              clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Stack(clipBehavior: Clip.none, children: [
-                                Positioned(
-                                  left: 0,
-                                  top: 0,
-                                  child: Icon(
-                                    LineAwesomeIcons.ruler,
-                                    size: 72,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 8),
-                                    child: controller.obx(
-                                        (route) => Text(
-                                              '${(route!.length / 1000).toString()}km',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black38),
-                                            ),
-                                        onLoading: Shimmer(
-                                          height: 30,
-                                        )),
-                                  ),
-                                )
-                              ]),
-                            ),
+                          Container(
+                            height: 16,
                           ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Container(
-                              height: 48,
-                              clipBehavior: Clip.hardEdge,
+                          Container(
+                              height: 240,
+                              clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Stack(clipBehavior: Clip.none, children: [
-                                Positioned(
-                                  left: 0,
-                                  top: 0,
-                                  child: Icon(
-                                    LineAwesomeIcons.clock,
-                                    size: 72,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Padding(
-                                        padding: EdgeInsets.only(right: 8),
-                                        child: controller.obx(
-                                            (route) => Text(
-                                                  TimeUtils.formatMinutes(
-                                                      route!.duration),
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.black38),
-                                                ),
-                                            onLoading: Shimmer(
-                                              height: 30,
-                                            ))))
-                              ]),
-                            ),
-                          ),
+                                  borderRadius: BorderRadius.circular(16.0)),
+                              child: controller.obx(
+                                  (state) => HikeeMap(
+                                      target: controller.points.value![
+                                          (controller.points.value!.length /
+                                                  5 *
+                                                  2)
+                                              .floor()],
+                                      path: controller.points.value!),
+                                  onLoading: Shimmer(
+                                    height: 240,
+                                  )))
                         ],
-                      ),
-                      // controller.obx(
-                      //     (state) => RouteInfo(
-                      //           route: state!,
-                      //           showRouteName: false,
-                      //         ),
-                      //     onLoading: SizedBox()),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Text('Description',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ))),
-                      controller.obx(
-                          (state) => Text(
-                                state!.description_en,
-                                strutStyle: StrutStyle(
-                                  height: 1.6,
-                                ),
-                              ),
-                          onLoading: Shimmer(
-                            fontSize: 16,
-                          )),
-                      Container(
-                        height: 16,
-                      ),
-                      Container(
-                          height: 240,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16.0)),
-                          child: controller.obx(
-                              (state) => HikeeMap(
-                                  target: controller.points.value![
-                                      (controller.points.value!.length / 5 * 2)
-                                          .floor()],
-                                  path: controller.points.value!),
-                              onLoading: Shimmer(
-                                height: 240,
-                              )))
-                    ]),
-                  ),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.all(16),
-                  sliver: SliverToBoxAdapter(
+                      )),
+                  Padding(
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       children: [
                         Divider(),
@@ -287,8 +521,7 @@ class RoutePage extends GetView<RouteController> {
                                 children: [
                                   Text('Reviews',
                                       style: TextStyle(
-                                          fontSize: 18,
-                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold)),
                                   Button(
                                       backgroundColor: Colors.transparent,
@@ -342,18 +575,57 @@ class RoutePage extends GetView<RouteController> {
                         ),
                       ],
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
+            // if (!(Get.arguments?['hideButtons'] == true))
+            //   Row(
+            //     children: [
+            //       Expanded(
+            //         child: Button(
+            //           radius: 0,
+            //           safeArea: true,
+            //           onPressed: () {
+            //             HomeController hc = Get.find<HomeController>();
+            //             hc.switchTab(0);
+            //             CompassController cc = Get.find<CompassController>();
+            //             cc.selectRoute(controller.state!);
+            //             Get.back();
+            //           },
+            //           child: Text('Select Route'),
+            //         ),
+            //       ),
+            //       Expanded(
+            //         child: Button(
+            //           radius: 0,
+            //           safeArea: true,
+            //           backgroundColor: Colors.teal,
+            //           onPressed: () {
+            //             Get.to(RouteEventsPage(),
+            //                 transition: Transition.cupertino,
+            //                 arguments: {'id': Get.arguments['id']},
+            //                 binding: RouteEventsBinding());
+            //           },
+            //           child: Text('FIND EVENTS'),
+            //         ),
+            //       ),
+            //     ],
+            //   )
           ),
-          if (!(Get.arguments?['hideButtons'] == true))
-            Row(
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(
+                  blurRadius: 16,
+                  spreadRadius: -8,
+                  color: Colors.black.withOpacity(.09),
+                  offset: Offset(0, -6))
+            ]),
+            child: Row(
               children: [
                 Expanded(
                   child: Button(
-                    radius: 0,
-                    safeArea: true,
                     onPressed: () {
                       HomeController hc = Get.find<HomeController>();
                       hc.switchTab(0);
@@ -361,25 +633,19 @@ class RoutePage extends GetView<RouteController> {
                       cc.selectRoute(controller.state!);
                       Get.back();
                     },
-                    child: Text('SELECT ROUTE'),
+                    child: Text('Select Now'),
                   ),
                 ),
-                Expanded(
-                  child: Button(
-                    radius: 0,
-                    safeArea: true,
-                    backgroundColor: Colors.teal,
-                    onPressed: () {
-                      Get.to(RouteEventsPage(),
-                          transition: Transition.cupertino,
-                          arguments: {'id': Get.arguments['id']},
-                          binding: RouteEventsBinding());
-                    },
-                    child: Text('FIND EVENTS'),
-                  ),
+                SizedBox(
+                  width: 16,
+                ),
+                Button(
+                  onPressed: () {},
+                  icon: Icon(Icons.public_outlined, color: Colors.white),
                 ),
               ],
-            )
+            ),
+          )
         ]));
   }
 

@@ -24,7 +24,7 @@ class RouteInfo extends StatelessWidget {
           children: [
             Icon(
               LineAwesomeIcons.map_signs,
-              color: Theme.of(context).primaryColor,
+              color: Colors.black45,
             ),
             Container(width: 8),
             Expanded(
@@ -44,7 +44,7 @@ class RouteInfo extends StatelessWidget {
           children: [
             Icon(
               LineAwesomeIcons.map,
-              color: Theme.of(context).primaryColor,
+              color: Colors.black45,
             ),
             Container(width: 8),
             Text(
@@ -58,31 +58,39 @@ class RouteInfo extends StatelessWidget {
         Container(height: 8),
       ],
       Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(
-            LineAwesomeIcons.ruler,
-            color: Theme.of(context).primaryColor,
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  LineAwesomeIcons.ruler,
+                  color: Colors.black45,
+                ),
+                Container(width: 8),
+                Text(
+                  '${(route.length / 1000).toString()}km',
+                  style: TextStyle(),
+                ),
+              ],
+            ),
           ),
-          Container(width: 8),
-          Text(
-            '${(route.length / 1000).toString()}km',
-            style: TextStyle(),
-          ),
-        ],
-      ),
-      Container(height: 8),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(
-            LineAwesomeIcons.clock,
-            color: Theme.of(context).primaryColor,
-          ),
-          Container(width: 8),
-          Text(
-            TimeUtils.formatMinutes(route.duration),
-            style: TextStyle(),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  LineAwesomeIcons.clock,
+                  color: Colors.black45,
+                ),
+                Container(width: 8),
+                Text(
+                  TimeUtils.formatMinutes(route.duration),
+                  style: TextStyle(),
+                ),
+              ],
+            ),
           ),
         ],
       ),

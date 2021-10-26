@@ -75,15 +75,30 @@ class HomePage extends GetView<HomeController> {
           () => BottomNavigationBar(
             items: [
               BottomNavigationBarItem(
-                  icon: Icon(LineAwesomeIcons.compass), label: 'Compass'),
+                  icon: Icon(controller.currentTabIndex.value == 0
+                      ? Icons.explore
+                      : Icons.explore_outlined),
+                  label: 'Compass'),
               BottomNavigationBarItem(
-                  icon: Icon(LineAwesomeIcons.book_open), label: 'Routes'),
+                  icon: Icon(controller.currentTabIndex.value == 1
+                      ? Icons.menu_book
+                      : Icons.menu_book_outlined),
+                  label: 'Routes'),
               BottomNavigationBarItem(
-                  icon: Icon(LineAwesomeIcons.globe), label: 'Events'),
+                  icon: Icon(controller.currentTabIndex.value == 2
+                      ? Icons.public
+                      : Icons.public_outlined),
+                  label: 'Events'),
               BottomNavigationBarItem(
-                  icon: Icon(LineAwesomeIcons.comments), label: 'Topics'),
+                  icon: Icon(controller.currentTabIndex.value == 3
+                      ? Icons.sms
+                      : Icons.sms_outlined),
+                  label: 'Topics'),
               BottomNavigationBarItem(
-                  icon: Icon(LineAwesomeIcons.user), label: 'Account')
+                  icon: Icon(controller.currentTabIndex.value == 4
+                      ? Icons.account_box
+                      : Icons.account_box_outlined),
+                  label: 'Account')
             ],
             currentIndex: controller.currentTabIndex.value,
             onTap: (i) {

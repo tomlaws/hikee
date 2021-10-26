@@ -1,4 +1,3 @@
-import 'package:hikee/models/route.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'record.g.dart';
@@ -7,14 +6,18 @@ part 'record.g.dart';
 class Record {
   int id;
   int time;
+  String name;
   DateTime date;
-  HikingRoute route;
+  String userPath;
+  List<double> altitudes;
 
   Record(
       {required this.id,
       required this.time,
+      required this.name,
       required this.date,
-      required this.route});
+      required this.userPath,
+      required this.altitudes});
 
   factory Record.fromJson(Map<String, dynamic> json) => _$RecordFromJson(json);
   Map<String, dynamic> toJson() => _$RecordToJson(this);

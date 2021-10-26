@@ -6,7 +6,6 @@ import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/token.dart';
 import 'package:hikee/pages/auth/register_controller.dart';
-import 'package:provider/provider.dart';
 
 class RegisterPage extends GetView<RegisterController> {
   @override

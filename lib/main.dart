@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hikee/messages.dart';
 import 'package:hikee/pages/account/records/account_records_binding.dart';
@@ -18,10 +17,7 @@ import 'package:hikee/pages/route/route_page.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/map_marker.dart';
 
-Future main() async {
-  try {
-  await dotenv.load(fileName: ".env");
-  } catch (ex) {}
+void main() {
   runApp(MyApp());
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/compass.dart';
 import 'package:hikee/components/dropdown.dart';
 import 'package:hikee/components/keep_alive.dart';
 import 'package:hikee/components/mountain_deco.dart';
@@ -20,6 +21,7 @@ import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
 import 'package:hikee/utils/time.dart';
+import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -67,7 +69,14 @@ class CompassPage extends GetView<CompassController> {
                               margin: EdgeInsets.symmetric(horizontal: 8.0),
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                  color: Colors.green.shade800,
+                                  gradient: LinearGradient(
+                                    begin: Alignment.center,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      Colors.green.shade800,
+                                      Colors.green,
+                                    ],
+                                  ),
                                   borderRadius: BorderRadius.circular(16.0)),
                               child: Text('Swipe up to finish the route!',
                                   style: TextStyle(color: Colors.white)),
@@ -154,44 +163,48 @@ class CompassPage extends GetView<CompassController> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     if (controller.activeRoute.value!.isStarted) ...[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            LineAwesomeIcons.walking,
-                            size: 30,
-                            color: Get.theme.primaryColor,
-                          ),
-                          Container(width: 4),
-                          Text(
-                            GeoUtils.formatDistance(
-                                controller.walkedDistance.value),
-                            style: TextStyle(
-                                fontSize: 28,
-                                color: Get.theme.primaryColor,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1),
-                          )
-                        ],
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.walking,
+                              size: 24,
+                            ),
+                            Container(width: 4),
+                            Text(
+                              GeoUtils.formatDistance(
+                                  controller.walkedDistance.value),
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            LineAwesomeIcons.stopwatch,
-                            size: 30,
-                            color: Get.theme.primaryColor,
-                          ),
-                          Container(width: 4),
-                          Text(
-                            TimeUtils.formatSeconds(controller.elapsed.value),
-                            style: TextStyle(
-                                fontSize: 28,
-                                color: Get.theme.primaryColor,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1),
-                          ),
-                        ],
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        color: Get.theme.dividerColor,
+                        width: 1,
+                        height: 24,
+                      ),
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.stopwatch,
+                              size: 24,
+                            ),
+                            Container(width: 4),
+                            Text(
+                              TimeUtils.formatSeconds(controller.elapsed.value),
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
                       )
                     ] else
                       Expanded(
@@ -204,17 +217,36 @@ class CompassPage extends GetView<CompassController> {
                                   ? 'You\'re now at the start of the route'
                                   : 'You\'re far away from the route',
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Get.theme.primaryColor),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            Opacity(
-                                opacity: .5,
-                                child: Text(
-                                    controller.isCloseToStart.value
-                                        ? 'Swipe up to get start!'
-                                        : 'Please reach to the starting point first',
-                                    style: TextStyle(fontSize: 12)))
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                AnimatedOpacity(
+                                  duration: const Duration(milliseconds: 500),
+                                  opacity: controller.panelPosition.value == 1
+                                      ? 0
+                                      : 1,
+                                  child: Text(
+                                      controller.isCloseToStart.value
+                                          ? 'Swipe up to get started!'
+                                          : 'Please reach to the starting point first',
+                                      style: TextStyle(fontSize: 12)),
+                                ),
+                                Positioned(
+                                  child: AnimatedOpacity(
+                                    duration: const Duration(milliseconds: 500),
+                                    opacity: controller.panelPosition.value == 1
+                                        ? 1
+                                        : 0,
+                                    child: Text('Let\'s get started!',
+                                        style: TextStyle(fontSize: 12)),
+                                  ),
+                                )
+                              ],
+                            )
                           ],
                         ),
                       )
@@ -236,18 +268,28 @@ class CompassPage extends GetView<CompassController> {
               child: PageView(
                 controller: controller.panelPageController,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: _routeInfo(),
-                  ),
+                  _routeInfo(),
                   KeepAlivePage(
                     key: Key(controller.activeRoute.value!.route.id.toString()),
                     child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: RouteElevation(
-                        routeId: controller.activeRoute.value!.route.id,
-                      ),
-                    ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Column(children: [
+                          RouteInfo(
+                            route: controller.activeRoute.value!.route,
+                            showRouteName: true,
+                            hideRegion: true,
+                          ),
+                          SizedBox(height: 8),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: RouteElevation(
+                                routeId: controller.activeRoute.value!.route.id,
+                              ),
+                            ),
+                          ),
+                        ])),
                   )
                 ],
               ),
@@ -495,9 +537,9 @@ class CompassPage extends GetView<CompassController> {
           polylines: [
             Polyline(
               polylineId: PolylineId('polyLine1'),
-              color: Colors.amber.shade400,
+              color: Color(0xFFfcce39),
               zIndex: 1,
-              width: 4,
+              width: 8,
               jointType: JointType.round,
               startCap: Cap.roundCap,
               endCap: Cap.roundCap,
@@ -506,48 +548,36 @@ class CompassPage extends GetView<CompassController> {
             Polyline(
               polylineId: PolylineId('polyLine2'),
               color: Colors.white,
-              width: 6,
+              width: 10,
               jointType: JointType.round,
               startCap: Cap.roundCap,
               endCap: Cap.roundCap,
               zIndex: 0,
               points: activeHikingRoute.decodedPath,
             ),
+            if (controller.started.value) ...[
+              Polyline(
+                polylineId: PolylineId('polyLine1-walked'),
+                color: Colors.blue,
+                zIndex: 2,
+                width: 8,
+                jointType: JointType.round,
+                startCap: Cap.roundCap,
+                endCap: Cap.roundCap,
+                points: controller.walkedPath.toList(),
+              ),
+              Polyline(
+                polylineId: PolylineId('polyLine2-walked'),
+                color: Colors.white,
+                width: 10,
+                jointType: JointType.round,
+                startCap: Cap.roundCap,
+                endCap: Cap.roundCap,
+                zIndex: 0,
+                points: controller.walkedPath.toList(),
+              ),
+            ]
           ].toSet(),
-          // circles: [
-          //   Circle(
-          //       circleId: CircleId(
-          //           'start-' + activeHikingRouteProvider.route!.id.toString()),
-          //       center: activeHikingRouteProvider.decodedPath.first,
-          //       fillColor: Colors.blue.withOpacity(.6),
-          //       strokeWidth: 0,
-          //       zIndex: 2,
-          //       radius: 200),
-          //   Circle(
-          //       circleId: CircleId('start-border-' +
-          //           activeHikingRouteProvider.route!.id.toString()),
-          //       center: activeHikingRouteProvider.decodedPath.first,
-          //       fillColor: Colors.blue.withOpacity(.3),
-          //       strokeWidth: 0,
-          //       zIndex: 2,
-          //       radius: 300),
-          //   Circle(
-          //       circleId: CircleId(
-          //           'end-' + activeHikingRouteProvider.route!.id.toString()),
-          //       center: activeHikingRouteProvider.decodedPath.last,
-          //       fillColor: Colors.red.withOpacity(.6),
-          //       strokeWidth: 0,
-          //       zIndex: 2,
-          //       radius: 200),
-          //   Circle(
-          //       circleId: CircleId('end-border-' +
-          //           activeHikingRouteProvider.route!.id.toString()),
-          //       center: activeHikingRouteProvider.decodedPath.last,
-          //       fillColor: Colors.red.withOpacity(.3),
-          //       strokeWidth: 0,
-          //       zIndex: 2,
-          //       radius: 300),
-          // ].toSet(),
           markers: [
             Marker(
               markerId: MarkerId('marker-start'),
@@ -605,10 +635,51 @@ class CompassPage extends GetView<CompassController> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child:
           Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        RouteInfo(
-          route: controller.activeRoute.value!.route,
-          showRouteName: true,
-          hideRegion: true,
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Compass(
+                  heading: controller.heading,
+                ),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Average speed', style: TextStyle()),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                          '${GeoUtils.formatDistance(controller.speed.value)}/h'),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Text(
+                        'Estimated finish time',
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: [
+                          Text(DateFormat('hh:mm').format(DateTime.now().add(
+                              Duration(
+                                  seconds:
+                                      controller.estimatedFinishTime.value)))),
+                          SizedBox(width: 8),
+                          Text(
+                              '(+${TimeUtils.formatSeconds(controller.estimatedFinishTime.value)})'),
+                        ],
+                      )
+                    ]),
+              )
+            ],
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
@@ -618,25 +689,29 @@ class CompassPage extends GetView<CompassController> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (!controller.activeRoute.value!.isStarted)
-                  Button(
-                      child: Text('START NOW'),
-                      backgroundColor:
-                          closeEnough ? Get.theme.primaryColor : Colors.grey,
-                      onPressed: () {
-                        if (closeEnough) {
-                          controller.startRoute();
-                          controller.goToCurrentLocation();
-                        } else {
-                          _showFarAwayDialog();
-                        }
-                      })
+                  Expanded(
+                    child: Button(
+                        child: Text('Start Now'),
+                        backgroundColor:
+                            closeEnough ? Get.theme.primaryColor : Colors.grey,
+                        onPressed: () {
+                          if (closeEnough) {
+                            controller.startRoute();
+                            controller.goToCurrentLocation();
+                          } else {
+                            _showFarAwayDialog();
+                          }
+                        }),
+                  )
                 else
-                  Button(
-                      child: Text('FINISH ROUTE'),
-                      disabled: !controller.isCloseToGoal.value,
-                      onPressed: () {
-                        controller.finishRoute();
-                      }),
+                  Expanded(
+                    child: Button(
+                        child: Text('Finish Route'),
+                        disabled: !controller.isCloseToGoal.value,
+                        onPressed: () {
+                          controller.finishRoute();
+                        }),
+                  ),
                 // else
                 //   Button(
                 //       icon:
@@ -646,12 +721,14 @@ class CompassPage extends GetView<CompassController> {
                 //         _showNearestDistancePostDialog();
                 //       }),
                 Container(width: 16),
-                Button(
-                    child: Text('QUIT ROUTE'),
-                    backgroundColor: Colors.brown[300],
-                    onPressed: () {
-                      controller.quitRoute();
-                    })
+                Expanded(
+                  child: Button(
+                      child: Text('Quit Route'),
+                      backgroundColor: Color.fromRGBO(109, 160, 176, 1),
+                      onPressed: () {
+                        controller.quitRoute();
+                      }),
+                )
               ],
             );
           }),

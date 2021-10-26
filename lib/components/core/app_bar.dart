@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'dart:math' as math;
 
 import 'package:hikee/components/button.dart';
@@ -39,7 +40,10 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       // ),
       elevation: elevation,
       titleTextStyle: TextStyle(fontSize: 12),
-      title: title,
+      title: DefaultTextStyle(
+        style: TextStyle(color: Get.theme.primaryColor, fontSize: 16),
+        child: title,
+      ),
       leadingWidth: 44 + 8 * 2,
       leading: leading ??
           (backButton
