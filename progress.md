@@ -7,4 +7,7 @@ added features:
 - records system
 
 27/10/21
-different color for walked path
+- compass
+- display walked path
+- background tracking, with notification
+- show speed and estimated finish time
