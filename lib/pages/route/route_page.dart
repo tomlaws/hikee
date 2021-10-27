@@ -188,6 +188,7 @@ class RoutePage extends GetView<RouteController> {
                                             controller.obx(
                                                 (state) => AutoSizeText(
                                                     state!.name_en,
+                                                    minFontSize: 18,
                                                     style: TextStyle(
                                                         fontSize: 18,
                                                         fontWeight:

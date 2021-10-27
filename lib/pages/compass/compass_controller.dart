@@ -72,8 +72,8 @@ class CompassController extends GetxController
   @override
   void onInit() {
     super.onInit();
-
     _loadRoute();
+    print('load route');
     panelPageController
       ..addListener(() {
         panelPage.value = panelPageController.page ?? 0;
@@ -96,9 +96,11 @@ class CompassController extends GetxController
         });
       }
       // location tracking
+      print('hello');
       if (route == null) {
         stopLocationTracking();
       } else {
+        print('start');
         startLocationTracking();
       }
     });
@@ -360,7 +362,7 @@ class CompassController extends GetxController
         );
       }
     } catch (ex) {}
-    //await quitRoute();
+    await quitRoute();
   }
 
   void googleMapDir() {
@@ -396,6 +398,7 @@ class CompassController extends GetxController
 
   Future<void> startLocationTracking() async {
     if (!await _checkLocationPermission()) {
+      print('Location permission denied');
       return;
     }
     Map<String, dynamic> data = {'countInit': 1};
@@ -426,6 +429,7 @@ class CompassController extends GetxController
     BackgroundLocator.unRegisterLocationUpdate();
     walkedPath.clear();
     walkedDistance.value = 0;
+    speed.value = 0;
     SharedPreferences.getInstance().then((instance) {
       instance.remove('walkedPath');
       instance.remove('altitudes');
