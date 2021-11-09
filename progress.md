@@ -29,7 +29,8 @@ added features:
     - added user profile pic in the topic list
     - added "pull to refresh" feature
     - added categories selection (clicking the title in the top left corner)
-    - added image upload feature(supports multiple images) for creating new topic
-4. added create trail feature
+    - added image upload feature (supports multiple images) for creating new topic
+    - show carousel as part of the content and enlarge the image by clicking it (lightbox)
+4. added create trail feature (top-right button of the trails page)
     - putting markers on map
     - input details to publish the trail
