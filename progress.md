@@ -27,9 +27,9 @@ added features:
     - turn into expandable description when description is too long
 3. updated topics page ui
     - added user profile pic in the topic list
-    - added pull to refresh feature
+    - added "pull to refresh" feature
     - added categories selection (clicking the title in the top left corner)
-    - added image upload feature for creating new topic
+    - added image upload feature(supports multiple images) for creating new topic
 4. added create trail feature
     - putting markers on map
     - input details to publish the trail
