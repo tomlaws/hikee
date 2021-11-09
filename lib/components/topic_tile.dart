@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hikee/components/avatar.dart';
+import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/utils/time.dart';
 
 class TopicTile extends StatefulWidget {
-  final Topic topic;
+  final Topic? topic;
   final void Function()? onTap;
-  const TopicTile({Key? key, required this.topic, this.onTap})
-      : super(key: key);
+  const TopicTile({Key? key, this.topic, this.onTap}) : super(key: key);
 
   @override
   _TopicTileState createState() => _TopicTileState();
@@ -15,89 +16,110 @@ class TopicTile extends StatefulWidget {
 class _TopicTileState extends State<TopicTile> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
         onTap: widget.onTap,
         child: Container(
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8.0),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(.1), blurRadius: 3)
+                BoxShadow(
+                    blurRadius: 12,
+                    spreadRadius: -2,
+                    color: Colors.black.withOpacity(.09),
+                    offset: Offset(0, 1))
               ]),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding:
-                    EdgeInsets.only(top: 16.0, left: 16, right: 16, bottom: 8),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Row(
-                      children: [
-                        Text(widget.topic.user.nickname,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: Colors.green[500])),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(3.0)),
-                          width: 6,
-                          height: 6,
-                        ),
-                        Text(
-                          TimeUtils.timeAgoSinceDate(widget.topic.createdAt),
-                          style: TextStyle(color: Colors.grey[500]),
-                        ),
-                      ],
+                    SizedBox(
+                      width: 48,
+                      child: widget.topic == null
+                          ? Shimmer(
+                              height: 48,
+                              width: 48,
+                              radius: 24,
+                            )
+                          : Avatar(user: widget.topic!.user, height: 48),
                     ),
-                    Row(children: [
-                      Row(
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.chat_bubble,
-                            size: 16,
-                            color: Colors.green[200],
+                          Row(
+                            children: [
+                              widget.topic == null
+                                  ? Shimmer(fontSize: 16, width: 120)
+                                  : Text(widget.topic!.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16)),
+                            ],
                           ),
                           SizedBox(
-                            width: 8,
+                            height: 4,
                           ),
-                          Text(widget.topic.replyCount.toString(),
-                              style: TextStyle(color: Colors.green[300]))
-                        ],
-                      ),
-                      SizedBox(
-                        width: 16,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.thumb_up,
-                            size: 16,
-                            color: Colors.blue[200],
-                          ),
+                          widget.topic == null
+                              ? Shimmer(width: 88, fontSize: 12)
+                              : Text(widget.topic!.user.nickname,
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black54)),
                           SizedBox(
-                            width: 8,
+                            height: 4,
                           ),
-                          Text(widget.topic.likeCount.toString(),
-                              style: TextStyle(color: Colors.blue[300]))
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  widget.topic == null
+                                      ? Shimmer(width: 64, fontSize: 12)
+                                      : Text(
+                                          '${widget.topic!.replyCount} replies',
+                                          style: TextStyle(fontSize: 12)),
+                                  Icon(
+                                    Icons.chevron_right,
+                                    size: 14,
+                                  ),
+                                ],
+                              ),
+                              widget.topic == null
+                                  ? Shimmer(width: 64, fontSize: 12)
+                                  : Text(
+                                      TimeUtils.timeAgoSinceDate(
+                                          widget.topic!.createdAt),
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.black54))
+                            ],
+                          ),
                         ],
-                      )
-                    ]),
+                      ),
+                    ),
+                    // Container(
+                    //   margin: EdgeInsets.symmetric(horizontal: 8),
+                    //   decoration: BoxDecoration(
+                    //       color: Colors.grey[300],
+                    //       borderRadius: BorderRadius.circular(3.0)),
+                    //   width: 6,
+                    //   height: 6,
+                    // ),
+                    // Text(
+                    //   TimeUtils.timeAgoSinceDate(widget.topic.createdAt),
+                    //   style: TextStyle(color: Colors.grey[500]),
+                    // ),
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
-                child: Text(
-                  widget.topic.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              )
             ],
           ),
         ));

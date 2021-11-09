@@ -17,6 +17,7 @@ class Button extends StatefulWidget {
   final double radius;
   final double minWidth;
   final double height;
+  final bool shadow;
   final EdgeInsets? padding;
   final bool safeArea;
 
@@ -34,6 +35,7 @@ class Button extends StatefulWidget {
       this.minWidth = 48,
       this.height = 48,
       this.safeArea = false,
+      this.shadow = true,
       this.padding})
       : super(key: key);
 
@@ -53,7 +55,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         ? widget.backgroundColor!
         : (widget.invert
             ? Colors.white
-            : (widget.secondary ? Color(0xFFF5F5F5) : Get.theme.primaryColor)));
+            : (widget.secondary ? Color(0xFFBEBEBE) : Get.theme.primaryColor)));
 
     var textColor = (widget.invert
             ? (widget.icon != null
@@ -73,7 +75,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
       height: widget.height,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          boxShadow: buttonColor != Colors.transparent
+          boxShadow: widget.shadow && buttonColor != Colors.transparent
               ? [Themes.buttonShadow(buttonColor)]
               : null),
       child: Material(
@@ -122,7 +124,8 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                                 ? IconTheme(
                                     data: IconThemeData(
                                         color: widget.secondary
-                                            ? Get.theme.primaryColor
+                                            ? Get.theme.textTheme.bodyText1
+                                                ?.color
                                             : Get.theme.primaryColor),
                                     child: widget.icon!)
                                 : widget.child) ??

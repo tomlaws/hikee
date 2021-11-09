@@ -27,12 +27,12 @@ class EventProvider extends BaseProvider {
       {required String name,
       required String description,
       required DateTime date,
-      required int routeId}) async {
+      required int trailId}) async {
     var res = await post('events', {
       'name': name,
       'description': description,
       'date': date.toString(),
-      'routeId': routeId
+      'trailId': trailId
     });
     return Event.fromJson(res.body);
   }

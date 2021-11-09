@@ -10,7 +10,7 @@ class EventController extends GetxController with StateMixin<Event> {
   @override
   void onInit() {
     super.onInit();
-    id = Get.arguments['routeId'] ?? Get.arguments['id'];
+    id = Get.arguments['trailId'] ?? Get.arguments['id'];
     append(() => () => _eventProvider.getEvent(id));
   }
 

@@ -1,5 +1,5 @@
 import 'package:hikee/models/event_category.dart';
-import 'package:hikee/models/route.dart';
+import 'package:hikee/models/trail.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'event.g.dart';
@@ -10,7 +10,7 @@ class Event {
   final String name;
   final List<EventCategory> categories;
   final String description;
-  final HikingRoute route;
+  final Trail trail;
   int participantCount;
   bool? joined;
   final DateTime date;
@@ -21,7 +21,7 @@ class Event {
       required this.name,
       required this.categories,
       required this.description,
-      required this.route,
+      required this.trail,
       required this.participantCount,
       this.joined,
       required this.date,

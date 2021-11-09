@@ -50,12 +50,16 @@ class _CompassState extends State<Compass> with SingleTickerProviderStateMixin {
               color: Colors.grey.shade100,
               borderRadius: BorderRadius.circular(96),
             ),
-            child: Container(),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned(top: 6, child: Text('N')),
+                Positioned(right: 6, child: Text('E')),
+                Positioned(bottom: 6, child: Text('S')),
+                Positioned(left: 6, child: Text('W')),
+              ],
+            ),
           ),
-          Positioned(top: 6, child: Text('N')),
-          Positioned(right: 6, child: Text('E')),
-          Positioned(bottom: 6, child: Text('S')),
-          Positioned(left: 6, child: Text('W')),
           // Pointer
           Obx(() {
             if (lastValue != widget.heading.value) {

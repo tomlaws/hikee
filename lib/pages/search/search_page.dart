@@ -35,40 +35,28 @@ class _SearchPageState<U> extends State<SearchPage<U>> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: HikeeAppBar(
-          elevation: 2,
-          title: Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: TextInput(
-                    textEditingController: _searchController.searchController,
-                    hintText: 'Search...',
-                    textInputAction: TextInputAction.search,
-                    icon: Icon(Icons.search),
-                    autoFocus: true,
-                    onSubmitted: (q) {
-                      widget.controller.query = q;
-                      _searchController.addHistory(widget.tag, q);
-                      _searchController.searched.value = true;
-                    },
-                  ),
-                ),
+          actions: [
+            Button(
+              onPressed: () {},
+              backgroundColor: Colors.transparent,
+              secondary: true,
+              icon: Icon(
+                Icons.filter_alt_rounded,
+                size: 18,
               ),
-              Container(
-                height: 44,
-                width: 44,
-                margin: EdgeInsets.only(right: 8),
-                child: Button(
-                  onPressed: () {},
-                  backgroundColor: Colors.transparent,
-                  icon: Icon(
-                    Icons.filter_list_alt,
-                    size: 18,
-                  ),
-                ),
-              )
-            ],
+            )
+          ],
+          title: TextInput(
+            textEditingController: _searchController.searchController,
+            hintText: 'Search...',
+            textInputAction: TextInputAction.search,
+            icon: Icon(Icons.search),
+            autoFocus: true,
+            onSubmitted: (q) {
+              widget.controller.query = q;
+              _searchController.addHistory(widget.tag, q);
+              _searchController.searched.value = true;
+            },
           ),
         ),
         body: Obx(() => _searchController.showHistory.value

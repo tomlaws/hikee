@@ -61,7 +61,7 @@ class ElevationProfile extends StatelessWidget {
     }
     bool _showCurrent = true;
     if (minDist > 1) {
-      // far away from route
+      // far away from trail
       _showCurrent = false;
     }
     return Container(

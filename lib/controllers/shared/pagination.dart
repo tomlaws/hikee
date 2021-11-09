@@ -34,7 +34,7 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
       change(state, status: RxStatus.loading());
     var newData = await fetch(getQueryParams());
     if (newData?.data.length == 0) {
-      change(newData, status: RxStatus.success());
+      change(state, status: RxStatus.success());
       return;
     }
     if (state != null)
@@ -47,15 +47,14 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
   }
 
   _clear() {
-    print('clear');
     cursor = null;
     fetchingMore = false;
     change(null, status: RxStatus.loading());
   }
 
-  refetch() {
+  Future<void> refetch() async {
     _clear();
-    next();
+    await next();
   }
 
   set query(String query) {

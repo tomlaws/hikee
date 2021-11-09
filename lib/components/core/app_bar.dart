@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'dart:math' as math;
-
 import 'package:hikee/components/button.dart';
 
 class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HikeeAppBar(
       {Key? key,
-      required this.title,
+      this.title,
       this.pinned = false,
       this.leading,
       this.canPop,
@@ -19,7 +16,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.closeIcon})
       : super(key: key);
 
-  final Widget title;
+  final Widget? title;
   final bool pinned;
   final Widget? leading;
   final bool? canPop;
@@ -40,24 +37,56 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       // ),
       elevation: elevation,
       titleTextStyle: TextStyle(fontSize: 12),
-      title: DefaultTextStyle(
-        style: TextStyle(color: Get.theme.primaryColor, fontSize: 16),
-        child: title,
-      ),
+      title: title == null
+          ? null
+          : DefaultTextStyle(
+              style: TextStyle(
+                  color: Get.theme.textTheme.bodyText1?.color ?? Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    left: leading != null || backButton ? 0 : 16, right: 8.0),
+                child: title,
+              ),
+            ),
       leadingWidth: 44 + 8 * 2,
-      leading: leading ??
-          (backButton
+      leading: leading != null
+          ? Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: leading,
+            )
+          : (backButton
               ? Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Button(
                     backgroundColor: Colors.transparent,
-                    icon: Icon(closeIcon ?? Icons.chevron_left),
+                    icon: Icon(closeIcon ?? Icons.chevron_left,
+                        color: Get.theme.textTheme.bodyText1?.color ??
+                            Colors.black),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 )
               : null),
       automaticallyImplyLeading: false,
-      actions: actions,
+      actions: actions != null
+          ? [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: actions!
+                      .map((e) => SizedBox(
+                            height: 44,
+                            width: 44,
+                            child: e,
+                          ))
+                      .toList(),
+                ),
+              )
+            ]
+          : null,
       backgroundColor: Colors.white,
       shadowColor: Colors.black26,
       toolbarHeight: height,
@@ -659,12 +688,12 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
 //     final ColorScheme colorScheme = theme.colorScheme;
 //     final AppBarTheme appBarTheme = AppBarTheme.of(context);
 //     final ScaffoldState? scaffold = Scaffold.maybeOf(context);
-//     final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
+//     final ModalTrail<dynamic>? parentTrail = ModalTrail.of(context);
 
 //     final bool hasDrawer = scaffold?.hasDrawer ?? false;
 //     final bool hasEndDrawer = scaffold?.hasEndDrawer ?? false;
-//     final bool canPop = parentRoute?.canPop ?? false;
-//     final bool useCloseButton = parentRoute is PageRoute<dynamic> && parentRoute.fullscreenDialog;
+//     final bool canPop = parentTrail?.canPop ?? false;
+//     final bool useCloseButton = parentTrail is PageTrail<dynamic> && parentTrail.fullscreenDialog;
 
 //     final double toolbarHeight = widget.toolbarHeight ?? kToolbarHeight;
 //     final bool backwardsCompatibility = widget.backwardsCompatibility ?? appBarTheme.backwardsCompatibility ?? true;
@@ -745,13 +774,13 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 //     Widget? title = widget.title;
 //     if (title != null) {
-//       bool? namesRoute;
+//       bool? namesTrail;
 //       switch (theme.platform) {
 //         case TargetPlatform.android:
 //         case TargetPlatform.fuchsia:
 //         case TargetPlatform.linux:
 //         case TargetPlatform.windows:
-//           namesRoute = true;
+//           namesTrail = true;
 //           break;
 //         case TargetPlatform.iOS:
 //         case TargetPlatform.macOS:
@@ -761,7 +790,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
 //       title = _AppBarTitleBox(child: title);
 //       if (!widget.excludeHeaderSemantics) {
 //         title = Semantics(
-//           namesRoute: namesRoute,
+//           namesTrail: namesTrail,
 //           child: title,
 //           header: true,
 //         );

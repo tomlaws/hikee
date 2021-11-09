@@ -14,7 +14,7 @@ Event _$EventFromJson(Map<String, dynamic> json) {
         .map((e) => EventCategory.fromJson(e as Map<String, dynamic>))
         .toList(),
     description: json['description'] as String,
-    route: HikingRoute.fromJson(json['route'] as Map<String, dynamic>),
+    trail: Trail.fromJson(json['trail'] as Map<String, dynamic>),
     participantCount: json['participantCount'] as int,
     joined: json['joined'] as bool?,
     date: DateTime.parse(json['date'] as String),
@@ -27,7 +27,7 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
       'name': instance.name,
       'categories': instance.categories,
       'description': instance.description,
-      'route': instance.route,
+      'trail': instance.trail,
       'participantCount': instance.participantCount,
       'joined': instance.joined,
       'date': instance.date.toIso8601String(),

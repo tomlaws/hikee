@@ -5,15 +5,15 @@ import 'package:hikee/components/dialog/base.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/error/error_response.dart';
 
-class RouteReviewDialog extends BaseDialog {
-  const RouteReviewDialog({Key? key, required this.routeId}) : super(key: key);
-  final int routeId;
+class TrailReviewDialog extends BaseDialog {
+  const TrailReviewDialog({Key? key, required this.trailId}) : super(key: key);
+  final int trailId;
 
   @override
-  _RouteReviewDialogState createState() => _RouteReviewDialogState();
+  _TrailReviewDialogState createState() => _TrailReviewDialogState();
 }
 
-class _RouteReviewDialogState extends State<RouteReviewDialog> {
+class _TrailReviewDialogState extends State<TrailReviewDialog> {
   TextInputController _contentController = TextInputController();
   int _rating = 0;
 
@@ -29,7 +29,7 @@ class _RouteReviewDialogState extends State<RouteReviewDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('How would you rate this route?'),
+        Text('How would you rate this trail?'),
         SizedBox(
           height: 8,
         ),
@@ -83,8 +83,8 @@ class _RouteReviewDialogState extends State<RouteReviewDialog> {
             String content = _contentController.text;
             int rating = _rating;
             //await context
-            //    .read<RouteReviewsProvider>()
-            //   .createRouteReview(widget.routeId, content, rating);
+            //    .read<TrailReviewsProvider>()
+            //   .createTrailReview(widget.trailId, content, rating);
             Navigator.of(context).pop(result);
           } catch (ex) {
             if (ex is ErrorResponse) {

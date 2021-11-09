@@ -8,11 +8,11 @@ import 'package:hikee/components/compass.dart';
 import 'package:hikee/components/dropdown.dart';
 import 'package:hikee/components/keep_alive.dart';
 import 'package:hikee/components/mountain_deco.dart';
-import 'package:hikee/components/route_elevation.dart';
-import 'package:hikee/components/route_info.dart';
+import 'package:hikee/components/trail_elevation.dart';
+import 'package:hikee/components/trail_info.dart';
 import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/data/distance_posts/reader.dart';
-import 'package:hikee/models/active_hiking_route.dart';
+import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/compass/weather_controller.dart';
@@ -78,7 +78,7 @@ class CompassPage extends GetView<CompassController> {
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(16.0)),
-                              child: Text('Swipe up to finish the route!',
+                              child: Text('Swipe up to finish the trail!',
                                   style: TextStyle(color: Colors.white)),
                             ),
                             Container(
@@ -128,7 +128,7 @@ class CompassPage extends GetView<CompassController> {
   }
 
   Widget _panel() {
-    if (controller.activeRoute.value == null) {
+    if (controller.activeTrail.value == null) {
       return Container();
     }
     return Container(
@@ -162,7 +162,7 @@ class CompassPage extends GetView<CompassController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (controller.activeRoute.value!.isStarted) ...[
+                    if (controller.activeTrail.value!.isStarted) ...[
                       Expanded(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -214,8 +214,8 @@ class CompassPage extends GetView<CompassController> {
                           children: [
                             Text(
                               controller.isCloseToStart.value
-                                  ? 'You\'re now at the start of the route'
-                                  : 'You\'re far away from the route',
+                                  ? 'You\'re now at the start of the trail'
+                                  : 'You\'re far away from the trail',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -268,24 +268,24 @@ class CompassPage extends GetView<CompassController> {
               child: PageView(
                 controller: controller.panelPageController,
                 children: [
-                  _routeInfo(),
+                  _trailInfo(),
                   KeepAlivePage(
-                    key: Key(controller.activeRoute.value!.route.id.toString()),
+                    key: Key(controller.activeTrail.value!.trail.id.toString()),
                     child: Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         child: Column(children: [
-                          RouteInfo(
-                            route: controller.activeRoute.value!.route,
-                            showRouteName: true,
+                          TrailInfo(
+                            trail: controller.activeTrail.value!.trail,
+                            showTrailName: true,
                             hideRegion: true,
                           ),
                           SizedBox(height: 8),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: RouteElevation(
-                                routeId: controller.activeRoute.value!.route.id,
+                              child: TrailElevation(
+                                trailId: controller.activeTrail.value!.trail.id,
                               ),
                             ),
                           ),
@@ -305,11 +305,11 @@ class CompassPage extends GetView<CompassController> {
       clipBehavior: Clip.none,
       color: Color(0xFF5DB075),
       child: Obx(() {
-        var hasActiveRoute = controller.activeRoute.value != null;
+        var hasActiveTrail = controller.activeTrail.value != null;
         return Stack(
           children: [
-            if (hasActiveRoute)
-              _map(controller.activeRoute.value!)
+            if (hasActiveTrail)
+              _map(controller.activeTrail.value!)
             else
               Positioned(
                 bottom: 0,
@@ -452,12 +452,12 @@ class CompassPage extends GetView<CompassController> {
                             ],
                           ),
                         ),
-                        if (!hasActiveRoute)
+                        if (!hasActiveTrail)
                           Expanded(
                               child: Center(
                             child: Button(
                               invert: true,
-                              child: Text('Discover Routes'),
+                              child: Text('Discover Trails'),
                               onPressed: () {
                                 var hc = Get.find<HomeController>();
                                 hc.switchTab(1);
@@ -467,7 +467,7 @@ class CompassPage extends GetView<CompassController> {
                           ))
                       ],
                     ))),
-            if (hasActiveRoute)
+            if (hasActiveTrail)
               Positioned(
                 right: 0,
                 bottom: controller.collapsedPanelHeight + 8,
@@ -488,7 +488,7 @@ class CompassPage extends GetView<CompassController> {
                             ),
                             invert: true,
                             onPressed: () {
-                              controller.focusActiveRoute();
+                              controller.focusActiveTrail();
                             },
                           ),
                           Container(
@@ -516,7 +516,7 @@ class CompassPage extends GetView<CompassController> {
     );
   }
 
-  Widget _map(ActiveHikingRoute activeHikingRoute) {
+  Widget _map(ActiveTrail activeTrail) {
     return Listener(
         onPointerDown: (e) {
           controller.lockPosition = false;
@@ -529,7 +529,7 @@ class CompassPage extends GetView<CompassController> {
           tiltGesturesEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: activeHikingRoute.decodedPath[0],
+            target: activeTrail.decodedPath[0],
             zoom: 14,
           ),
           myLocationEnabled: true,
@@ -543,7 +543,7 @@ class CompassPage extends GetView<CompassController> {
               jointType: JointType.round,
               startCap: Cap.roundCap,
               endCap: Cap.roundCap,
-              points: activeHikingRoute.decodedPath,
+              points: activeTrail.decodedPath,
             ),
             Polyline(
               polylineId: PolylineId('polyLine2'),
@@ -553,7 +553,7 @@ class CompassPage extends GetView<CompassController> {
               startCap: Cap.roundCap,
               endCap: Cap.roundCap,
               zIndex: 0,
-              points: activeHikingRoute.decodedPath,
+              points: activeTrail.decodedPath,
             ),
             if (controller.started.value) ...[
               Polyline(
@@ -583,13 +583,13 @@ class CompassPage extends GetView<CompassController> {
               markerId: MarkerId('marker-start'),
               zIndex: 2,
               icon: MapMarker().start,
-              position: activeHikingRoute.decodedPath.first,
+              position: activeTrail.decodedPath.first,
             ),
             Marker(
               markerId: MarkerId('marker-end'),
               zIndex: 1,
               icon: MapMarker().end,
-              position: activeHikingRoute.decodedPath.last,
+              position: activeTrail.decodedPath.last,
             ),
             if (controller.nearestDistancePost.value != null)
               Marker(
@@ -630,7 +630,7 @@ class CompassPage extends GetView<CompassController> {
     return list;
   }
 
-  Widget _routeInfo() {
+  Widget _trailInfo() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child:
@@ -644,13 +644,14 @@ class CompassPage extends GetView<CompassController> {
                   heading: controller.heading,
                 ),
               ),
-              SizedBox(width: 8),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Average speed', style: TextStyle()),
+                      Text('Average speed',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
                       SizedBox(
                         height: 8,
                       ),
@@ -659,9 +660,8 @@ class CompassPage extends GetView<CompassController> {
                       SizedBox(
                         height: 16,
                       ),
-                      Text(
-                        'Estimated finish time',
-                      ),
+                      Text('Estimated finish time',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
                       SizedBox(
                         height: 8,
                       ),
@@ -688,7 +688,7 @@ class CompassPage extends GetView<CompassController> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (!controller.activeRoute.value!.isStarted)
+                if (!controller.activeTrail.value!.isStarted)
                   Expanded(
                     child: Button(
                         child: Text('Start Now'),
@@ -696,7 +696,7 @@ class CompassPage extends GetView<CompassController> {
                             closeEnough ? Get.theme.primaryColor : Colors.grey,
                         onPressed: () {
                           if (closeEnough) {
-                            controller.startRoute();
+                            controller.startTrail();
                             controller.goToCurrentLocation();
                           } else {
                             _showFarAwayDialog();
@@ -706,10 +706,10 @@ class CompassPage extends GetView<CompassController> {
                 else
                   Expanded(
                     child: Button(
-                        child: Text('Finish Route'),
+                        child: Text('Finish Trail'),
                         disabled: !controller.isCloseToGoal.value,
                         onPressed: () {
-                          controller.finishRoute();
+                          controller.finishTrail();
                         }),
                   ),
                 // else
@@ -723,10 +723,10 @@ class CompassPage extends GetView<CompassController> {
                 Container(width: 16),
                 Expanded(
                   child: Button(
-                      child: Text('Quit Route'),
+                      child: Text('Quit Trail'),
                       backgroundColor: Color.fromRGBO(109, 160, 176, 1),
                       onPressed: () {
-                        controller.quitRoute();
+                        controller.quitTrail();
                       }),
                 )
               ],
@@ -747,7 +747,7 @@ class CompassPage extends GetView<CompassController> {
           content: SingleChildScrollView(
             child: ListBody(
               children: const <Widget>[
-                Text('You\'re not at the start of the route'),
+                Text('You\'re not at the start of the trail'),
                 Text('Would you like to check how to reach there?'),
               ],
             ),
@@ -841,7 +841,7 @@ class CompassPage extends GetView<CompassController> {
                       child: Text('SHOW IN MAP'),
                       onPressed: () {
                         controller.showDistancePost(nearestDistancePost);
-                        //Routemaster.of(context).pop();
+                        //Trailmaster.of(context).pop();
                       }),
                 ],
               );
@@ -852,13 +852,13 @@ class CompassPage extends GetView<CompassController> {
                   backgroundColor: Colors.red,
                   onPressed: () {
                     launch("tel://999");
-                    //Routemaster.of(context).pop();
+                    //Trailmaster.of(context).pop();
                   }),
               Button(
                   child: Text('CANCEL'),
                   backgroundColor: Colors.black38,
                   onPressed: () {
-                    //Routemaster.of(context).pop();
+                    //Trailmaster.of(context).pop();
                   })
             ]);
   }

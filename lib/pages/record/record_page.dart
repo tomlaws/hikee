@@ -5,7 +5,7 @@ import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/elevation_profile.dart';
 import 'package:hikee/components/map.dart';
-import 'package:hikee/components/route_elevation.dart';
+import 'package:hikee/components/trail_elevation.dart';
 import 'package:hikee/pages/record/record_controller.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
@@ -49,7 +49,7 @@ class RecordPage extends GetView<RecordController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Route',
+                      Text('Trail',
                           style: TextStyle(
                             color: Colors.black38,
                           )),
@@ -170,7 +170,7 @@ class RecordPage extends GetView<RecordController> {
                       //     decoration:
                       //         BoxDecoration(borderRadius: BorderRadius.circular(16.0)),
                       //     child: controller.obx((state) {
-                      //       var p = GeoUtils.decodePath(state!.route.path);
+                      //       var p = GeoUtils.decodePath(state!.trail.path);
                       //       return HikeeMap(target: p.first, path: p);
                       //     },
                       //         onLoading: Shimmer(

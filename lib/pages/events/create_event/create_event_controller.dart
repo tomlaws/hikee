@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 class CreateEventController extends GetxController {
   final _eventProvider = Get.put(EventProvider());
-  late int routeId;
+  late int trailId;
 
   final TextInputController nameController = TextInputController();
   final TextInputController descriptionController = TextInputController();
@@ -15,7 +15,7 @@ class CreateEventController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    routeId = Get.arguments['routeId'];
+    trailId = Get.arguments['trailId'];
   }
 
   @override
@@ -30,7 +30,7 @@ class CreateEventController extends GetxController {
     var date = DateFormat('yyyy-MM-dd HH:mm').parse(dateController.text);
     var utcDate = date.toUtc();
     var event = await _eventProvider.createEvent(
-        name: name, description: description, date: utcDate, routeId: routeId);
+        name: name, description: description, date: utcDate, trailId: trailId);
     return event;
   }
 }

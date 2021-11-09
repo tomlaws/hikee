@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/event_tile.dart';
-import 'package:hikee/components/hiking_route_tile.dart';
-import 'package:hikee/models/event.dart';
-import 'package:hikee/models/route.dart';
 import 'package:hikee/pages/account/account_binding.dart';
 import 'package:hikee/pages/account/old_account_page.dart';
 import 'package:hikee/pages/account/events/account_events_binding.dart';
@@ -12,13 +8,9 @@ import 'package:hikee/pages/account/events/account_events_page.dart';
 import 'package:hikee/pages/compass/compass_binding.dart';
 import 'package:hikee/pages/compass/compass_page.dart';
 import 'package:hikee/pages/events/events_binding.dart';
-import 'package:hikee/pages/events/events_controller.dart';
 import 'package:hikee/pages/events/events_page.dart';
-import 'package:hikee/pages/routes/routes_binding.dart';
-import 'package:hikee/pages/routes/routes_controller.dart';
-import 'package:hikee/pages/routes/routes_page.dart';
-import 'package:hikee/pages/search/search_binding.dart';
-import 'package:hikee/pages/search/search_page.dart';
+import 'package:hikee/pages/trails/trails_binding.dart';
+import 'package:hikee/pages/trails/trails_page.dart';
 import 'package:hikee/pages/topics/topics_binding.dart';
 import 'package:hikee/pages/topics/topics_page.dart';
 
@@ -32,7 +24,7 @@ class HomeController extends GetxController {
       '/': [() => CompassPage(), CompassBinding()],
     },
     1: {
-      '/': [() => RoutesPage(), RoutesBinding()],
+      '/': [() => TrailsPage(), TrailsBinding()],
     },
     2: {
       '/': [() => EventsPage(), EventsBinding()],

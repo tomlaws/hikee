@@ -1,4 +1,4 @@
-import 'package:hikee/models/route.dart';
+import 'package:hikee/models/trail.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'bookmark.g.dart';
@@ -7,13 +7,13 @@ part 'bookmark.g.dart';
 class Bookmark {
   int id;
   int userId;
-  int routeId;
-  HikingRoute? route;
+  int trailId;
+  Trail? trail;
   Bookmark(
       {required this.id,
       required this.userId,
-      required this.routeId,
-      this.route});
+      required this.trailId,
+      this.trail});
   factory Bookmark.fromJson(Map<String, dynamic> json) =>
       _$BookmarkFromJson(json);
   Map<String, dynamic> toJson() => _$BookmarkToJson(this);

@@ -27,9 +27,10 @@ class TimeUtils {
     final date2 = DateTime.now();
     final difference = date2.difference(dateTime);
 
-    if ((difference.inDays / 7).floor() >= 1) {
-      return (numericDates) ? '1 week ago' : 'Last week';
-    } else if (difference.inDays >= 2) {
+    // if ((difference.inDays / 7).floor() <= 1) {
+    //   return (numericDates) ? '1 week ago' : 'Last week';
+    // } else
+    if (difference.inDays >= 2) {
       return '${difference.inDays} days ago';
     } else if (difference.inDays >= 1) {
       return (numericDates) ? '1 day ago' : 'Yesterday';

@@ -147,7 +147,7 @@ class AccountPage extends GetView<AccountController> {
                             ),
                             Padding(padding: const EdgeInsets.only(top: 8)),
                             Text(
-                              'routes',
+                              'trails',
                               style: TextStyle(
                                 fontWeight: FontWeight.w200,
                                 letterSpacing: 1,

@@ -9,6 +9,7 @@ class Topic {
   final User user;
   final String title;
   final String content;
+  final List<String>? images;
   final int likeCount;
   final int replyCount;
   final DateTime createdAt;
@@ -19,6 +20,7 @@ class Topic {
     required this.user,
     required this.title,
     required this.content,
+    this.images,
     required this.likeCount,
     required this.replyCount,
     required this.createdAt,

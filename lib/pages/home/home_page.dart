@@ -10,12 +10,11 @@ import 'package:hikee/pages/compass/compass_page.dart';
 import 'package:hikee/pages/compass/weather_controller.dart';
 import 'package:hikee/pages/events/events_controller.dart';
 import 'package:hikee/pages/events/events_page.dart';
-import 'package:hikee/pages/routes/featured_route_controller.dart';
-import 'package:hikee/pages/routes/popular_routes_controller.dart';
-import 'package:hikee/pages/routes/routes_page.dart';
+import 'package:hikee/pages/trails/featured_trail_controller.dart';
+import 'package:hikee/pages/trails/popular_trails_controller.dart';
+import 'package:hikee/pages/trails/trails_page.dart';
 import 'package:hikee/pages/topics/topics_controller.dart';
 import 'package:hikee/pages/topics/topics_page.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import 'home_controller.dart';
 
@@ -48,8 +47,8 @@ class HomePage extends GetView<HomeController> {
         ));
     Get.lazyPut(() => CompassController());
     Get.lazyPut(() => WeatherController());
-    Get.lazyPut(() => PopularRoutesController());
-    Get.lazyPut(() => FeaturedRouteController());
+    Get.lazyPut(() => PopularTrailsController());
+    Get.lazyPut(() => FeaturedTrailController());
     Get.lazyPut(() => EventsController());
     Get.lazyPut(() => EventCategoriesController());
     Get.lazyPut(() => TopicsController());
@@ -59,7 +58,7 @@ class HomePage extends GetView<HomeController> {
         physics: NeverScrollableScrollPhysics(),
         children: [
           KeepAlivePage(child: CompassPage()),
-          RoutesPage(),
+          TrailsPage(),
           EventsPage(),
           TopicsPage(),
           AccountPage()
@@ -83,7 +82,7 @@ class HomePage extends GetView<HomeController> {
                   icon: Icon(controller.currentTabIndex.value == 1
                       ? Icons.menu_book
                       : Icons.menu_book_outlined),
-                  label: 'Routes'),
+                  label: 'Trails'),
               BottomNavigationBarItem(
                   icon: Icon(controller.currentTabIndex.value == 2
                       ? Icons.public

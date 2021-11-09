@@ -8,13 +8,13 @@ import 'package:hikee/components/calendar_date.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/components/hiking_route_tile.dart';
+import 'package:hikee/components/trail_tile.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/models/event_participation.dart';
 import 'package:hikee/pages/event/event_controller.dart';
 import 'package:hikee/pages/event/event_participation_controller.dart';
-import 'package:hikee/pages/route/route_binding.dart';
-import 'package:hikee/pages/route/route_page.dart';
+import 'package:hikee/pages/trail/trail_binding.dart';
+import 'package:hikee/pages/trail/trail_page.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
 
@@ -34,14 +34,15 @@ class EventPage extends GetView<EventController> {
           return Column(children: [
             Expanded(
               child: SingleChildScrollView(
+                padding: EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    HikingRouteTile(
+                    TrailTile(
                       radius: 0,
-                      route: event!.route,
+                      trail: event!.trail,
                       onTap: () {
-                        Get.toNamed('/routes/${event.route.id}',
+                        Get.toNamed('/trails/${event.trail.id}',
                             arguments: {'hideButtons': true});
                       },
                     ),
@@ -82,7 +83,7 @@ class EventPage extends GetView<EventController> {
                                           opacity: .75,
                                           child: Text(
                                             TimeUtils.formatMinutes(
-                                                event.route.duration),
+                                                event.trail.duration),
                                           ),
                                         )
                                       ],
@@ -95,13 +96,13 @@ class EventPage extends GetView<EventController> {
                                     var startDate = controller.state!.date;
                                     var endDate = startDate.add(Duration(
                                         minutes:
-                                            controller.state!.route.duration));
+                                            controller.state!.trail.duration));
                                     final Event event = Event(
                                         title: controller.state?.name ?? '',
                                         description:
                                             controller.state?.description ?? '',
                                         location:
-                                            controller.state?.route.name_en ??
+                                            controller.state?.trail.name_en ??
                                                 '',
                                         startDate: startDate,
                                         endDate: endDate);

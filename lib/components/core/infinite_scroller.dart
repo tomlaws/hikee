@@ -18,6 +18,8 @@ class InfiniteScroller<U> extends StatefulWidget {
     this.horizontal = false,
     this.empty,
     this.initial,
+    this.loadingBuilder,
+    this.loadingItemCount = 5,
   }) : super(key: key);
 
   final bool shrinkWrap;
@@ -47,6 +49,12 @@ class InfiniteScroller<U> extends StatefulWidget {
   /// Widget to be shown when the search is not initiated
   /// String will be converted into Text widget
   final dynamic initial;
+
+  /// Widget to show when it is loading
+  final Widget? loadingBuilder;
+
+  /// Number of fake items (Built from [loadingBuilder]) to be shown when it is in loading state
+  final int loadingItemCount;
 
   @override
   _InfiniteScrollerState<U> createState() => _InfiniteScrollerState<U>();
@@ -99,46 +107,45 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
         }
         return widget.empty;
       }
-      return widget.separator != null
-          ? ListView.separated(
-              clipBehavior: Clip.none,
-              scrollDirection:
-                  widget.horizontal ? Axis.horizontal : Axis.vertical,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.padding,
-              controller: _scrollController,
-              itemCount: itemCount,
-              separatorBuilder: (_, __) => widget.separator!,
-              itemBuilder: (_, i) {
-                if (widget.take != null &&
-                    i == widget.take! - 1 &&
-                    widget.overflowBuilder != null) {
-                  return widget.overflowBuilder!(
-                      items[i], itemCount - 1, data?.totalCount ?? 0);
-                }
-                return widget.builder(items[i]);
-              })
-          : ListView.builder(
-              clipBehavior: Clip.none,
-              scrollDirection:
-                  widget.horizontal ? Axis.horizontal : Axis.vertical,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.padding,
-              controller: _scrollController,
-              itemCount: itemCount,
-              itemBuilder: (_, i) {
-                if (widget.take != null &&
-                    i == widget.take! - 1 &&
-                    widget.overflowBuilder != null) {
-                  return widget.overflowBuilder!(
-                      items[i], itemCount, data?.totalCount ?? 0);
-                }
-                return widget.builder(items[i]);
-              });
+      return _list(itemCount, (_, i) {
+        if (widget.take != null &&
+            i == widget.take! - 1 &&
+            widget.overflowBuilder != null) {
+          return widget.overflowBuilder!(
+              items[i], itemCount - 1, data?.totalCount ?? 0);
+        }
+        return widget.builder(items[i]);
+      });
     },
         onLoading: Center(
-          child: CircularProgressIndicator(),
+          child: widget.loadingBuilder != null
+              ? _list(
+                  widget.loadingItemCount, (_, __) => widget.loadingBuilder!)
+              : CircularProgressIndicator(),
         ),
         onEmpty: SizedBox());
+  }
+
+  Widget _list(int itemCount, Widget Function(BuildContext, int) itemBuilder) {
+    return widget.separator != null
+        ? ListView.separated(
+            clipBehavior: Clip.none,
+            scrollDirection:
+                widget.horizontal ? Axis.horizontal : Axis.vertical,
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            controller: _scrollController,
+            itemCount: itemCount,
+            separatorBuilder: (_, __) => widget.separator!,
+            itemBuilder: itemBuilder)
+        : ListView.builder(
+            clipBehavior: Clip.none,
+            scrollDirection:
+                widget.horizontal ? Axis.horizontal : Axis.vertical,
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            controller: _scrollController,
+            itemCount: itemCount,
+            itemBuilder: itemBuilder);
   }
 }

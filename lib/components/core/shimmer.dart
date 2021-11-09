@@ -23,10 +23,17 @@ class Shimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     var renderHeight = height;
     if (fontSize != null) {
-      renderHeight = fontSize! + fontSize! / 4;
+      final Size size = (TextPainter(
+              text: TextSpan(text: '', style: TextStyle(fontSize: fontSize)),
+              maxLines: 1,
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textDirection: TextDirection.ltr)
+            ..layout())
+          .size;
+      renderHeight = size.height;
     }
     return S.Shimmer.fromColors(
-      baseColor: Colors.grey[100]!,
+      baseColor: Colors.grey[200]!,
       highlightColor: Colors.grey[50]!,
       enabled: enabled,
       child: child ??

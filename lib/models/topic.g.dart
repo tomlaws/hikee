@@ -12,6 +12,8 @@ Topic _$TopicFromJson(Map<String, dynamic> json) {
     user: User.fromJson(json['user'] as Map<String, dynamic>),
     title: json['title'] as String,
     content: json['content'] as String,
+    images:
+        (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
     likeCount: json['likeCount'] as int,
     replyCount: json['replyCount'] as int,
     createdAt: DateTime.parse(json['createdAt'] as String),
@@ -23,6 +25,7 @@ Map<String, dynamic> _$TopicToJson(Topic instance) => <String, dynamic>{
       'user': instance.user,
       'title': instance.title,
       'content': instance.content,
+      'images': instance.images,
       'likeCount': instance.likeCount,
       'replyCount': instance.replyCount,
       'createdAt': instance.createdAt.toIso8601String(),

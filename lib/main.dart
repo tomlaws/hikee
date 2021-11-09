@@ -12,8 +12,18 @@ import 'package:hikee/pages/home/home_binding.dart';
 import 'package:hikee/pages/home/home_page.dart';
 import 'package:hikee/pages/record/record_binding.dart';
 import 'package:hikee/pages/record/record_page.dart';
-import 'package:hikee/pages/route/route_binding.dart';
-import 'package:hikee/pages/route/route_page.dart';
+import 'package:hikee/pages/topic/topic_binding.dart';
+import 'package:hikee/pages/topic/topic_page.dart';
+import 'package:hikee/pages/topics/create/create_topic_binding.dart';
+import 'package:hikee/pages/topics/create/create_topic_page.dart';
+import 'package:hikee/pages/trail/trail_binding.dart';
+import 'package:hikee/pages/trail/trail_page.dart';
+import 'package:hikee/pages/trails/categories/trail_categories_binding.dart';
+import 'package:hikee/pages/trails/categories/trail_categories_page.dart';
+import 'package:hikee/pages/trails/category/trail_category_binding.dart';
+import 'package:hikee/pages/trails/category/trail_category_page.dart';
+import 'package:hikee/pages/trails/create/create_trail_binding.dart';
+import 'package:hikee/pages/trails/create/create_trail_page.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/map_marker.dart';
 
@@ -42,9 +52,24 @@ class MyApp extends StatelessWidget {
           binding: HomeBinding(),
         ),
         GetPage(
-          name: '/routes/:id',
-          page: () => RoutePage(),
-          binding: RouteBinding(),
+          name: '/trails/create',
+          page: () => CreateTrailPage(),
+          binding: CreateTrailBinding(),
+        ),
+        GetPage(
+          name: '/trails/categories',
+          page: () => TrailCategoriesPage(),
+          binding: TrailCategoriesBinding(),
+        ),
+        GetPage(
+          name: '/trails/categories/:id',
+          page: () => TrailCategoryPage(),
+          binding: TrailCategoryBinding(),
+        ),
+        GetPage(
+          name: '/trails/:id',
+          page: () => TrailPage(),
+          binding: TrailBinding(),
         ),
         GetPage(
           name: '/records/:id',
@@ -55,6 +80,16 @@ class MyApp extends StatelessWidget {
           name: '/records',
           page: () => AccountRecordsPage(),
           binding: AccountRecordsBinding(),
+        ),
+        GetPage(
+          name: '/topics/create',
+          page: () => CreateTopicPage(),
+          binding: CreateTopicBinding(),
+        ),
+        GetPage(
+          name: '/topics/:id',
+          page: () => TopicPage(),
+          binding: TopicBinding(),
         ),
         GetPage(
             name: '/login', page: () => LoginPage(), binding: LoginBinding()),

@@ -4,8 +4,6 @@ import 'package:hikee/pages/topics/topics_controller.dart';
 class TopicsBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<TopicsController>(() {
-      return TopicsController();
-    });
+    Get.lazyPut<TopicsController>(() => TopicsController());
   }
 }

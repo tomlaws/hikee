@@ -1,15 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/topic_tile.dart';
 import 'package:hikee/models/topic.dart';
+import 'package:hikee/pages/topics/topic_categories.dart';
+import 'package:hikee/pages/topics/topic_categories_controller.dart';
 import 'package:hikee/pages/topics/topics_controller.dart';
 
 class TopicsPage extends GetView<TopicsController> {
   final TextEditingController _searchController =
       TextEditingController(text: "");
+  final categoriesController = Get.put(TopicCategoriesController());
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,7 @@ class TopicsPage extends GetView<TopicsController> {
       //   onPressed: () {
       //     context.read<AuthProvider>().mustLogin(context, () {
       //       Navigator.of(context, rootNavigator: true)
-      //           .push(CupertinoPageRoute(builder: (_) => CreateTopicPage()));
+      //           .push(CupertinoPageTrail(builder: (_) => CreateTopicPage()));
       //     });
       //   },
       //   icon: Icon(Icons.add, color: Colors.white),
@@ -80,63 +85,69 @@ class TopicsPage extends GetView<TopicsController> {
       //     ),
       //   ),
       // ),
-      body: CustomScrollView(
-        controller: controller.scrollController,
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 76.0,
-            collapsedHeight: 60.0,
-            pinned: true,
-            elevation: 2,
-            backgroundColor: Colors.white,
-            flexibleSpace: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextInput(
-                      textEditingController: _searchController,
-                      hintText: 'Search...',
-                      textInputAction: TextInputAction.search,
-                      icon: Icon(Icons.search),
-                      onSubmitted: (q) {
-                        //context.read<TopicsProvider>().query = q;
+      body: RefreshIndicator(
+        onRefresh: controller.refetch,
+        child: CustomScrollView(
+          controller: controller.scrollController,
+          physics: AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 60.0,
+              collapsedHeight: 60.0,
+              pinned: true,
+              elevation: 2,
+              shadowColor: Colors.black45,
+              backgroundColor: Colors.white,
+              flexibleSpace: HikeeAppBar(
+                  elevation: 0,
+                  actions: [
+                    Button(
+                      icon: Icon(Icons.add),
+                      secondary: true,
+                      backgroundColor: Colors.transparent,
+                      onPressed: () {
+                        Get.toNamed('/topics/create', arguments: {
+                          'categoryId':
+                              categoriesController.currentCategory.value
+                        });
                       },
                     ),
-                  ),
-                ],
-              ),
+                    Button(
+                      icon: Icon(Icons.search),
+                      secondary: true,
+                      backgroundColor: Colors.transparent,
+                      onPressed: () {},
+                    )
+                  ],
+                  title: TopicCategories()),
             ),
-          ),
-          // SliverToBoxAdapter(
-          //   child: Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          //     child: Row(
-          //       children: [Text('test')],
-          //     ),
-          //   ),
-          // ),
-          SliverList(
-              delegate: SliverChildListDelegate([
-            InfiniteScroller<Topic>(
+            SliverList(
+                delegate: SliverChildListDelegate([
+              InfiniteScroller<Topic>(
                 controller: controller,
                 shrinkWrap: true,
                 separator: SizedBox(
                   height: 16,
                 ),
                 padding:
-                    EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+                    EdgeInsets.only(top: 0, left: 16, right: 16, bottom: 16),
                 builder: (topic) {
                   return TopicTile(
                     topic: topic,
                     onTap: () {
-                      //Routemaster.of(context).push('/topics/${topic.id}');
+                      Get.toNamed('/topics/${topic.id}');
                     },
                   );
-                })
-          ]))
-        ],
+                },
+                loadingBuilder: TopicTile(
+                  topic: null,
+                  onTap: () {},
+                ),
+                loadingItemCount: 4,
+              )
+            ]))
+          ],
+        ),
       ),
       // body: SafeArea(
       //   child: Container(
@@ -154,7 +165,7 @@ class TopicsPage extends GetView<TopicsController> {
       //                 return TopicTile(
       //                   topic: topic,
       //                   onTap: () {
-      //                     Routemaster.of(context).push('/topics/${topic.id}');
+      //                     Trailmaster.of(context).push('/topics/${topic.id}');
       //                   },
       //                 );
       //               }),

@@ -5,8 +5,9 @@ const Color themeColor = Color(0xFF1ec28c);
 
 class Themes {
   static final light = ThemeData.light().copyWith(
-      colorScheme: ColorScheme.light(
-          primary: themeColor, secondary: Color.fromRGBO(241, 130, 69, 1)),
+      colorScheme: ColorScheme.light(primary: themeColor, secondary: Colors.grey
+          // secondary: Color.fromRGBO(241, 130, 69, 1)
+          ),
       primaryColor: themeColor,
       backgroundColor: Colors.white,
       scaffoldBackgroundColor: Colors.white,
@@ -31,6 +32,7 @@ class Themes {
           showSelectedLabels: false),
       splashColor: Colors.transparent,
       highlightColor: Color(0x0F000000),
+      iconTheme: IconThemeData(color: Color(0xFF454157)),
       textTheme: ThemeData(fontFamily: 'Gilroy')
           .textTheme
           .apply(bodyColor: Color(0xFF454157))

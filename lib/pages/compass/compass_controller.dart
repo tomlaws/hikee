@@ -12,10 +12,10 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/sliding_up_panel.dart';
-import 'package:hikee/models/active_hiking_route.dart';
+import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/models/record.dart';
-import 'package:hikee/models/route.dart';
+import 'package:hikee/models/trail.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/record.dart';
 import 'package:hikee/utils/geo.dart';
@@ -31,7 +31,7 @@ import 'package:background_locator/background_locator.dart';
 
 class CompassController extends GetxController
     with SingleGetTickerProviderMixin {
-  Rxn<ActiveHikingRoute> activeRoute = Rxn<ActiveHikingRoute>();
+  Rxn<ActiveTrail> activeTrail = Rxn<ActiveTrail>();
   Completer<GoogleMapController> mapController = Completer();
   PanelController panelController = PanelController();
   PageController panelPageController = PageController(
@@ -72,16 +72,16 @@ class CompassController extends GetxController
   @override
   void onInit() {
     super.onInit();
-    _loadRoute();
-    print('load route');
+    _loadTrail();
+    print('load trail');
     panelPageController
       ..addListener(() {
         panelPage.value = panelPageController.page ?? 0;
       });
-    // start timer when active route is started
-    activeRoute.listen((route) {
-      started.value = route?.isStarted ?? false;
-      if (route == null || !route.isStarted) {
+    // start timer when active trail is started
+    activeTrail.listen((trail) {
+      started.value = trail?.isStarted ?? false;
+      if (trail == null || !trail.isStarted) {
         elapsed.value = 0;
         if (_timer != null) {
           _timer!.cancel();
@@ -90,17 +90,18 @@ class CompassController extends GetxController
       } else {
         _timer = Timer.periodic(const Duration(seconds: 1), (_) {
           int s = DateTime.now().millisecondsSinceEpoch -
-              (activeRoute.value?.startTime ??
+              (activeTrail.value?.startTime ??
                   DateTime.now().millisecondsSinceEpoch);
           elapsed.value = ((s / 1000).floor());
+
+          updateSpeed();
         });
       }
       // location tracking
-      print('hello');
-      if (route == null) {
+      if (trail == null) {
         stopLocationTracking();
       } else {
-        print('start');
+        print('start tracking location in the background');
         startLocationTracking();
       }
     });
@@ -176,29 +177,29 @@ class CompassController extends GetxController
     }
   }
 
-  void focusActiveRoute() async {
-    var decodedPath = activeRoute.value!.decodedPath;
+  void focusActiveTrail() async {
+    var decodedPath = activeTrail.value!.decodedPath;
     lockPosition = false;
     print({
-      'start': activeRoute.value!.decodedPath.first,
-      'end': activeRoute.value!.decodedPath.last
+      'start': activeTrail.value!.decodedPath.first,
+      'end': activeTrail.value!.decodedPath.last
     });
     final GoogleMapController controller = await mapController.future;
     controller.moveCamera(
         CameraUpdate.newLatLngBounds(GeoUtils.getPathBounds(decodedPath), 20));
   }
 
-  _loadRoute() async {
+  _loadTrail() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (prefs.containsKey('activeRoute')) {
-        String? json = prefs.getString('activeRoute');
+      if (prefs.containsKey('activeTrail')) {
+        String? json = prefs.getString('activeTrail');
         if (json != null) {
-          var route = HikingRoute.fromJson(jsonDecode(json));
-          var decodedPath = GeoUtils.decodePath(route.path);
+          var trail = Trail.fromJson(jsonDecode(json));
+          var decodedPath = GeoUtils.decodePath(trail.path);
           var startTime = prefs.getInt('startTime');
-          activeRoute.value = ActiveHikingRoute(
-              route: route, decodedPath: decodedPath, startTime: startTime);
+          activeTrail.value = ActiveTrail(
+              trail: trail, decodedPath: decodedPath, startTime: startTime);
         }
       }
       if (prefs.containsKey('walkedPath')) {
@@ -219,35 +220,35 @@ class CompassController extends GetxController
     }
   }
 
-  selectRoute(HikingRoute route) async {
+  selectTrail(Trail trail) async {
     try {
-      var decodedPath = GeoUtils.decodePath(route.path);
+      var decodedPath = GeoUtils.decodePath(trail.path);
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String encoded = jsonEncode(route.toJson());
-      prefs.setString('activeRoute', encoded);
-      activeRoute.value = ActiveHikingRoute(
-          route: route, decodedPath: decodedPath, startTime: null);
+      String encoded = jsonEncode(trail.toJson());
+      prefs.setString('activeTrail', encoded);
+      activeTrail.value =
+          ActiveTrail(trail: trail, decodedPath: decodedPath, startTime: null);
       isCloseToStart.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!, activeRoute.value!.decodedPath[0]);
+          currentLocation.value!, activeTrail.value!.decodedPath[0]);
     } catch (ex) {
       print(ex);
     }
   }
 
-  startRoute() async {
+  startTrail() async {
     try {
-      if (activeRoute.value == null) return;
+      if (activeTrail.value == null) return;
       var startTime = DateTime.now().millisecondsSinceEpoch;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setInt('startTime', startTime);
-      activeRoute.value = ActiveHikingRoute(
-          route: activeRoute.value!.route,
-          decodedPath: activeRoute.value!.decodedPath,
+      activeTrail.value = ActiveTrail(
+          trail: activeTrail.value!.trail,
+          decodedPath: activeTrail.value!.decodedPath,
           startTime: startTime);
       isCloseToGoal.value = false;
       if (currentLocation.value != null) {
         isCloseToStart.value = GeoUtils.isCloseToPoint(
-            currentLocation.value!, activeRoute.value!.decodedPath[0]);
+            currentLocation.value!, activeTrail.value!.decodedPath[0]);
         walkedPath.add(currentLocation.value!);
       }
       updateNotification(0);
@@ -256,37 +257,37 @@ class CompassController extends GetxController
     }
   }
 
-  quitRoute() async {
+  quitTrail() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.remove('startTime');
-      prefs.remove('activeRoute');
-      activeRoute.value = null;
+      prefs.remove('activeTrail');
+      activeTrail.value = null;
       panelPosition.value = 0;
     } catch (ex) {
       print(ex);
     }
   }
 
-  finishRoute() async {
+  finishTrail() async {
     try {
       if (_authProvider.loggedIn.value) {
         //upload stats
         var time = elapsed.value;
-        var routeId = activeRoute.value!.route.id;
-        var routeName = activeRoute.value!.route.name_en;
-        var distance = activeRoute.value!.route.length;
-        var msse = activeRoute.value!.startTime!;
+        var trailId = activeTrail.value!.trail.id;
+        var trailName = activeTrail.value!.trail.name_en;
+        var distance = activeTrail.value!.trail.length;
+        var msse = activeTrail.value!.startTime!;
         var date = DateTime.fromMillisecondsSinceEpoch(msse);
         Record record = await _recordProvider.createRecord(
             date: date,
             time: time,
-            name: routeName,
-            path: activeRoute.value!.route.path,
+            name: trailName,
+            path: activeTrail.value!.trail.path,
             userPath: walkedPath.toList(),
             altitudes: altitudes);
         Get.defaultDialog(
-          title: "Congratulations, you've completed the route!",
+          title: "Congratulations, you've completed the trail!",
           content: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
@@ -306,7 +307,7 @@ class CompassController extends GetxController
                       Expanded(
                         child: Column(
                           children: [
-                            Text(routeName),
+                            Text(trailName),
                           ],
                         ),
                       )
@@ -362,7 +363,7 @@ class CompassController extends GetxController
         );
       }
     } catch (ex) {}
-    await quitRoute();
+    await quitTrail();
   }
 
   void googleMapDir() {
@@ -370,7 +371,7 @@ class CompassController extends GetxController
     var origin =
         '${currentLocation.value!.latitude.toString()},${currentLocation.value!.longitude.toString()}';
     var destination =
-        '${activeRoute.value!.decodedPath.first.latitude.toString()},${activeRoute.value!.decodedPath.first.longitude.toString()}';
+        '${activeTrail.value!.decodedPath.first.latitude.toString()},${activeTrail.value!.decodedPath.first.longitude.toString()}';
     //print(
     //    'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=transit');
     launch(
@@ -419,7 +420,7 @@ class CompassController extends GetxController
                 notificationChannelName: 'Location tracking',
                 notificationTitle: 'Hikee',
                 notificationMsg: 'Hikee navigation is active',
-                notificationBigMsg: 'Route selected. Tap to see more details.',
+                notificationBigMsg: 'Trail selected. Tap to see more details.',
                 notificationIconColor: Colors.grey,
                 notificationTapCallback:
                     LocationCallbackHandler.notificationCallback)));
@@ -440,7 +441,6 @@ class CompassController extends GetxController
     LatLng latlng = LatLng(location.latitude, location.longitude);
     currentLocation.value = latlng;
     heading.value = location.heading;
-    updateSpeed();
     if (started.value) {
       walkedPath.add(latlng);
       walkedDistance.value = GeoUtils.getPathLength(path: walkedPath);
@@ -452,11 +452,11 @@ class CompassController extends GetxController
         instance.setString('altitudes', jsonEncode(altitudes));
       });
     }
-    if (activeRoute.value != null) {
+    if (activeTrail.value != null) {
       isCloseToStart.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!, activeRoute.value!.decodedPath.first);
+          currentLocation.value!, activeTrail.value!.decodedPath.first);
       isCloseToGoal.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!, activeRoute.value!.decodedPath.last);
+          currentLocation.value!, activeTrail.value!.decodedPath.last);
     }
     if (lockPosition) {
       goToCurrentLocation();
@@ -471,11 +471,11 @@ class CompassController extends GetxController
   void updateSpeed() {
     var kmps = (walkedDistance.value / elapsed.value);
     if (elapsed.value == 0.0 || kmps == 0.0 || kmps.isInfinite || kmps.isNaN)
-      estimatedFinishTime.value = activeRoute.value!.route.duration * 60;
+      estimatedFinishTime.value = activeTrail.value!.trail.duration * 60;
     else {
       speed.value = kmps * 3600; //km per sec to km per hour
       var remamingLength =
-          activeRoute.value!.route.length - walkedDistance.value;
+          activeTrail.value!.trail.length - walkedDistance.value;
       estimatedFinishTime.value =
           (remamingLength * 0.001 / kmps).round(); // in secs
     }

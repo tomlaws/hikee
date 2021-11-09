@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/record.dart';
-import 'package:hikee/models/route.dart';
+import 'package:hikee/models/trail.dart';
 import 'package:hikee/providers/shared/base.dart';
 import 'package:hikee/utils/geo.dart';
 

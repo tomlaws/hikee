@@ -24,6 +24,7 @@ class AuthProvider extends BaseProvider {
 
   Future<User> getMe() async {
     var res = await get('users/me');
+    print(res.body);
     return User.fromJson(res.body);
   }
 

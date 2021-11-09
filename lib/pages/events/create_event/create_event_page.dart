@@ -6,21 +6,21 @@ import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/components/hiking_route_tile.dart';
+import 'package:hikee/components/trail_tile.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/pages/event/event_binding.dart';
 import 'package:hikee/pages/event/event_page.dart';
 import 'package:hikee/pages/events/create_event/create_event_controller.dart';
-import 'package:hikee/pages/route/route_controller.dart';
-import 'package:hikee/pages/route/route_events/route_events_controller.dart';
+import 'package:hikee/pages/trail/trail_controller.dart';
+import 'package:hikee/pages/trail/trail_events/trail_events_controller.dart';
 import 'package:intl/intl.dart';
 
 class CreateEventPage extends GetView<CreateEventController> {
   @override
   Widget build(BuildContext context) {
-    final routeController =
-        Get.put(RouteController(), tag: 'create-event-${controller.routeId}');
+    final trailController =
+        Get.put(TrailController(), tag: 'create-event-${controller.trailId}');
     return Scaffold(
         appBar: HikeeAppBar(
           title: Text('Create Event'),
@@ -37,9 +37,9 @@ class CreateEventPage extends GetView<CreateEventController> {
                     SizedBox(
                       height: 16,
                     ),
-                    routeController.obx(
-                        (state) => HikingRouteTile(
-                              route: state!,
+                    trailController.obx(
+                        (state) => TrailTile(
+                              trail: state!,
                               onTap: () {},
                             ),
                         onLoading: Shimmer(
@@ -84,7 +84,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                     transition: Transition.cupertino,
                     arguments: {'id': id},
                     binding: EventBinding());
-                var c = Get.find<RouteEventsController>();
+                var c = Get.find<TrailEventsController>();
                 c.refetch();
               }
             }, builder: (mutate, loading) {

@@ -46,7 +46,7 @@ class EventTile extends StatelessWidget {
             aspectRatio: aspectRatio,
             child: CachedNetworkImage(
               placeholder: (_, __) => Shimmer(),
-              imageUrl: event.route.image,
+              imageUrl: event.trail.image,
               imageBuilder: (_, image) {
                 return Stack(children: [
                   Positioned.fill(

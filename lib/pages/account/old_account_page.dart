@@ -22,14 +22,14 @@ class AccountPage extends StatelessWidget {
         'bookmarks'.tr: (BuildContext ctx) {
           // Get.to(LoginPage());
           // Navigator.of(ctx)
-          //     .push(CupertinoPageRoute(builder: (_) => BookmarksPage()));
+          //     .push(CupertinoPageTrail(builder: (_) => BookmarksPage()));
         },
         'events'.tr: (BuildContext ctx) {
           Get.toNamed('/events', id: 4);
         }
       } else
         'login'.tr: {
-          //Routemaster.of(context).push('/login');
+          //Trailmaster.of(context).push('/login');
         },
       if (loggedIn)
         'account'.tr: {
