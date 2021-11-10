@@ -9,6 +9,7 @@ import 'package:hikee/models/topic.dart';
 import 'package:hikee/pages/topic/topic_controller.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/time.dart';
+import 'package:photo_view/photo_view.dart';
 
 class TopicPage extends GetView<TopicController> {
   @override
@@ -140,10 +141,10 @@ class TopicPage extends GetView<TopicController> {
                           .map((e) => Container(
                                 clipBehavior: Clip.antiAlias,
                                 decoration: BoxDecoration(),
-                                child: CachedNetworkImage(
-                                    imageUrl:
-                                        'https://hikee.s3.ap-southeast-1.amazonaws.com/$e',
-                                    fit: BoxFit.cover),
+                                child: PhotoView(
+                                  imageProvider: CachedNetworkImageProvider(
+                                      'https://hikee.s3.ap-southeast-1.amazonaws.com/$e'),
+                                ),
                               ))
                           .toList(),
                     ),

@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/map.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
@@ -17,6 +19,7 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:marquee/marquee.dart';
 import 'package:readmore/readmore.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:photo_view/photo_view.dart';
 
 class TrailPage extends GetView<TrailController> {
   @override
@@ -148,11 +151,14 @@ class TrailPage extends GetView<TrailController> {
                                     height: 280,
                                     child: controller.obx((state) {
                                       var images = state!.images
-                                          .map((img) => CachedNetworkImage(
-                                                placeholder: (_, __) =>
-                                                    Shimmer(),
-                                                imageUrl: img,
-                                                fit: BoxFit.cover,
+                                          .map((img) => GestureDetector(
+                                                onTap: () => _fullscreen(img),
+                                                child: CachedNetworkImage(
+                                                  placeholder: (_, __) =>
+                                                      Shimmer(),
+                                                  imageUrl: img,
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ))
                                           .toList();
                                       return Container(
@@ -650,6 +656,36 @@ class TrailPage extends GetView<TrailController> {
         ]));
   }
 
+  _fullscreen(String image) {
+    var widget = Scaffold(
+      appBar: HikeeAppBar(title: Text("Gallery")),
+      backgroundColor: Colors.black,
+      body: controller.obx(
+          (state) => (state?.images == null || state?.images.length == 0)
+              ? SizedBox()
+              : Column(children: [
+                  Expanded(
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                          enableInfiniteScroll: false,
+                          viewportFraction: 1,
+                          initialPage: state!.images.indexOf(image),
+                          height: double.infinity),
+                      items: state.images
+                          .map((e) => Container(
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(),
+                              child: PhotoView(
+                                imageProvider: CachedNetworkImageProvider(e),
+                              )))
+                          .toList(),
+                    ),
+                  )
+                ]),
+          onLoading: SizedBox()),
+    );
+    Get.to(widget, transition: Transition.zoom, fullscreenDialog: true);
+  }
   // Future<Map<String, dynamic>?> trailReviewDialog() async {
   //   return await showDialog<Map<String, dynamic>?>(
   //     context: context,

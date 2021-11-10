@@ -5,7 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/pages/trails/create/create_trail_controller.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/map_marker.dart';
@@ -15,9 +14,17 @@ class CreateTrailPage extends GetView<CreateTrailController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: HikeeAppBar(
-          title: Text("Create Trail"),
-        ),
+        appBar: HikeeAppBar(title: Text("Create Trail"), actions: [
+          Obx(() => controller.prevCoordinates.length == 0
+              ? SizedBox()
+              : Button(
+                  secondary: true,
+                  backgroundColor: Colors.transparent,
+                  icon: Icon(Icons.undo_rounded),
+                  onPressed: () {
+                    controller.undo();
+                  }))
+        ]),
         body: Obx(() {
           switch (controller.step.value) {
             case 0:
@@ -214,6 +221,9 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       markerId: MarkerId('marker-${entry.key}'),
                       zIndex: 2,
                       position: entry.value,
+                      onTap: () {
+                        controller.remove(entry.key);
+                      },
                       onDragEnd: ((newPosition) {
                         controller.updateMarkerPosition(entry.key, newPosition);
                       })),

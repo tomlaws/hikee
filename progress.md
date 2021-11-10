@@ -13,7 +13,7 @@ added features:
 - show speed and estimated finish time
 
 10/11/21
-1. updated trails page ui
+1. updated trails page
     - added classification as listed in (https://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF%E9%83%8A%E9%81%8A%E8%B7%AF%E5%BE%91)
         - Long-distance trail
         - Country trail
@@ -22,10 +22,11 @@ added features:
         - Nature trail
         - Geo route
         - Recommended route
-2. updated trail page ui
+2. updated trail page
     - show marquee when the trail name is too long
     - turn into expandable description when description is too long
-3. updated topics page ui
+    - enlarge image by tapping it, and can zoom in/out
+3. updated topic(s) page
     - added user profile pic in the topic list
     - added "pull to refresh" feature
     - added categories selection (clicking the title in the top left corner)
@@ -34,3 +35,6 @@ added features:
 4. added create trail feature (top-right button of the trails page)
     - putting markers on map
     - input details to publish the trail
+你講1,2
+li kwok leung講3
+我講4
