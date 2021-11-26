@@ -50,7 +50,7 @@ class LocationServiceRepository {
   }
 
   Future<void> callback(LocationDto locationDto) async {
-    //print('$_count location in dart: ${locationDto.toString()}');
+    print('$_count location in dart: ${locationDto.toString()}');
     await setLogPosition(_count, locationDto);
     SendPort? send = IsolateNameServer.lookupPortByName(isolateName);
     send?.send(locationDto);

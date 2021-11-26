@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/providers/trail.dart';
 import 'package:hikee/utils/geo.dart';

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hikee/manager/token.dart';
 import 'package:hikee/models/error/error_response.dart';
@@ -19,6 +20,11 @@ class BaseProvider extends GetConnect {
     super.onInit();
     httpClient.baseUrl = getUrl();
     httpClient.addRequestModifier<void>((request) async {
+      if (kIsWeb) {
+        request.headers.remove('user-agent');
+        request.headers.remove('content-length');
+        request.headers['Access-Control-Allow-Origin'] = '*';
+      }
       if (request.url.path.contains('/auth')) return request;
       if (_tokenManager.token != null) {
         var accessToken = _tokenManager.token!.accessToken;
@@ -38,6 +44,7 @@ class BaseProvider extends GetConnect {
         print(response.body);
         throw ErrorResponse.fromJson(response.body as Map<String, dynamic>);
       }
+      print(response.body);
       return response;
     });
   }

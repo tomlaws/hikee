@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/elevation_profile.dart';
@@ -10,14 +13,13 @@ import 'package:hikee/pages/record/record_controller.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 
 class RecordPage extends GetView<RecordController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HikeeAppBar(
-        title: Text('Record'),
-      ),
+      appBar: HikeeAppBar(title: Text('Record')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -36,10 +38,11 @@ class RecordPage extends GetView<RecordController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 controller.obx((state) {
+                  var decoded = GeoUtils.decodePath(state!.userPath);
                   return Container(
-                      height: 176,
-                      child:
-                          HikeeMap(path: GeoUtils.decodePath(state!.userPath)));
+                    height: 176,
+                    child: HikeeMap(path: decoded, pathOnly: true),
+                  );
                 },
                     onLoading: Shimmer(
                       height: 176,

@@ -8,6 +8,7 @@ import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/pages/topic/topic_controller.dart';
 import 'package:hikee/themes.dart';
+import 'package:hikee/utils/image.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -105,8 +106,7 @@ class TopicPage extends GetView<TopicController> {
                                             BorderRadius.circular(16)),
                                     margin: const EdgeInsets.all(8.0),
                                     child: CachedNetworkImage(
-                                        imageUrl:
-                                            'https://hikee.s3.ap-southeast-1.amazonaws.com/$e',
+                                        imageUrl: ImageUtils.imageLink(e),
                                         fit: BoxFit.cover),
                                   ),
                                 ))
@@ -143,7 +143,7 @@ class TopicPage extends GetView<TopicController> {
                                 decoration: BoxDecoration(),
                                 child: PhotoView(
                                   imageProvider: CachedNetworkImageProvider(
-                                      'https://hikee.s3.ap-southeast-1.amazonaws.com/$e'),
+                                      ImageUtils.imageLink(e)),
                                 ),
                               ))
                           .toList(),

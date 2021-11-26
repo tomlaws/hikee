@@ -221,17 +221,17 @@ class AccountPage extends StatelessWidget {
   }
 
   void _changeNickname(BuildContext context) {
-    DialogUtils.show(context, ChangeNickname(), title: 'Change Nickname',
-        buttons: (_) {
-      return [];
-    });
+    // DialogUtils.show(context, ChangeNickname(), title: 'Change Nickname',
+    //     buttons: (_) {
+    //   return [];
+    // });
   }
 
   void _changePassword(BuildContext context) {
-    DialogUtils.show(context, ChangePassword(), title: 'Change Password',
-        buttons: (_) {
-      return [];
-    });
+    // DialogUtils.show(context, ChangePassword(), title: 'Change Password',
+    //     buttons: (_) {
+    //   return [];
+    // });
   }
 
   void _uploadIcon(File file) {
@@ -239,9 +239,9 @@ class AccountPage extends StatelessWidget {
   }
 
   void _changeLanguage(BuildContext context) {
-    DialogUtils.show(context, ChangeLanguage(), title: 'language'.tr,
-        buttons: (_) {
-      return [];
-    });
+    // DialogUtils.show(context, ChangeLanguage(), title: 'language'.tr,
+    //     buttons: (_) {
+    //   return [];
+    // });
   }
 }

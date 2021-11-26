@@ -7,6 +7,7 @@ import 'package:hikee/models/trail.dart';
 import 'package:hikee/pages/trail/trail_binding.dart';
 import 'package:hikee/pages/trail/trail_page.dart';
 import 'package:hikee/themes.dart';
+import 'package:hikee/utils/image.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class TrailTile extends StatelessWidget {
@@ -61,7 +62,7 @@ class TrailTile extends StatelessWidget {
                       ? Shimmer()
                       : CachedNetworkImage(
                           placeholder: (_, __) => Shimmer(),
-                          imageUrl: trail!.image,
+                          imageUrl: ImageUtils.imageLink(trail!.image),
                           fit: BoxFit.cover,
                         ),
                 ),

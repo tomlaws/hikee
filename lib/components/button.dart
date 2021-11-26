@@ -63,7 +63,10 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                 : Get.theme.textTheme.bodyText1?.color ?? Colors.black)
             : Colors.white)
         .withOpacity((widget.disabled || widget.loading) ? .75 : 1);
-    if (widget.secondary) textColor = Get.theme.textTheme.bodyText1!.color!;
+    if (widget.secondary)
+      textColor = buttonColor != Colors.transparent
+          ? Colors.white
+          : Get.theme.textTheme.bodyText1!.color!;
     if (buttonColor != Colors.transparent) {
       buttonColor.withOpacity((widget.loading) ? .75 : 1);
       if (widget.disabled) buttonColor = Color(0xFFaaaaaa);

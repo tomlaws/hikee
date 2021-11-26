@@ -33,6 +33,7 @@ class _MutationBuilderState<T> extends State<MutationBuilder<T>> {
           widget.onDone!(result);
         }
       } catch (ex) {
+        print(ex);
         if (widget.onError != null && ex is ErrorResponse) widget.onError!(ex);
       }
       setState(() {

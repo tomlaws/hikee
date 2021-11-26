@@ -9,6 +9,7 @@ import 'package:hikee/pages/trails/featured_trail_controller.dart';
 import 'package:hikee/pages/trails/popular_trails_controller.dart';
 import 'package:hikee/pages/trails/trails_controller.dart';
 import 'package:hikee/pages/search/search_page.dart';
+import 'package:hikee/pages/trails/trails_filter.dart';
 
 class TrailsPage extends StatelessWidget {
   final _popularTrailsController = Get.find<PopularTrailsController>();
@@ -57,10 +58,10 @@ class TrailsPage extends StatelessWidget {
                             textInputAction: TextInputAction.search,
                             icon: Icon(Icons.search),
                             onTap: () {
-                              Get.to(SearchPage<Trail>(
+                              Get.to(SearchPage<Trail, TrailsController>(
                                   tag: 'search-trails',
-                                  controller: Get.put(TrailsController(),
-                                      tag: 'search-trails'),
+                                  controller: TrailsController(),
+                                  filter: TrailsFilter(),
                                   builder: (trail) => TrailTile(trail: trail)));
                             }),
                       ),

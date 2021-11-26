@@ -8,8 +8,10 @@ import 'package:background_locator/settings/android_settings.dart';
 import 'package:background_locator/settings/ios_settings.dart';
 import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hikee/utils/dialog.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/models/active_trail.dart';
@@ -32,11 +34,11 @@ import 'package:background_locator/background_locator.dart';
 class CompassController extends GetxController
     with SingleGetTickerProviderMixin {
   Rxn<ActiveTrail> activeTrail = Rxn<ActiveTrail>();
-  Completer<GoogleMapController> mapController = Completer();
   PanelController panelController = PanelController();
   PageController panelPageController = PageController(
     initialPage: 0,
   );
+  MapController? mapController;
 
   // Data
   final currentLocation = Rxn<LatLng>();
@@ -58,7 +60,7 @@ class CompassController extends GetxController
   final panelPosition = 0.0.obs;
   final panelPage = 0.0.obs;
   final double panelHeaderHeight = 60;
-  bool lockPosition = true;
+  var lockPosition = false.obs;
 
   // tooltip
   late AnimationController tooltipController;
@@ -144,16 +146,9 @@ class CompassController extends GetxController
 
   Future<void> goToCurrentLocation() async {
     try {
-      lockPosition = true;
+      lockPosition.value = true;
       if (currentLocation.value == null) return;
-      final GoogleMapController controller = await mapController.future;
-      controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          bearing: 0,
-          target: currentLocation.value!,
-          zoom: 17.0,
-        ),
-      ));
+      mapController?.move(currentLocation.value!, 17);
     } catch (e) {
       print(e);
     }
@@ -161,17 +156,17 @@ class CompassController extends GetxController
 
   Future<void> showDistancePost(DistancePost dp) async {
     try {
-      lockPosition = false;
+      lockPosition.value = false;
       var location = dp.location;
       nearestDistancePost.value = dp;
-      final GoogleMapController controller = await mapController.future;
-      controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          bearing: 0,
-          target: location,
-          zoom: 16.0,
-        ),
-      ));
+      // final GoogleMapController controller = await mapController.future;
+      // controller.animateCamera(CameraUpdate.newCameraPosition(
+      //   CameraPosition(
+      //     bearing: 0,
+      //     target: location,
+      //     zoom: 16.0,
+      //   ),
+      // ));
     } catch (e) {
       print(e);
     }
@@ -179,14 +174,17 @@ class CompassController extends GetxController
 
   void focusActiveTrail() async {
     var decodedPath = activeTrail.value!.decodedPath;
-    lockPosition = false;
+    lockPosition.value = false;
     print({
       'start': activeTrail.value!.decodedPath.first,
       'end': activeTrail.value!.decodedPath.last
     });
-    final GoogleMapController controller = await mapController.future;
-    controller.moveCamera(
-        CameraUpdate.newLatLngBounds(GeoUtils.getPathBounds(decodedPath), 20));
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      var result = mapController?.centerZoomFitBounds(
+          GeoUtils.getPathBounds(decodedPath),
+          options: FitBoundsOptions(padding: EdgeInsets.all(80)));
+      mapController?.move(result!.center, result.zoom);
+    });
   }
 
   _loadTrail() async {
@@ -205,7 +203,7 @@ class CompassController extends GetxController
       if (prefs.containsKey('walkedPath')) {
         String s = prefs.getString('walkedPath')!;
         walkedPath.value = (jsonDecode(s) as List<dynamic>)
-            .map((e) => LatLng.fromJson(e)!)
+            .map((e) => LatLng.fromJson(e))
             .toList();
 
         walkedDistance.value = GeoUtils.getPathLength(path: walkedPath);
@@ -278,19 +276,21 @@ class CompassController extends GetxController
         var trailName = activeTrail.value!.trail.name_en;
         var distance = activeTrail.value!.trail.length;
         var msse = activeTrail.value!.startTime!;
+        var regionId = activeTrail.value!.trail.regionId;
         var date = DateTime.fromMillisecondsSinceEpoch(msse);
         Record record = await _recordProvider.createRecord(
             date: date,
             time: time,
             name: trailName,
-            path: activeTrail.value!.trail.path,
+            regionId: regionId,
+            //path: activeTrail.value!.trail.path,
+            length: (GeoUtils.getPathLength(path: walkedPath.toList()) * 1000)
+                .truncate(),
             userPath: walkedPath.toList(),
             altitudes: altitudes);
-        Get.defaultDialog(
-          title: "Congratulations, you've completed the trail!",
-          content: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
+        DialogUtils.showDialog(
+            "Congratulations, you've completed the trail!",
+            Column(
               children: [
                 Container(
                   padding: EdgeInsets.all(8),
@@ -350,17 +350,7 @@ class CompassController extends GetxController
                   height: 8,
                 ),
               ],
-            ),
-          ),
-          actions: [
-            Button(
-              onPressed: () {
-                Get.back();
-              },
-              child: Text('DISMISS'),
-            )
-          ],
-        );
+            ));
       }
     } catch (ex) {}
     await quitTrail();
@@ -439,6 +429,7 @@ class CompassController extends GetxController
 
   Future<void> onLocationChange(LocationDto location) async {
     LatLng latlng = LatLng(location.latitude, location.longitude);
+    print(latlng);
     currentLocation.value = latlng;
     heading.value = location.heading;
     if (started.value) {
@@ -458,7 +449,7 @@ class CompassController extends GetxController
       isCloseToGoal.value = GeoUtils.isCloseToPoint(
           currentLocation.value!, activeTrail.value!.decodedPath.last);
     }
-    if (lockPosition) {
+    if (lockPosition.value) {
       goToCurrentLocation();
     }
   }

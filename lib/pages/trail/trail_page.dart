@@ -2,9 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
+import 'package:hikee/components/drag_marker.dart';
 import 'package:hikee/components/map.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
@@ -13,7 +15,9 @@ import 'package:hikee/pages/trail/trail_controller.dart';
 import 'package:hikee/pages/trail/trail_events/trail_events_binding.dart';
 import 'package:hikee/pages/trail/trail_events/trail_events_page.dart';
 import 'package:hikee/themes.dart';
+import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/image.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:marquee/marquee.dart';
@@ -156,7 +160,8 @@ class TrailPage extends GetView<TrailController> {
                                                 child: CachedNetworkImage(
                                                   placeholder: (_, __) =>
                                                       Shimmer(),
-                                                  imageUrl: img,
+                                                  imageUrl:
+                                                      ImageUtils.imageLink(img),
                                                   fit: BoxFit.cover,
                                                 ),
                                               ))
@@ -501,14 +506,37 @@ class TrailPage extends GetView<TrailController> {
                               clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16.0)),
-                              child: controller.obx(
-                                  (state) => HikeeMap(
-                                      target: controller.points.value![
-                                          (controller.points.value!.length /
-                                                  5 *
-                                                  2)
-                                              .floor()],
-                                      path: controller.points.value!),
+                              child: controller.obx((state) {
+                                var path = GeoUtils.decodePath(state!.path);
+                                return HikeeMap(
+                                  path: path,
+                                  pathOnly: true,
+                                  markers: state.pins == null
+                                      ? null
+                                      : state.pins!
+                                          .map(
+                                            (pos) => DragMarker(
+                                              draggable: false,
+                                              point: pos.location,
+                                              width: 10,
+                                              height: 10,
+                                              hasPopup: pos.message != null,
+                                              onTap: (_) {
+                                                DialogUtils.showDialog(
+                                                    "Message", pos.message!);
+                                              },
+                                              builder: (_) {
+                                                return Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.transparent,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          )
+                                          .toList(),
+                                );
+                              },
                                   onLoading: Shimmer(
                                     height: 240,
                                   )))
@@ -638,7 +666,7 @@ class TrailPage extends GetView<TrailController> {
                       hc.switchTab(0);
                       CompassController cc = Get.find<CompassController>();
                       cc.selectTrail(controller.state!);
-                      Get.back();
+                      Get.offAllNamed('/');
                     },
                     child: Text('Select Now'),
                   ),
@@ -676,7 +704,8 @@ class TrailPage extends GetView<TrailController> {
                               clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(),
                               child: PhotoView(
-                                imageProvider: CachedNetworkImageProvider(e),
+                                imageProvider: CachedNetworkImageProvider(
+                                    ImageUtils.imageLink(e)),
                               )))
                           .toList(),
                     ),

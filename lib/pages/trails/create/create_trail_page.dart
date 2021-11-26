@@ -1,40 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' hide TextInput;
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hikee/components/core/dropdown.dart';
+import 'package:hikee/components/core/text_input.dart';
+import 'package:hikee/components/drag_marker.dart';
+import 'package:hikee/components/map.dart';
+import 'package:hikee/components/mutation_builder.dart';
+import 'package:hikee/models/region.dart';
+import 'package:hikee/models/trail.dart';
+import 'package:hikee/utils/dialog.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/pages/trails/create/create_trail_controller.dart';
 import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/map_marker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class CreateTrailPage extends GetView<CreateTrailController> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: HikeeAppBar(title: Text("Create Trail"), actions: [
-          Obx(() => controller.prevCoordinates.length == 0
-              ? SizedBox()
-              : Button(
-                  secondary: true,
-                  backgroundColor: Colors.transparent,
-                  icon: Icon(Icons.undo_rounded),
-                  onPressed: () {
-                    controller.undo();
-                  }))
-        ]),
-        body: Obx(() {
-          switch (controller.step.value) {
-            case 0:
-              return _step0();
-            case 1:
-              return _step1();
-            default:
-              return _step0();
-          }
-        }));
+    return Obx(() {
+      var body = _step0();
+      switch (controller.step.value) {
+        case 0:
+          body = _step0();
+          break;
+        case 1:
+          body = _step1();
+          break;
+        default:
+          body = _step0();
+      }
+      List<Widget> actions = [];
+      if (controller.step.value == 0 &&
+          controller.selectedCoordinates.value != null) {
+        if (controller.selectedCoordinates.value?.message == null)
+          actions.add(Button(
+              secondary: true,
+              backgroundColor: Colors.transparent,
+              icon: Icon(Icons.add_comment_rounded),
+              onPressed: () {
+                controller.addMessage();
+              }));
+        actions.add(Button(
+            secondary: true,
+            backgroundColor: Colors.transparent,
+            icon: Icon(Icons.delete_rounded),
+            onPressed: () {
+              controller.removeLocation();
+            }));
+      }
+      return Scaffold(
+          appBar: HikeeAppBar(title: Text("Create Trail"), actions: actions),
+          body: body);
+    });
   }
 
   Widget _step1() {
@@ -47,69 +68,129 @@ class CreateTrailPage extends GetView<CreateTrailController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 240,
-                margin: EdgeInsets.symmetric(vertical: 8.0),
-                clipBehavior: Clip.antiAlias,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(24)),
-                child: GoogleMap(
-                  compassEnabled: false,
-                  mapToolbarEnabled: false,
-                  zoomControlsEnabled: false,
-                  tiltGesturesEnabled: false,
-                  scrollGesturesEnabled: false,
-                  padding:
-                      EdgeInsets.only(bottom: kBottomNavigationBarHeight + 16),
-                  markers: [
-                    Marker(
-                      markerId: MarkerId('marker-start'),
-                      zIndex: 2,
-                      icon: MapMarker().start,
-                      position: controller.coordinates.first,
-                    ),
-                    Marker(
-                      markerId: MarkerId('marker-end'),
-                      zIndex: 1,
-                      icon: MapMarker().end,
-                      position: controller.coordinates.last,
-                    ),
-                  ].toSet(),
-                  polylines: [
-                    Polyline(
-                      polylineId: PolylineId('polyline1'),
-                      color: Color(0xFFfcce39),
-                      zIndex: 1,
-                      width: 8,
-                      jointType: JointType.round,
-                      startCap: Cap.roundCap,
-                      endCap: Cap.roundCap,
-                      points: controller.coordinates,
-                    ),
-                    Polyline(
-                      polylineId: PolylineId('polyline2'),
-                      color: Colors.white,
-                      width: 10,
-                      jointType: JointType.round,
-                      startCap: Cap.roundCap,
-                      endCap: Cap.roundCap,
-                      zIndex: 0,
-                      points: controller.coordinates,
-                    ),
-                  ].toSet(),
-                  initialCameraPosition: CameraPosition(
-                    target: controller.coordinates.first,
-                    zoom: 11,
-                  ),
-                  onMapCreated: (GoogleMapController mapController) async {
-                    await mapController.setMapStyle(
-                        '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
-                    WidgetsBinding.instance?.addPostFrameCallback((_) {
-                      mapController.moveCamera(CameraUpdate.newLatLngBounds(
-                          GeoUtils.getPathBounds(controller.coordinates), 40));
-                    });
-                  },
-                ),
-              ),
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  height: 240,
+                  decoration: BoxDecoration(
+                      color: Color(0xfff5f5f5),
+                      borderRadius: BorderRadius.circular(24)),
+                  child: controller.images.length == 0
+                      ? Button(
+                          child: Text('Upload image'),
+                          onPressed: () {
+                            controller.pickImages();
+                          },
+                          backgroundColor: Colors.transparent,
+                          secondary: true)
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          padding:
+                              EdgeInsets.only(top: 16, left: 16, right: 16),
+                          child: Wrap(
+                            spacing: 16,
+                            children: [
+                              ...controller.images
+                                  .map((image) => Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Container(
+                                            width: 240,
+                                            height: 240 - 16 * 2,
+                                            clipBehavior: Clip.antiAlias,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(16)),
+                                            child: Image.memory(image,
+                                                fit: BoxFit.cover),
+                                          ),
+                                          Positioned(
+                                              top: 0,
+                                              right: 0,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  controller.removeImage(image);
+                                                },
+                                                child: Container(
+                                                    padding: EdgeInsets.all(4),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.black87,
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        8),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        16),
+                                                                bottomRight:
+                                                                    Radius
+                                                                        .circular(
+                                                                            8),
+                                                                bottomLeft: Radius
+                                                                    .circular(
+                                                                        8))),
+                                                    child: Icon(
+                                                      Icons.close,
+                                                      color: Colors.white,
+                                                      size: 18,
+                                                    )),
+                                              )),
+                                        ],
+                                      ))
+                                  .toList(),
+                              Container(
+                                width: 240,
+                                height: 240 - 16 * 2,
+                                clipBehavior: Clip.antiAlias,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16)),
+                                child: Button(
+                                    child: Text('Upload image'),
+                                    onPressed: () {
+                                      controller.pickImages();
+                                    },
+                                    backgroundColor: Colors.transparent,
+                                    secondary: true),
+                              ),
+                            ],
+                          ))),
+              Container(
+                  height: 240,
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  clipBehavior: Clip.antiAlias,
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                  child: HikeeMap(
+                    pathOnly: true,
+                    path:
+                        controller.coordinates.map((c) => c.location).toList(),
+                    interactiveFlag: InteractiveFlag.none,
+                    markers: controller.coordinates
+                        .map(
+                          (pos) => DragMarker(
+                            draggable: false,
+                            point: pos.location,
+                            width: 10,
+                            height: 10,
+                            hasPopup: pos.message != null,
+                            builder: (_) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                    color:
+                                        controller.selectedCoordinates.value ==
+                                                pos
+                                            ? Colors.orange
+                                            : Colors.orange.shade50,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                        width: 1,
+                                        color: Colors.deepOrange.shade900)),
+                              );
+                            },
+                          ),
+                        )
+                        .toList(),
+                  )),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text('Trail name',
@@ -120,7 +201,64 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: TextInput(
                   hintText: "Trail name",
+                  controller: controller.nameController,
                 ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text('Duration',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: TextInput(
+                          hintText: "Duration in minutes",
+                          controller: controller.durationController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text('Region',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Dropdown<Region>(
+                            items: Region.allRegions().toList(),
+                            selected: controller.region.value,
+                            itemBuilder: (r) {
+                              return Text(r.name_en);
+                            },
+                            onChanged: (r) {
+                              controller.region.value = r;
+                            },
+                          )),
+                    ],
+                  ))
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -142,7 +280,9 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     Icons.star,
                     color: Colors.amber,
                   ),
-                  onRatingUpdate: (rating) {},
+                  onRatingUpdate: (difficulty) {
+                    controller.difficulty = difficulty.truncate();
+                  },
                 ),
               ),
               Padding(
@@ -156,11 +296,11 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 child: SizedBox(
                   height: 160,
                   child: TextInput(
-                    expand: true,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    hintText: "Description",
-                  ),
+                      expand: true,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      hintText: "Description",
+                      controller: controller.descriptionController),
                 ),
               ),
             ],
@@ -188,9 +328,24 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 width: 16,
               ),
               Expanded(
-                child: Button(
-                  onPressed: () {},
-                  child: Text('Publish'),
+                child: MutationBuilder<Trail>(
+                  builder: (mutate, loading) => Button(
+                    loading: loading,
+                    onPressed: () {
+                      mutate();
+                    },
+                    child: Text('Publish'),
+                  ),
+                  onDone: (Trail? trail) {
+                    if (trail != null) {
+                      Get.back();
+                      Get.toNamed('/trails/${trail.id}');
+                    }
+                  },
+                  onError: (err) {},
+                  mutation: () async {
+                    return controller.create();
+                  },
                 ),
               ),
             ],
@@ -203,67 +358,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
   Widget _step0() {
     return Obx(() {
       var coordinates = controller.coordinates;
-      print(coordinates.length); // keep this line to avoid error from GetX
       return Stack(children: [
-        Positioned.fill(
-          child: GoogleMap(
-            compassEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            tiltGesturesEnabled: false,
-            padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight + 16),
-            markers: coordinates
-                .asMap()
-                .entries
-                .map(
-                  (entry) => Marker(
-                      draggable: true,
-                      markerId: MarkerId('marker-${entry.key}'),
-                      zIndex: 2,
-                      position: entry.value,
-                      onTap: () {
-                        controller.remove(entry.key);
-                      },
-                      onDragEnd: ((newPosition) {
-                        controller.updateMarkerPosition(entry.key, newPosition);
-                      })),
-                )
-                .toSet(),
-            polylines: [
-              Polyline(
-                polylineId: PolylineId('polyline1'),
-                color: Color(0xFFfcce39),
-                zIndex: 1,
-                width: 8,
-                jointType: JointType.round,
-                startCap: Cap.roundCap,
-                endCap: Cap.roundCap,
-                points: coordinates,
-              ),
-              Polyline(
-                polylineId: PolylineId('polyline2'),
-                color: Colors.white,
-                width: 10,
-                jointType: JointType.round,
-                startCap: Cap.roundCap,
-                endCap: Cap.roundCap,
-                zIndex: 0,
-                points: coordinates,
-              ),
-            ].toSet(),
-            onTap: (LatLng latLng) {
-              controller.addLocation(latLng);
-            },
-            initialCameraPosition: CameraPosition(
-              target: LatLng(22.3579571, 114.1194196),
-              zoom: 11,
-            ),
-            onMapCreated: (GoogleMapController mapController) async {
-              await mapController.setMapStyle(
-                  '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
-            },
-          ),
-        ),
+        Positioned.fill(child: _map()),
         Positioned(
             bottom: 0,
             left: 0,
@@ -289,7 +385,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                         ),
                         Container(width: 4),
                         Text(
-                            "${GeoUtils.formatDistance(GeoUtils.getPathLength(path: controller.coordinates))}",
+                            "${GeoUtils.formatDistance(GeoUtils.getPathLength(path: controller.coordinates.map((c) => c.location).toList()))}",
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w600)),
                       ],
@@ -310,5 +406,56 @@ class CreateTrailPage extends GetView<CreateTrailController> {
             ))
       ]);
     });
+  }
+
+  Widget _map() {
+    return HikeeMap(
+      mapController: controller.mapController,
+      onMapCreated: (mapController) {
+        controller.mapController = mapController;
+      },
+      markers: controller.coordinates
+          .map(
+            (pos) => DragMarker(
+              point: pos.location,
+              width: 10,
+              height: 10,
+              hasPopup: pos.message != null,
+              onPopupTap: () {
+                controller.editMessage(pos);
+              },
+              builder: (_) {
+                return Container(
+                  decoration: BoxDecoration(
+                      color: controller.selectedCoordinates.value == pos
+                          ? Colors.orange
+                          : Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                          width: 1, color: Colors.deepOrange.shade900)),
+                );
+              },
+              onTap: (LatLng latlng) {
+                controller.selectedCoordinates.value = pos;
+                controller.coordinates.refresh();
+              },
+              onDragUpdate: (_, position) {
+                pos.location.latitude = position.latitude;
+                pos.location.longitude = position.longitude;
+                controller.coordinates.refresh();
+              },
+              onDragEnd: (_, position) {
+                pos.location.latitude = position.latitude;
+                pos.location.longitude = position.longitude;
+                controller.coordinates.refresh();
+              },
+            ),
+          )
+          .toList(),
+      path: controller.coordinates.map((c) => c.location).toList(),
+      onTap: (LatLng l) {
+        controller.addLocation(l);
+      },
+    );
   }
 }

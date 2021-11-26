@@ -34,7 +34,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    MapMarker();
+    //MapMarker();
     var locale = Locale('zh');
     Get.testMode = true;
     return GetMaterialApp(

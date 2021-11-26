@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 
 class TimeUtils {
-  static String formatMinutes(int minutes) {
+  static String formatMinutes(int minutes, {bool hourOnly = false}) {
     int remainder = minutes % 60;
     int hour = (minutes / 60).floor();
-    if (hour > 0) {
+    if (hour > 0 || hourOnly) {
       if (remainder == 0) {
         return '${hour}h';
       }

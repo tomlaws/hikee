@@ -1,4 +1,5 @@
 import 'package:hikee/models/bookmark.dart';
+import 'package:hikee/models/pin.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hikee/models/region.dart';
 
@@ -21,6 +22,7 @@ class Trail {
   final int length; //meters
   final String path;
   final Bookmark? bookmark;
+  final List<Pin>? pins;
 
   Trail(
       {required this.id,
@@ -37,6 +39,7 @@ class Trail {
       required this.duration,
       required this.length,
       required this.path,
+      this.pins,
       this.bookmark});
 
   factory Trail.fromJson(Map<String, dynamic> json) => _$TrailFromJson(json);

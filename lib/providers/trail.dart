@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:get/get.dart';
 import 'package:hikee/models/elevation.dart';
 import 'package:hikee/models/paginated.dart';
+import 'package:hikee/models/pin.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/models/trail_category.dart';
 import 'package:hikee/providers/shared/base.dart';
@@ -41,5 +46,44 @@ class TrailProvider extends BaseProvider {
           .map((e) => TrailCategory.fromJson(e))
           .toList();
     });
+  }
+
+  Future<Trail> createTrail({
+    required String name,
+    required int regionId,
+    required int difficulty,
+    required int length,
+    required int duration,
+    required String description,
+    required String path,
+    required List<Pin> pins,
+    required List<Uint8List> images,
+  }) async {
+    var params = {
+      'name_en': name,
+      'name_zh': name,
+      'description_en': description,
+      'description_zh': description,
+      'duration': duration,
+      'difficulty': difficulty,
+      'length': length,
+      'regionId': regionId,
+      'path': path,
+      'images': images
+          .asMap()
+          .map((i, e) => MapEntry(
+              i,
+              MultipartFile(
+                e,
+                filename: '${i.toString()}.jpeg',
+              )))
+          .values
+          .toList(),
+      'pins': jsonEncode(pins.map((e) => e.toJson()).toList()),
+    };
+    final form = FormData(params);
+    var res = await post('trails', form);
+    Trail newTopic = Trail.fromJson(res.body);
+    return newTopic;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class TextInput extends StatefulWidget {
@@ -17,25 +18,27 @@ class TextInput extends StatefulWidget {
   final String? label;
   final Function? onTap;
   final bool autoFocus;
+  final List<TextInputFormatter>? inputFormatters;
 
-  const TextInput({
-    Key? key,
-    this.hintText,
-    this.textEditingController,
-    this.controller,
-    this.maxLines = 1,
-    this.keyboardType,
-    this.obscureText = false,
-    this.textInputAction,
-    this.onSubmitted,
-    this.icon,
-    this.expand = false,
-    this.radius = 12,
-    this.transparent = false,
-    this.label,
-    this.onTap,
-    this.autoFocus = false,
-  }) : super(key: key);
+  const TextInput(
+      {Key? key,
+      this.hintText,
+      this.textEditingController,
+      this.controller,
+      this.maxLines = 1,
+      this.keyboardType,
+      this.obscureText = false,
+      this.textInputAction,
+      this.onSubmitted,
+      this.icon,
+      this.expand = false,
+      this.radius = 12,
+      this.transparent = false,
+      this.label,
+      this.onTap,
+      this.autoFocus = false,
+      this.inputFormatters})
+      : super(key: key);
 
   @override
   _TextInputState createState() => _TextInputState();
@@ -96,6 +99,7 @@ class _TextInputState extends State<TextInput>
                       borderRadius:
                           BorderRadius.all(Radius.circular(widget.radius))),
                   child: TextField(
+                      inputFormatters: widget.inputFormatters,
                       focusNode: _focus,
                       controller:
                           widget.controller ?? widget.textEditingController,

@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hikee/components/drag_marker.dart';
+import 'package:hikee/components/map.dart';
+import 'package:latlong2/latlong.dart' hide Path;
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/compass.dart';
 import 'package:hikee/components/dropdown.dart';
@@ -517,95 +519,131 @@ class CompassPage extends GetView<CompassController> {
   }
 
   Widget _map(ActiveTrail activeTrail) {
-    return Listener(
-        onPointerDown: (e) {
-          controller.lockPosition = false;
+    return Obx(() {
+      var lock = controller.lockPosition.value; // do not remove this line
+      return HikeeMap(
+        mapController: controller.mapController,
+        onMapCreated: (mapController) {
+          controller.mapController = mapController;
+          controller.focusActiveTrail();
         },
-        child: GoogleMap(
-          padding: EdgeInsets.only(bottom: controller.collapsedPanelHeight + 8),
-          compassEnabled: false,
-          mapToolbarEnabled: false,
-          zoomControlsEnabled: false,
-          tiltGesturesEnabled: false,
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: activeTrail.decodedPath[0],
-            zoom: 14,
-          ),
-          myLocationEnabled: true,
-          myLocationButtonEnabled: false,
-          polylines: [
-            Polyline(
-              polylineId: PolylineId('polyLine1'),
-              color: Color(0xFFfcce39),
-              zIndex: 1,
-              width: 8,
-              jointType: JointType.round,
-              startCap: Cap.roundCap,
-              endCap: Cap.roundCap,
-              points: activeTrail.decodedPath,
-            ),
-            Polyline(
-              polylineId: PolylineId('polyLine2'),
-              color: Colors.white,
-              width: 10,
-              jointType: JointType.round,
-              startCap: Cap.roundCap,
-              endCap: Cap.roundCap,
-              zIndex: 0,
-              points: activeTrail.decodedPath,
-            ),
-            if (controller.started.value) ...[
-              Polyline(
-                polylineId: PolylineId('polyLine1-walked'),
-                color: Colors.blue,
-                zIndex: 2,
-                width: 8,
-                jointType: JointType.round,
-                startCap: Cap.roundCap,
-                endCap: Cap.roundCap,
-                points: controller.walkedPath.toList(),
-              ),
-              Polyline(
-                polylineId: PolylineId('polyLine2-walked'),
-                color: Colors.white,
-                width: 10,
-                jointType: JointType.round,
-                startCap: Cap.roundCap,
-                endCap: Cap.roundCap,
-                zIndex: 0,
-                points: controller.walkedPath.toList(),
-              ),
-            ]
-          ].toSet(),
-          markers: [
-            Marker(
-              markerId: MarkerId('marker-start'),
-              zIndex: 2,
-              icon: MapMarker().start,
-              position: activeTrail.decodedPath.first,
-            ),
-            Marker(
-              markerId: MarkerId('marker-end'),
-              zIndex: 1,
-              icon: MapMarker().end,
-              position: activeTrail.decodedPath.last,
-            ),
-            if (controller.nearestDistancePost.value != null)
-              Marker(
-                markerId: MarkerId('marker-distance-post'),
-                zIndex: 999,
-                icon: MapMarker().distancePost,
-                position: controller.nearestDistancePost.value!.location,
-              )
-          ].toSet(),
-          onMapCreated: (GoogleMapController mapController) async {
-            mapController.setMapStyle(
-                '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
-            controller.mapController = Completer<GoogleMapController>();
-            controller.mapController.complete(mapController);
-          },
-        ));
+        centerOnLocationUpdate: controller.lockPosition,
+        path: activeTrail.decodedPath,
+        showMyLocation: true,
+        markers: activeTrail.trail.pins == null
+            ? null
+            : activeTrail.trail.pins!
+                .map(
+                  (pos) => DragMarker(
+                    draggable: false,
+                    point: pos.location,
+                    width: 10,
+                    height: 10,
+                    hasPopup: pos.message != null,
+                    onTap: (_) {
+                      DialogUtils.showDialog("Message", pos.message!);
+                    },
+                    builder: (_) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                        ),
+                      );
+                    },
+                  ),
+                )
+                .toList(),
+      );
+    });
+    // return Listener(
+    //     onPointerDown: (e) {
+    //       controller.lockPosition = false;
+    //     },
+    //     child: GoogleMap(
+    //       padding: EdgeInsets.only(bottom: controller.collapsedPanelHeight + 8),
+    //       compassEnabled: false,
+    //       mapToolbarEnabled: false,
+    //       zoomControlsEnabled: false,
+    //       tiltGesturesEnabled: false,
+    //       mapType: MapType.normal,
+    //       initialCameraPosition: CameraPosition(
+    //         target: activeTrail.decodedPath[0],
+    //         zoom: 14,
+    //       ),
+    //       myLocationEnabled: true,
+    //       myLocationButtonEnabled: false,
+    //       polylines: [
+    //         Polyline(
+    //           polylineId: PolylineId('polyLine1'),
+    //           color: Color(0xFFfcce39),
+    //           zIndex: 1,
+    //           width: 8,
+    //           jointType: JointType.round,
+    //           startCap: Cap.roundCap,
+    //           endCap: Cap.roundCap,
+    //           points: activeTrail.decodedPath,
+    //         ),
+    //         Polyline(
+    //           polylineId: PolylineId('polyLine2'),
+    //           color: Colors.white,
+    //           width: 10,
+    //           jointType: JointType.round,
+    //           startCap: Cap.roundCap,
+    //           endCap: Cap.roundCap,
+    //           zIndex: 0,
+    //           points: activeTrail.decodedPath,
+    //         ),
+    //         if (controller.started.value) ...[
+    //           Polyline(
+    //             polylineId: PolylineId('polyLine1-walked'),
+    //             color: Colors.blue,
+    //             zIndex: 2,
+    //             width: 8,
+    //             jointType: JointType.round,
+    //             startCap: Cap.roundCap,
+    //             endCap: Cap.roundCap,
+    //             points: controller.walkedPath.toList(),
+    //           ),
+    //           Polyline(
+    //             polylineId: PolylineId('polyLine2-walked'),
+    //             color: Colors.white,
+    //             width: 10,
+    //             jointType: JointType.round,
+    //             startCap: Cap.roundCap,
+    //             endCap: Cap.roundCap,
+    //             zIndex: 0,
+    //             points: controller.walkedPath.toList(),
+    //           ),
+    //         ]
+    //       ].toSet(),
+    //       markers: [
+    //         Marker(
+    //           markerId: MarkerId('marker-start'),
+    //           zIndex: 2,
+    //           icon: MapMarker().start,
+    //           position: activeTrail.decodedPath.first,
+    //         ),
+    //         Marker(
+    //           markerId: MarkerId('marker-end'),
+    //           zIndex: 1,
+    //           icon: MapMarker().end,
+    //           position: activeTrail.decodedPath.last,
+    //         ),
+    //         if (controller.nearestDistancePost.value != null)
+    //           Marker(
+    //             markerId: MarkerId('marker-distance-post'),
+    //             zIndex: 999,
+    //             icon: MapMarker().distancePost,
+    //             position: controller.nearestDistancePost.value!.location,
+    //           )
+    //       ].toSet(),
+    //       onMapCreated: (GoogleMapController mapController) async {
+    //         mapController.setMapStyle(
+    //             '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
+    //         controller.mapController = Completer<GoogleMapController>();
+    //         controller.mapController.complete(mapController);
+    //       },
+    //     ));
   }
 
   List<Widget> _pageIndicators(int total, double currentPage) {
@@ -777,90 +815,90 @@ class CompassPage extends GetView<CompassController> {
         controller.currentLocation.value ?? LatLng(22.3872078, 114.3777223);
 
     //location = const LatLng(22.3872078, 114.3777223);
-    DialogUtils.show(
-        Get.context,
-        FutureBuilder<DistancePost?>(
-            future: DistancePostsReader.findClosestDistancePost(location),
-            builder: (_, snapshot) {
-              var nearestDistancePost = snapshot.data;
-              if (snapshot.connectionState != ConnectionState.done) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              if (nearestDistancePost == null) {
-                return Center(
-                  child: Text('Distance post not found'),
-                );
-              }
-              var distInKm = GeoUtils.calculateDistance(
-                  nearestDistancePost.location, location);
-              return Column(
-                children: [
-                  Text(
-                    'The nearest distance post is',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Opacity(
-                    opacity: .75,
-                    child: Text(
-                      'You\'re ${distInKm.toStringAsFixed(2)} km away from this distance post.',
-                    ),
-                  ),
-                  Opacity(
-                    opacity: .75,
-                    child: Text(
-                      'This may help the rescue team to locate you',
-                    ),
-                  ),
-                  Container(
-                    height: 16,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                        color: Colors.black12,
-                        borderRadius: BorderRadius.circular(8.0)),
-                    child: Column(
-                      children: [
-                        Text(nearestDistancePost.trail_name_en),
-                        Text(nearestDistancePost.trail_name_zh),
-                        Text(nearestDistancePost.no,
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 16,
-                  ),
-                  Button(
-                      child: Text('SHOW IN MAP'),
-                      onPressed: () {
-                        controller.showDistancePost(nearestDistancePost);
-                        //Trailmaster.of(context).pop();
-                      }),
-                ],
-              );
-            }),
-        buttons: (context) => [
-              Button(
-                  child: Text('DIAL 999 NOW'),
-                  backgroundColor: Colors.red,
-                  onPressed: () {
-                    launch("tel://999");
-                    //Trailmaster.of(context).pop();
-                  }),
-              Button(
-                  child: Text('CANCEL'),
-                  backgroundColor: Colors.black38,
-                  onPressed: () {
-                    //Trailmaster.of(context).pop();
-                  })
-            ]);
+    //   DialogUtils.show(
+    //       Get.context,
+    //       FutureBuilder<DistancePost?>(
+    //           future: DistancePostsReader.findClosestDistancePost(location),
+    //           builder: (_, snapshot) {
+    //             var nearestDistancePost = snapshot.data;
+    //             if (snapshot.connectionState != ConnectionState.done) {
+    //               return Padding(
+    //                 padding: const EdgeInsets.all(16.0),
+    //                 child: Center(
+    //                   child: CircularProgressIndicator(),
+    //                 ),
+    //               );
+    //             }
+    //             if (nearestDistancePost == null) {
+    //               return Center(
+    //                 child: Text('Distance post not found'),
+    //               );
+    //             }
+    //             var distInKm = GeoUtils.calculateDistance(
+    //                 nearestDistancePost.location, location);
+    //             return Column(
+    //               children: [
+    //                 Text(
+    //                   'The nearest distance post is',
+    //                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    //                 ),
+    //                 Opacity(
+    //                   opacity: .75,
+    //                   child: Text(
+    //                     'You\'re ${distInKm.toStringAsFixed(2)} km away from this distance post.',
+    //                   ),
+    //                 ),
+    //                 Opacity(
+    //                   opacity: .75,
+    //                   child: Text(
+    //                     'This may help the rescue team to locate you',
+    //                   ),
+    //                 ),
+    //                 Container(
+    //                   height: 16,
+    //                 ),
+    //                 Container(
+    //                   padding: EdgeInsets.all(16),
+    //                   decoration: BoxDecoration(
+    //                       color: Colors.black12,
+    //                       borderRadius: BorderRadius.circular(8.0)),
+    //                   child: Column(
+    //                     children: [
+    //                       Text(nearestDistancePost.trail_name_en),
+    //                       Text(nearestDistancePost.trail_name_zh),
+    //                       Text(nearestDistancePost.no,
+    //                           style: TextStyle(
+    //                               fontSize: 24, fontWeight: FontWeight.bold))
+    //                     ],
+    //                   ),
+    //                 ),
+    //                 Container(
+    //                   height: 16,
+    //                 ),
+    //                 Button(
+    //                     child: Text('SHOW IN MAP'),
+    //                     onPressed: () {
+    //                       controller.showDistancePost(nearestDistancePost);
+    //                       //Trailmaster.of(context).pop();
+    //                     }),
+    //               ],
+    //             );
+    //           }),
+    //       buttons: (context) => [
+    //             Button(
+    //                 child: Text('DIAL 999 NOW'),
+    //                 backgroundColor: Colors.red,
+    //                 onPressed: () {
+    //                   launch("tel://999");
+    //                   //Trailmaster.of(context).pop();
+    //                 }),
+    //             Button(
+    //                 child: Text('CANCEL'),
+    //                 backgroundColor: Colors.black38,
+    //                 onPressed: () {
+    //                   //Trailmaster.of(context).pop();
+    //                 })
+    //           ]);
   }
 }
 

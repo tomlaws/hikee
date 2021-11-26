@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/user.dart';
+import 'package:hikee/utils/image.dart';
 
 class Avatar extends StatelessWidget {
   const Avatar({Key? key, this.user, this.height = 32}) : super(key: key);
@@ -27,8 +28,7 @@ class Avatar extends StatelessWidget {
                   )
                 : CachedNetworkImage(
                     placeholder: (_, __) => Shimmer(),
-                    imageUrl:
-                        'https://hikee.s3.ap-southeast-1.amazonaws.com/${user!.icon!}',
+                    imageUrl: ImageUtils.imageLink(user!.icon!),
                     width: height,
                     fit: BoxFit.cover,
                   ));

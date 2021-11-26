@@ -22,6 +22,9 @@ Trail _$TrailFromJson(Map<String, dynamic> json) {
     duration: json['duration'] as int,
     length: json['length'] as int,
     path: json['path'] as String,
+    pins: (json['pins'] as List<dynamic>?)
+        ?.map((e) => Pin.fromJson(e as Map<String, dynamic>))
+        .toList(),
     bookmark: json['bookmark'] == null
         ? null
         : Bookmark.fromJson(json['bookmark'] as Map<String, dynamic>),
@@ -44,4 +47,5 @@ Map<String, dynamic> _$TrailToJson(Trail instance) => <String, dynamic>{
       'length': instance.length,
       'path': instance.path,
       'bookmark': instance.bookmark,
+      'pins': instance.pins,
     };

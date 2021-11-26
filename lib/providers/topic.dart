@@ -34,8 +34,7 @@ class TopicProvider extends BaseProvider {
       required String content,
       required List<Uint8List> images,
       int? categoryId}) async {
-    final form = FormData({
-      'categoryId': categoryId,
+    var params = {
       'title': title,
       'content': content,
       'images': images
@@ -48,7 +47,11 @@ class TopicProvider extends BaseProvider {
               )))
           .values
           .toList()
-    });
+    };
+    if (categoryId != null) {
+      params['categoryId'] = categoryId;
+    }
+    final form = FormData(params);
     var res = await post('topics', form);
     Topic newTopic = Topic.fromJson(res.body);
     return newTopic;

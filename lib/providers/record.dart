@@ -1,14 +1,22 @@
 import 'dart:convert';
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/record.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/providers/shared/base.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:latlong2/latlong.dart';
 
 class RecordProvider extends BaseProvider {
   Future<Paginated<Record>> getMyRecords(Map<String, dynamic>? query) async {
+    return await get('users/records', query: query).then((value) {
+      return Paginated<Record>.fromJson(
+          value.body, (o) => Record.fromJson(o as Map<String, dynamic>));
+    });
+  }
+
+  Future<Paginated<Record>> getMyRecordsInDays(
+      Map<String, dynamic>? query) async {
     return await get('users/records', query: query).then((value) {
       return Paginated<Record>.fromJson(
           value.body, (o) => Record.fromJson(o as Map<String, dynamic>));
@@ -19,7 +27,9 @@ class RecordProvider extends BaseProvider {
       {required DateTime date,
       required int time,
       required String name,
-      required String path,
+      //required String path,
+      required int regionId,
+      required int length,
       required List<LatLng> userPath,
       required List<double> altitudes}) async {
     if (altitudes.length > 48) {
@@ -34,7 +44,9 @@ class RecordProvider extends BaseProvider {
       'date': date.toString(),
       'time': time,
       'name': name,
-      'path': path,
+      //'path': path,
+      'regionId': regionId,
+      'length': length,
       'userPath': GeoUtils.encodePath(userPath),
       'altitudes': altitudes
     }).then((value) {

@@ -8,27 +8,32 @@ import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/pages/search/search_controller.dart';
 
-class SearchPage<U> extends StatefulWidget {
+class SearchPage<U, C extends PaginationController<Paginated<U>>>
+    extends StatefulWidget {
   const SearchPage(
       {Key? key,
       required this.tag,
+      required this.controller,
       required this.builder,
-      required this.controller})
+      this.filter})
       : super(key: key);
 
   @override
-  _SearchPageState<U> createState() => _SearchPageState<U>();
+  _SearchPageState<U, C> createState() => _SearchPageState<U, C>();
 
   final String tag;
+  final C controller;
   final Widget Function(U item) builder;
-  final PaginationController<Paginated<U>> controller;
+  final Widget? filter;
 }
 
-class _SearchPageState<U> extends State<SearchPage<U>> {
+class _SearchPageState<U, C extends PaginationController<Paginated<U>>>
+    extends State<SearchPage<U, C>> {
   late SearchController<U> _searchController;
 
   @override
   Widget build(BuildContext context) {
+    var _controller = Get.put<C>(widget.controller, tag: widget.tag);
     Get.lazyPut(() => SearchController<U>(), tag: widget.tag);
     _searchController = Get.find<SearchController<U>>(tag: widget.tag);
     _searchController.loadHistory(widget.tag);
@@ -36,15 +41,18 @@ class _SearchPageState<U> extends State<SearchPage<U>> {
         backgroundColor: Colors.white,
         appBar: HikeeAppBar(
           actions: [
-            Button(
-              onPressed: () {},
-              backgroundColor: Colors.transparent,
-              secondary: true,
-              icon: Icon(
-                Icons.filter_alt_rounded,
-                size: 18,
-              ),
-            )
+            if (widget.filter != null)
+              Button(
+                onPressed: () {
+                  Get.to(widget.filter);
+                },
+                backgroundColor: Colors.transparent,
+                secondary: true,
+                icon: Icon(
+                  Icons.filter_alt_rounded,
+                  size: 18,
+                ),
+              )
           ],
           title: TextInput(
             textEditingController: _searchController.searchController,
@@ -53,7 +61,7 @@ class _SearchPageState<U> extends State<SearchPage<U>> {
             icon: Icon(Icons.search),
             autoFocus: true,
             onSubmitted: (q) {
-              widget.controller.query = q;
+              _controller.query = q;
               _searchController.addHistory(widget.tag, q);
               _searchController.searched.value = true;
             },
@@ -77,7 +85,7 @@ class _SearchPageState<U> extends State<SearchPage<U>> {
                     onTap: () {
                       _searchController.searchController.text =
                           _searchController.history[i];
-                      widget.controller.query = _searchController.history[i];
+                      _controller.query = _searchController.history[i];
                       _searchController.addHistory(
                           widget.tag, _searchController.history[i]);
                       _searchController.searched.value = true;
@@ -91,7 +99,7 @@ class _SearchPageState<U> extends State<SearchPage<U>> {
                 itemCount: _searchController.history.length)
             : _searchController.searched.value
                 ? InfiniteScroller<U>(
-                    controller: widget.controller,
+                    controller: _controller,
                     firstFetch: false,
                     empty: Center(
                       child: Text('No results found'),
