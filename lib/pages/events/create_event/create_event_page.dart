@@ -33,16 +33,6 @@ class CreateEventPage extends GetView<CreateEventController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Trail',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
                     trailController.obx(
                         (state) => TrailTile(
                               trail: state!,
@@ -51,42 +41,27 @@ class CreateEventPage extends GetView<CreateEventController> {
                         onLoading: Shimmer(
                           height: 100,
                         )),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text(
-                        'Event name',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                    SizedBox(
+                      height: 16,
                     ),
                     TextInput(
                       controller: controller.nameController,
+                      label: 'Event name',
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text(
-                        'Description',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                    SizedBox(
+                      height: 16,
                     ),
                     TextInput(
                       controller: controller.descriptionController,
+                      label: 'Description',
                       maxLines: 5,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text(
-                        'Date & Time',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                    SizedBox(
+                      height: 16,
                     ),
                     TextInput(
                       controller: controller.dateController,
+                      label: 'Date & Time',
                       onTap: () {
                         _showDatePicker(context);
                       },

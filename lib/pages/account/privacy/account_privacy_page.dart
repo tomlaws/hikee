@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/pages/account/account_page.dart';
 import 'package:hikee/pages/account/privacy/account_privacy_controller.dart';
@@ -19,6 +17,7 @@ class AccountPrivacyPage extends GetView<AccountPrivacyController> {
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
             boxShadow: [Themes.lightShadow],
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16.0)),
         child: Column(
           children: [
@@ -36,14 +35,16 @@ class AccountPrivacyPage extends GetView<AccountPrivacyController> {
                           controller.isPrivate.toggle();
                           mutate();
                         },
-                        title: "Hide trail records",
+                        title: "Hide Trail Records",
                       ),
                     );
                   });
                 })),
             MenuListTile(
-              onTap: () {},
-              title: "Update password",
+              onTap: () {
+                Get.toNamed('/password');
+              },
+              title: "Update Password",
             ),
           ],
         ),

@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/user.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/user.dart';
+import 'package:hikee/utils/dialog.dart';
 
 class AccountPrivacyController extends GetxController {
   final userProvider = Get.put(UserProvider());

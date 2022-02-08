@@ -87,8 +87,11 @@ class _TextInputState extends State<TextInput>
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               if (widget.label != null)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(widget.label!),
+                  padding: const EdgeInsets.only(bottom: 12.0, left: 8),
+                  child: Text(widget.label!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      )),
                 ),
               Expanded(
                 flex: widget.expand ? 1 : 0,

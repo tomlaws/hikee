@@ -50,9 +50,9 @@ class Themes {
       offset: Offset(0, 14));
   static final lightShadow = BoxShadow(
       blurRadius: 18,
-      spreadRadius: -6,
-      color: Colors.black.withOpacity(.07),
-      offset: Offset(0, 7));
+      spreadRadius: -5,
+      color: Colors.black.withOpacity(.06),
+      offset: Offset(0, 6));
   static BoxShadow buttonShadow(Color? color) {
     return BoxShadow(
         blurRadius: 16,

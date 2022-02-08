@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/messages.dart';
+import 'package:hikee/pages/account/password/account_password_binding.dart';
+import 'package:hikee/pages/account/password/account_password_page.dart';
 import 'package:hikee/pages/account/privacy/account_privacy_binding.dart';
 import 'package:hikee/pages/account/privacy/account_privacy_page.dart';
 import 'package:hikee/pages/account/records/account_records_binding.dart';
@@ -118,6 +120,11 @@ class MyApp extends StatelessWidget {
           name: '/privacy',
           page: () => AccountPrivacyPage(),
           binding: AccountPrivacyBinding(),
+        ),
+        GetPage(
+          name: '/password',
+          page: () => AccountPasswordPage(),
+          binding: AccountPasswordBinding(),
         ),
         GetPage(
             name: '/login', page: () => LoginPage(), binding: LoginBinding()),

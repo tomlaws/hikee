@@ -137,10 +137,9 @@ class CompassController extends GetxController
 
   @override
   void onClose() {
-    print('close');
+    stopLocationTracking();
     port.close();
     panelPageController.dispose();
-    BackgroundLocator.unRegisterLocationUpdate();
     if (_timer != null) {
       _timer!.cancel();
     }

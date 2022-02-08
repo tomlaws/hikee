@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
+import 'package:hikee/components/mutation_builder.dart';
 
 class DialogUtils {
   static showDialog(String title, dynamic content, {bool showDismiss = true}) {
@@ -28,14 +29,14 @@ class DialogUtils {
                 onPressed: () {
                   Get.back();
                 },
-                child: Text('DISMISS'),
+                child: Text('Dismiss'),
               )
           ],
         ));
   }
 
   static Future<T?> showActionDialog<T>(String title, Widget content,
-      {Function? onOk}) async {
+      {Function? onOk, MutationBuilder? mutationBuilder}) async {
     return await Get.defaultDialog(
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
@@ -58,7 +59,8 @@ class DialogUtils {
                       onPressed: () {
                         Get.back();
                       },
-                      child: Text('DISMISS'),
+                      child:
+                          Text(mutationBuilder != null ? 'Cancel' : 'Dismiss'),
                     ),
                   ),
                   SizedBox(width: 16),
@@ -73,7 +75,7 @@ class DialogUtils {
                           Get.back();
                         }
                       },
-                      child: Text('OK'),
+                      child: Text(mutationBuilder != null ? 'Submit' : 'OK'),
                     ),
                   )
                 ],
