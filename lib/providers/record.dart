@@ -23,6 +23,15 @@ class RecordProvider extends BaseProvider {
     });
   }
 
+  Future<Paginated<Record>> getUserRecords(
+      int userId, Map<String, dynamic>? query) async {
+    return await get('users/${userId.toString()}/records', query: query)
+        .then((value) {
+      return Paginated<Record>.fromJson(
+          value.body, (o) => Record.fromJson(o as Map<String, dynamic>));
+    });
+  }
+
   Future<Record> createRecord(
       {required DateTime date,
       required int time,

@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:hikee/models/token.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class TokenManager {
   static final TokenManager _singleton = TokenManager._internal();
@@ -41,6 +42,25 @@ class TokenManager {
       _storage.write(key: 'accessToken', value: token.accessToken);
       _storage.write(key: 'refreshToken', value: token.refreshToken);
     }
+  }
+
+  bool get nearlyExpire {
+    if (token == null) {
+      return true;
+    }
+    Duration remainingTime = JwtDecoder.getRemainingTime(token!.accessToken);
+    if (remainingTime < Duration(minutes: 1)) {
+      return true;
+    }
+    return false;
+  }
+
+  int? get userId {
+    if (token == null) {
+      return null;
+    }
+    var decoded = JwtDecoder.decode(token!.accessToken);
+    return decoded['id'] as int;
   }
 
   set token(Token? token) {

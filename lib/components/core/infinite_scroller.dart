@@ -6,6 +6,7 @@ import 'package:hikee/models/paginated.dart';
 class InfiniteScroller<U> extends StatefulWidget {
   const InfiniteScroller({
     Key? key,
+    this.headers,
     this.shrinkWrap = false,
     required this.builder,
     this.controller,
@@ -23,6 +24,7 @@ class InfiniteScroller<U> extends StatefulWidget {
   }) : super(key: key);
 
   final bool shrinkWrap;
+  final List<Widget>? headers;
   final Widget Function(U item) builder;
   final PaginationController<Paginated<U>>? controller;
   final PaginationController<Paginated<U>> Function()? controllerBuilder;
@@ -127,17 +129,27 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
   }
 
   Widget _list(int itemCount, Widget Function(BuildContext, int) itemBuilder) {
-    return widget.separator != null
+    var ret = widget.separator != null
         ? ListView.separated(
             clipBehavior: Clip.none,
             scrollDirection:
                 widget.horizontal ? Axis.horizontal : Axis.vertical,
             shrinkWrap: widget.shrinkWrap,
-            padding: widget.padding,
+            padding: widget.headers == null
+                ? widget.padding
+                : EdgeInsets.only(
+                    left: widget.padding.left,
+                    right: widget.padding.right,
+                    bottom: widget.padding.bottom),
             controller: _scrollController,
             itemCount: itemCount,
             separatorBuilder: (_, __) => widget.separator!,
-            itemBuilder: itemBuilder)
+            itemBuilder: (c, i) {
+              if (widget.headers == null || i > 0) return itemBuilder(c, i);
+              return Column(
+                children: [...widget.headers!, itemBuilder(c, i)],
+              );
+            })
         : ListView.builder(
             clipBehavior: Clip.none,
             scrollDirection:
@@ -146,6 +158,13 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
             padding: widget.padding,
             controller: _scrollController,
             itemCount: itemCount,
-            itemBuilder: itemBuilder);
+            itemBuilder: (c, i) {
+              if (widget.headers == null || i > 0) return itemBuilder(c, i);
+              return Column(
+                children: [...widget.headers!, itemBuilder(c, i)],
+              );
+            });
+
+    return ret;
   }
 }

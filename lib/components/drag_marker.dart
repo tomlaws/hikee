@@ -122,38 +122,46 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
         if (marker.onLongPress != null) marker.onLongPress!(marker.point);
       },
       child: Stack(children: [
-        Positioned(
-          width: marker.width,
-          height: marker.height,
-          left: pixelPosition.x +
-              ((isDragging && (marker.feedbackOffset != null))
-                  ? marker.feedbackOffset.dx
-                  : marker.offset.dx),
-          top: pixelPosition.y +
-              ((isDragging && (marker.feedbackOffset != null))
-                  ? marker.feedbackOffset.dy
-                  : marker.offset.dy),
-          child: (isDragging && (marker.feedbackBuilder != null))
-              ? marker.feedbackBuilder!(context)
-              : marker.builder!(context),
-        ),
+        if (marker.builder != null || marker.feedbackBuilder != null)
+          Positioned(
+            width: marker.width,
+            height: marker.height,
+            left: pixelPosition.x +
+                ((isDragging && (marker.feedbackOffset != null))
+                    ? marker.feedbackOffset.dx
+                    : marker.offset.dx),
+            top: pixelPosition.y +
+                ((isDragging && (marker.feedbackOffset != null))
+                    ? marker.feedbackOffset.dy
+                    : marker.offset.dy),
+            child: (isDragging && (marker.feedbackBuilder != null))
+                ? marker.feedbackBuilder!(context)
+                : marker.builder!(context),
+          ),
         if (marker.hasPopup)
           Positioned(
             width: 24,
             height: 24 + 6,
             child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
               onTap: marker.onPopupTap,
               child: Container(
                   child: Column(
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                        color: Get.theme.textTheme.bodyText1!.color,
-                        borderRadius: BorderRadius.circular(4)),
+                        color: marker.popupColor,
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                              offset: Offset(0, 5))
+                        ]),
                     height: 24,
                     width: 24,
                     child: Icon(
-                      Icons.message_rounded,
+                      marker.popupIcon,
                       color: Colors.white,
                       size: 16,
                     ),
@@ -161,7 +169,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
                   ClipPath(
                     clipper: TriangleClipper(),
                     child: Container(
-                      color: Get.theme.textTheme.bodyText1!.color,
+                      color: marker.popupColor,
                       height: 6,
                       width: 12,
                     ),
@@ -344,6 +352,8 @@ class DragMarker {
   final WidgetBuilder? builder;
   final WidgetBuilder? feedbackBuilder;
   final bool hasPopup;
+  final Color popupColor;
+  final IconData popupIcon;
   final Function()? onPopupTap;
   final double width;
   final double height;
@@ -366,6 +376,8 @@ class DragMarker {
     this.builder,
     this.feedbackBuilder,
     this.hasPopup = false,
+    this.popupColor = Colors.black87,
+    this.popupIcon = Icons.message_rounded,
     this.onPopupTap,
     this.width = 30.0,
     this.height = 30.0,

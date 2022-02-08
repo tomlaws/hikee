@@ -33,9 +33,15 @@ class CreateEventPage extends GetView<CreateEventController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Venue'),
+                    Text(
+                      'Trail',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
+                    ),
                     SizedBox(
-                      height: 16,
+                      height: 8,
                     ),
                     trailController.obx(
                         (state) => TrailTile(
@@ -47,14 +53,24 @@ class CreateEventPage extends GetView<CreateEventController> {
                         )),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text('Name'),
+                      child: Text(
+                        'Event name',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                     TextInput(
                       controller: controller.nameController,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text('Description'),
+                      child: Text(
+                        'Description',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                     TextInput(
                       controller: controller.descriptionController,
@@ -62,7 +78,12 @@ class CreateEventPage extends GetView<CreateEventController> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text('Date'),
+                      child: Text(
+                        'Date & Time',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                     TextInput(
                       controller: controller.dateController,
@@ -74,35 +95,42 @@ class CreateEventPage extends GetView<CreateEventController> {
                 ),
               ),
             ),
-            MutationBuilder<Event>(mutation: () {
-              return controller.createEvent();
-            }, onDone: (evt) {
-              if (evt != null) {
-                var id = evt.id;
-                Get.back();
-                Get.to(EventPage(),
-                    transition: Transition.cupertino,
-                    arguments: {'id': id},
-                    binding: EventBinding());
-                var c = Get.find<TrailEventsController>();
-                c.refetch();
-              }
-            }, builder: (mutate, loading) {
-              return Button(
-                radius: 0,
-                safeArea: true,
-                minWidth: double.infinity,
-                onPressed: () {
-                  mutate();
-                },
-                child: Text('CREATE'),
-              );
-            })
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                    blurRadius: 16,
+                    spreadRadius: -8,
+                    color: Colors.black.withOpacity(.09),
+                    offset: Offset(0, -6))
+              ]),
+              child: MutationBuilder<Event>(mutation: () {
+                return controller.createEvent();
+              }, onDone: (evt) {
+                if (evt != null) {
+                  var id = evt.id;
+                  Get.back();
+                  Get.to(EventPage(),
+                      transition: Transition.cupertino,
+                      arguments: {'id': id},
+                      binding: EventBinding());
+                  var c = Get.find<TrailEventsController>();
+                  c.refetch();
+                }
+              }, builder: (mutate, loading) {
+                return Button(
+                  minWidth: double.infinity,
+                  onPressed: () {
+                    mutate();
+                  },
+                  child: Text('Create Event'),
+                );
+              }),
+            )
           ],
         ));
   }
 
-  DateTime _dateTime = DateTime.now();
   void _showDatePicker(ctx) {
     double height = 200;
     showCupertinoModalPopup(
@@ -120,7 +148,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                             DateTime.now().add(const Duration(days: 365)),
                         initialDateTime: DateTime.now(),
                         onDateTimeChanged: (val) {
-                          _dateTime = val;
+                          controller.dateTime.value = val;
                         }),
                   ),
                   // Close the modal
@@ -128,7 +156,8 @@ class CreateEventPage extends GetView<CreateEventController> {
                     child: Text('OK'),
                     onPressed: () {
                       controller.dateController.text =
-                          DateFormat('yyyy-MM-dd HH:mm').format(_dateTime);
+                          DateFormat('yyyy-MM-dd HH:mm')
+                              .format(controller.dateTime.value);
                       Navigator.of(ctx).pop();
                     },
                   )

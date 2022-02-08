@@ -5,15 +5,26 @@ part 'user.g.dart';
 @JsonSerializable()
 class User {
   final int id;
-  final String email;
+  final String? email;
+  final bool isPrivate;
   final String? _nickname;
   final String? icon;
+  //
+  final int? minutes;
+  final int? trailCount;
+  final int? meters;
+  final int? eventCount;
 
   User(
       {required this.id,
-      required this.email,
+      this.email,
+      required this.isPrivate,
       required String? nickname,
-      this.icon})
+      this.icon,
+      this.minutes,
+      this.trailCount,
+      this.meters,
+      this.eventCount})
       : _nickname = nickname;
 
   String get nickname {

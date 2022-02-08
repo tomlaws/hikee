@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:hikee/components/account/record_list_tile.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
@@ -16,14 +15,27 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
   Widget build(BuildContext context) {
     return Protected(
       authenticatedBuilder: (_, getMe) {
-        var me = getMe();
         return Scaffold(
           backgroundColor: Color(0xffffffff),
           appBar: HikeeAppBar(title: Text('Records'), actions: [
             Button(
+              onPressed: () {
+                Get.to(AccountRecordsFilter(
+                  controller: controller,
+                ));
+              },
+              backgroundColor: Colors.transparent,
+              secondary: true,
+              icon: Icon(
+                Icons.filter_alt_rounded,
+                size: 18,
+              ),
+            ),
+            Button(
               icon: Icon(Icons.search_rounded),
               onPressed: () {
                 Get.to(SearchPage<Record, AccountRecordsController>(
+                    showAll: true,
                     tag: 'search-records',
                     controller: AccountRecordsController(),
                     filter: AccountRecordsFilter(),

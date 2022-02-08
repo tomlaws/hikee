@@ -1,8 +1,5 @@
-import 'dart:math' as Math;
-import 'package:background_locator/location_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
 import 'package:get/get.dart';
@@ -17,6 +14,7 @@ class HikeeMap extends StatelessWidget {
       this.path,
       this.lock = false,
       this.zoom = 16,
+      this.imagery = false,
       this.pathOnly = false,
       this.showMyLocation = false,
       this.centerOnLocationUpdate,
@@ -30,6 +28,7 @@ class HikeeMap extends StatelessWidget {
   final bool lock;
   final double zoom;
   final bool pathOnly;
+  final bool imagery;
   final bool showMyLocation;
   final Rx<bool>? centerOnLocationUpdate;
   final Function(LatLng)? onTap;
@@ -50,13 +49,16 @@ class HikeeMap extends StatelessWidget {
       center = bounds.center;
     }
     LatLng? finishMarker;
-    if ((markers != null && markers!.length > 1)) {
-      finishMarker = markers!.last.point;
-    }
-    if (path != null) {
+    // if ((markers != null && markers!.length > 1)) {
+    //   finishMarker = markers!.last.point;
+    // }
+    if (markers == null && path != null) {
       if (path!.length > 1) {
         finishMarker = path!.last;
       }
+    }
+    if (pathOnly && path != null) {
+      if (path!.length > 1) finishMarker = path!.last;
     }
     return FlutterMap(
       options: MapOptions(
@@ -84,6 +86,7 @@ class HikeeMap extends StatelessWidget {
           enableScrollWheel: !lock,
           center: center,
           bounds: bounds,
+          boundsOptions: FitBoundsOptions(),
           onPositionChanged: (MapPosition position, bool hasGesture) {
             if (hasGesture) {
               if (centerOnLocationUpdate != null) {
@@ -103,13 +106,19 @@ class HikeeMap extends StatelessWidget {
           ]),
       layers: [
         TileLayerOptions(
-          urlTemplate:
-              "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png",
-          errorTileCallback: (_, __) {},
-          evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
-        ),
+            urlTemplate: imagery
+                ? "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/imagery/WGS84/{z}/{x}/{y}.png"
+                : "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png",
+            errorTileCallback: (_, __) {},
+            evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+            backgroundColor: Colors.transparent),
+        TileLayerOptions(
+            urlTemplate:
+                "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/WGS84/{z}/{x}/{y}.png",
+            errorTileCallback: (_, __) {},
+            evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+            backgroundColor: Colors.transparent),
         TappablePolylineLayerOptions(
-            polylineCulling: true,
             polylines: [
               if (path != null)
                 TaggedPolyline(
@@ -132,12 +141,7 @@ class HikeeMap extends StatelessWidget {
               print('No polyline was tapped at position ' +
                   tapPosition.globalPosition.toString());
             }),
-        TileLayerOptions(
-            urlTemplate:
-                "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/WGS84/{z}/{x}/{y}.png",
-            errorTileCallback: (_, __) {},
-            evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
-            backgroundColor: Colors.transparent),
+        if (showMyLocation) LocationMarkerLayerOptions(),
         if (markers != null) DragMarkerPluginOptions(markers: markers!),
         MarkerLayerOptions(
           markers: [
@@ -168,7 +172,6 @@ class HikeeMap extends StatelessWidget {
               ),
           ],
         ),
-        if (showMyLocation) LocationMarkerLayerOptions(),
       ],
     );
   }

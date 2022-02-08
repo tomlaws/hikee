@@ -15,7 +15,8 @@ class SearchPage<U, C extends PaginationController<Paginated<U>>>
       required this.tag,
       required this.controller,
       required this.builder,
-      this.filter})
+      this.filter,
+      this.showAll = false})
       : super(key: key);
 
   @override
@@ -25,6 +26,7 @@ class SearchPage<U, C extends PaginationController<Paginated<U>>>
   final C controller;
   final Widget Function(U item) builder;
   final Widget? filter;
+  final bool showAll;
 }
 
 class _SearchPageState<U, C extends PaginationController<Paginated<U>>>
@@ -61,6 +63,7 @@ class _SearchPageState<U, C extends PaginationController<Paginated<U>>>
             icon: Icon(Icons.search),
             autoFocus: true,
             onSubmitted: (q) {
+              if (q.isEmpty) return;
               _controller.query = q;
               _searchController.addHistory(widget.tag, q);
               _searchController.searched.value = true;

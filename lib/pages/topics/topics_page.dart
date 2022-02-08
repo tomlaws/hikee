@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/topic_tile.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/pages/topics/topic_categories.dart';
@@ -12,79 +11,12 @@ import 'package:hikee/pages/topics/topic_categories_controller.dart';
 import 'package:hikee/pages/topics/topics_controller.dart';
 
 class TopicsPage extends GetView<TopicsController> {
-  final TextEditingController _searchController =
-      TextEditingController(text: "");
   final categoriesController = Get.put(TopicCategoriesController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // floatingActionButton: Button(
-      //   onPressed: () {
-      //     context.read<AuthProvider>().mustLogin(context, () {
-      //       Navigator.of(context, rootNavigator: true)
-      //           .push(CupertinoPageTrail(builder: (_) => CreateTopicPage()));
-      //     });
-      //   },
-      //   icon: Icon(Icons.add, color: Colors.white),
-      // ),
-      // appBar: HikeeAppBar(
-      //   elevation: 0,
-      //   title: Padding(
-      //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      //     child: Row(
-      //       children: [
-      //         Expanded(
-      //           child: TextInput(
-      //             textEditingController: _searchController,
-      //             hintText: 'Search...',
-      //             textInputAction: TextInputAction.search,
-      //             icon: Icon(Icons.search),
-      //             onSubmitted: (q) {
-      //               context.read<TopicsProvider>().query = q;
-      //             },
-      //           ),
-      //         ),
-      //         SizedBox(
-      //           width: 8,
-      //         ),
-      //         // SizedBox(
-      //         //   width: 120,
-      //         //   child: Button(
-      //         //     backgroundColor: Color(0xFFF5F5F5),
-      //         //     child: Selector<TopicsProvider, Tuple2<TopicSortable, Order>>(
-      //         //       selector: (_, p) => Tuple2(p.sort, p.order),
-      //         //       builder: (_, sortAndOrder, __) => Row(
-      //         //         children: [
-      //         //           sortAndOrder.item2 == Order.DESC
-      //         //               ? Icon(Icons.sort)
-      //         //               : Transform.rotate(
-      //         //                   angle: 180 * pi / 180, child: Icon(Icons.sort)),
-      //         //           Expanded(
-      //         //             child: Center(
-      //         //               child: Text(
-      //         //                 sortAndOrder.item1.name,
-      //         //                 style: TextStyle(
-      //         //                     color: Theme.of(context)
-      //         //                         .textTheme
-      //         //                         .bodyText1!
-      //         //                         .color),
-      //         //               ),
-      //         //             ),
-      //         //           )
-      //         //         ],
-      //         //       ),
-      //         //     ),
-      //         //     onPressed: () {
-      //         //       _showSortMenu();
-      //         //     },
-      //         //   ),
-      //         // ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
       body: RefreshIndicator(
         onRefresh: controller.refetch,
         child: CustomScrollView(
@@ -149,31 +81,6 @@ class TopicsPage extends GetView<TopicsController> {
           ],
         ),
       ),
-      // body: SafeArea(
-      //   child: Container(
-      //     color: Colors.white,
-      //     child: Column(
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         Expanded(
-      //           child: InfiniteScroller<Topic>(
-      //               controller: Get.find<TopicsController>(),
-      //               separator: SizedBox(
-      //                 height: 16,
-      //               ),
-      //               builder: (topic) {
-      //                 return TopicTile(
-      //                   topic: topic,
-      //                   onTap: () {
-      //                     Trailmaster.of(context).push('/topics/${topic.id}');
-      //                   },
-      //                 );
-      //               }),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 

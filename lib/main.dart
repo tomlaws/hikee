@@ -2,14 +2,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/messages.dart';
+import 'package:hikee/pages/account/privacy/account_privacy_binding.dart';
+import 'package:hikee/pages/account/privacy/account_privacy_page.dart';
 import 'package:hikee/pages/account/records/account_records_binding.dart';
 import 'package:hikee/pages/account/records/account_records_page.dart';
 import 'package:hikee/pages/auth/login_binding.dart';
 import 'package:hikee/pages/auth/login_page.dart';
 import 'package:hikee/pages/auth/register.dart';
 import 'package:hikee/pages/auth/register_binding.dart';
+import 'package:hikee/pages/events/create_event/create_event_binding.dart';
+import 'package:hikee/pages/events/create_event/create_event_page.dart';
 import 'package:hikee/pages/home/home_binding.dart';
 import 'package:hikee/pages/home/home_page.dart';
+import 'package:hikee/pages/profile/profile_binding.dart';
+import 'package:hikee/pages/profile/profile_page.dart';
 import 'package:hikee/pages/record/record_binding.dart';
 import 'package:hikee/pages/record/record_page.dart';
 import 'package:hikee/pages/topic/topic_binding.dart';
@@ -17,6 +23,8 @@ import 'package:hikee/pages/topic/topic_page.dart';
 import 'package:hikee/pages/topics/create/create_topic_binding.dart';
 import 'package:hikee/pages/topics/create/create_topic_page.dart';
 import 'package:hikee/pages/trail/trail_binding.dart';
+import 'package:hikee/pages/trail/trail_events/trail_events_binding.dart';
+import 'package:hikee/pages/trail/trail_events/trail_events_page.dart';
 import 'package:hikee/pages/trail/trail_page.dart';
 import 'package:hikee/pages/trails/categories/trail_categories_binding.dart';
 import 'package:hikee/pages/trails/categories/trail_categories_page.dart';
@@ -67,9 +75,19 @@ class MyApp extends StatelessWidget {
           binding: TrailCategoryBinding(),
         ),
         GetPage(
+          name: '/trails/events/:id',
+          page: () => TrailEventsPage(),
+          binding: TrailEventsBinding(),
+        ),
+        GetPage(
           name: '/trails/:id',
           page: () => TrailPage(),
           binding: TrailBinding(),
+        ),
+        GetPage(
+          name: '/events/create/:trailId',
+          page: () => CreateEventPage(),
+          binding: CreateEventBinding(),
         ),
         GetPage(
           name: '/records/:id',
@@ -90,6 +108,16 @@ class MyApp extends StatelessWidget {
           name: '/topics/:id',
           page: () => TopicPage(),
           binding: TopicBinding(),
+        ),
+        GetPage(
+          name: '/profiles/:id',
+          page: () => ProfilePage(),
+          binding: ProfileBinding(),
+        ),
+        GetPage(
+          name: '/privacy',
+          page: () => AccountPrivacyPage(),
+          binding: AccountPrivacyBinding(),
         ),
         GetPage(
             name: '/login', page: () => LoginPage(), binding: LoginBinding()),

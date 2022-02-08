@@ -7,7 +7,7 @@ import 'package:hikee/providers/auth.dart';
 
 class Protected extends StatelessWidget {
   final Widget Function(BuildContext context)? unauthenticatedBuilder;
-  final Widget Function(BuildContext context, Future<User> Function() getMe)
+  final Widget Function(BuildContext context, Future<User> getMe)
       authenticatedBuilder;
   Protected({this.unauthenticatedBuilder, required this.authenticatedBuilder});
 
@@ -16,7 +16,8 @@ class Protected extends StatelessWidget {
     final authProvider = Get.put(AuthProvider());
     return Obx(() {
       if (authProvider.loggedIn.value) {
-        return authenticatedBuilder(context, authProvider.getMe);
+        var getMe = authProvider.getMe();
+        return authenticatedBuilder(context, getMe);
       } else {
         if (unauthenticatedBuilder != null) {
           return unauthenticatedBuilder!(context);

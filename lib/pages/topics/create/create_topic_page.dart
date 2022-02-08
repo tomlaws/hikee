@@ -18,7 +18,6 @@ class CreateTopicPage extends GetView<CreateTopicController> {
             onPressed: () async {
               var topic = await controller.createTopic();
             },
-            secondary: true,
             backgroundColor: Colors.transparent,
           )
         ],

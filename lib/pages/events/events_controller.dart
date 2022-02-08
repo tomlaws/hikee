@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/event_category.dart';
@@ -7,11 +8,18 @@ import 'package:hikee/providers/event.dart';
 
 class EventsController extends PaginationController<Paginated<Event>> {
   final _eventProvider = Get.put(EventProvider());
+  final PageController pageController = PageController();
 
   @override
   void onInit() {
     super.onInit();
     next();
+  }
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
   }
 
   @override

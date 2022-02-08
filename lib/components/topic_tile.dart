@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hikee/components/avatar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/topic.dart';
+import 'package:hikee/themes.dart';
 import 'package:hikee/utils/time.dart';
 
 class TopicTile extends StatefulWidget {
@@ -21,14 +22,8 @@ class _TopicTileState extends State<TopicTile> {
         child: Container(
           decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(8.0),
-              boxShadow: [
-                BoxShadow(
-                    blurRadius: 12,
-                    spreadRadius: -2,
-                    color: Colors.black.withOpacity(.09),
-                    offset: Offset(0, 1))
-              ]),
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: [Themes.lightShadow]),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,7 +56,7 @@ class _TopicTileState extends State<TopicTile> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 16)),
                             ],
                           ),

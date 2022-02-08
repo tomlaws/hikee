@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/calendar_date.dart';
 import 'package:hikee/models/record.dart';
+import 'package:hikee/themes.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:intl/intl.dart';
 
@@ -19,10 +21,7 @@ class RecordListTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(16)),
-          boxShadow: [
-            BoxShadow(
-                blurRadius: 1, spreadRadius: 1, color: Colors.grey.shade200)
-          ],
+          boxShadow: [Themes.lightShadow],
         ),
         height: 80,
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -37,22 +36,21 @@ class RecordListTile extends StatelessWidget {
             // Container(
             //   width: 24,
             // ),
+            CalendarDate(
+              date: record.date,
+              size: 42,
+            ),
+            SizedBox(width: 16),
             Expanded(
               child: Text(
                 record.name,
               ),
             ),
+            SizedBox(width: 16),
             Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    DateFormat('yyyy-MM-dd').format(record.date),
-                    style: TextStyle(color: Colors.black45),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
                   Text(
                     '${(GeoUtils.getPathLength(encodedPath: record.userPath))}km',
                     maxLines: 2,

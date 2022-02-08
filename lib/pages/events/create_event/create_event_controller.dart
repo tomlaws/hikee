@@ -11,11 +11,12 @@ class CreateEventController extends GetxController {
   final TextInputController nameController = TextInputController();
   final TextInputController descriptionController = TextInputController();
   final TextInputController dateController = TextInputController();
+  final dateTime = Rx(DateTime.now());
 
   @override
   void onInit() {
     super.onInit();
-    trailId = Get.arguments['trailId'];
+    trailId = int.parse(Get.parameters['trailId']!);
   }
 
   @override

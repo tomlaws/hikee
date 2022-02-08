@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
 
@@ -7,6 +6,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HikeeAppBar(
       {Key? key,
       this.title,
+      this.titlePadding = true,
       this.pinned = false,
       this.leading,
       this.canPop,
@@ -17,6 +17,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       : super(key: key);
 
   final Widget? title;
+  final bool titlePadding;
   final bool pinned;
   final Widget? leading;
   final bool? canPop;
@@ -46,7 +47,9 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   fontSize: 18),
               child: Padding(
                 padding: EdgeInsets.only(
-                    left: leading != null || backButton ? 0 : 16, right: 8.0),
+                    left:
+                        leading != null || backButton || !titlePadding ? 0 : 8,
+                    right: 8.0),
                 child: title,
               ),
             ),

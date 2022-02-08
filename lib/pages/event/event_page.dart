@@ -15,6 +15,7 @@ import 'package:hikee/pages/event/event_controller.dart';
 import 'package:hikee/pages/event/event_participation_controller.dart';
 import 'package:hikee/pages/trail/trail_binding.dart';
 import 'package:hikee/pages/trail/trail_page.dart';
+import 'package:hikee/themes.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
 
@@ -38,13 +39,15 @@ class EventPage extends GetView<EventController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TrailTile(
-                      radius: 0,
-                      trail: event!.trail,
-                      onTap: () {
-                        Get.toNamed('/trails/${event.trail.id}',
-                            arguments: {'hideButtons': true});
-                      },
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TrailTile(
+                        trail: event!.trail,
+                        onTap: () {
+                          Get.toNamed('/trails/${event.trail.id}',
+                              arguments: {'hideButtons': true});
+                        },
+                      ),
                     ),
                     Padding(
                       padding:
@@ -52,13 +55,13 @@ class EventPage extends GetView<EventController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Text('Date',
-                          //     style: TextStyle(
-                          //         fontWeight: FontWeight.bold,
-                          //         fontSize: 18,
-                          //         color: Theme.of(context).primaryColor)),
+                          Text('Date',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                              )),
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -72,7 +75,7 @@ class EventPage extends GetView<EventController> {
                                       children: [
                                         Text(
                                             DateFormat('hh:mm a')
-                                                .format(event.date.toLocal()),
+                                                .format(event.date),
                                             style: TextStyle(
                                               fontSize: 16,
                                             )),
@@ -92,6 +95,7 @@ class EventPage extends GetView<EventController> {
                                 ),
                                 Button(
                                   secondary: true,
+                                  backgroundColor: Color(0xFFf5f5f5),
                                   onPressed: () {
                                     var startDate = controller.state!.date;
                                     var endDate = startDate.add(Duration(
@@ -110,6 +114,7 @@ class EventPage extends GetView<EventController> {
                                   },
                                   icon: Icon(
                                     Icons.event,
+                                    color: Colors.green,
                                   ),
                                 )
                               ],
@@ -117,9 +122,9 @@ class EventPage extends GetView<EventController> {
                           ),
                           Text('Participants',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Theme.of(context).primaryColor)),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                              )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             child: SizedBox(
@@ -131,9 +136,9 @@ class EventPage extends GetView<EventController> {
                           ),
                           Text('Description',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Theme.of(context).primaryColor)),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                              )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             child: Text(event.description),
@@ -146,41 +151,51 @@ class EventPage extends GetView<EventController> {
               ),
             ),
             Container(
-              width: double.infinity,
-              color: Colors.white,
-              child: Padding(
-                  padding: EdgeInsets.all(0),
-                  child: MutationBuilder(
-                    mutation: () {
-                      bool joined = event.joined ?? false;
-                      if (joined) {
-                        return _eventParticipationController.quitEvent();
-                      }
-                      return _eventParticipationController.joinEvent();
-                    },
-                    onDone: (_) {
-                      bool joined = event.joined!;
-                      if (joined) {
-                        controller.setJoined(false);
-                      } else {
-                        controller.setJoined(true);
-                      }
-                    },
-                    builder: (mutate, loading) {
-                      bool joined = event.joined ?? false;
-                      return Button(
-                        radius: 0,
-                        loading: loading,
-                        backgroundColor: joined ? Colors.red : null,
-                        onPressed: () {
-                          mutate();
-                        },
-                        safeArea: true,
-                        child: Text(joined ? 'QUIT' : 'JOIN'),
-                      );
-                    },
-                  )),
-            )
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                    blurRadius: 16,
+                    spreadRadius: -8,
+                    color: Colors.black.withOpacity(.09),
+                    offset: Offset(0, -6))
+              ]),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: MutationBuilder(
+                      userOnly: true,
+                      mutation: () {
+                        bool joined = event.joined ?? false;
+                        if (joined) {
+                          return _eventParticipationController.quitEvent();
+                        }
+                        return _eventParticipationController.joinEvent();
+                      },
+                      onDone: (e) {
+                        bool joined = event.joined!;
+                        if (joined) {
+                          controller.setJoined(false);
+                        } else {
+                          controller.setJoined(true);
+                        }
+                      },
+                      builder: (mutate, loading) {
+                        bool joined = event.joined ?? false;
+                        return Button(
+                          loading: loading,
+                          backgroundColor: joined ? Colors.red : null,
+                          onPressed: () {
+                            mutate();
+                          },
+                          safeArea: true,
+                          child: Text(joined ? 'Quit' : 'Join'),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ]);
         },
             onLoading: Center(

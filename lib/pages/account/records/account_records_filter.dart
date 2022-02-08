@@ -14,24 +14,29 @@ import 'package:hikee/pages/trails/regions/others.dart';
 import 'package:hikee/pages/trails/regions/sai_kung.dart';
 import 'package:hikee/pages/trails/regions/west_nt.dart';
 import 'package:hikee/pages/trails/trails_controller.dart';
-import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class AccountRecordsFilter extends StatefulWidget {
-  const AccountRecordsFilter({Key? key}) : super(key: key);
+  const AccountRecordsFilter({Key? key, this.controller}) : super(key: key);
 
   @override
   _AccountRecordsFilterState createState() => _AccountRecordsFilterState();
+
+  final AccountRecordsController? controller;
 }
 
 class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
-  var controller = Get.find<AccountRecordsController>(tag: "search-records");
   var _regions = Rx<Set<int>>({});
   var _minDuration = Rx<int>(0);
   var _maxDuration = Rx<int>(0);
   var _minLength = Rx<int>(0);
   var _maxLength = Rx<int>(0);
+
+  AccountRecordsController get controller {
+    return widget.controller ??
+        Get.find<AccountRecordsController>(tag: "search-records");
+  }
 
   void apply() {
     controller.regions.assignAll(_regions.value);
@@ -41,6 +46,11 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
     controller.maxLength = _maxLength.value;
     controller.refetch();
     Get.back();
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override

@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get_utils/src/extensions/double_extensions.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:proj4dart/proj4dart.dart' as proj4;
+import 'package:tuple/tuple.dart';
 
 class GeoUtils {
   static String encodePath(List<LatLng> points) {
@@ -40,32 +42,8 @@ class GeoUtils {
   }
 
   static LatLngBounds getPathBounds(List<LatLng> path) {
-    // double minLat = path.first.latitude;
-    // double minLng = path.first.longitude;
-    // double maxLat = path.first.latitude;
-    // double maxLng = path.first.longitude;
-    // for (int i = 1; i < path.length; i++) {
-    //   if (path[i].latitude < minLat) minLat = path[i].latitude;
-    //   if (path[i].longitude < minLng) minLng = path[i].longitude;
-    //   if (path[i].latitude > maxLat) maxLat = path[i].latitude;
-    //   if (path[i].longitude > maxLng) maxLng = path[i].longitude;
-    // }
     return LatLngBounds.fromPoints(path);
   }
-
-  // static List<LatLng> getPathBounds(List<LatLng> path) {
-  //   double minLat = path.first.latitude;
-  //   double minLng = path.first.longitude;
-  //   double maxLat = path.first.latitude;
-  //   double maxLng = path.first.longitude;
-  //   for (int i = 1; i < path.length; i++) {
-  //     if (path[i].latitude < minLat) minLat = path[i].latitude;
-  //     if (path[i].longitude < minLng) minLng = path[i].longitude;
-  //     if (path[i].latitude > maxLat) maxLat = path[i].latitude;
-  //     if (path[i].longitude > maxLng) maxLng = path[i].longitude;
-  //   }
-  //   return [LatLng(maxLat, maxLng), LatLng(minLat, minLng)]; //NE,SW
-  // }
 
   static double minDistanceToPath(LatLng location, List<LatLng> path) {
     double min = double.infinity;
@@ -110,5 +88,29 @@ class GeoUtils {
       return (km * 1000).toStringAsFixed(0) + 'm';
     }
     return km.toStringAsFixed(2) + 'km';
+  }
+
+  static int determinePathRegion(List<LatLng> centers, List<LatLng> path) {
+    return 0;
+  }
+
+  static var epsg2326Def =
+      '+proj=tmerc +lat_0=22.31213333333334 +lon_0=114.1785555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,0.067753,-2.24365,-1.15883,-1.09425 +units=m +no_defs';
+  static Tuple2 convertToEPSG2326(LatLng src) {
+    var pointSrc = proj4.Point(x: src.longitude, y: src.latitude);
+    var projDst = proj4.Projection.get('EPSG:2326') ??
+        proj4.Projection.add('EPSG:2326', epsg2326Def);
+    var projSrc = proj4.Projection.get('EPSG:4326')!;
+    var pointForward = projSrc.transform(projDst, pointSrc).toArray();
+    return Tuple2(pointForward[0], pointForward[1]);
+  }
+
+  static LatLng convertFromEPSG2326(Tuple2 src) {
+    var pointSrc = proj4.Point(x: src.item1, y: src.item2);
+    var projSrc = proj4.Projection.get('EPSG:2326') ??
+        proj4.Projection.add('EPSG:2326', epsg2326Def);
+    var projDst = proj4.Projection.get('EPSG:4326')!;
+    var pointForward = projSrc.transform(projDst, pointSrc).toArray();
+    return LatLng(pointForward[1], pointForward[0]);
   }
 }

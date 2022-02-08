@@ -20,6 +20,7 @@ class SectionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 160,
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
           color: color ?? Colors.grey[100],

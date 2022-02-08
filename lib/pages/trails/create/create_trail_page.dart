@@ -418,13 +418,31 @@ class CreateTrailPage extends GetView<CreateTrailController> {
           .map(
             (pos) => DragMarker(
               point: pos.location,
-              width: 10,
-              height: 10,
+              width: pos == controller.coordinates.last ? 25 : 10,
+              height: pos == controller.coordinates.last ? 25 : 10,
               hasPopup: pos.message != null,
               onPopupTap: () {
                 controller.editMessage(pos);
               },
               builder: (_) {
+                if (pos == controller.coordinates.last)
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.deepOrange.shade900,
+                      ),
+                      borderRadius: BorderRadius.circular(12.5),
+                      color: Colors.orange.shade600,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Icon(
+                        Icons.flag_rounded,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
                 return Container(
                   decoration: BoxDecoration(
                       color: controller.selectedCoordinates.value == pos

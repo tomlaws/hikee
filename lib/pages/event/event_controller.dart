@@ -20,7 +20,9 @@ class EventController extends GetxController with StateMixin<Event> {
     state!.participantCount += joined ? 1 : -1;
     change(state, status: RxStatus.success());
     //
-    final accountEventsController = Get.find<AccountEventsController>();
-    accountEventsController.refetch();
+    try {
+      final accountEventsController = Get.find<AccountEventsController>();
+      accountEventsController.refetch();
+    } catch (ex) {}
   }
 }

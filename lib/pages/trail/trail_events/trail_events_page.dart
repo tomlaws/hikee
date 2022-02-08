@@ -5,8 +5,6 @@ import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/event_tile.dart';
 import 'package:hikee/models/event.dart';
-import 'package:hikee/pages/events/create_event/create_event_binding.dart';
-import 'package:hikee/pages/events/create_event/create_event_page.dart';
 import 'package:hikee/pages/trail/trail_events/trail_events_controller.dart';
 
 class TrailEventsPage extends GetView<TrailEventsController> {
@@ -14,7 +12,7 @@ class TrailEventsPage extends GetView<TrailEventsController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: HikeeAppBar(
-          title: Text('Events'.tr),
+          title: Text('Trail Events'.tr),
         ),
         body: Column(
           children: [
@@ -35,17 +33,24 @@ class TrailEventsPage extends GetView<TrailEventsController> {
               ),
             ),
             Container(
-              width: double.infinity,
-              child: Button(
-                  radius: 0,
-                  safeArea: true,
-                  child: Text('CREATE'),
-                  onPressed: () {
-                    Get.to(CreateEventPage(),
-                        arguments: {'trailId': controller.trailId},
-                        binding: CreateEventBinding(),
-                        transition: Transition.cupertino);
-                  }),
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                    blurRadius: 16,
+                    spreadRadius: -8,
+                    color: Colors.black.withOpacity(.09),
+                    offset: Offset(0, -6))
+              ]),
+              child: Row(children: [
+                Expanded(
+                  child: Button(
+                      child: Text('Create Event'),
+                      onPressed: () {
+                        Get.offAndToNamed(
+                            '/events/create/${controller.trailId}');
+                      }),
+                )
+              ]),
             )
           ],
         ));

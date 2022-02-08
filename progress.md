@@ -51,3 +51,23 @@ added features:
 5. updated records page (need login, ac abcd@gmail.com / pw 654321)
     - added search feature
         - by date, regions, length, duration
+
+
+12/1/21
+1. WGS84 to HK80 and HK80 back to WGS84
+    http://www.geodetic.gov.hk/transform/v2/?inSys=wgsgeog&outSys=hkgrid&lat=22.2&long=114.2
+2. https://geodata.gov.hk/gs/api/v1.0.0/searchNearby?x=835665&y=817198
+
+
+
+FEB
+1. add profile page, display trail history (can be disabled in privacy setting)
+2. show distance between facility and current location & pin the facility on the map view
+
+TODO:
+add land dep logo on the map face
+emergency update
+check inside hong kong
+support recording
+check inside region
+date filter

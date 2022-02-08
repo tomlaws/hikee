@@ -43,21 +43,14 @@ class _CompassState extends State<Compass> with SingleTickerProviderStateMixin {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Container(
-            height: 120,
-            width: 120,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(96),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned(top: 6, child: Text('N')),
-                Positioned(right: 6, child: Text('E')),
-                Positioned(bottom: 6, child: Text('S')),
-                Positioned(left: 6, child: Text('W')),
-              ],
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Container(
+              height: 32,
+              width: 32,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(96),
+                  color: Colors.black.withOpacity(.1)),
             ),
           ),
           // Pointer
@@ -76,26 +69,26 @@ class _CompassState extends State<Compass> with SingleTickerProviderStateMixin {
                 child: ClipPath(
                   clipper: PointerClipper(),
                   child: Container(
-                    width: 14,
-                    height: 64,
+                    width: 10,
+                    height: 24,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           stops: [0.5, 0.5],
-                          colors: [Colors.red.shade400, Colors.grey.shade400]),
+                          colors: [Colors.red.shade400, Colors.white]),
                     ),
                   ),
                 ));
           }),
           Positioned(
               child: Container(
-            width: 14,
-            height: 14,
+            width: 10,
+            height: 10,
             decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.red.shade400, width: 3.0)),
+                border: Border.all(color: Colors.red.shade400, width: 2.0)),
           )),
         ],
       ),

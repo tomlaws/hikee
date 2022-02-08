@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/text_input.dart';
+import 'package:hikee/components/latest_events/latest_events.dart';
 import 'package:hikee/components/trail_tile.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/pages/trails/featured_trail_controller.dart';
@@ -69,7 +70,7 @@ class TrailsPage extends StatelessWidget {
                   )
                 ]),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 16),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                 child: Text(
@@ -131,7 +132,20 @@ class TrailsPage extends StatelessWidget {
                 child: _featuredTrailsController.obx(
                     (state) => TrailTile(trail: state!, aspectRatio: 4 / 3),
                     onLoading: CircularProgressIndicator()),
-              )
+              ),
+              SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                child: Text(
+                  'Latest Events',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              LatestEvents(),
+              SizedBox(height: 16),
             ],
           ),
         ));

@@ -27,9 +27,8 @@ class BaseProvider extends GetConnect {
       }
       if (request.url.path.contains('/auth')) return request;
       if (_tokenManager.token != null) {
-        var accessToken = _tokenManager.token!.accessToken;
-        Duration remainingTime = JwtDecoder.getRemainingTime(accessToken);
-        if (remainingTime < Duration(minutes: 1)) {
+        //var accessToken = _tokenManager.token!.accessToken;
+        if (_tokenManager.nearlyExpire) {
           //refresh
           print('Token expired. Trying to refresh.');
           await _refreshToken();

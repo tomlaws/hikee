@@ -10,9 +10,10 @@ import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
+import 'package:hikee/models/facility.dart';
+import 'package:hikee/providers/geodata.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/components/button.dart';
 import 'package:hikee/components/sliding_up_panel.dart';
 import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/models/distance_post.dart';
@@ -32,7 +33,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:background_locator/background_locator.dart';
 
 class CompassController extends GetxController
-    with SingleGetTickerProviderMixin {
+    with GetSingleTickerProviderStateMixin {
   Rxn<ActiveTrail> activeTrail = Rxn<ActiveTrail>();
   PanelController panelController = PanelController();
   PageController panelPageController = PageController(
@@ -54,6 +55,8 @@ class CompassController extends GetxController
   final altitudes = RxList<double>();
   final speed = 0.0.obs;
   final estimatedFinishTime = 0.obs;
+  final nearbyFacilities = Rxn<List<Facility>>(null);
+  final pinnedFacility = Rxn<Facility>(null);
 
   // UI
   final double collapsedPanelHeight = kBottomNavigationBarHeight;
@@ -61,6 +64,7 @@ class CompassController extends GetxController
   final panelPage = 0.0.obs;
   final double panelHeaderHeight = 60;
   var lockPosition = false.obs;
+  var imagery = false.obs;
 
   // tooltip
   late AnimationController tooltipController;
@@ -68,6 +72,7 @@ class CompassController extends GetxController
 
   AuthProvider _authProvider = Get.put(AuthProvider());
   RecordProvider _recordProvider = Get.put(RecordProvider());
+  GeodataProvider _geodataProvider = Get.put(GeodataProvider());
 
   ReceivePort port = ReceivePort();
 
@@ -76,10 +81,9 @@ class CompassController extends GetxController
     super.onInit();
     _loadTrail();
     print('load trail');
-    panelPageController
-      ..addListener(() {
-        panelPage.value = panelPageController.page ?? 0;
-      });
+    panelPageController.addListener(() {
+      panelPage.value = panelPageController.page ?? 0;
+    });
     // start timer when active trail is started
     activeTrail.listen((trail) {
       started.value = trail?.isStarted ?? false;
@@ -133,7 +137,10 @@ class CompassController extends GetxController
 
   @override
   void onClose() {
+    print('close');
+    port.close();
     panelPageController.dispose();
+    BackgroundLocator.unRegisterLocationUpdate();
     if (_timer != null) {
       _timer!.cancel();
     }
@@ -159,31 +166,27 @@ class CompassController extends GetxController
       lockPosition.value = false;
       var location = dp.location;
       nearestDistancePost.value = dp;
-      // final GoogleMapController controller = await mapController.future;
-      // controller.animateCamera(CameraUpdate.newCameraPosition(
-      //   CameraPosition(
-      //     bearing: 0,
-      //     target: location,
-      //     zoom: 16.0,
-      //   ),
-      // ));
     } catch (e) {
       print(e);
     }
   }
 
-  void focusActiveTrail() async {
+  void focusActiveTrail() {
     var decodedPath = activeTrail.value!.decodedPath;
-    lockPosition.value = false;
-    print({
-      'start': activeTrail.value!.decodedPath.first,
-      'end': activeTrail.value!.decodedPath.last
-    });
     WidgetsBinding.instance?.addPostFrameCallback((_) {
+      lockPosition.value = false;
       var result = mapController?.centerZoomFitBounds(
           GeoUtils.getPathBounds(decodedPath),
           options: FitBoundsOptions(padding: EdgeInsets.all(80)));
-      mapController?.move(result!.center, result.zoom);
+      if (result == null) return;
+      focus(result.center, zoom: result.zoom);
+    });
+  }
+
+  void focus(LatLng point, {double? zoom}) {
+    lockPosition.value = false;
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      mapController?.move(point, zoom ?? mapController!.zoom);
     });
   }
 
@@ -289,9 +292,13 @@ class CompassController extends GetxController
             userPath: walkedPath.toList(),
             altitudes: altitudes);
         DialogUtils.showDialog(
-            "Congratulations, you've completed the trail!",
+            "Congratulations",
             Column(
               children: [
+                Text("You've completed the trail!"),
+                SizedBox(
+                  height: 8,
+                ),
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -314,41 +321,48 @@ class CompassController extends GetxController
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Start Time'),
-                    Text(DateFormat('yyyy-MM-dd HH:mm').format(date))
-                  ],
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Time Used'),
-                    Text(TimeUtils.formatSeconds(elapsed.value))
-                  ],
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Distance'),
-                    Text(
-                      '${(distance / 1000).toString()}km',
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 8,
-                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Start Time'),
+                          Text(DateFormat('yyyy-MM-dd HH:mm').format(date))
+                        ],
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Time Used'),
+                          Text(TimeUtils.formatSeconds(elapsed.value))
+                        ],
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Distance'),
+                          Text(
+                            '${(distance / 1000).toString()}km',
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                    ],
+                  ),
+                )
               ],
             ));
       }
@@ -429,7 +443,6 @@ class CompassController extends GetxController
 
   Future<void> onLocationChange(LocationDto location) async {
     LatLng latlng = LatLng(location.latitude, location.longitude);
-    print(latlng);
     currentLocation.value = latlng;
     heading.value = location.heading;
     if (started.value) {
@@ -470,5 +483,15 @@ class CompassController extends GetxController
       estimatedFinishTime.value =
           (remamingLength * 0.001 / kmps).round(); // in secs
     }
+  }
+
+  Future<void> discoverNearbyFacilities() async {
+    print(currentLocation.value);
+    if (currentLocation.value == null) {
+      nearbyFacilities.value = [];
+      return;
+    }
+    nearbyFacilities.value =
+        await _geodataProvider.getNearbyFacilities(currentLocation.value!);
   }
 }

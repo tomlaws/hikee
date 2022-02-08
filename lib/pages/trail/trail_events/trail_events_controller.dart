@@ -11,7 +11,7 @@ class TrailEventsController extends PaginationController<Paginated<Event>> {
   @override
   void onInit() {
     super.onInit();
-    trailId = Get.arguments['id'];
+    trailId = int.parse(Get.parameters['id']!);
   }
 
   @override

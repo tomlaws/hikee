@@ -7,9 +7,11 @@ import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/pages/event/event_binding.dart';
 import 'package:hikee/pages/event/event_page.dart';
+import 'package:hikee/themes.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class EventTile extends StatelessWidget {
-  final Event event;
+  final Event? event;
   final void Function()? onTap;
   final double width;
   final double aspectRatio;
@@ -18,94 +20,81 @@ class EventTile extends StatelessWidget {
       required this.event,
       this.onTap,
       this.width = double.infinity,
-      this.aspectRatio = 16 / 9})
+      this.aspectRatio = 16 / 7})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // if (onTap != null) {
-        //   onTap!();
-        //   return;
-        // }
-        //Get.toNamed('/event', id: 2, arguments: {'id': event.id});
-        Get.to(EventPage(),
-            transition: Transition.cupertino,
-            arguments: {'id': event.id},
-            binding: EventBinding());
+        if (event != null)
+          Get.to(EventPage(),
+              transition: Transition.cupertino,
+              arguments: {'id': event!.id},
+              binding: EventBinding());
       },
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(
-          width: width,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-          child: AspectRatio(
-            //height: 180,
-            //width: width,
+      child: Container(
+        width: width,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [Themes.shadow]),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          AspectRatio(
             aspectRatio: aspectRatio,
-            child: CachedNetworkImage(
-              placeholder: (_, __) => Shimmer(),
-              imageUrl: event.trail.image,
-              imageBuilder: (_, image) {
-                return Stack(children: [
-                  Positioned.fill(
-                    child: Image(
-                      image: image,
+            child: Container(
+              margin: EdgeInsets.all(8),
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: event == null
+                  ? Shimmer()
+                  : CachedNetworkImage(
+                      placeholder: (_, __) => Shimmer(),
+                      imageUrl: event!.trail.image,
                       fit: BoxFit.cover,
                     ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 72,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(.7),
-                        ],
-                      )),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(event.name,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold)),
-                                  Text(
-                                    '${event.participantCount} participants',
-                                    maxLines: 1,
-                                    style: TextStyle(color: Color(0xFFCCCCCC)),
-                                  ),
-                                ]),
-                            CalendarDate(date: event.date, size: 48)
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                ]);
-              },
             ),
           ),
-        ),
-      ]),
+          Padding(
+              padding: EdgeInsets.only(top: 4, left: 16, right: 16, bottom: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        event == null
+                            ? Shimmer(fontSize: 16)
+                            : Text(event!.name,
+                                maxLines: 1,
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 4),
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 4,
+                          children: [
+                            event == null
+                                ? Shimmer(fontSize: 12, width: 88)
+                                : Text(
+                                    '${event!.participantCount} participants',
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        color: Colors.black54, fontSize: 12),
+                                  ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  if (event != null) CalendarDate(date: event!.date, size: 36)
+                ],
+              )),
+        ]),
+      ),
     );
   }
 }

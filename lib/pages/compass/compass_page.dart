@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/drag_marker.dart';
 import 'package:hikee/components/map.dart';
+import 'package:hikee/components/mutation_builder.dart';
+import 'package:hikee/themes.dart';
 import 'package:latlong2/latlong.dart' hide Path;
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/compass.dart';
@@ -13,15 +17,12 @@ import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/trail_elevation.dart';
 import 'package:hikee/components/trail_info.dart';
 import 'package:hikee/components/sliding_up_panel.dart';
-import 'package:hikee/data/distance_posts/reader.dart';
 import 'package:hikee/models/active_trail.dart';
-import 'package:hikee/models/distance_post.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/compass/weather_controller.dart';
 import 'package:hikee/pages/home/home_controller.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/map_marker.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -243,7 +244,10 @@ class CompassPage extends GetView<CompassController> {
                                     opacity: controller.panelPosition.value == 1
                                         ? 1
                                         : 0,
-                                    child: Text('Let\'s get started!',
+                                    child: Text(
+                                        controller.isCloseToStart.value
+                                            ? 'Let\'s get started!'
+                                            : 'Please reach to the starting point first',
                                         style: TextStyle(fontSize: 12)),
                                   ),
                                 )
@@ -262,7 +266,7 @@ class CompassPage extends GetView<CompassController> {
             Obx(
               () => Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: _pageIndicators(2, controller.panelPage.value),
+                children: _pageIndicators(3, controller.panelPage.value),
               ),
             ),
             Container(),
@@ -292,6 +296,188 @@ class CompassPage extends GetView<CompassController> {
                             ),
                           ),
                         ])),
+                  ),
+                  KeepAlivePage(
+                    key: Key(controller.activeTrail.value!.trail.id.toString()),
+                    child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Column(children: [
+                          if (controller.nearbyFacilities.value != null &&
+                              controller.nearbyFacilities.value!.length > 0)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                MutationBuilder(mutation: () {
+                                  return controller.discoverNearbyFacilities();
+                                }, builder: (mutate, loading) {
+                                  return Button(
+                                    height: 44,
+                                    minWidth: 44,
+                                    onPressed: () {
+                                      mutate();
+                                    },
+                                    loading: loading,
+                                    child: Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 8.0,
+                                        children: [
+                                          Icon(
+                                            LineAwesomeIcons.sync_icon,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          Text(
+                                            'Nearby Facilities',
+                                          )
+                                        ]),
+                                  );
+                                }),
+                                MutationBuilder(mutation: () {
+                                  return controller.discoverNearbyFacilities();
+                                }, builder: (mutate, loading) {
+                                  return Button(
+                                    height: 44,
+                                    minWidth: 44,
+                                    backgroundColor: Colors.red,
+                                    onPressed: () {
+                                      mutate();
+                                    },
+                                    loading: loading,
+                                    child: Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 8.0,
+                                        children: [
+                                          Icon(
+                                            LineAwesomeIcons.bell,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          Text(
+                                            'Emergency',
+                                          )
+                                        ]),
+                                  );
+                                })
+                              ],
+                            ),
+                          Expanded(
+                              child: controller.nearbyFacilities.value !=
+                                          null &&
+                                      controller
+                                              .nearbyFacilities.value!.length >
+                                          0
+                                  ? ListView.separated(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8),
+                                      itemBuilder: (_, i) {
+                                        var facility = controller
+                                            .nearbyFacilities.value![i];
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              boxShadow: [Themes.lightShadow]),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Expanded(
+                                                  child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    facility.name,
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  if (controller.currentLocation
+                                                          .value !=
+                                                      null) ...[
+                                                    SizedBox(height: 4),
+                                                    Obx(() => Text(
+                                                          '~' +
+                                                              GeoUtils.formatDistance(
+                                                                  facility.calculateDistance(
+                                                                      controller
+                                                                          .currentLocation
+                                                                          .value!)),
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black54),
+                                                        ))
+                                                  ]
+                                                ],
+                                              )),
+                                              SizedBox(width: 16),
+                                              Button(
+                                                icon: Icon(
+                                                  LineAwesomeIcons.map_marker,
+                                                  //color: Colors.white,
+                                                ),
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                onPressed: () {
+                                                  controller.pinnedFacility
+                                                      .value = facility;
+                                                  controller
+                                                      .focus(facility.location);
+                                                },
+                                              )
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder: (_, __) =>
+                                          SizedBox(height: 8),
+                                      itemCount: controller
+                                          .nearbyFacilities.value!.length)
+                                  : Center(
+                                      child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Opacity(
+                                            opacity: .6,
+                                            child: Text(controller
+                                                        .nearbyFacilities
+                                                        .value ==
+                                                    null
+                                                ? 'Discover nearby facilities'
+                                                : 'No nearby facilities')),
+                                        SizedBox(
+                                          height: 16,
+                                        ),
+                                        MutationBuilder(mutation: () {
+                                          return controller
+                                              .discoverNearbyFacilities();
+                                        }, builder: (mutate, loading) {
+                                          return Button(
+                                            onPressed: () {
+                                              mutate();
+                                            },
+                                            loading: loading,
+                                            child: Text(controller
+                                                        .nearbyFacilities
+                                                        .value ==
+                                                    null
+                                                ? 'Discover facilities'
+                                                : 'Refresh'),
+                                          );
+                                        }),
+                                      ],
+                                    )))
+                        ])),
                   )
                 ],
               ),
@@ -309,6 +495,7 @@ class CompassPage extends GetView<CompassController> {
       child: Obx(() {
         var hasActiveTrail = controller.activeTrail.value != null;
         return Stack(
+          clipBehavior: Clip.none,
           children: [
             if (hasActiveTrail)
               _map(controller.activeTrail.value!)
@@ -326,16 +513,27 @@ class CompassPage extends GetView<CompassController> {
                   ),
                 ),
               ),
-            SafeArea(
-                child: Opacity(
-                    opacity: 1 - controller.panelPosition.value,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        DefaultTextStyle(
-                          style: TextStyle(color: Colors.white),
+            Opacity(
+                //opacity: 1 - controller.panelPosition.value,
+                opacity: 1,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    DefaultTextStyle(
+                      style: TextStyle(color: Colors.white),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.black54, Colors.transparent],
+                          ),
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                        child: SafeArea(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Row(
                                 mainAxisAlignment:
@@ -380,7 +578,13 @@ class CompassPage extends GetView<CompassController> {
                                               )
                                             : SizedBox()),
                                   ),
-                                  DropdownMenu(),
+                                  Container(
+                                    margin: EdgeInsets.only(right: 16),
+                                    child: Compass(
+                                      heading: controller.heading,
+                                    ),
+                                  ),
+                                  // DropdownMenu(),
                                   // Button(
                                   //   icon: Icon(LineAwesomeIcons.bars,
                                   //       color: Colors.white, size: 32),
@@ -438,12 +642,6 @@ class CompassPage extends GetView<CompassController> {
                                               style: TextStyle(
                                                   color: Colors.black),
                                               maxLines: 1),
-                                          SizedBox(
-                                            height: 8,
-                                          ),
-                                          Text('Tap to view more details...',
-                                              style: TextStyle(
-                                                  color: Colors.black))
                                         ],
                                       ),
                                     ),
@@ -454,21 +652,23 @@ class CompassPage extends GetView<CompassController> {
                             ],
                           ),
                         ),
-                        if (!hasActiveTrail)
-                          Expanded(
-                              child: Center(
-                            child: Button(
-                              invert: true,
-                              child: Text('Discover Trails'),
-                              onPressed: () {
-                                var hc = Get.find<HomeController>();
-                                hc.switchTab(1);
-                                Get.toNamed('/', id: 1);
-                              },
-                            ),
-                          ))
-                      ],
-                    ))),
+                      ),
+                    ),
+                    if (!hasActiveTrail)
+                      Expanded(
+                          child: Center(
+                        child: Button(
+                          invert: true,
+                          child: Text('Discover Trails'),
+                          onPressed: () {
+                            var hc = Get.find<HomeController>();
+                            hc.switchTab(1);
+                            Get.toNamed('/', id: 1);
+                          },
+                        ),
+                      ))
+                  ],
+                )),
             if (hasActiveTrail)
               Positioned(
                 right: 0,
@@ -491,6 +691,20 @@ class CompassPage extends GetView<CompassController> {
                             invert: true,
                             onPressed: () {
                               controller.focusActiveTrail();
+                            },
+                          ),
+                          Container(
+                            height: 8,
+                          ),
+                          Button(
+                            icon: Icon(
+                              LineAwesomeIcons.layer_group,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            invert: true,
+                            onPressed: () {
+                              controller.imagery.value =
+                                  !controller.imagery.value;
                             },
                           ),
                           Container(
@@ -521,6 +735,38 @@ class CompassPage extends GetView<CompassController> {
   Widget _map(ActiveTrail activeTrail) {
     return Obx(() {
       var lock = controller.lockPosition.value; // do not remove this line
+      List<DragMarker> markers = [];
+      if (activeTrail.trail.pins != null) {
+        markers.addAll(activeTrail.trail.pins!.map(
+          (pos) => DragMarker(
+            draggable: false,
+            point: pos.location,
+            width: 10,
+            height: 10,
+            hasPopup: pos.message != null,
+            onTap: (_) {
+              DialogUtils.showDialog("Message", pos.message!);
+            },
+          ),
+        ));
+      }
+      if (controller.pinnedFacility.value != null) {
+        markers.add(
+          DragMarker(
+            draggable: false,
+            point: controller.pinnedFacility.value!.location,
+            width: 10,
+            height: 10,
+            hasPopup: true,
+            popupColor: Color.fromARGB(255, 64, 66, 196),
+            popupIcon: LineAwesomeIcons.star,
+            onTap: (_) {
+              DialogUtils.showDialog(
+                  "Facility", controller.pinnedFacility.value!.name);
+            },
+          ),
+        );
+      }
       return HikeeMap(
         mapController: controller.mapController,
         onMapCreated: (mapController) {
@@ -529,121 +775,12 @@ class CompassPage extends GetView<CompassController> {
         },
         centerOnLocationUpdate: controller.lockPosition,
         path: activeTrail.decodedPath,
+        pathOnly: true,
         showMyLocation: true,
-        markers: activeTrail.trail.pins == null
-            ? null
-            : activeTrail.trail.pins!
-                .map(
-                  (pos) => DragMarker(
-                    draggable: false,
-                    point: pos.location,
-                    width: 10,
-                    height: 10,
-                    hasPopup: pos.message != null,
-                    onTap: (_) {
-                      DialogUtils.showDialog("Message", pos.message!);
-                    },
-                    builder: (_) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                        ),
-                      );
-                    },
-                  ),
-                )
-                .toList(),
+        imagery: controller.imagery.value,
+        markers: markers,
       );
     });
-    // return Listener(
-    //     onPointerDown: (e) {
-    //       controller.lockPosition = false;
-    //     },
-    //     child: GoogleMap(
-    //       padding: EdgeInsets.only(bottom: controller.collapsedPanelHeight + 8),
-    //       compassEnabled: false,
-    //       mapToolbarEnabled: false,
-    //       zoomControlsEnabled: false,
-    //       tiltGesturesEnabled: false,
-    //       mapType: MapType.normal,
-    //       initialCameraPosition: CameraPosition(
-    //         target: activeTrail.decodedPath[0],
-    //         zoom: 14,
-    //       ),
-    //       myLocationEnabled: true,
-    //       myLocationButtonEnabled: false,
-    //       polylines: [
-    //         Polyline(
-    //           polylineId: PolylineId('polyLine1'),
-    //           color: Color(0xFFfcce39),
-    //           zIndex: 1,
-    //           width: 8,
-    //           jointType: JointType.round,
-    //           startCap: Cap.roundCap,
-    //           endCap: Cap.roundCap,
-    //           points: activeTrail.decodedPath,
-    //         ),
-    //         Polyline(
-    //           polylineId: PolylineId('polyLine2'),
-    //           color: Colors.white,
-    //           width: 10,
-    //           jointType: JointType.round,
-    //           startCap: Cap.roundCap,
-    //           endCap: Cap.roundCap,
-    //           zIndex: 0,
-    //           points: activeTrail.decodedPath,
-    //         ),
-    //         if (controller.started.value) ...[
-    //           Polyline(
-    //             polylineId: PolylineId('polyLine1-walked'),
-    //             color: Colors.blue,
-    //             zIndex: 2,
-    //             width: 8,
-    //             jointType: JointType.round,
-    //             startCap: Cap.roundCap,
-    //             endCap: Cap.roundCap,
-    //             points: controller.walkedPath.toList(),
-    //           ),
-    //           Polyline(
-    //             polylineId: PolylineId('polyLine2-walked'),
-    //             color: Colors.white,
-    //             width: 10,
-    //             jointType: JointType.round,
-    //             startCap: Cap.roundCap,
-    //             endCap: Cap.roundCap,
-    //             zIndex: 0,
-    //             points: controller.walkedPath.toList(),
-    //           ),
-    //         ]
-    //       ].toSet(),
-    //       markers: [
-    //         Marker(
-    //           markerId: MarkerId('marker-start'),
-    //           zIndex: 2,
-    //           icon: MapMarker().start,
-    //           position: activeTrail.decodedPath.first,
-    //         ),
-    //         Marker(
-    //           markerId: MarkerId('marker-end'),
-    //           zIndex: 1,
-    //           icon: MapMarker().end,
-    //           position: activeTrail.decodedPath.last,
-    //         ),
-    //         if (controller.nearestDistancePost.value != null)
-    //           Marker(
-    //             markerId: MarkerId('marker-distance-post'),
-    //             zIndex: 999,
-    //             icon: MapMarker().distancePost,
-    //             position: controller.nearestDistancePost.value!.location,
-    //           )
-    //       ].toSet(),
-    //       onMapCreated: (GoogleMapController mapController) async {
-    //         mapController.setMapStyle(
-    //             '[ { "elementType": "geometry.stroke", "stylers": [ { "color": "#798b87" } ] }, { "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "elementType": "labels.text.stroke", "stylers": [ { "visibility": "off" } ] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#c2d1c2" } ] }, { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#97be99" } ] }, { "featureType": "road", "stylers": [ { "color": "#d0ddd9" } ] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [ { "color": "#919c99" } ] }, { "featureType": "road", "elementType": "labels.text", "stylers": [ { "color": "#446c79" } ] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [ { "color": "#cedade" } ] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [ { "color": "#8b989c" } ] }, { "featureType": "water", "stylers": [ { "color": "#6da0b0" } ] } ]');
-    //         controller.mapController = Completer<GoogleMapController>();
-    //         controller.mapController.complete(mapController);
-    //       },
-    //     ));
   }
 
   List<Widget> _pageIndicators(int total, double currentPage) {
@@ -677,12 +814,6 @@ class CompassPage extends GetView<CompassController> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: Compass(
-                  heading: controller.heading,
-                ),
-              ),
-              SizedBox(width: 16),
               Expanded(
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
