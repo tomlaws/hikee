@@ -574,7 +574,8 @@ class TrailPage extends GetView<TrailController> {
                       hc.switchTab(0);
                       CompassController cc = Get.find<CompassController>();
                       cc.selectTrail(controller.state!);
-                      Get.offAllNamed('/');
+                      Navigator.pop(
+                          context); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
                     },
                     child: Text('Select Now'),
                   ),

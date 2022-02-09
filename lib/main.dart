@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,10 +37,63 @@ import 'package:hikee/pages/trails/category/trail_category_page.dart';
 import 'package:hikee/pages/trails/create/create_trail_binding.dart';
 import 'package:hikee/pages/trails/create/create_trail_page.dart';
 import 'package:hikee/themes.dart';
-import 'package:hikee/utils/map_marker.dart';
 
 void main() {
   runApp(MyApp());
+}
+
+// Remove glow effect for scroll views from flutter framework
+class CustomOverscrollIndicator extends ScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
+  }
+
+  @override
+  Widget buildScrollbar(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    var opacity = [1.0, 1.0];
+    var wrapped = StatefulBuilder(builder: (_, setState) {
+      return NotificationListener<ScrollNotification>(
+        onNotification: (scrollNotification) {
+          var v = scrollNotification.metrics.viewportDimension;
+          // apply fading edge only to small view
+          if (v > MediaQuery.of(context).size.height / 2) {
+            return true;
+          }
+          var b = scrollNotification.metrics.extentBefore;
+          var a = scrollNotification.metrics.extentAfter;
+          setState(() {
+            opacity = [
+              1 - (b * 20).clamp(0, 100) / 100,
+              1 - (a * 20).clamp(0, 100) / 100
+            ];
+          });
+          return true;
+        },
+        child: ShaderMask(
+          shaderCallback: (Rect bounds) {
+            return LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.0, 0.2, 0.8, 1.0],
+              colors: <Color>[
+                Colors.white
+                    .withOpacity(opacity[0]), //opacity: 0=fade, 1 = sharpedge
+                Colors.white,
+                Colors.white,
+                Colors.white.withOpacity(opacity[1])
+              ],
+            ).createShader(bounds);
+          },
+          child: child,
+          blendMode: BlendMode.dstIn,
+        ),
+      );
+    });
+    return super.buildScrollbar(context, wrapped, details);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -55,6 +110,11 @@ class MyApp extends StatelessWidget {
       defaultTransition: Transition.cupertino,
       locale: Locale('en', 'US'),
       initialRoute: '/',
+      builder: (_, widget) {
+        if (widget == null) return Container();
+        return ScrollConfiguration(
+            behavior: CustomOverscrollIndicator(), child: widget);
+      },
       getPages: [
         GetPage(
           name: '/',

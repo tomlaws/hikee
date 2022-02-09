@@ -36,9 +36,7 @@ class CompassController extends GetxController
     with GetSingleTickerProviderStateMixin {
   Rxn<ActiveTrail> activeTrail = Rxn<ActiveTrail>();
   PanelController panelController = PanelController();
-  PageController panelPageController = PageController(
-    initialPage: 0,
-  );
+  final panelPageController = Rxn<PageController>(null);
   MapController? mapController;
 
   // Data
@@ -80,10 +78,6 @@ class CompassController extends GetxController
   void onInit() {
     super.onInit();
     _loadTrail();
-    print('load trail');
-    panelPageController.addListener(() {
-      panelPage.value = panelPageController.page ?? 0;
-    });
     // start timer when active trail is started
     activeTrail.listen((trail) {
       started.value = trail?.isStarted ?? false;
@@ -107,9 +101,18 @@ class CompassController extends GetxController
       if (trail == null) {
         stopLocationTracking();
       } else {
-        print('start tracking location in the background');
         startLocationTracking();
       }
+      if (panelPageController.value != null) {
+        panelPageController.value!.dispose();
+        panelPageController.value = null;
+      }
+      print('trail changed');
+      panelPageController.value = PageController(
+        initialPage: 0,
+      )..addListener(() {
+          panelPage.value = panelPageController.value!.page ?? 0;
+        });
     });
 
     tooltipController = AnimationController(
@@ -137,7 +140,11 @@ class CompassController extends GetxController
 
   @override
   void onClose() {
-    panelPageController.dispose();
+    if (panelPageController.value != null) {
+      panelPageController.value!.dispose();
+      panelPageController.value = null;
+    }
+    port.close();
     tooltipController.dispose();
     if (_timer != null) {
       _timer!.cancel();
@@ -162,7 +169,6 @@ class CompassController extends GetxController
   Future<void> showDistancePost(DistancePost dp) async {
     try {
       lockPosition.value = false;
-      var location = dp.location;
       nearestDistancePost.value = dp;
     } catch (e) {
       print(e);

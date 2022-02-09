@@ -32,26 +32,28 @@ class ElevationProfile extends StatelessWidget {
     FlSpot? currentSpot;
     double minDist = double.infinity;
     elevations.asMap().forEach((index, value) {
-      var dist = 0.0;
-      double e = 0;
-      if (value is Elevation) {
-        if (myLocation != null)
-          dist = GeoUtils.calculateDistance(value.location, myLocation!);
-        e = value.elevation.roundToDouble();
-      }
-      if (value is double) {
-        e = value;
-      }
-      maxE = max(e, maxE);
-      minE = min(e, minE);
-      var spot = FlSpot(index.toDouble(), e);
-
-      if (dist < minDist) {
-        currentSpot = spot;
-        minDist = dist;
-      }
       // limits number of spot rendered, otherwise the line is not curvy enough
-      if (index % (elevations.length / 32).round() == 0) return spots.add(spot);
+      if (index % (elevations.length / 32).round() == 0) {
+        var dist = 0.0;
+        double e = 0;
+        if (value is Elevation) {
+          if (myLocation != null)
+            dist = GeoUtils.calculateDistance(value.location, myLocation!);
+          e = value.elevation.roundToDouble();
+        }
+        if (value is double) {
+          e = value;
+        }
+        maxE = max(e, maxE);
+        minE = min(e, minE);
+        var spot = FlSpot(index.toDouble(), e);
+
+        if (dist < minDist) {
+          currentSpot = spot;
+          minDist = dist;
+        }
+        return spots.add(spot);
+      }
     });
     int interval = ((maxE - minE) / 6).round();
     if (interval == 0) {
@@ -65,7 +67,6 @@ class ElevationProfile extends StatelessWidget {
       _showCurrent = false;
     }
     return Container(
-      //margin: EdgeInsets.only(left: 8, right: 16, top: 16, bottom: 16),
       child: LineChart(LineChartData(
           gridData: FlGridData(
             show: false,
@@ -90,8 +91,6 @@ class ElevationProfile extends StatelessWidget {
                 fontSize: 12,
               ),
               interval: interval.toDouble(),
-              //reservedSize: 24,
-              //margin: 6,
             ),
           ),
           maxY: maxE,
@@ -111,12 +110,20 @@ class ElevationProfile extends StatelessWidget {
                   colors: gradientColors
                       .map((color) => color.withOpacity(0.2))
                       .toList(),
-                  spotsLine: BarAreaSpotsLine(
-                      show: _showCurrent,
-                      flLineStyle: FlLine(color: Colors.blue),
-                      checkToShowSpotLine: (FlSpot spot) {
-                        return spot == currentSpot;
-                      })),
+                  spotsLine: currentSpot == null
+                      ? null
+                      : BarAreaSpotsLine(
+                          show: _showCurrent,
+                          flLineStyle: FlLine(
+                              strokeWidth: 1,
+                              color: lerpGradient(
+                                  gradientColors,
+                                  [0, 1],
+                                  spots.indexOf(currentSpot!) /
+                                      spots.length.toDouble())),
+                          checkToShowSpotLine: (FlSpot spot) {
+                            return spot == currentSpot;
+                          })),
             ),
           ],
           lineTouchData: LineTouchData(enabled: false)
@@ -149,5 +156,19 @@ class ElevationProfile extends StatelessWidget {
           //         }))
           )),
     );
+  }
+
+  Color? lerpGradient(List<Color> colors, List<double> stops, double t) {
+    for (int s = 0; s < stops.length - 1; s++) {
+      final leftStop = stops[s], rightStop = stops[s + 1];
+      final leftColor = colors[s], rightColor = colors[s + 1];
+      if (t <= leftStop) {
+        return leftColor;
+      } else if (t < rightStop) {
+        final sectionT = (t - leftStop) / (rightStop - leftStop);
+        return Color.lerp(leftColor, rightColor, sectionT);
+      }
+    }
+    return colors.last;
   }
 }
