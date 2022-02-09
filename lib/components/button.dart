@@ -86,7 +86,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         color: buttonColor,
         child: InkWell(
           onTap: () {
-            widget.onPressed();
+            if (!widget.disabled) widget.onPressed();
           },
           child: SafeArea(
             top: false,

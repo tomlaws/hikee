@@ -8,9 +8,11 @@ import 'package:hikee/models/user.dart';
 import 'package:hikee/utils/image.dart';
 
 class Avatar extends StatelessWidget {
-  const Avatar({Key? key, this.user, this.height = 32}) : super(key: key);
+  const Avatar({Key? key, this.user, this.height = 32, this.onTap})
+      : super(key: key);
   final FutureOr<User>? user;
   final double height;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +52,12 @@ class Avatar extends StatelessWidget {
             width: height,
             fit: BoxFit.cover,
           );
-    return GestureDetector(
+    return InkWell(
       onTap: () {
-        Get.toNamed('/profiles/${user.id.toString()}');
+        if (onTap != null)
+          onTap!();
+        else
+          Get.toNamed('/profiles/${user.id.toString()}');
       },
       child: avatar,
     );

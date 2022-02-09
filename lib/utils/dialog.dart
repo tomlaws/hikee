@@ -8,6 +8,7 @@ class DialogUtils {
     Get.defaultDialog(
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 8),
         content: Column(
           children: [
             Padding(
@@ -21,7 +22,7 @@ class DialogUtils {
             ),
             if (showDismiss)
               SizedBox(
-                height: 32,
+                height: 24,
               ),
             if (showDismiss)
               Button(
@@ -40,6 +41,7 @@ class DialogUtils {
     return await Get.defaultDialog(
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 8),
         content: Column(
           children: [
             Padding(

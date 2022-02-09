@@ -20,7 +20,12 @@ class AccountPage extends GetView<AccountController> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: AccountHeader(future: getMe),
+                    child: AccountHeader(
+                      future: getMe,
+                      onAvatarTap: () {
+                        controller.promptUploadIcon();
+                      },
+                    ),
                   ),
                   Container(
                     margin: EdgeInsets.all(16),

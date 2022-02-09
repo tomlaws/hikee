@@ -16,6 +16,7 @@ import 'package:hikee/pages/event/event_participation_controller.dart';
 import 'package:hikee/pages/trail/trail_binding.dart';
 import 'package:hikee/pages/trail/trail_page.dart';
 import 'package:hikee/themes.dart';
+import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
 
@@ -57,8 +58,8 @@ class EventPage extends GetView<EventController> {
                         children: [
                           Text('Date',
                               style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
                               )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -122,8 +123,8 @@ class EventPage extends GetView<EventController> {
                           ),
                           Text('Participants',
                               style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
                               )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -136,8 +137,8 @@ class EventPage extends GetView<EventController> {
                           ),
                           Text('Description',
                               style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
                               )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -183,12 +184,22 @@ class EventPage extends GetView<EventController> {
                         bool joined = event.joined ?? false;
                         return Button(
                           loading: loading,
+                          disabled: event.isExpired,
                           backgroundColor: joined ? Colors.red : null,
                           onPressed: () {
+                            if (event.isExpired) {
+                              DialogUtils.showDialog(
+                                  'Error', 'This event has expired.');
+                              return;
+                            }
                             mutate();
                           },
                           safeArea: true,
-                          child: Text(joined ? 'Quit' : 'Join'),
+                          child: Text(event.isExpired
+                              ? 'Expired'
+                              : joined
+                                  ? 'Quit'
+                                  : 'Join'),
                         );
                       },
                     ),

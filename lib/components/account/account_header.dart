@@ -7,8 +7,9 @@ import 'package:hikee/themes.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class AccountHeader extends GetView {
-  const AccountHeader({required this.future});
+  const AccountHeader({required this.future, this.onAvatarTap});
   final Future<User> future;
+  final void Function()? onAvatarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -18,24 +19,20 @@ class AccountHeader extends GetView {
           height: 32,
         ),
         Column(mainAxisSize: MainAxisSize.min, children: [
-          GestureDetector(
-            onTap: () async {
-              controller.promptUploadIcon();
-            },
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              FutureBuilder<User>(
-                  future: future,
-                  builder: (_, snapshot) {
-                    if (snapshot.data == null)
-                      return Shimmer(height: 128, width: 128, radius: 64);
-                    else
-                      return Avatar(
-                        user: snapshot.data!,
-                        height: 128,
-                      );
-                  })
-            ]),
-          ),
+          Column(mainAxisSize: MainAxisSize.min, children: [
+            FutureBuilder<User>(
+                future: future,
+                builder: (_, snapshot) {
+                  if (snapshot.data == null)
+                    return Shimmer(height: 128, width: 128, radius: 64);
+                  else
+                    return Avatar(
+                      user: snapshot.data!,
+                      height: 128,
+                      onTap: onAvatarTap,
+                    );
+                })
+          ]),
         ]),
         Row(
             mainAxisAlignment: MainAxisAlignment.center,

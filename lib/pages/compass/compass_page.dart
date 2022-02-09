@@ -30,7 +30,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CompassPage extends GetView<CompassController> {
   final _weatherController = Get.find<WeatherController>();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,7 +45,9 @@ class CompassPage extends GetView<CompassController> {
               onPanelSlide: (position) {
                 controller.panelPosition.value = position;
               },
-              panel: Obx(() => _panel()),
+              panel: Obx(() => controller.activeTrail.value == null
+                  ? Container()
+                  : _panel()),
               body: _body(context)),
         ),
         AnimatedBuilder(
@@ -131,9 +132,7 @@ class CompassPage extends GetView<CompassController> {
   }
 
   Widget _panel() {
-    if (controller.activeTrail.value == null) {
-      return Container();
-    }
+    print('hello');
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -148,10 +147,6 @@ class CompassPage extends GetView<CompassController> {
         children: [
           Container(
             height: kBottomNavigationBarHeight,
-            // decoration: BoxDecoration(
-            //     border: Border(
-            //         bottom: BorderSide(
-            //             width: 1, color: Theme.of(context).dividerColor.withOpacity(.25)))),
             margin: EdgeInsets.symmetric(horizontal: 16),
             child: Obx(() {
               return GestureDetector(
@@ -302,182 +297,190 @@ class CompassPage extends GetView<CompassController> {
                     child: Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Column(children: [
-                          if (controller.nearbyFacilities.value != null &&
-                              controller.nearbyFacilities.value!.length > 0)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                MutationBuilder(mutation: () {
-                                  return controller.discoverNearbyFacilities();
-                                }, builder: (mutate, loading) {
-                                  return Button(
-                                    height: 44,
-                                    minWidth: 44,
-                                    onPressed: () {
-                                      mutate();
-                                    },
-                                    loading: loading,
-                                    child: Wrap(
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.center,
-                                        spacing: 8.0,
-                                        children: [
-                                          Icon(
-                                            LineAwesomeIcons.sync_icon,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                          Text(
-                                            'Nearby Facilities',
-                                          )
-                                        ]),
-                                  );
-                                }),
-                                MutationBuilder(mutation: () {
-                                  return controller.discoverNearbyFacilities();
-                                }, builder: (mutate, loading) {
-                                  return Button(
-                                    height: 44,
-                                    minWidth: 44,
-                                    backgroundColor: Colors.red,
-                                    onPressed: () {
-                                      mutate();
-                                    },
-                                    loading: loading,
-                                    child: Wrap(
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.center,
-                                        spacing: 8.0,
-                                        children: [
-                                          Icon(
-                                            LineAwesomeIcons.bell,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                          Text(
-                                            'Emergency',
-                                          )
-                                        ]),
-                                  );
-                                })
-                              ],
-                            ),
-                          Expanded(
-                              child: controller.nearbyFacilities.value !=
-                                          null &&
-                                      controller
-                                              .nearbyFacilities.value!.length >
-                                          0
-                                  ? ListView.separated(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8),
-                                      itemBuilder: (_, i) {
-                                        var facility = controller
-                                            .nearbyFacilities.value![i];
-                                        return Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              boxShadow: [Themes.lightShadow]),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                          child: Row(
+                        child: Obx(() => Column(children: [
+                              if (controller.nearbyFacilities.value != null &&
+                                  controller.nearbyFacilities.value!.length > 0)
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    MutationBuilder(mutation: () {
+                                      return controller
+                                          .discoverNearbyFacilities();
+                                    }, builder: (mutate, loading) {
+                                      return Button(
+                                        height: 44,
+                                        minWidth: 44,
+                                        onPressed: () {
+                                          mutate();
+                                        },
+                                        loading: loading,
+                                        child: Wrap(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                                WrapCrossAlignment.center,
+                                            spacing: 8.0,
                                             children: [
-                                              Expanded(
-                                                  child: Column(
+                                              Icon(
+                                                LineAwesomeIcons.sync_icon,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                              Text(
+                                                'Nearby Facilities',
+                                              )
+                                            ]),
+                                      );
+                                    }),
+                                    MutationBuilder(mutation: () {
+                                      return controller
+                                          .discoverNearbyFacilities();
+                                    }, builder: (mutate, loading) {
+                                      return Button(
+                                        height: 44,
+                                        minWidth: 44,
+                                        backgroundColor: Colors.red,
+                                        onPressed: () {
+                                          mutate();
+                                        },
+                                        loading: loading,
+                                        child: Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            spacing: 8.0,
+                                            children: [
+                                              Icon(
+                                                LineAwesomeIcons.bell,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                              Text(
+                                                'Emergency',
+                                              )
+                                            ]),
+                                      );
+                                    })
+                                  ],
+                                ),
+                              Expanded(
+                                  child: controller.nearbyFacilities.value !=
+                                              null &&
+                                          controller.nearbyFacilities.value!
+                                                  .length >
+                                              0
+                                      ? ListView.separated(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 8),
+                                          itemBuilder: (_, i) {
+                                            var facility = controller
+                                                .nearbyFacilities.value![i];
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  boxShadow: [
+                                                    Themes.lightShadow
+                                                  ]),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 16, vertical: 8),
+                                              child: Row(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.center,
                                                 children: [
-                                                  Text(
-                                                    facility.name,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                  if (controller.currentLocation
-                                                          .value !=
-                                                      null) ...[
-                                                    SizedBox(height: 4),
-                                                    Obx(() => Text(
-                                                          '~' +
-                                                              GeoUtils.formatDistance(
-                                                                  facility.calculateDistance(
+                                                  Expanded(
+                                                      child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        facility.name,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      if (controller
+                                                              .currentLocation
+                                                              .value !=
+                                                          null) ...[
+                                                        SizedBox(height: 4),
+                                                        Obx(() => Text(
+                                                              '~' +
+                                                                  GeoUtils.formatDistance(facility.calculateDistance(
                                                                       controller
                                                                           .currentLocation
                                                                           .value!)),
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .black54),
-                                                        ))
-                                                  ]
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black54),
+                                                            ))
+                                                      ]
+                                                    ],
+                                                  )),
+                                                  SizedBox(width: 16),
+                                                  Button(
+                                                    icon: Icon(
+                                                      LineAwesomeIcons
+                                                          .map_marker,
+                                                      //color: Colors.white,
+                                                    ),
+                                                    backgroundColor:
+                                                        Colors.transparent,
+                                                    onPressed: () {
+                                                      controller.pinnedFacility
+                                                          .value = facility;
+                                                      controller.focus(
+                                                          facility.location);
+                                                    },
+                                                  )
                                                 ],
-                                              )),
-                                              SizedBox(width: 16),
-                                              Button(
-                                                icon: Icon(
-                                                  LineAwesomeIcons.map_marker,
-                                                  //color: Colors.white,
-                                                ),
-                                                backgroundColor:
-                                                    Colors.transparent,
+                                              ),
+                                            );
+                                          },
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 8),
+                                          itemCount: controller
+                                              .nearbyFacilities.value!.length)
+                                      : Center(
+                                          child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Opacity(
+                                                opacity: .6,
+                                                child: Text(controller
+                                                            .nearbyFacilities
+                                                            .value ==
+                                                        null
+                                                    ? 'Discover nearby facilities'
+                                                    : 'No nearby facilities')),
+                                            SizedBox(
+                                              height: 16,
+                                            ),
+                                            MutationBuilder(mutation: () {
+                                              return controller
+                                                  .discoverNearbyFacilities();
+                                            }, builder: (mutate, loading) {
+                                              return Button(
                                                 onPressed: () {
-                                                  controller.pinnedFacility
-                                                      .value = facility;
-                                                  controller
-                                                      .focus(facility.location);
+                                                  mutate();
                                                 },
-                                              )
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                      separatorBuilder: (_, __) =>
-                                          SizedBox(height: 8),
-                                      itemCount: controller
-                                          .nearbyFacilities.value!.length)
-                                  : Center(
-                                      child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Opacity(
-                                            opacity: .6,
-                                            child: Text(controller
-                                                        .nearbyFacilities
-                                                        .value ==
-                                                    null
-                                                ? 'Discover nearby facilities'
-                                                : 'No nearby facilities')),
-                                        SizedBox(
-                                          height: 16,
-                                        ),
-                                        MutationBuilder(mutation: () {
-                                          return controller
-                                              .discoverNearbyFacilities();
-                                        }, builder: (mutate, loading) {
-                                          return Button(
-                                            onPressed: () {
-                                              mutate();
-                                            },
-                                            loading: loading,
-                                            child: Text(controller
-                                                        .nearbyFacilities
-                                                        .value ==
-                                                    null
-                                                ? 'Discover facilities'
-                                                : 'Refresh'),
-                                          );
-                                        }),
-                                      ],
-                                    )))
-                        ])),
+                                                loading: loading,
+                                                child: Text(controller
+                                                            .nearbyFacilities
+                                                            .value ==
+                                                        null
+                                                    ? 'Discover facilities'
+                                                    : 'Refresh'),
+                                              );
+                                            }),
+                                          ],
+                                        )))
+                            ]))),
                   )
                 ],
               ),

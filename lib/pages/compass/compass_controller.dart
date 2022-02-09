@@ -137,9 +137,8 @@ class CompassController extends GetxController
 
   @override
   void onClose() {
-    stopLocationTracking();
-    port.close();
     panelPageController.dispose();
+    tooltipController.dispose();
     if (_timer != null) {
       _timer!.cancel();
     }
