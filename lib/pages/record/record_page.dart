@@ -4,7 +4,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/elevation_profile.dart';
-import 'package:hikee/components/map.dart';
+import 'package:hikee/components/map/map.dart';
 import 'package:hikee/pages/record/record_controller.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
@@ -13,52 +13,95 @@ import 'package:intl/intl.dart';
 class RecordPage extends GetView<RecordController> {
   @override
   Widget build(BuildContext context) {
+    var bottomPanelHeight = 200.0;
     return Scaffold(
       appBar: HikeeAppBar(title: Text('Record')),
-      body: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: controller.obx((state) {
-                  var decoded = GeoUtils.decodePath(state!.userPath);
-                  return Container(
-                    child: HikeeMap(path: decoded, pathOnly: true),
-                  );
-                }, onLoading: Shimmer()),
-              ),
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Trail',
-                        style: TextStyle(
-                          color: Colors.black38,
-                        )),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    controller.obx(
-                        (state) => Text(
-                              state!.name,
-                              style: TextStyle(),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            bottom: bottomPanelHeight - 18.0,
+            child: controller.obx((state) {
+              var decoded = GeoUtils.decodePath(state!.userPath);
+              var referencePath = state.referenceTrail != null
+                  ? GeoUtils.decodePath(state.referenceTrail!.path)
+                  : null;
+              return Container(
+                child: HikeeMap(
+                  path: referencePath,
+                  userPath: decoded,
+                  pathOnly: true,
+                  contentMargin: EdgeInsets.only(
+                      left: 8, bottom: 8 + 18, right: 8, top: 8),
+                ),
+              );
+            }, onLoading: Shimmer()),
+          ),
+          Positioned.fill(
+            top: null,
+            child: SafeArea(
+              child: Container(
+                height: bottomPanelHeight,
+                clipBehavior: Clip.hardEdge,
+                padding: EdgeInsets.only(top: 8),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(26))),
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Trail',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.black38,
+                          )),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      controller.obx(
+                          (state) => Text(
+                                state!.name,
+                                style: TextStyle(),
+                              ),
+                          onLoading: Shimmer()),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 120,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Date',
+                                    style: TextStyle(
+                                      color: Colors.black38,
+                                    )),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                controller.obx(
+                                    (state) => Text(
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(state!.date),
+                                          style: TextStyle(),
+                                        ),
+                                    onLoading: Shimmer()),
+                              ],
                             ),
-                        onLoading: Shimmer()),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 120,
-                          child: Column(
+                          ),
+                          SizedBox(
+                            width: 32,
+                          ),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Date',
+                              Text('Time',
                                   style: TextStyle(
                                     color: Colors.black38,
                                   )),
@@ -67,50 +110,49 @@ class RecordPage extends GetView<RecordController> {
                               ),
                               controller.obx(
                                   (state) => Text(
-                                        DateFormat('yyyy-MM-dd')
+                                        DateFormat('HH:mm:ss')
                                             .format(state!.date),
                                         style: TextStyle(),
                                       ),
                                   onLoading: Shimmer()),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          width: 32,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Time',
-                                style: TextStyle(
-                                  color: Colors.black38,
-                                )),
-                            SizedBox(
-                              height: 8,
+                        ],
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 120,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Distance',
+                                    style: TextStyle(
+                                      color: Colors.black38,
+                                    )),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                controller.obx(
+                                    (state) => Text(
+                                          '${(GeoUtils.getPathLength(encodedPath: state!.userPath)).toString()}km',
+                                          style: TextStyle(),
+                                        ),
+                                    onLoading: Shimmer()),
+                              ],
                             ),
-                            controller.obx(
-                                (state) => Text(
-                                      DateFormat('HH:mm:ss')
-                                          .format(state!.date),
-                                      style: TextStyle(),
-                                    ),
-                                onLoading: Shimmer()),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 120,
-                          child: Column(
+                          ),
+                          SizedBox(
+                            width: 32,
+                          ),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Distance',
+                              Text('Time Used',
                                   style: TextStyle(
                                     color: Colors.black38,
                                   )),
@@ -119,70 +161,35 @@ class RecordPage extends GetView<RecordController> {
                               ),
                               controller.obx(
                                   (state) => Text(
-                                        '${(GeoUtils.getPathLength(encodedPath: state!.userPath)).toString()}km',
+                                        TimeUtils.formatSeconds(state!.time),
                                         style: TextStyle(),
                                       ),
                                   onLoading: Shimmer()),
                             ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 32,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Time Used',
-                                style: TextStyle(
-                                  color: Colors.black38,
-                                )),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            controller.obx(
-                                (state) => Text(
-                                      TimeUtils.formatSeconds(state!.time),
-                                      style: TextStyle(),
-                                    ),
-                                onLoading: Shimmer()),
-                          ],
-                        )
-                      ],
-                    )
-                    // Container(
-                    //     height: 160,
-                    //     clipBehavior: Clip.antiAlias,
-                    //     decoration:
-                    //         BoxDecoration(borderRadius: BorderRadius.circular(16.0)),
-                    //     child: controller.obx((state) {
-                    //       var p = GeoUtils.decodePath(state!.trail.path);
-                    //       return HikeeMap(target: p.first, path: p);
-                    //     },
-                    //         onLoading: Shimmer(
-                    //           height: 160,
-                    //         )))
-
-                    ,
-                    controller.obx((state) {
-                      if (state!.altitudes.length == 0) return SizedBox();
-                      return Builder(builder: (context) {
-                        return Container(
-                          height: 160,
-                          child: ElevationProfile(
-                            elevations: state.altitudes,
-                          ),
-                        );
-                      });
-                    },
-                        onLoading: Shimmer(
-                          height: 160,
-                        )),
-                  ],
+                          )
+                        ],
+                      ),
+                      // controller.obx((state) {
+                      //   if (state!.altitudes.length == 0) return SizedBox();
+                      //   return Builder(builder: (context) {
+                      //     return Container(
+                      //       height: 160,
+                      //       child: ElevationProfile(
+                      //         elevations: state.altitudes,
+                      //       ),
+                      //     );
+                      //   });
+                      // },
+                      //     onLoading: Shimmer(
+                      //       height: 160,
+                      //     )),
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
-        ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

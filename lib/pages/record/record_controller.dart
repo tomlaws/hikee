@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:hikee/models/record.dart';
 import 'package:hikee/providers/record.dart';
 

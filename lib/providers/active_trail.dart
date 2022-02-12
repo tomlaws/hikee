@@ -1,0 +1,247 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:isolate';
+import 'dart:ui';
+
+import 'package:background_locator/background_locator.dart';
+import 'package:background_locator/location_dto.dart';
+import 'package:background_locator/settings/android_settings.dart';
+import 'package:background_locator/settings/ios_settings.dart';
+import 'package:background_locator/settings/locator_settings.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:get/get.dart';
+import 'package:hikee/models/active_trail.dart';
+import 'package:hikee/models/elevation.dart';
+import 'package:hikee/models/trail.dart';
+import 'package:hikee/providers/shared/base.dart';
+import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/location_callback_handler.dart';
+import 'package:hikee/utils/location_service_repository.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:vector_math/vector_math.dart' as vmath;
+
+// Core Provider
+class ActiveTrailProvider extends BaseProvider {
+  ReceivePort port = ReceivePort();
+
+  final activeTrail = Rxn<ActiveTrail>(null);
+  // GPS dependent
+  final currentLocation = Rxn<LocationMarkerPosition>();
+  final currentHeading = Rxn<LocationMarkerHeading>();
+  final isCloseToStart = false.obs;
+  final isCloseToGoal = false.obs;
+
+  Timer? _timer;
+  final tick = 0.obs;
+  final altitudes = RxList<double>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    _load();
+    activeTrail.listen((_) {
+      _save();
+      if (activeTrail.value == null || !activeTrail.value!.isStarted) {
+        if (_timer != null) {
+          tick.value = 0;
+          _timer!.cancel();
+          _timer = null;
+        }
+      } else {
+        print('set timer');
+        _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+          // update
+          tick.value += 1;
+        });
+      }
+      // location tracking
+      if (activeTrail.value == null) {
+        _stopLocationTracking();
+      } else {
+        _startLocationTracking();
+      }
+    });
+
+    // For location tracking
+    if (IsolateNameServer.lookupPortByName(
+            LocationServiceRepository.isolateName) !=
+        null) {
+      IsolateNameServer.removePortNameMapping(
+          LocationServiceRepository.isolateName);
+    }
+    IsolateNameServer.registerPortWithName(
+        port.sendPort, LocationServiceRepository.isolateName);
+    port.listen((dynamic data) {
+      if (data != null) onLocationChange(data);
+    });
+    BackgroundLocator.initialize();
+  }
+
+  @override
+  void onClose() {
+    activeTrail.close();
+    port.close();
+    super.onClose();
+  }
+
+  Future<bool> _checkLocationPermission() async {
+    final access = await Permission.location.status;
+    switch (access) {
+      case PermissionStatus.limited:
+      case PermissionStatus.permanentlyDenied:
+      case PermissionStatus.denied:
+      case PermissionStatus.restricted:
+        if (await Permission.locationAlways.request().isGranted) {
+          return true;
+        } else {
+          return false;
+        }
+      case PermissionStatus.granted:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  Future<void> _startLocationTracking() async {
+    if (!await _checkLocationPermission()) {
+      print('Location permission denied');
+      return;
+    }
+    Map<String, dynamic> data = {'countInit': 1};
+    return await BackgroundLocator.registerLocationUpdate(
+        LocationCallbackHandler.callback,
+        initCallback: LocationCallbackHandler.initCallback,
+        initDataCallback: data,
+        disposeCallback: LocationCallbackHandler.disposeCallback,
+        iosSettings: IOSSettings(
+            accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
+        autoStop: false,
+        androidSettings: AndroidSettings(
+            accuracy: LocationAccuracy.NAVIGATION,
+            interval: 5,
+            distanceFilter: 0,
+            client: LocationClient.google,
+            androidNotificationSettings: AndroidNotificationSettings(
+                notificationChannelName: 'Location tracking',
+                notificationTitle: 'Hikee',
+                notificationMsg: 'Hikee navigation is active',
+                notificationBigMsg: 'Trail selected. Tap to see more details.',
+                notificationIconColor: Colors.grey,
+                notificationTapCallback:
+                    LocationCallbackHandler.notificationCallback)));
+  }
+
+  void _stopLocationTracking() {
+    BackgroundLocator.unRegisterLocationUpdate();
+    SharedPreferences.getInstance().then((instance) {
+      instance.remove('walkedPath');
+      instance.remove('altitudes');
+    });
+  }
+
+  Future<void> onLocationChange(LocationDto location) async {
+    currentLocation.value = LocationMarkerPosition(
+        latitude: location.latitude,
+        longitude: location.longitude,
+        accuracy: location.accuracy);
+    currentHeading.value = LocationMarkerHeading(
+        heading: vmath.radians(location.heading), accuracy: 1.0);
+
+    if (activeTrail.value?.isStarted == true) {
+      LatLng latlng = LatLng(location.latitude, location.longitude);
+      if (activeTrail.value!.userPath.last != latlng) {
+        activeTrail.update((t) {
+          t?.userPath.add(latlng);
+        });
+      }
+
+      updateNotification(activeTrail.value!.walkedDistance);
+      if (location.altitude != 0) {
+        activeTrail.update((t) {
+          t?.userElevation.add(location.altitude);
+        });
+      }
+    }
+    if (activeTrail.value != null) {
+      isCloseToStart.value = GeoUtils.isCloseToPoint(
+          currentLocation.value!.latLng, activeTrail.value!.decodedPath.first);
+      isCloseToGoal.value = GeoUtils.isCloseToPoint(
+          currentLocation.value!.latLng, activeTrail.value!.decodedPath.last);
+    }
+  }
+
+  void updateNotification(double km) {
+    BackgroundLocator.updateNotificationText(
+        bigMsg: "You've walked ${km.toString()} km");
+  }
+
+  Future<void> _load() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('activeTrail')) return;
+    String serialized = prefs.getString('activeTrail')!;
+    dynamic decoded = jsonDecode(serialized);
+    activeTrail.value = ActiveTrail.fromJson(decoded);
+  }
+
+  Future<void> _save() async {
+    String serialized = jsonEncode(activeTrail);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('activeTrail', serialized);
+  }
+
+  Future<List<Elevation>> _getElevations(int trailId) async {
+    try {
+      return await get('trails/$trailId/elevation').then((value) {
+        return (value.body as List).map((e) => Elevation.fromJson(e)).toList();
+      });
+    } catch (ex) {
+      return [];
+    }
+  }
+
+  select(Trail trail) async {
+    try {
+      var decodedPath = GeoUtils.decodePath(trail.path);
+      // get elevations
+      var elevations = await _getElevations(trail.id);
+      activeTrail.value = ActiveTrail(
+          trail: trail,
+          decodedPath: decodedPath,
+          elevations: elevations,
+          startTime: null);
+      isCloseToStart.value = GeoUtils.isCloseToPoint(
+          currentLocation.value!.latLng, activeTrail.value!.decodedPath[0]);
+      isCloseToGoal.value = GeoUtils.isCloseToPoint(
+          currentLocation.value!.latLng, activeTrail.value!.decodedPath.last);
+    } catch (ex) {
+      print(ex);
+    }
+  }
+
+  start() async {
+    try {
+      if (activeTrail.value == null) return;
+      var startTime = DateTime.now().millisecondsSinceEpoch;
+      activeTrail.value = ActiveTrail(
+          trail: activeTrail.value!.trail,
+          decodedPath: activeTrail.value!.decodedPath,
+          startTime: startTime);
+      if (currentLocation.value != null) {
+        activeTrail.update((t) {
+          t?.userPath.add(currentLocation.value!.latLng);
+        });
+      }
+      updateNotification(0);
+    } catch (ex) {
+      print(ex);
+    }
+  }
+
+  quit() async {
+    activeTrail.value = null;
+  }
+}

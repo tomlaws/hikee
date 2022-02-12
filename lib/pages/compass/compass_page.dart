@@ -1,17 +1,15 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/drag_marker.dart';
-import 'package:hikee/components/map.dart';
+import 'package:hikee/components/elevation_profile.dart';
+import 'package:hikee/components/map/map.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/themes.dart';
 import 'package:latlong2/latlong.dart' hide Path;
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/compass.dart';
-import 'package:hikee/components/dropdown.dart';
 import 'package:hikee/components/keep_alive.dart';
 import 'package:hikee/components/mountain_deco.dart';
 import 'package:hikee/components/trail_elevation.dart';
@@ -60,7 +58,8 @@ class CompassPage extends GetView<CompassController> {
                   controller.alpha.value,
               left: 0,
               child: Obx(
-                () => controller.started.value && controller.isCloseToGoal.value
+                () => controller.activeTrail.value?.isStarted == true &&
+                        controller.activeTrailProvider.isCloseToGoal.value
                     ? Opacity(
                         opacity:
                             (1 - controller.panelPosition.value).clamp(0, 1),
@@ -74,12 +73,9 @@ class CompassPage extends GetView<CompassController> {
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    begin: Alignment.center,
+                                    begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
-                                    colors: [
-                                      Colors.green.shade800,
-                                      Colors.green,
-                                    ],
+                                    colors: Themes.gradientColors,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0)),
                               child: Text('Swipe up to finish the trail!',
@@ -90,7 +86,7 @@ class CompassPage extends GetView<CompassController> {
                               child: ClipPath(
                                 clipper: TriangleClipper(),
                                 child: Container(
-                                  color: Colors.green.shade800,
+                                  color: Themes.gradientColors[0],
                                   height: 10,
                                   width: 20,
                                 ),
@@ -170,12 +166,16 @@ class CompassPage extends GetView<CompassController> {
                               size: 24,
                             ),
                             Container(width: 4),
-                            Text(
-                              GeoUtils.formatDistance(
-                                  controller.walkedDistance.value),
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w600),
-                            )
+                            Obx(() {
+                              var t = controller.activeTrailProvider.tick
+                                  .value; // do not remove this line
+                              return Text(
+                                GeoUtils.formatDistance(controller
+                                    .activeTrail.value!.walkedDistance),
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              );
+                            })
                           ],
                         ),
                       ),
@@ -195,11 +195,16 @@ class CompassPage extends GetView<CompassController> {
                               size: 24,
                             ),
                             Container(width: 4),
-                            Text(
-                              TimeUtils.formatSeconds(controller.elapsed.value),
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w600),
-                            ),
+                            Obx(() {
+                              var t = controller.activeTrailProvider.tick
+                                  .value; // do not remove this line
+                              return Text(
+                                TimeUtils.formatSeconds(
+                                    controller.activeTrail.value!.elapsed),
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              );
+                            })
                           ],
                         ),
                       )
@@ -210,7 +215,8 @@ class CompassPage extends GetView<CompassController> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              controller.isCloseToStart.value
+                              controller
+                                      .activeTrailProvider.isCloseToStart.value
                                   ? 'You\'re now at the start of the trail'
                                   : 'You\'re far away from the trail',
                               style: TextStyle(
@@ -227,7 +233,8 @@ class CompassPage extends GetView<CompassController> {
                                       ? 0
                                       : 1,
                                   child: Text(
-                                      controller.isCloseToStart.value
+                                      controller.activeTrailProvider
+                                              .isCloseToStart.value
                                           ? 'Swipe up to get started!'
                                           : 'Please reach to the starting point first',
                                       style: TextStyle(fontSize: 12)),
@@ -239,7 +246,8 @@ class CompassPage extends GetView<CompassController> {
                                         ? 1
                                         : 0,
                                     child: Text(
-                                        controller.isCloseToStart.value
+                                        controller.activeTrailProvider
+                                                .isCloseToStart.value
                                             ? 'Let\'s get started!'
                                             : 'Please reach to the starting point first',
                                         style: TextStyle(fontSize: 12)),
@@ -264,250 +272,253 @@ class CompassPage extends GetView<CompassController> {
               ),
             ),
             Container(),
-            Expanded(
-                child: Obx(
-              () => controller.panelPageController.value == null
+            Expanded(child: Obx(() {
+              return controller.panelPageController.value == null
                   ? SizedBox()
                   : PageView(
                       controller: controller.panelPageController.value,
                       children: [
                         _trailInfo(),
                         KeepAlivePage(
-                          key: Key(controller.activeTrail.value!.trail.id
-                              .toString()),
                           child: Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 8),
-                              child: Column(children: [
-                                TrailInfo(
-                                  trail: controller.activeTrail.value!.trail,
-                                  showTrailName: true,
-                                  hideRegion: true,
-                                ),
-                                SizedBox(height: 8),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: TrailElevation(
-                                      trailId: controller
-                                          .activeTrail.value!.trail.id,
+                              child: Obx(() => Column(children: [
+                                    TrailInfo(
+                                      trail:
+                                          controller.activeTrail.value!.trail,
+                                      showTrailName: true,
+                                      hideRegion: true,
                                     ),
-                                  ),
-                                ),
-                              ])),
+                                    SizedBox(height: 8),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ElevationProfile(
+                                          elevations: controller
+                                              .activeTrail.value!.elevations,
+                                          myLocation: controller
+                                              .currentLocation.value?.latLng,
+                                        ),
+                                      ),
+                                    ),
+                                  ]))),
                         ),
                         KeepAlivePage(
-                          key: Key(controller.activeTrail.value!.trail.id
-                              .toString()),
                           child: Padding(
                               padding:
                                   EdgeInsets.only(left: 16, right: 16, top: 8),
-                              child: Obx(() => Column(children: [
-                                    if (controller.nearbyFacilities.value !=
-                                            null &&
-                                        controller.nearbyFacilities.value!
-                                                .length >
-                                            0)
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          MutationBuilder(mutation: () {
-                                            return controller
-                                                .discoverNearbyFacilities();
-                                          }, builder: (mutate, loading) {
-                                            return Button(
-                                              height: 44,
-                                              minWidth: 44,
-                                              onPressed: () {
-                                                mutate();
-                                              },
-                                              loading: loading,
-                                              child: Wrap(
-                                                  crossAxisAlignment:
-                                                      WrapCrossAlignment.center,
-                                                  spacing: 8.0,
-                                                  children: [
-                                                    Icon(
-                                                      LineAwesomeIcons
-                                                          .sync_icon,
-                                                      color: Colors.white,
-                                                      size: 18,
-                                                    ),
-                                                    Text(
-                                                      'Nearby Facilities',
-                                                    )
-                                                  ]),
-                                            );
-                                          }),
-                                          MutationBuilder(mutation: () {
-                                            return controller
-                                                .discoverNearbyFacilities();
-                                          }, builder: (mutate, loading) {
-                                            return Button(
-                                              height: 44,
-                                              minWidth: 44,
-                                              backgroundColor: Colors.red,
-                                              onPressed: () {
-                                                mutate();
-                                              },
-                                              loading: loading,
-                                              child: Wrap(
-                                                  crossAxisAlignment:
-                                                      WrapCrossAlignment.center,
-                                                  spacing: 8.0,
-                                                  children: [
-                                                    Icon(
-                                                      LineAwesomeIcons.bell,
-                                                      color: Colors.white,
-                                                      size: 18,
-                                                    ),
-                                                    Text(
-                                                      'Emergency',
-                                                    )
-                                                  ]),
-                                            );
-                                          })
-                                        ],
-                                      ),
-                                    Expanded(
-                                        child: controller.nearbyFacilities
-                                                        .value !=
-                                                    null &&
-                                                controller.nearbyFacilities
-                                                        .value!.length >
-                                                    0
-                                            ? ListView.separated(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 16),
-                                                itemBuilder: (_, i) {
-                                                  var facility = controller
-                                                      .nearbyFacilities
-                                                      .value![i];
-                                                  return Container(
-                                                    width: 80,
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(16),
-                                                        boxShadow: [
-                                                          Themes.lightShadow
-                                                        ]),
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 16,
-                                                            vertical: 8),
-                                                    child: Row(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Expanded(
-                                                            child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              facility.name,
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                              maxLines: 1,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                            if (controller
-                                                                    .currentLocation
-                                                                    .value !=
-                                                                null) ...[
-                                                              SizedBox(
-                                                                  height: 4),
-                                                              Obx(() => Text(
-                                                                    '~' +
-                                                                        GeoUtils.formatDistance(facility.calculateDistance(controller
-                                                                            .currentLocation
-                                                                            .value!)),
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black54),
-                                                                  ))
-                                                            ]
-                                                          ],
-                                                        )),
-                                                        SizedBox(width: 16),
-                                                        Button(
-                                                          icon: Icon(
-                                                            LineAwesomeIcons
-                                                                .map_marker,
-                                                            //color: Colors.white,
-                                                          ),
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .transparent,
-                                                          onPressed: () {
-                                                            controller
-                                                                .pinnedFacility
-                                                                .value = facility;
-                                                            controller.focus(
-                                                                facility
-                                                                    .location);
-                                                          },
-                                                        )
-                                                      ],
-                                                    ),
-                                                  );
-                                                },
-                                                separatorBuilder: (_, __) =>
-                                                    SizedBox(height: 8),
-                                                itemCount: controller
-                                                    .nearbyFacilities
-                                                    .value!
-                                                    .length)
-                                            : Center(
-                                                child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                              child: Obx(() {
+                                return Column(children: [
+                                  if (controller.nearbyFacilities.value !=
+                                          null &&
+                                      controller
+                                              .nearbyFacilities.value!.length >
+                                          0)
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        MutationBuilder(mutation: () {
+                                          return controller
+                                              .discoverNearbyFacilities();
+                                        }, builder: (mutate, loading) {
+                                          return Button(
+                                            height: 44,
+                                            minWidth: 44,
+                                            onPressed: () {
+                                              mutate();
+                                            },
+                                            loading: loading,
+                                            child: Wrap(
+                                                crossAxisAlignment:
+                                                    WrapCrossAlignment.center,
+                                                spacing: 8.0,
                                                 children: [
-                                                  Opacity(
-                                                      opacity: .6,
-                                                      child: Text(controller
-                                                                  .nearbyFacilities
-                                                                  .value ==
-                                                              null
-                                                          ? 'Discover nearby facilities'
-                                                          : 'No nearby facilities')),
-                                                  SizedBox(
-                                                    height: 16,
+                                                  Icon(
+                                                    LineAwesomeIcons.sync_icon,
+                                                    color: Colors.white,
+                                                    size: 18,
                                                   ),
-                                                  MutationBuilder(mutation: () {
-                                                    return controller
-                                                        .discoverNearbyFacilities();
-                                                  }, builder:
-                                                      (mutate, loading) {
-                                                    return Button(
-                                                      onPressed: () {
-                                                        mutate();
-                                                      },
-                                                      loading: loading,
-                                                      child: Text(controller
-                                                                  .nearbyFacilities
-                                                                  .value ==
-                                                              null
-                                                          ? 'Discover facilities'
-                                                          : 'Refresh'),
+                                                  Text(
+                                                    'Nearby Facilities',
+                                                  )
+                                                ]),
+                                          );
+                                        }),
+                                        MutationBuilder(mutation: () {
+                                          return controller
+                                              .discoverNearbyFacilities();
+                                        }, builder: (mutate, loading) {
+                                          return Button(
+                                            height: 44,
+                                            minWidth: 44,
+                                            backgroundColor: Colors.red,
+                                            onPressed: () {
+                                              mutate();
+                                            },
+                                            loading: loading,
+                                            child: Wrap(
+                                                crossAxisAlignment:
+                                                    WrapCrossAlignment.center,
+                                                spacing: 8.0,
+                                                children: [
+                                                  Icon(
+                                                    LineAwesomeIcons.bell,
+                                                    color: Colors.white,
+                                                    size: 18,
+                                                  ),
+                                                  Text(
+                                                    'Emergency',
+                                                  )
+                                                ]),
+                                          );
+                                        })
+                                      ],
+                                    ),
+                                  Expanded(
+                                      child:
+                                          controller.nearbyFacilities.value !=
+                                                      null &&
+                                                  controller.nearbyFacilities
+                                                          .value!.length >
+                                                      0
+                                              ? ListView.separated(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 16),
+                                                  itemBuilder: (_, i) {
+                                                    var facility = controller
+                                                        .nearbyFacilities
+                                                        .value![i];
+                                                    return Container(
+                                                      width: 80,
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          boxShadow: [
+                                                            Themes.lightShadow
+                                                          ]),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 16,
+                                                              vertical: 8),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Expanded(
+                                                              child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                facility.name,
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                              Obx(() => controller
+                                                                          .currentLocation
+                                                                          .value !=
+                                                                      null
+                                                                  ? Container(
+                                                                      margin: EdgeInsets
+                                                                          .only(
+                                                                              top: 4),
+                                                                      child:
+                                                                          Text(
+                                                                        '~' +
+                                                                            GeoUtils.formatDistance(facility.calculateDistance(controller.currentLocation.value!.latLng)),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.black54),
+                                                                      ),
+                                                                    )
+                                                                  : SizedBox())
+                                                            ],
+                                                          )),
+                                                          SizedBox(width: 16),
+                                                          Button(
+                                                            icon: Icon(
+                                                              LineAwesomeIcons
+                                                                  .map_marker,
+                                                              //color: Colors.white,
+                                                            ),
+                                                            backgroundColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            onPressed: () {
+                                                              controller
+                                                                  .pinnedFacility
+                                                                  .value = facility;
+                                                              controller
+                                                                  .mapController
+                                                                  ?.focus(facility
+                                                                      .location);
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
                                                     );
-                                                  }),
-                                                ],
-                                              )))
-                                  ]))),
+                                                  },
+                                                  separatorBuilder: (_, __) =>
+                                                      SizedBox(height: 8),
+                                                  itemCount: controller
+                                                      .nearbyFacilities
+                                                      .value!
+                                                      .length)
+                                              : Center(
+                                                  child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Opacity(
+                                                        opacity: .6,
+                                                        child: Text(controller
+                                                                    .nearbyFacilities
+                                                                    .value ==
+                                                                null
+                                                            ? 'Discover nearby facilities'
+                                                            : 'No nearby facilities')),
+                                                    SizedBox(
+                                                      height: 16,
+                                                    ),
+                                                    MutationBuilder(
+                                                        mutation: () {
+                                                      return controller
+                                                          .discoverNearbyFacilities();
+                                                    }, builder:
+                                                            (mutate, loading) {
+                                                      return Button(
+                                                        onPressed: () {
+                                                          mutate();
+                                                        },
+                                                        loading: loading,
+                                                        child: Text(controller
+                                                                    .nearbyFacilities
+                                                                    .value ==
+                                                                null
+                                                            ? 'Discover facilities'
+                                                            : 'Refresh'),
+                                                      );
+                                                    }),
+                                                  ],
+                                                )))
+                                ]);
+                              })),
                         )
                       ],
-                    ),
-            ))
+                    );
+            }))
           ])),
         ],
       ),
@@ -515,247 +526,254 @@ class CompassPage extends GetView<CompassController> {
   }
 
   Widget _body(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.none,
-      color: Color(0xFF5DB075),
-      child: Obx(() {
-        var hasActiveTrail = controller.activeTrail.value != null;
-        return Stack(
+    return Obx(() => Container(
           clipBehavior: Clip.none,
-          children: [
-            if (hasActiveTrail)
-              _map(controller.activeTrail.value!)
-            else
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: ClipPath(
-                  clipper: MountainDeco(),
-                  child: Container(
-                    color: Colors.black.withOpacity(.05),
-                    width: 400,
-                    height: 400,
-                  ),
-                ),
-              ),
-            Opacity(
-                //opacity: 1 - controller.panelPosition.value,
-                opacity: 1,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    DefaultTextStyle(
-                      style: TextStyle(color: Colors.white),
+          color: controller.activeTrail.value != null
+              ? Colors.white
+              : Color.fromARGB(255, 44, 119, 76),
+          child: Obx(() {
+            var hasActiveTrail = controller.activeTrail.value != null;
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                if (hasActiveTrail)
+                  _map(controller.activeTrail.value!)
+                else
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: ClipPath(
+                      clipper: MountainDeco(),
                       child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.black54, Colors.transparent],
-                          ),
-                        ),
-                        clipBehavior: Clip.hardEdge,
-                        child: SafeArea(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 10),
-                                    height: controller.panelHeaderHeight,
-                                    alignment: Alignment.centerLeft,
-                                    child: _weatherController
-                                        .obx((weather) => weather != null
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  launch(
-                                                      'https://www.hko.gov.hk/en/index.html');
-                                                },
-                                                child: Row(
-                                                  children: [
-                                                    ...weather.icon
-                                                        .map((no) =>
-                                                            CachedNetworkImage(
-                                                              imageUrl:
-                                                                  'https://www.hko.gov.hk/images/HKOWxIconOutline/pic$no.png',
-                                                              width: 30,
-                                                              height: 30,
-                                                            ))
-                                                        .toList(),
-                                                    Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8),
-                                                      child: Text(
-                                                          '${weather.temperature}°C',
-                                                          style: TextStyle(
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            : SizedBox()),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 16),
-                                    child: Compass(
-                                      heading: controller.heading,
-                                    ),
-                                  ),
-                                  // DropdownMenu(),
-                                  // Button(
-                                  //   icon: Icon(LineAwesomeIcons.bars,
-                                  //       color: Colors.white, size: 32),
-                                  //   backgroundColor: Colors.transparent,
-                                  //   onPressed: () {},
-                                  // )
-                                ],
+                        color: Colors.black.withOpacity(.05),
+                        width: 400,
+                        height: 400,
+                      ),
+                    ),
+                  ),
+                Opacity(
+                    //opacity: 1 - controller.panelPosition.value,
+                    opacity: 1,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        DefaultTextStyle(
+                          style: TextStyle(color: Colors.white),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.black54, Colors.transparent],
                               ),
-                              _weatherController.obx((weather) {
-                                if (weather != null &&
-                                    weather.warningMessage.length > 0) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Get.defaultDialog(
-                                          title: 'Warning',
-                                          content: Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
+                            ),
+                            clipBehavior: Clip.hardEdge,
+                            child: SafeArea(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 10),
+                                        height: controller.panelHeaderHeight,
+                                        alignment: Alignment.centerLeft,
+                                        child: _weatherController
+                                            .obx((weather) => weather != null
+                                                ? GestureDetector(
+                                                    onTap: () {
+                                                      launch(
+                                                          'https://www.hko.gov.hk/en/index.html');
+                                                    },
+                                                    child: Row(
+                                                      children: [
+                                                        ...weather.icon
+                                                            .map((no) =>
+                                                                CachedNetworkImage(
+                                                                  imageUrl:
+                                                                      'https://www.hko.gov.hk/images/HKOWxIconOutline/pic$no.png',
+                                                                  width: 30,
+                                                                  height: 30,
+                                                                ))
+                                                            .toList(),
+                                                        Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 8),
+                                                          child: Text(
+                                                              '${weather.temperature}°C',
+                                                              style: TextStyle(
+                                                                  fontSize: 24,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold)),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                : SizedBox()),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(right: 16),
+                                        child: Compass(
+                                          heading: controller.currentHeading,
+                                        ),
+                                      ),
+                                      // DropdownMenu(),
+                                      // Button(
+                                      //   icon: Icon(LineAwesomeIcons.bars,
+                                      //       color: Colors.white, size: 32),
+                                      //   backgroundColor: Colors.transparent,
+                                      //   onPressed: () {},
+                                      // )
+                                    ],
+                                  ),
+                                  _weatherController.obx((weather) {
+                                    if (weather != null &&
+                                        weather.warningMessage.length > 0) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Get.defaultDialog(
+                                              title: 'Warning',
+                                              content: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
                                                         horizontal: 8.0),
-                                                child: Text(
+                                                    child: Text(
+                                                      weather.warningMessage
+                                                          .join('\n'),
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  Button(
+                                                    onPressed: () {
+                                                      Get.back();
+                                                    },
+                                                    child: Text('DISMISS'),
+                                                  )
+                                                ],
+                                              ));
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.only(
+                                              bottom: 8.0,
+                                              left: 8.0,
+                                              right: 8.0),
+                                          padding: EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.amber),
+                                              color:
+                                                  Colors.amber.withOpacity(.8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0)),
+                                          child: Column(
+                                            children: [
+                                              Text(
                                                   weather.warningMessage
                                                       .join('\n'),
                                                   style: TextStyle(
                                                       color: Colors.black),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 16,
-                                              ),
-                                              Button(
-                                                onPressed: () {
-                                                  Get.back();
-                                                },
-                                                child: Text('DISMISS'),
-                                              )
+                                                  maxLines: 1),
                                             ],
-                                          ));
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.only(
-                                          bottom: 8.0, left: 8.0, right: 8.0),
-                                      padding: EdgeInsets.all(8.0),
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.amber),
-                                          color: Colors.amber.withOpacity(.8),
-                                          borderRadius:
-                                              BorderRadius.circular(8.0)),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                              weather.warningMessage.join('\n'),
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                              maxLines: 1),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
-                                return SizedBox();
-                              }),
-                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return SizedBox();
+                                  }),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    if (!hasActiveTrail)
-                      Expanded(
-                          child: Center(
-                        child: Button(
-                          invert: true,
-                          child: Text('Discover Trails'),
-                          onPressed: () {
-                            var hc = Get.find<HomeController>();
-                            hc.switchTab(1);
-                            Get.toNamed('/', id: 1);
-                          },
-                        ),
-                      ))
-                  ],
-                )),
-            if (hasActiveTrail)
-              Positioned(
-                right: 0,
-                bottom: controller.collapsedPanelHeight + 8,
-                child: Container(
-                  //color: Colors.black,
-                  padding: EdgeInsets.all(12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Button(
-                            icon: Icon(
-                              LineAwesomeIcons.expand,
-                              color: Theme.of(context).primaryColor,
+                        if (!hasActiveTrail)
+                          Expanded(
+                              child: Center(
+                            child: Button(
+                              invert: true,
+                              child: Text('Discover Trails'),
+                              onPressed: () {
+                                var hc = Get.find<HomeController>();
+                                hc.switchTab(1);
+                                Get.toNamed('/', id: 1);
+                              },
                             ),
-                            invert: true,
-                            onPressed: () {
-                              controller.focusActiveTrail();
-                            },
-                          ),
-                          Container(
-                            height: 8,
-                          ),
-                          Button(
-                            icon: Icon(
-                              LineAwesomeIcons.layer_group,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            invert: true,
-                            onPressed: () {
-                              controller.imagery.value =
-                                  !controller.imagery.value;
-                            },
-                          ),
-                          Container(
-                            height: 8,
-                          ),
-                          Button(
-                            icon: Icon(
-                              LineAwesomeIcons.map_marker,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            invert: true,
-                            onPressed: () {
-                              controller.goToCurrentLocation();
-                            },
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        );
-      }),
-    );
+                          ))
+                      ],
+                    )),
+                // if (hasActiveTrail)
+                //   Positioned(
+                //     right: 0,
+                //     bottom: controller.collapsedPanelHeight,
+                //     child: Container(
+                //       //color: Colors.black,
+                //       padding: EdgeInsets.all(12),
+                //       child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //         mainAxisSize: MainAxisSize.min,
+                //         children: [
+                //           Column(
+                //             mainAxisSize: MainAxisSize.min,
+                //             children: [
+                //               Button(
+                //                 icon: Icon(
+                //                   LineAwesomeIcons.expand,
+                //                   color: Theme.of(context).primaryColor,
+                //                 ),
+                //                 invert: true,
+                //                 onPressed: () {
+                //                   controller.focusActiveTrail();
+                //                 },
+                //               ),
+                //               Container(
+                //                 height: 8,
+                //               ),
+                //               Button(
+                //                 icon: Icon(
+                //                   LineAwesomeIcons.layer_group,
+                //                   color: Theme.of(context).primaryColor,
+                //                 ),
+                //                 invert: true,
+                //                 onPressed: () {
+                //                   controller.imagery.value =
+                //                       !controller.imagery.value;
+                //                 },
+                //               ),
+                //               Container(
+                //                 height: 8,
+                //               ),
+                //               Button(
+                //                 icon: Icon(
+                //                   LineAwesomeIcons.map_marker,
+                //                   color: Theme.of(context).primaryColor,
+                //                 ),
+                //                 invert: true,
+                //                 onPressed: () {
+                //                   controller.goToCurrentLocation();
+                //                 },
+                //               ),
+                //             ],
+                //           )
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+              ],
+            );
+          }),
+        ));
   }
 
   Widget _map(ActiveTrail activeTrail) {
@@ -794,17 +812,22 @@ class CompassPage extends GetView<CompassController> {
         );
       }
       return HikeeMap(
-        mapController: controller.mapController,
+        key: Key('compass-map'),
         onMapCreated: (mapController) {
           controller.mapController = mapController;
-          controller.focusActiveTrail();
         },
-        centerOnLocationUpdate: controller.lockPosition,
         path: activeTrail.decodedPath,
+        userPath: controller.userPath,
         pathOnly: true,
-        showMyLocation: true,
-        imagery: controller.imagery.value,
+        showCenterOnLocationUpdateButton: true,
+        positionStream: controller.currentLocation.stream,
+        headingStream: controller.currentHeading.stream,
         markers: markers,
+        contentMargin: EdgeInsets.only(
+            top: 8,
+            left: 8,
+            right: 8,
+            bottom: controller.collapsedPanelHeight + 8),
       );
     });
   }
@@ -850,8 +873,7 @@ class CompassPage extends GetView<CompassController> {
                       SizedBox(
                         height: 8,
                       ),
-                      Text(
-                          '${GeoUtils.formatDistance(controller.speed.value)}/h'),
+                      Text('${GeoUtils.formatDistance(controller.speed!)}/h'),
                       SizedBox(
                         height: 16,
                       ),
@@ -864,11 +886,10 @@ class CompassPage extends GetView<CompassController> {
                         children: [
                           Text(DateFormat('hh:mm').format(DateTime.now().add(
                               Duration(
-                                  seconds:
-                                      controller.estimatedFinishTime.value)))),
+                                  seconds: controller.estimatedFinishTime!)))),
                           SizedBox(width: 8),
                           Text(
-                              '(+${TimeUtils.formatSeconds(controller.estimatedFinishTime.value)})'),
+                              '(+${TimeUtils.formatSeconds(controller.estimatedFinishTime!)})'),
                         ],
                       )
                     ]),
@@ -891,8 +912,8 @@ class CompassPage extends GetView<CompassController> {
                             closeEnough ? Get.theme.primaryColor : Colors.grey,
                         onPressed: () {
                           if (closeEnough) {
-                            controller.startTrail();
-                            controller.goToCurrentLocation();
+                            controller.activeTrailProvider.start();
+                            controller.mapController?.focusCurrentLocation();
                           } else {
                             _showFarAwayDialog();
                           }
@@ -902,7 +923,7 @@ class CompassPage extends GetView<CompassController> {
                   Expanded(
                     child: Button(
                         child: Text('Finish Trail'),
-                        disabled: !controller.isCloseToGoal.value,
+                        //disabled: !controller.isCloseToGoal.value,
                         onPressed: () {
                           controller.finishTrail();
                         }),
@@ -921,7 +942,7 @@ class CompassPage extends GetView<CompassController> {
                       child: Text('Quit Trail'),
                       backgroundColor: Color.fromRGBO(109, 160, 176, 1),
                       onPressed: () {
-                        controller.quitTrail();
+                        controller.activeTrailProvider.quit();
                       }),
                 )
               ],

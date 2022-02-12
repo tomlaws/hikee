@@ -63,7 +63,9 @@ added features:
 FEB
 1. add profile page, display trail history (can be disabled in privacy setting)
 2. show distance between facility and current location & pin the facility on the map view
-
+3. add lands department logo on the map face
+4. show original trail for each record
+4. add trail match percentage
 TODO:
 add land dep logo on the map face
 emergency update

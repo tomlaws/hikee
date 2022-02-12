@@ -25,7 +25,7 @@ class TrailElevation extends GetView<TrailElevationController> {
     return controller.obx((state) {
       return Obx(() => ElevationProfile(
           elevations: state!,
-          myLocation: _compassController.currentLocation.value));
+          myLocation: _compassController.currentLocation.value?.latLng));
     },
         onLoading: Center(
           child: CircularProgressIndicator(),

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:hikee/themes.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikee/models/elevation.dart';
 import 'package:hikee/utils/geo.dart';
@@ -22,10 +23,7 @@ class ElevationProfile extends StatelessWidget {
         child: Text('No data'),
       );
     }
-    final List<Color> gradientColors = [
-      const Color(0xff23b6e6),
-      const Color(0xff02d39a),
-    ];
+
     List<FlSpot> spots = [];
     double maxE = double.negativeInfinity;
     double minE = double.infinity;
@@ -99,7 +97,7 @@ class ElevationProfile extends StatelessWidget {
             LineChartBarData(
               spots: spots,
               isCurved: true,
-              colors: gradientColors,
+              colors: Themes.gradientColors,
               barWidth: 1,
               isStrokeCapRound: true,
               dotData: FlDotData(
@@ -107,7 +105,7 @@ class ElevationProfile extends StatelessWidget {
               ),
               belowBarData: BarAreaData(
                   show: true,
-                  colors: gradientColors
+                  colors: Themes.gradientColors
                       .map((color) => color.withOpacity(0.2))
                       .toList(),
                   spotsLine: currentSpot == null
@@ -117,7 +115,7 @@ class ElevationProfile extends StatelessWidget {
                           flLineStyle: FlLine(
                               strokeWidth: 1,
                               color: lerpGradient(
-                                  gradientColors,
+                                  Themes.gradientColors,
                                   [0, 1],
                                   spots.indexOf(currentSpot!) /
                                       spots.length.toDouble())),

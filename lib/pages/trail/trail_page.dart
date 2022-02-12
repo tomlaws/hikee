@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:hikee/components/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/drag_marker.dart';
-import 'package:hikee/components/map.dart';
+import 'package:hikee/components/map/map.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/home/home_controller.dart';
@@ -573,7 +573,7 @@ class TrailPage extends GetView<TrailController> {
                       HomeController hc = Get.find<HomeController>();
                       hc.switchTab(0);
                       CompassController cc = Get.find<CompassController>();
-                      cc.selectTrail(controller.state!);
+                      cc.activeTrailProvider.select(controller.state!);
                       Navigator.pop(
                           context); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
                     },

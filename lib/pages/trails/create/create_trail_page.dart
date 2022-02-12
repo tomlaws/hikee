@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:hikee/components/core/dropdown.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/drag_marker.dart';
-import 'package:hikee/components/map.dart';
+import 'package:hikee/components/map/map.dart';
 import 'package:hikee/components/mutation_builder.dart';
 import 'package:hikee/models/region.dart';
 import 'package:hikee/models/trail.dart';
@@ -161,6 +161,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(24)),
                   child: HikeeMap(
+                    key: Key('create-trail-map'),
                     pathOnly: true,
                     path:
                         controller.coordinates.map((c) => c.location).toList(),
@@ -410,10 +411,6 @@ class CreateTrailPage extends GetView<CreateTrailController> {
 
   Widget _map() {
     return HikeeMap(
-      mapController: controller.mapController,
-      onMapCreated: (mapController) {
-        controller.mapController = mapController;
-      },
       markers: controller.coordinates
           .map(
             (pos) => DragMarker(

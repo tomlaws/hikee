@@ -84,6 +84,7 @@ flutter:
     - assets/images/marker_start.png
     - assets/images/marker_end.png
     - assets/images/marker_distance_post.png
+    - assets/images/lands_department.png
     - assets/data/
   fonts:
     - family: Gilroy

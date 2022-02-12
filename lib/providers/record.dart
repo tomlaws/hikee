@@ -36,7 +36,7 @@ class RecordProvider extends BaseProvider {
       {required DateTime date,
       required int time,
       required String name,
-      //required String path,
+      required int referenceTrailId,
       required int regionId,
       required int length,
       required List<LatLng> userPath,
@@ -50,13 +50,13 @@ class RecordProvider extends BaseProvider {
       altitudes = minimized;
     }
     return await post('records', {
+      'name': name,
       'date': date.toString(),
       'time': time,
-      'name': name,
-      //'path': path,
+      'referenceTrailId': referenceTrailId,
       'regionId': regionId,
-      'length': length,
       'userPath': GeoUtils.encodePath(userPath),
+      'length': length,
       'altitudes': altitudes
     }).then((value) {
       return Record.fromJson(value.body);

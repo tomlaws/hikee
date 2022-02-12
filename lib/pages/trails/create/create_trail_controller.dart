@@ -18,7 +18,6 @@ class CreateTrailController extends GetxController {
   var coordinates = RxList<Pin>([]);
   var selectedCoordinates = Rxn<Pin>();
   final step = 0.obs;
-  MapController? mapController;
   final ImagePicker _picker = ImagePicker();
 
   var pointMessageTextController = TextInputController(text: '');
