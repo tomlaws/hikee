@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/messages.dart';
@@ -53,46 +50,46 @@ class CustomOverscrollIndicator extends ScrollBehavior {
   @override
   Widget buildScrollbar(
       BuildContext context, Widget child, ScrollableDetails details) {
-    var opacity = [1.0, 1.0];
-    var wrapped = StatefulBuilder(builder: (_, setState) {
-      return NotificationListener<ScrollNotification>(
-        onNotification: (scrollNotification) {
-          var v = scrollNotification.metrics.viewportDimension;
-          // apply fading edge only to small view
-          if (v > MediaQuery.of(context).size.height / 2) {
-            return true;
-          }
-          var b = scrollNotification.metrics.extentBefore;
-          var a = scrollNotification.metrics.extentAfter;
-          setState(() {
-            opacity = [
-              1 - (b * 20).clamp(0, 100) / 100,
-              1 - (a * 20).clamp(0, 100) / 100
-            ];
-          });
-          return true;
-        },
-        child: ShaderMask(
-          shaderCallback: (Rect bounds) {
-            return LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.0, 0.2, 0.8, 1.0],
-              colors: <Color>[
-                Colors.white
-                    .withOpacity(opacity[0]), //opacity: 0=fade, 1 = sharpedge
-                Colors.white,
-                Colors.white,
-                Colors.white.withOpacity(opacity[1])
-              ],
-            ).createShader(bounds);
-          },
-          child: child,
-          blendMode: BlendMode.dstIn,
-        ),
-      );
-    });
-    return super.buildScrollbar(context, wrapped, details);
+    // var opacity = [1.0, 1.0];
+    // var wrapped = StatefulBuilder(builder: (_, setState) {
+    //   return NotificationListener<ScrollNotification>(
+    //     onNotification: (scrollNotification) {
+    //       var v = scrollNotification.metrics.viewportDimension;
+    //       // apply fading edge only to small view
+    //       if (v > MediaQuery.of(context).size.height / 2) {
+    //         return true;
+    //       }
+    //       var b = scrollNotification.metrics.extentBefore;
+    //       var a = scrollNotification.metrics.extentAfter;
+    //       setState(() {
+    //         opacity = [
+    //           1 - (b * 20).clamp(0, 100) / 100,
+    //           1 - (a * 20).clamp(0, 100) / 100
+    //         ];
+    //       });
+    //       return false;
+    //     },
+    //     child: ShaderMask(
+    //       shaderCallback: (Rect bounds) {
+    //         return LinearGradient(
+    //           begin: Alignment.topCenter,
+    //           end: Alignment.bottomCenter,
+    //           stops: [0.0, 0.2, 0.8, 1.0],
+    //           colors: <Color>[
+    //             Colors.white
+    //                 .withOpacity(opacity[0]), //opacity: 0=fade, 1 = sharpedge
+    //             Colors.white,
+    //             Colors.white,
+    //             Colors.white.withOpacity(opacity[1])
+    //           ],
+    //         ).createShader(bounds);
+    //       },
+    //       child: child,
+    //       blendMode: BlendMode.dstIn,
+    //     ),
+    //   );
+    // });
+    return super.buildScrollbar(context, child, details);
   }
 }
 

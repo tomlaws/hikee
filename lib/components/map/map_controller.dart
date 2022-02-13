@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/providers/active_trail.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
@@ -18,7 +19,6 @@ class HikeeMapController extends GetxController {
 
   @override
   void onClose() {
-    print('close map controller');
     super.onClose();
   }
 
@@ -40,6 +40,10 @@ class HikeeMapController extends GetxController {
 
   void focusCurrentLocation() {
     var p = Get.find<ActiveTrailProvider>();
-    if (p.currentLocation.value != null) focus(p.currentLocation.value!.latLng);
+    if (p.currentLocation.value != null) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        mapController!.move(p.currentLocation.value!.latLng, 17);
+      });
+    }
   }
 }

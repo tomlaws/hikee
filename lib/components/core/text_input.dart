@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 class TextInput extends StatefulWidget {
   final String? hintText;
@@ -10,7 +9,9 @@ class TextInput extends StatefulWidget {
   final bool obscureText;
   final int? maxLines;
   final TextInputAction? textInputAction;
+  final String? Function(String?)? validator;
   final void Function(String)? onSubmitted;
+  final void Function(String?)? onSaved;
   final Icon? icon;
   final bool expand;
   final double radius;
@@ -29,7 +30,9 @@ class TextInput extends StatefulWidget {
       this.keyboardType,
       this.obscureText = false,
       this.textInputAction,
+      this.validator,
       this.onSubmitted,
+      this.onSaved,
       this.icon,
       this.expand = false,
       this.radius = 12,
@@ -90,8 +93,9 @@ class _TextInputState extends State<TextInput>
                   padding: const EdgeInsets.only(bottom: 12.0, left: 8),
                   child: Text(widget.label!,
                       style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                      )),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54)),
                 ),
               Expanded(
                 flex: widget.expand ? 1 : 0,
@@ -101,13 +105,15 @@ class _TextInputState extends State<TextInput>
                       //border: widget.transparent ? null : Border.all(color: _colorTween2.value),
                       borderRadius:
                           BorderRadius.all(Radius.circular(widget.radius))),
-                  child: TextField(
+                  child: TextFormField(
                       inputFormatters: widget.inputFormatters,
                       focusNode: _focus,
                       controller:
                           widget.controller ?? widget.textEditingController,
                       textInputAction: widget.textInputAction,
-                      onSubmitted: widget.onSubmitted,
+                      validator: widget.validator,
+                      onFieldSubmitted: widget.onSubmitted,
+                      onSaved: widget.onSaved,
                       autofocus: widget.autoFocus,
                       obscureText: widget.obscureText,
                       maxLines: widget.maxLines,

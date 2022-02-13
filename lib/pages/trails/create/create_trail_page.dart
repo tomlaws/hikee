@@ -161,7 +161,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(24)),
                   child: HikeeMap(
-                    key: Key('create-trail-map'),
+                    key: Key('create-trail-map-2'),
                     pathOnly: true,
                     path:
                         controller.coordinates.map((c) => c.location).toList(),
@@ -194,13 +194,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                   )),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text('Trail name',
-                    style: TextStyle(
-                        color: Colors.black54, fontWeight: FontWeight.bold)),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: TextInput(
+                  label: 'Trail Name',
                   hintText: "Trail name",
                   controller: controller.nameController,
                 ),
@@ -213,14 +208,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text('Duration',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
                         child: TextInput(
+                          label: 'Duration',
                           hintText: "Duration in minutes",
                           controller: controller.durationController,
                           keyboardType: TextInputType.number,
@@ -239,15 +228,9 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text('Region',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                      Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Dropdown<Region>(
+                            label: 'Region',
                             items: Region.allRegions().toList(),
                             selected: controller.region.value,
                             itemBuilder: (r) {
@@ -262,13 +245,13 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8),
                 child: Text('Difficulty',
                     style: TextStyle(
                         color: Colors.black54, fontWeight: FontWeight.bold)),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 child: RatingBar.builder(
                   glow: false,
                   initialRating: 0,
@@ -288,15 +271,10 @@ class CreateTrailPage extends GetView<CreateTrailController> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text('Description',
-                    style: TextStyle(
-                        color: Colors.black54, fontWeight: FontWeight.bold)),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: SizedBox(
                   height: 160,
                   child: TextInput(
+                      label: 'Description',
                       expand: true,
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
@@ -411,6 +389,9 @@ class CreateTrailPage extends GetView<CreateTrailController> {
 
   Widget _map() {
     return HikeeMap(
+      key: Key('create-trail-map'),
+      zoom: 10,
+      contentMargin: EdgeInsets.only(bottom: 80, right: 8),
       markers: controller.coordinates
           .map(
             (pos) => DragMarker(
@@ -425,12 +406,9 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 if (pos == controller.coordinates.last)
                   return Container(
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.deepOrange.shade900,
-                      ),
-                      borderRadius: BorderRadius.circular(12.5),
-                      color: Colors.orange.shade600,
-                    ),
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12.5),
+                        color: Color.fromARGB(255, 149, 65, 197)),
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Icon(
@@ -443,11 +421,10 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 return Container(
                   decoration: BoxDecoration(
                       color: controller.selectedCoordinates.value == pos
-                          ? Colors.orange
-                          : Colors.orange.shade50,
+                          ? Colors.white
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                          width: 1, color: Colors.deepOrange.shade900)),
+                      border: Border.all(width: 2, color: Colors.white)),
                 );
               },
               onTap: (LatLng latlng) {

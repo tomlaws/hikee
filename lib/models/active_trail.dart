@@ -1,19 +1,18 @@
-import 'package:hikee/models/elevation.dart';
+import 'package:hikee/models/reference_trail.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/models/trail.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'active_trail.g.dart';
 
 @JsonSerializable()
 class ActiveTrail {
-  Trail trail;
-  List<LatLng> decodedPath;
+  ReferenceTrail? trail;
+  String? name_en;
+  String? name_zh;
   late List<LatLng> userPath;
   late List<double> userElevation;
   int? startTime;
-  late List<Elevation> elevations;
 
   bool get isStarted => startTime != null;
 
@@ -24,35 +23,32 @@ class ActiveTrail {
     return ((e / 1000).floor());
   }
 
-  double get walkedDistance {
+  // in km
+  double get length {
     return GeoUtils.getPathLength(path: userPath);
   }
 
   double get speed {
     if (elapsed == 0) return 0.0;
-    var kmps = (walkedDistance / elapsed);
+    var kmps = (length / elapsed);
     var s = kmps * 3600;
     return s;
   }
 
   int get estimatedFinishTime {
-    var kmps = (walkedDistance / elapsed);
+    if (trail == null) return 0;
+    var kmps = (length / elapsed);
     if (elapsed == 0.0 || kmps == 0.0 || kmps.isInfinite || kmps.isNaN)
-      return trail.duration * 60;
+      return trail!.duration * 60;
     else {
-      var remamingLength = trail.length - walkedDistance;
+      var remamingLength = trail!.length - length;
       return (remamingLength * 0.001 / kmps).round(); // in secs
     }
   }
 
-  ActiveTrail(
-      {required this.trail,
-      required this.decodedPath,
-      this.startTime,
-      List<Elevation>? elevations}) {
+  ActiveTrail({this.trail, this.startTime}) {
     this.userPath = [];
     this.userElevation = [];
-    this.elevations = elevations ?? [];
   }
 
   factory ActiveTrail.fromJson(Map<String, dynamic> json) =>

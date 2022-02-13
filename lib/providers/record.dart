@@ -36,7 +36,7 @@ class RecordProvider extends BaseProvider {
       {required DateTime date,
       required int time,
       required String name,
-      required int referenceTrailId,
+      int? referenceTrailId,
       required int regionId,
       required int length,
       required List<LatLng> userPath,
@@ -49,16 +49,19 @@ class RecordProvider extends BaseProvider {
       });
       altitudes = minimized;
     }
-    return await post('records', {
+    var body = {
       'name': name,
       'date': date.toString(),
       'time': time,
-      'referenceTrailId': referenceTrailId,
       'regionId': regionId,
       'userPath': GeoUtils.encodePath(userPath),
       'length': length,
       'altitudes': altitudes
-    }).then((value) {
+    };
+    if (referenceTrailId != null) {
+      body['referenceTrailId'] = referenceTrailId;
+    }
+    return await post('records', body).then((value) {
       return Record.fromJson(value.body);
     });
   }
