@@ -95,22 +95,16 @@ class GeoUtils {
     var min = double.infinity;
     late Region result;
     Region.allRegions().forEach((region) {
-      print(region.name_en);
       var td = 0.0;
       path.forEach((location) {
         td += calculateDistance(location, region.center!);
       });
-      print(td);
       var averageDist = td / path.length;
       if (averageDist < min) {
-        print('smaller, set');
         min = averageDist;
         result = region;
       }
     });
-    print('result');
-    print(result.name_en);
-    print(result.id);
     return result;
   }
 

@@ -5,15 +5,25 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class ActiveTrailInfo extends StatelessWidget {
   final ActiveTrail activeTrail;
-  const ActiveTrailInfo({Key? key, required this.activeTrail})
+  final void Function() onEdit;
+  const ActiveTrailInfo(
+      {Key? key, required this.activeTrail, required this.onEdit})
       : super(key: key);
 
-  String get name {
-    return activeTrail.trail?.name_en ?? 'Unnamed';
+  bool get named {
+    if (activeTrail.trail != null) return true;
+    return activeTrail.name != null;
   }
 
-  int get length {
-    return activeTrail.trail?.length ?? (activeTrail.length * 1000).round();
+  String get name {
+    return activeTrail.trail?.name_en ?? activeTrail.name ?? 'Unnamed';
+  }
+
+  double get length {
+    if (activeTrail.trail == null) {
+      return activeTrail.length;
+    }
+    return ((activeTrail.trail?.length ?? 0) / 1000);
   }
 
   int get duration {
@@ -33,11 +43,28 @@ class ActiveTrailInfo extends StatelessWidget {
           ),
           Container(width: 8),
           Expanded(
-            child: Text(
-              name,
-              maxLines: 2,
-              style: TextStyle(),
-            ),
+            child: Row(children: [
+              Opacity(
+                opacity: named ? 1 : .5,
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(),
+                ),
+              ),
+              Container(
+                  margin: const EdgeInsets.only(left: 8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      onEdit();
+                    },
+                    child: Icon(
+                      LineAwesomeIcons.edit,
+                      color: Colors.black45,
+                    ),
+                  )),
+            ]),
           ),
         ],
       ),
@@ -55,7 +82,7 @@ class ActiveTrailInfo extends StatelessWidget {
                 ),
                 Container(width: 8),
                 Text(
-                  '${(length / 1000).toString()}km',
+                  '${(length).toString()}km',
                   style: TextStyle(),
                 ),
               ],

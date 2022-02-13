@@ -135,7 +135,9 @@ class ActiveTrailProvider extends BaseProvider {
                 notificationChannelName: 'Location tracking',
                 notificationTitle: 'Hikee',
                 notificationMsg: 'Hikee navigation is active',
-                notificationBigMsg: 'Trail selected. Tap to see more details.',
+                notificationBigMsg: recordMode
+                    ? 'You\'re in recording mode.'
+                    : 'Trail selected. Tap to see more details.',
                 notificationIconColor: Colors.grey,
                 notificationTapCallback:
                     LocationCallbackHandler.notificationCallback)));

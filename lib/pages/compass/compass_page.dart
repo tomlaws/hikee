@@ -302,7 +302,7 @@ class CompassPage extends GetView<CompassController> {
                                                   .isCloseToStart.value ||
                                               controller.activeTrailProvider
                                                   .recordMode
-                                          ? 'Swipe up to get started!'
+                                          ? 'Swipe up to start recording!'
                                           : 'Please reach to the starting point first',
                                       style: TextStyle(fontSize: 12)),
                                 ),
@@ -893,6 +893,7 @@ class CompassPage extends GetView<CompassController> {
                     children: [
                       Obx(() => ActiveTrailInfo(
                             activeTrail: controller.activeTrail.value!,
+                            onEdit: controller.rename,
                           )),
                       SizedBox(height: 8),
                       Expanded(

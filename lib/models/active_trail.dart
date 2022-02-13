@@ -8,8 +8,7 @@ part 'active_trail.g.dart';
 @JsonSerializable()
 class ActiveTrail {
   ReferenceTrail? trail;
-  String? name_en;
-  String? name_zh;
+  String? name;
   late List<LatLng> userPath;
   late List<double> userElevation;
   int? startTime;

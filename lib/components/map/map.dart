@@ -233,7 +233,8 @@ class HikeeMap extends StatelessWidget {
                             : true,
                         onPressed: () async {
                           controller.centerOnLocationUpdate.toggle();
-                          controller.focusCurrentLocation();
+                          if (controller.centerOnLocationUpdate.value)
+                            controller.focusCurrentLocation();
                         },
                       ))
                 ]

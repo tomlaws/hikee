@@ -127,16 +127,18 @@ class CompassController extends GetxController
   }
 
   Future<String> getRecordName() async {
-    String? trailName;
+    String? trailName =
+        activeTrail.value!.trail?.name_en ?? activeTrail.value!.name;
     final formkey = GlobalKey<FormState>();
     await DialogUtils.showActionDialog(
-        "Create Record",
+        "Give a name",
         Form(
             key: formkey,
             child: Column(
               children: [
                 TextInput(
                   label: 'Record Name',
+                  initialValue: trailName,
                   onSaved: (v) {
                     trailName = v;
                   },
@@ -159,6 +161,13 @@ class CompassController extends GetxController
     return trailName!;
   }
 
+  rename() async {
+    String name = await getRecordName();
+    activeTrail.update((val) {
+      val?.name = name;
+    });
+  }
+
   finishTrail() async {
     try {
       if (_authProvider.loggedIn.value) {
@@ -171,7 +180,8 @@ class CompassController extends GetxController
         late int regionId;
         String? recordName;
         if (activeTrailProvider.recordMode) {
-          recordName = await getRecordName();
+          recordName = activeTrail.value!.name;
+          if (recordName == null) recordName = await getRecordName();
           regionId = GeoUtils.determineRegion(activeTrail.value!.userPath).id;
         } else {
           //upload stats

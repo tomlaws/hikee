@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TextInput extends StatefulWidget {
+  final String? initialValue;
   final String? hintText;
   final TextEditingController? textEditingController;
   final TextInputController? controller;
@@ -23,6 +24,7 @@ class TextInput extends StatefulWidget {
 
   const TextInput(
       {Key? key,
+      this.initialValue,
       this.hintText,
       this.textEditingController,
       this.controller,
@@ -106,6 +108,7 @@ class _TextInputState extends State<TextInput>
                       borderRadius:
                           BorderRadius.all(Radius.circular(widget.radius))),
                   child: TextFormField(
+                      initialValue: widget.initialValue,
                       inputFormatters: widget.inputFormatters,
                       focusNode: _focus,
                       controller:

@@ -65,11 +65,9 @@ FEB
 2. show distance between facility and current location & pin the facility on the map view
 3. add lands department logo on the map face
 4. show original trail for each record
-5. determine region by path
+5. add recording mode (determine region by the recorded path as well)
 TODO:
 add land dep logo on the map face
 emergency update
 check inside hong kong
-support recording
-check inside region
 date filter
