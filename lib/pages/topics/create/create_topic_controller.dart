@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/topic.dart';
+import 'package:hikee/models/topic_reply.dart';
+import 'package:hikee/pages/topic/topic_controller.dart';
 import 'package:hikee/providers/topic.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -13,12 +16,14 @@ class CreateTopicController extends GetxController {
   final titleController = TextInputController();
   final contentController = TextInputController();
   final images = RxList<Uint8List>();
+  int? topicId;
   int? categoryId;
 
   @override
   void onInit() {
     super.onInit();
     categoryId = Get.arguments?['categoryId'];
+    topicId = int.tryParse(Get.parameters['topicId'] ?? '');
   }
 
   @override
@@ -26,6 +31,10 @@ class CreateTopicController extends GetxController {
     titleController.dispose();
     contentController.dispose();
     super.onClose();
+  }
+
+  bool get isReplying {
+    return topicId != null;
   }
 
   void pickImages() async {
@@ -41,22 +50,49 @@ class CreateTopicController extends GetxController {
   }
 
   Future<Topic?> createTopic() async {
-    return Get.showOverlay(
-        asyncFunction: () async {
-          try {
-            var title = titleController.text;
-            var content = contentController.text;
-            Topic topic = await _topicProvider.createTopic(
-                title: title,
-                content: content,
-                images: images,
-                categoryId: categoryId);
-            Get.offAndToNamed('/topics/${topic.id}');
-            return topic;
-          } catch (ex) {
-            throw ex;
-          }
-        },
-        loadingWidget: Center(child: CircularProgressIndicator()));
+    var title = titleController.text;
+    var content = contentController.text;
+    Topic topic = await _topicProvider.createTopic(
+        title: title, content: content, images: images, categoryId: categoryId);
+    Get.offAndToNamed('/topics/${topic.id}');
+    return topic;
+    // return Get.showOverlay(
+    //     asyncFunction: () async {
+    //       try {
+    //         var title = titleController.text;
+    //         var content = contentController.text;
+    //         Topic topic = await _topicProvider.createTopic(
+    //             title: title,
+    //             content: content,
+    //             images: images,
+    //             categoryId: categoryId);
+    //         Get.offAndToNamed('/topics/${topic.id}');
+    //         return topic;
+    //       } catch (ex) {
+    //         throw ex;
+    //       }
+    //     },
+    //     loadingWidget: Center(child: CircularProgressIndicator()));
+  }
+
+  Future<TopicReply?> createReply() async {
+    var content = contentController.text;
+    TopicReply reply = await _topicProvider.createTopicReply(
+        content: content, images: images, topicId: topicId!);
+    var topicController = Get.find<TopicController>();
+    var repliesState = topicController.topicReplyController.state;
+    if (repliesState?.hasMore == false) {
+      repliesState?..data.add(reply);
+      topicController.topicReplyController.forceUpdate(repliesState);
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        topicController.scrollController.animateTo(
+          topicController.scrollController.position.maxScrollExtent,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 500),
+        );
+      });
+    }
+    Get.back();
+    return reply;
   }
 }

@@ -1,6 +1,6 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
-// import 'package:hikee/components/button.dart';
+// import 'package:hikee/components/core/button.dart';
 // import 'package:hikee/components/core/app_bar.dart';
 // import 'package:hikee/old_providers/trails.dart';
 // import 'package:provider/provider.dart';

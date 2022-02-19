@@ -22,12 +22,19 @@ class Dropdown<T> extends StatefulWidget {
 }
 
 class _DropdownState<T> extends State<Dropdown<T>> {
+  var _selected = Rxn<T>();
+  @override
+  void initState() {
+    super.initState();
+    _selected.value = widget.selected;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
           DialogUtils.showDialog(
-              "Regions",
+              widget.label ?? 'Select...',
               Column(
                 children: widget.items
                     .map((e) => Material(
@@ -37,6 +44,7 @@ class _DropdownState<T> extends State<Dropdown<T>> {
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
                               widget.onChanged(e);
+                              _selected.value = e;
                               Get.back();
                             },
                             child: Container(
@@ -67,12 +75,13 @@ class _DropdownState<T> extends State<Dropdown<T>> {
                 color: Color(0xFFF2F2F2),
                 borderRadius: BorderRadius.all(Radius.circular(12))),
             child: Align(
-              alignment: Alignment.centerLeft,
-              child: widget.selected != null
-                  ? widget.itemBuilder(widget.selected!)
-                  : Text("Select...",
-                      style: TextStyle(color: Color(0xFFC5C5C5))),
-            ),
+                alignment: Alignment.centerLeft,
+                child: Obx(
+                  () => _selected.value != null
+                      ? widget.itemBuilder(_selected.value!)
+                      : Text("Select...",
+                          style: TextStyle(color: Color(0xFFC5C5C5))),
+                )),
           ),
         ]));
   }

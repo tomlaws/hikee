@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/account/record_list_tile.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/account/record_tile.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/protected.dart';
@@ -39,7 +39,7 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
                     tag: 'search-records',
                     controller: AccountRecordsController(),
                     filter: AccountRecordsFilter(),
-                    builder: (record) => RecordListTile(record: record)));
+                    builder: (record) => RecordTile(record: record)));
               },
               backgroundColor: Colors.transparent,
               secondary: true,
@@ -52,7 +52,7 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
               ),
               empty: 'No records',
               builder: (record) {
-                return RecordListTile(record: record);
+                return RecordTile(record: record);
               }),
         );
       },

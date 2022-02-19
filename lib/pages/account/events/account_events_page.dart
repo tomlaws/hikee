@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/event_tile.dart';
+import 'package:hikee/components/events/event_tile.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/pages/account/events/account_events_controller.dart';
 

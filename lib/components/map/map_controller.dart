@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikee/providers/active_trail.dart';
 import 'package:hikee/utils/geo.dart';
@@ -11,15 +12,31 @@ class HikeeMapController extends GetxController {
   final imagery = false.obs;
   final centerOnLocationUpdate = false.obs;
   MapController? mapController;
+  Stream<LocationMarkerPosition?>? positionStream;
+  late StreamController<double?> centerCurrentLocationStreamController;
+  StreamSubscription<LocationMarkerPosition?>? subscription;
 
   @override
   void onInit() {
     super.onInit();
+    centerCurrentLocationStreamController = StreamController<double?>();
   }
 
   @override
   void onClose() {
+    centerCurrentLocationStreamController.close();
+    subscription?.cancel();
     super.onClose();
+  }
+
+  void focusCurrentLocationOnce(Stream<LocationMarkerPosition?>? stream) {
+    positionStream = stream;
+    subscription?.cancel();
+    subscription = positionStream?.listen((event) {
+      focusCurrentLocation();
+      subscription?.cancel();
+      subscription = null;
+    });
   }
 
   void focus(LatLng point, {double? zoom}) {
@@ -39,11 +56,6 @@ class HikeeMapController extends GetxController {
   }
 
   void focusCurrentLocation() {
-    var p = Get.find<ActiveTrailProvider>();
-    if (p.currentLocation.value != null) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        mapController!.move(p.currentLocation.value!.latLng, 17);
-      });
-    }
+    centerCurrentLocationStreamController.add(17.0);
   }
 }

@@ -23,6 +23,16 @@ class Paginated<T> {
 
   /// Create a new object after concatenation
   Paginated<T> concat(Paginated<T> another) {
-    return new Paginated(data: [...this.data, ...another.data], hasMore: another.hasMore, cursor: another.cursor, totalCount: another.totalCount);
+    return Paginated(
+        data: [...this.data, ...another.data],
+        hasMore: another.hasMore,
+        cursor: another.cursor,
+        totalCount: another.totalCount);
+  }
+
+  Paginated<T> clone() {
+    return Paginated(data: [
+      ...this.data,
+    ], hasMore: hasMore, cursor: cursor, totalCount: totalCount);
   }
 }

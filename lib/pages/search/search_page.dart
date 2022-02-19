@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_input.dart';
@@ -8,8 +8,7 @@ import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/pages/search/search_controller.dart';
 
-class SearchPage<U, C extends PaginationController<Paginated<U>>>
-    extends StatefulWidget {
+class SearchPage<U, C extends PaginationController<U>> extends StatefulWidget {
   const SearchPage(
       {Key? key,
       required this.tag,
@@ -29,7 +28,7 @@ class SearchPage<U, C extends PaginationController<Paginated<U>>>
   final bool showAll;
 }
 
-class _SearchPageState<U, C extends PaginationController<Paginated<U>>>
+class _SearchPageState<U, C extends PaginationController<U>>
     extends State<SearchPage<U, C>> {
   late SearchController<U> _searchController;
 

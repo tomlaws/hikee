@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with WidgetsBindingObserver {
   static HomeController get to => Get.find();
   late PageController pageController;
   var currentTabIndex = 0.obs;
@@ -11,6 +10,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     pageController = PageController(initialPage: currentTabIndex.value);
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   void switchTab(int i) {
@@ -19,7 +19,13 @@ class HomeController extends GetxController {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
   void onClose() {
+    WidgetsBinding.instance?.removeObserver(this);
     super.onClose();
   }
 }

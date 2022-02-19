@@ -5,14 +5,14 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/dropdown.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/components/drag_marker.dart';
+import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/map/map.dart';
-import 'package:hikee/components/mutation_builder.dart';
+import 'package:hikee/components/core/mutation_builder.dart';
 import 'package:hikee/models/region.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/pages/trails/create/create_trail_controller.dart';
 import 'package:hikee/utils/geo.dart';
@@ -308,6 +308,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
               ),
               Expanded(
                 child: MutationBuilder<Trail>(
+                  userOnly: true,
                   builder: (mutate, loading) => Button(
                     loading: loading,
                     onPressed: () {

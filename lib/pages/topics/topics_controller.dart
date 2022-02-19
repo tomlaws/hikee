@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import 'package:hikee/controllers/shared/pagination.dart';
@@ -7,9 +7,8 @@ import 'package:hikee/models/topic.dart';
 import 'package:hikee/models/topic_category.dart';
 import 'package:hikee/providers/topic.dart';
 
-class TopicsController extends PaginationController<Paginated<Topic>> {
+class TopicsController extends PaginationController<Topic> {
   final _topicProvider = Get.put(TopicProvider());
-  ScrollController scrollController = ScrollController();
   int? categoryId;
 
   @override
@@ -26,7 +25,6 @@ class TopicsController extends PaginationController<Paginated<Topic>> {
 
   @override
   void onClose() {
-    scrollController.dispose();
     super.onClose();
   }
 }

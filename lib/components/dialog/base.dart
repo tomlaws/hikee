@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 
 abstract class BaseDialog extends StatefulWidget {
   const BaseDialog({Key? key}) : super(key: key);

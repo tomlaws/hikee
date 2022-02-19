@@ -1,100 +1,117 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hikee/components/account/account_header.dart';
-import 'package:hikee/components/protected.dart';
 import 'package:get/get.dart';
 import 'package:hikee/pages/account/account_controller.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/themes.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class AccountPage extends GetView<AccountController> {
   @override
   Widget build(BuildContext context) {
-    return Protected(
-      authenticatedBuilder: (_, getMe) {
-        return Scaffold(
-          backgroundColor: Color(0xffffffff),
-          body: SingleChildScrollView(
-            child: SafeArea(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: AccountHeader(
-                      future: getMe,
-                      onAvatarTap: () {
-                        controller.promptUploadIcon();
-                      },
-                    ),
+    final authProvider = Get.put(AuthProvider());
+    return Scaffold(
+      backgroundColor: Color(0xffffffff),
+      body: SingleChildScrollView(
+          child: SafeArea(
+        child: Obx(
+          () => Column(
+            children: [
+              if (authProvider.loggedIn.value)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: AccountHeader(
+                    future: authProvider.getMe(),
+                    onAvatarTap: () {
+                      controller.promptUploadIcon();
+                    },
                   ),
-                  Container(
-                    margin: EdgeInsets.all(16),
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                        boxShadow: [Themes.lightShadow],
-                        borderRadius: BorderRadius.circular(16.0)),
-                    child: Column(
-                      children: [
-                        MenuListTile(
-                          onTap: () {
-                            Get.toNamed('/records');
-                          },
-                          title: "Records",
-                          icon: Icon(
-                            LineAwesomeIcons.trophy,
-                            size: 32,
-                            color: Colors.black26,
-                          ),
+                ),
+              Container(
+                margin: EdgeInsets.all(16),
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                    boxShadow: [Themes.lightShadow],
+                    borderRadius: BorderRadius.circular(16.0)),
+                child: Column(
+                  children: [
+                    if (authProvider.loggedIn.value)
+                      MenuListTile(
+                        onTap: () {
+                          Get.toNamed('/records');
+                        },
+                        title: "Records",
+                        icon: Icon(
+                          LineAwesomeIcons.trophy,
+                          size: 32,
+                          color: Colors.black26,
                         ),
-                        MenuListTile(
-                          onTap: () {},
-                          title: "Profile",
-                          icon: Icon(
-                            LineAwesomeIcons.user,
-                            size: 32,
-                            color: Colors.black26,
-                          ),
+                      ),
+                    if (authProvider.loggedIn.value)
+                      MenuListTile(
+                        onTap: () {},
+                        title: "Profile",
+                        icon: Icon(
+                          LineAwesomeIcons.user,
+                          size: 32,
+                          color: Colors.black26,
                         ),
-                        MenuListTile(
-                          onTap: () {},
-                          title: "Language",
-                          icon: Icon(
-                            LineAwesomeIcons.language,
-                            size: 32,
-                            color: Colors.black26,
-                          ),
-                        ),
-                        MenuListTile(
-                          onTap: () {
-                            Get.toNamed('/privacy');
-                          },
-                          title: "Privacy & Security",
-                          icon: Icon(
-                            LineAwesomeIcons.cogs,
-                            size: 32,
-                            color: Colors.black26,
-                          ),
-                        ),
-                        MenuListTile(
-                          onTap: () {
-                            controller.logout();
-                          },
-                          title: "Logout",
-                          icon: Icon(
-                            LineAwesomeIcons.door_open,
-                            size: 32,
-                            color: Colors.black26,
-                          ),
-                        ),
-                      ],
+                      ),
+                    MenuListTile(
+                      onTap: () {
+                        Get.toNamed('/preferences');
+                      },
+                      title: "Preferences",
+                      icon: Icon(
+                        LineAwesomeIcons.horizontal_sliders,
+                        size: 32,
+                        color: Colors.black26,
+                      ),
                     ),
-                  )
-                ],
-              ),
-            ),
+                    if (authProvider.loggedIn.value)
+                      MenuListTile(
+                        onTap: () {
+                          Get.toNamed('/privacy');
+                        },
+                        title: "Privacy & Security",
+                        icon: Icon(
+                          LineAwesomeIcons.user_secret,
+                          size: 32,
+                          color: Colors.black26,
+                        ),
+                      ),
+                    if (authProvider.loggedIn.value)
+                      MenuListTile(
+                        onTap: () {
+                          controller.logout();
+                        },
+                        title: "Logout",
+                        icon: Icon(
+                          LineAwesomeIcons.door_open,
+                          size: 32,
+                          color: Colors.black26,
+                        ),
+                      )
+                    else
+                      MenuListTile(
+                        onTap: () {
+                          Get.toNamed('/login');
+                        },
+                        title: "Login",
+                        icon: Icon(
+                          LineAwesomeIcons.door_closed,
+                          size: 32,
+                          color: Colors.black26,
+                        ),
+                      ),
+                  ],
+                ),
+              )
+            ],
           ),
-        );
-      },
+        ),
+      )),
     );
   }
 }
@@ -103,6 +120,7 @@ class MenuListTile extends StatelessWidget {
   final String title;
   final Function? onTap;
   final Icon? icon;
+  final Widget? trailing;
   final bool switchValue;
   final bool? loading;
   final void Function(bool)? onSwitchValueChanged;
@@ -111,6 +129,7 @@ class MenuListTile extends StatelessWidget {
       required this.title,
       this.onTap,
       this.icon,
+      this.trailing,
       this.switchValue = false,
       this.loading,
       this.onSwitchValueChanged})
@@ -148,11 +167,17 @@ class MenuListTile extends StatelessWidget {
                         ),
                       ),
                       if (onTap != null)
-                        Icon(
-                          LineAwesomeIcons.angle_right,
-                          size: 24,
-                          color: Colors.black26,
-                        ),
+                        if (trailing != null)
+                          DefaultTextStyle(
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.black38),
+                              child: trailing!)
+                        else
+                          Icon(
+                            LineAwesomeIcons.angle_right,
+                            size: 24,
+                            color: Colors.black26,
+                          ),
                       if (onSwitchValueChanged != null)
                         loading == true
                             ? Container(

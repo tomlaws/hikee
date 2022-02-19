@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/account/account_header.dart';
-import 'package:hikee/components/account/record_list_tile.dart';
+import 'package:hikee/components/account/record_tile.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/shimmer.dart';
@@ -27,14 +27,16 @@ class ProfilePage extends GetView<ProfileController> {
               }
             }),
       ),
-      body: Obx(() => controller.isPrivate.value
+      body: Obx(() => controller.isPrivate.value != false
           ? Column(children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: AccountHeader(future: controller.getUser),
               ),
               SizedBox(height: 8),
-              Expanded(child: Center(child: Text('Trail records are hidden'))),
+              if (controller.isPrivate.value == true)
+                Expanded(
+                    child: Center(child: Text('Trail records are hidden'))),
             ])
           : InfiniteScroller<Record>(
               headers: [
@@ -46,7 +48,7 @@ class ProfilePage extends GetView<ProfileController> {
               ),
               empty: 'No records',
               builder: (record) {
-                return RecordListTile(record: record);
+                return RecordTile(record: record);
               })),
     );
   }

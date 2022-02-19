@@ -61,13 +61,15 @@ added features:
 
 
 FEB
-1. add profile page, display trail history (can be disabled in privacy setting)
+1. add profile page, display trail history (can be disabled in privacy setting, opt-in approach)
 2. show distance between facility and current location & pin the facility on the map view
 3. add lands department logo on the map face
 4. show original trail for each record
 5. add recording mode (determine region by the recorded path as well)
+6. allow custom map provider
 TODO:
 add land dep logo on the map face
 emergency update
 check inside hong kong
 date filter
+offline mode

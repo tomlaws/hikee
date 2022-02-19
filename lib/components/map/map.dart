@@ -5,9 +5,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
-import 'package:hikee/components/drag_marker.dart';
+import 'package:hikee/components/core/button.dart';
+import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/map/map_controller.dart';
+import 'package:hikee/models/preferences.dart';
+import 'package:hikee/providers/preferences.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -29,8 +31,15 @@ class HikeeMap extends StatelessWidget {
       this.watermarkAlignment = Alignment.bottomLeft,
       this.contentMargin = const EdgeInsets.all(8)})
       : super(key: key) {
+    _key = key?.toString();
     controller = Get.put(HikeeMapController(), tag: key?.toString());
+    if ((path == null || path?.length == 0) &&
+        (userPath == null || userPath?.length == 0))
+      controller.focusCurrentLocationOnce(positionStream);
   }
+
+  final _preferencesProvider = Get.find<PreferencesProvider>();
+  late final String? _key;
   late final HikeeMapController controller;
   final List<LatLng>? path;
   final List<LatLng>? userPath;
@@ -90,233 +99,289 @@ class HikeeMap extends StatelessWidget {
     if (pathOnly && path != null) {
       if (path!.length > 1) finishMarker = path!.last;
     }
-
-    return FlutterMap(
-      children: [
-        Obx(() => TileLayerWidget(
-            options: TileLayerOptions(
-                urlTemplate: controller.imagery.value
-                    ? "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/imagery/WGS84/{z}/{x}/{y}.png"
-                    : "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png",
-                errorTileCallback: (_, __) {},
-                evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
-                backgroundColor: Colors.transparent,
-                tilesContainerBuilder: (context, child, _) {
-                  return child;
-                }))),
-        TileLayerWidget(
-          options: TileLayerOptions(
-              urlTemplate:
-                  "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/WGS84/{z}/{x}/{y}.png",
-              errorTileCallback: (_, __) {},
-              evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
-              backgroundColor: Colors.transparent),
-        ),
-        PolylineLayerWidget(
-          options: PolylineLayerOptions(
-            polylines: [
-              if (path != null)
-                Polyline(
-                  gradientColors: [
-                    Color.fromARGB(255, 0, 138, 202)
-                        .withOpacity(userPath != null ? .5 : 1),
-                    Color.fromARGB(255, 149, 65, 197)
-                        .withOpacity(userPath != null ? .5 : 1),
-                  ],
-                  borderColor: Colors.white,
-                  borderStrokeWidth: 4.0,
-                  points: path!,
-                  strokeWidth: 6.0,
-                ),
-              if (userPath != null)
-                Polyline(
-                  gradientColors: [
-                    Color.fromARGB(255, 0, 138, 202),
-                    Color.fromARGB(255, 149, 65, 197),
-                  ],
-                  points: userPath!,
-                  strokeWidth: 6.0,
-                  borderStrokeWidth: 4.0,
-                  borderColor: Colors.white,
-                ),
+    return Obx(() => FlutterMap(
+          key: Key(_key ?? '-flutter-map'),
+          children: [
+            if (_preferencesProvider.preferences.value?.mapProvider ==
+                MapProvider.LandsDepartment) ...[
+              Obx(() => TileLayerWidget(
+                  options: TileLayerOptions(
+                      urlTemplate: controller.imagery.value
+                          ? "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/imagery/WGS84/{z}/{x}/{y}.png"
+                          : "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png",
+                      errorTileCallback: (_, __) {},
+                      evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+                      backgroundColor: Colors.transparent,
+                      tilesContainerBuilder: (context, child, _) {
+                        return child;
+                      }))),
+              TileLayerWidget(
+                options: TileLayerOptions(
+                    urlTemplate:
+                        "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/WGS84/{z}/{x}/{y}.png",
+                    attributionAlignment: Alignment.bottomLeft,
+                    attributionBuilder: (_) {
+                      return Container(
+                          margin: contentMargin,
+                          child: Opacity(
+                            opacity: .5,
+                            child: SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: Image.asset(
+                                  'assets/images/lands_department.png'),
+                            ),
+                          ));
+                    },
+                    errorTileCallback: (_, __) {},
+                    evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+                    backgroundColor: Colors.transparent),
+              ),
             ],
-          ),
-        ),
-        if (positionStream != null)
-          Obx(
-            () => LocationMarkerLayerWidget(
-              options: LocationMarkerLayerOptions(
-                  positionStream: positionStream!
-                      .where((event) => event != null)
-                      .map((event) => event!),
-                  headingStream: headingStream
-                      ?.where((event) => event != null)
-                      .map((event) {
-                    return event!;
-                  })),
-              plugin: LocationMarkerPlugin(
-                centerOnLocationUpdate: controller.centerOnLocationUpdate.value
-                    ? CenterOnLocationUpdate.always
-                    : CenterOnLocationUpdate.never,
+            if (_preferencesProvider.preferences.value?.mapProvider ==
+                MapProvider.OpenStreetMap)
+              TileLayerWidget(
+                options: TileLayerOptions(
+                    urlTemplate:
+                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: ['a', 'b', 'c'],
+                    attributionAlignment: Alignment.bottomLeft,
+                    attributionBuilder: (_) {
+                      return Container(
+                          margin: contentMargin,
+                          child: Text("© OpenStreetMap",
+                              style: TextStyle(color: Colors.white)));
+                    },
+                    errorTileCallback: (_, __) {},
+                    evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+                    backgroundColor: Colors.transparent),
+              ),
+            if (_preferencesProvider.preferences.value?.mapProvider ==
+                MapProvider.OpenStreetMapCyclOSM)
+              TileLayerWidget(
+                options: TileLayerOptions(
+                  urlTemplate:
+                      "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c'],
+                  attributionAlignment: Alignment.bottomLeft,
+                  attributionBuilder: (_) {
+                    return Container(
+                        margin: contentMargin,
+                        child: Text("© OpenStreetMap",
+                            style: TextStyle(color: Colors.white)));
+                  },
+                  errorTileCallback: (_, __) {},
+                  evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+                ),
+              ),
+            PolylineLayerWidget(
+              options: PolylineLayerOptions(
+                polylineCulling: false,
+                polylines: [
+                  if (path != null)
+                    Polyline(
+                      gradientColors: [
+                        Color.fromARGB(255, 0, 138, 202)
+                            .withOpacity(userPath != null ? .5 : 1),
+                        Color.fromARGB(255, 149, 65, 197)
+                            .withOpacity(userPath != null ? .5 : 1),
+                      ],
+                      borderColor: Colors.white,
+                      borderStrokeWidth: 4.0,
+                      points: path!,
+                      strokeWidth: 6.0,
+                    ),
+                  if (userPath != null)
+                    Polyline(
+                      gradientColors: [
+                        Color.fromARGB(255, 0, 138, 202),
+                        Color.fromARGB(255, 149, 65, 197),
+                      ],
+                      points: userPath!,
+                      strokeWidth: 6.0,
+                      borderStrokeWidth: 4.0,
+                      borderColor: Colors.white,
+                    ),
+                ],
               ),
             ),
-          ),
-      ],
-      nonRotatedChildren: [
-        Align(
-          alignment: watermarkAlignment,
-          child: Opacity(
-            opacity: .4,
-            child: Container(
-              margin: contentMargin,
-              width: 32,
-              height: 32,
-              child: Image.asset('assets/images/lands_department.png'),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Container(
-            margin: contentMargin,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (interactiveFlag != InteractiveFlag.none &&
-                    (focusingPath != null && focusingPath.length > 0))
-                  Button(
-                    icon: Icon(
-                      LineAwesomeIcons.expand,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    invert: true,
-                    onPressed: () {
-                      if (path == null) {
-                        if (userPath != null) {
-                          if (userPath!.length > 0)
-                            controller.focusPath(userPath!);
-                        }
-                      } else {
-                        if (path!.length > 0) controller.focusPath(path!);
-                      }
-                    },
-                  ),
-                Container(
-                  height: 8,
-                ),
-                Obx(() => Button(
-                      icon: Icon(
-                        LineAwesomeIcons.layer_group,
-                        color: controller.imagery.value
-                            ? Colors.white
-                            : Theme.of(context).primaryColor,
-                      ),
-                      invert: controller.imagery.value ? false : true,
-                      onPressed: () {
-                        controller.imagery.value = !controller.imagery.value;
-                      },
-                    )),
-                if (showCenterOnLocationUpdateButton) ...[
-                  Container(
-                    height: 8,
-                  ),
-                  Obx(() => Button(
-                        icon: Icon(
-                          LineAwesomeIcons.map_marker,
-                          color: controller.centerOnLocationUpdate.value
-                              ? Colors.white
-                              : Theme.of(context).primaryColor,
-                        ),
-                        invert: controller.centerOnLocationUpdate.value
-                            ? false
-                            : true,
-                        onPressed: () async {
-                          controller.centerOnLocationUpdate.toggle();
-                          if (controller.centerOnLocationUpdate.value)
-                            controller.focusCurrentLocation();
-                        },
-                      ))
-                ]
-              ],
-            ),
-          ),
-        )
-      ],
-      options: MapOptions(
-          interactiveFlags: interactiveFlag ?? InteractiveFlag.all,
-          onTap: (_, pos) {
-            if (this.onTap != null) {
-              this.onTap!(pos);
-            }
-          },
-          onMapCreated: (mapController) {
-            controller.mapController = mapController;
-            if (onMapCreated != null) onMapCreated!(controller);
-            if (pathOnly) {
-              if (focusingPath == null || focusingPath.length > 0) {
-                WidgetsBinding.instance?.addPostFrameCallback((_) {
-                  var r = mapController.centerZoomFitBounds(bounds,
-                      options: FitBoundsOptions(padding: EdgeInsets.all(64)));
-                  mapController.move(r.center, r.zoom);
-                });
-              } else {
-                WidgetsBinding.instance?.addPostFrameCallback((_) {
-                  if (!controller.centerOnLocationUpdate.value) {
-                    controller.centerOnLocationUpdate.value = true;
-                  }
-                });
-              }
-            }
-          },
-          zoom: zoom,
-          maxZoom: 18,
-          minZoom: 10,
-          allowPanningOnScrollingParent: false,
-          center: center,
-          nePanBoundary: hkBounds.northEast,
-          swPanBoundary: hkBounds.southWest,
-          onPositionChanged: (MapPosition position, bool hasGesture) {
-            if (hasGesture) {
-              if (controller.centerOnLocationUpdate.value) {
-                controller.centerOnLocationUpdate.value = false;
-              }
-            }
-          },
-          plugins: [
-            DragMarkerPlugin(),
-          ]),
-      layers: [
-        if (markers != null) DragMarkerPluginOptions(markers: markers!),
-        MarkerLayerOptions(
-          markers: [
-            if (finishMarker != null)
-              Marker(
-                width: 24,
-                height: 24,
-                point: finishMarker,
-                builder: (ctx) => Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 2),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Color.fromARGB(255, 149, 65, 197),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Color.fromARGB(144, 153, 100, 184),
-                              blurRadius: 8,
-                              spreadRadius: 4)
-                        ]),
-                    child: Center(
-                      child: Icon(Icons.flag_rounded,
-                          size: 14, color: Colors.white),
-                    ),
+            if (positionStream != null)
+              Obx(
+                () => LocationMarkerLayerWidget(
+                  options: LocationMarkerLayerOptions(
+                      positionStream: positionStream!
+                          .where((event) => event != null)
+                          .map((event) => event!),
+                      headingStream: headingStream
+                          ?.where((event) => event != null)
+                          .map((event) {
+                        return event!;
+                      })),
+                  plugin: LocationMarkerPlugin(
+                    centerCurrentLocationStream:
+                        controller.centerCurrentLocationStreamController.stream,
+                    centerOnLocationUpdate:
+                        controller.centerOnLocationUpdate.value
+                            ? CenterOnLocationUpdate.always
+                            : CenterOnLocationUpdate.never,
                   ),
                 ),
               ),
           ],
-        ),
-      ],
-    );
+          nonRotatedChildren: [
+            // Align(
+            //   alignment: watermarkAlignment,
+            //   child: Opacity(
+            //     opacity: .4,
+            //     child: Container(
+            //       margin: contentMargin,
+            //       width: 32,
+            //       height: 32,
+            //       child: Image.asset('assets/images/lands_department.png'),
+            //     ),
+            //   ),
+            // ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                margin: contentMargin,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (interactiveFlag != InteractiveFlag.none &&
+                        (focusingPath != null && focusingPath.length > 0))
+                      Button(
+                        icon: Icon(
+                          LineAwesomeIcons.expand,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        invert: true,
+                        onPressed: () {
+                          if (path == null) {
+                            if (userPath != null) {
+                              if (userPath!.length > 0)
+                                controller.focusPath(userPath!);
+                            }
+                          } else {
+                            if (path!.length > 0) controller.focusPath(path!);
+                          }
+                        },
+                      ),
+                    if (_preferencesProvider.preferences.value?.mapProvider ==
+                        MapProvider.LandsDepartment) ...[
+                      Container(
+                        height: 8,
+                      ),
+                      Obx(() => Button(
+                            icon: Icon(
+                              LineAwesomeIcons.layer_group,
+                              color: controller.imagery.value
+                                  ? Colors.white
+                                  : Theme.of(context).primaryColor,
+                            ),
+                            invert: controller.imagery.value ? false : true,
+                            onPressed: () {
+                              controller.imagery.value =
+                                  !controller.imagery.value;
+                            },
+                          )),
+                    ],
+                    if (showCenterOnLocationUpdateButton) ...[
+                      Container(
+                        height: 8,
+                      ),
+                      Obx(() => Button(
+                            icon: Icon(
+                              LineAwesomeIcons.map_marker,
+                              color: controller.centerOnLocationUpdate.value
+                                  ? Colors.white
+                                  : Theme.of(context).primaryColor,
+                            ),
+                            invert: controller.centerOnLocationUpdate.value
+                                ? false
+                                : true,
+                            onPressed: () async {
+                              controller.centerOnLocationUpdate.toggle();
+                              controller.focusCurrentLocation();
+                            },
+                          ))
+                    ]
+                  ],
+                ),
+              ),
+            )
+          ],
+          options: MapOptions(
+              interactiveFlags: interactiveFlag ?? InteractiveFlag.all,
+              onTap: (_, pos) {
+                if (this.onTap != null) {
+                  this.onTap!(pos);
+                }
+              },
+              onMapCreated: (mapController) {
+                controller.mapController = mapController;
+                if (onMapCreated != null) onMapCreated!(controller);
+                if (pathOnly) {
+                  if (focusingPath == null || focusingPath.length > 0) {
+                    WidgetsBinding.instance?.addPostFrameCallback((_) {
+                      var r = mapController.centerZoomFitBounds(bounds,
+                          options:
+                              FitBoundsOptions(padding: EdgeInsets.all(64)));
+                      mapController.move(r.center, r.zoom);
+                    });
+                  }
+                }
+              },
+              zoom: zoom,
+              maxZoom: 17,
+              minZoom: 11,
+              slideOnBoundaries: true,
+              //allowPanningOnScrollingParent: false,
+              center: center,
+              nePanBoundary: hkBounds.northEast,
+              swPanBoundary: hkBounds.southWest,
+              onPositionChanged: (MapPosition position, bool hasGesture) {
+                if (hasGesture) {
+                  if (controller.centerOnLocationUpdate.value) {
+                    controller.centerOnLocationUpdate.value = false;
+                  }
+                }
+              },
+              plugins: [
+                DragMarkerPlugin(),
+              ]),
+          layers: [
+            if (markers != null) DragMarkerPluginOptions(markers: markers!),
+            MarkerLayerOptions(
+              markers: [
+                if (finishMarker != null)
+                  Marker(
+                    width: 24,
+                    height: 24,
+                    point: finishMarker,
+                    builder: (ctx) => Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white, width: 2),
+                            borderRadius: BorderRadius.circular(12),
+                            color: Color.fromARGB(255, 149, 65, 197),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Color.fromARGB(144, 153, 100, 184),
+                                  blurRadius: 8,
+                                  spreadRadius: 4)
+                            ]),
+                        child: Center(
+                          child: Icon(Icons.flag_rounded,
+                              size: 14, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ));
   }
 }

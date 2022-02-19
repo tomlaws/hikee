@@ -6,7 +6,7 @@ import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/providers/event.dart';
 
-class LatestEventsController extends PaginationController<Paginated<Event>> {
+class LatestEventsController extends PaginationController<Event> {
   final _eventProvider = Get.put(EventProvider());
   final PageController pageController = PageController();
 

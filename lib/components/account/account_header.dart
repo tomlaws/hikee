@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/avatar.dart';
+import 'package:hikee/components/core/avatar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/user.dart';
 import 'package:hikee/themes.dart';

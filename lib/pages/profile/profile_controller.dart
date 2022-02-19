@@ -7,12 +7,12 @@ import 'package:hikee/pages/trails/trails_controller.dart';
 import 'package:hikee/providers/record.dart';
 import 'package:hikee/providers/user.dart';
 
-class ProfileController extends PaginationController<Paginated<Record>> {
+class ProfileController extends PaginationController<Record> {
   final _recordProvider = Get.put(RecordProvider());
   final userProvider = Get.put(UserProvider());
   late int userId;
   late Future<User> getUser;
-  final isPrivate = false.obs;
+  final isPrivate = Rxn<bool>(null);
 
   Set<int> regions = {...defaultRegions};
   int minDuration = defaultMinDuration;
@@ -26,9 +26,7 @@ class ProfileController extends PaginationController<Paginated<Record>> {
     userId = int.parse(Get.parameters['id']!);
     getUser = userProvider.getUser(userId);
     getUser.then((user) {
-      if (user.isPrivate) {
-        isPrivate.value = true;
-      }
+      isPrivate.value = user.isPrivate;
     });
   }
 

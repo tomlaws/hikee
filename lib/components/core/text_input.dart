@@ -101,51 +101,55 @@ class _TextInputState extends State<TextInput>
                 ),
               Expanded(
                 flex: widget.expand ? 1 : 0,
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: widget.transparent ? null : _colorTween.value,
-                      //border: widget.transparent ? null : Border.all(color: _colorTween2.value),
-                      borderRadius:
-                          BorderRadius.all(Radius.circular(widget.radius))),
-                  child: TextFormField(
-                      initialValue: widget.initialValue,
-                      inputFormatters: widget.inputFormatters,
-                      focusNode: _focus,
-                      controller:
-                          widget.controller ?? widget.textEditingController,
-                      textInputAction: widget.textInputAction,
-                      validator: widget.validator,
-                      onFieldSubmitted: widget.onSubmitted,
-                      onSaved: widget.onSaved,
-                      autofocus: widget.autoFocus,
-                      obscureText: widget.obscureText,
-                      maxLines: widget.maxLines,
-                      keyboardType: widget.keyboardType,
-                      cursorColor: Theme.of(context).primaryColor,
-                      decoration: InputDecoration(
-                          prefixIcon: widget.icon == null
-                              ? null
-                              : IconTheme(
-                                  data: IconThemeData(
-                                      color: Colors.grey, size: 18),
-                                  child: SizedBox(
-                                      child: widget.icon,
-                                      width: 24,
-                                      height: 24)),
-                          prefixIconConstraints:
-                              BoxConstraints(maxHeight: 24, minWidth: 32),
-                          isDense: true,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          filled: false,
-                          disabledBorder: InputBorder.none,
-                          hintStyle: TextStyle(color: Color(0xFFC5C5C5)),
-                          hintText: widget.hintText)),
-                ),
+                child: TextFormField(
+                    initialValue: widget.initialValue,
+                    inputFormatters: widget.inputFormatters,
+                    focusNode: _focus,
+                    controller:
+                        widget.controller ?? widget.textEditingController,
+                    textInputAction: widget.textInputAction,
+                    validator: widget.validator,
+                    onFieldSubmitted: widget.onSubmitted,
+                    onSaved: widget.onSaved,
+                    autofocus: widget.autoFocus,
+                    obscureText: widget.obscureText,
+                    maxLines: widget.maxLines,
+                    textAlignVertical:
+                        widget.expand ? TextAlignVertical.top : null,
+                    expands: widget.expand,
+                    keyboardType: widget.keyboardType,
+                    cursorColor: Theme.of(context).primaryColor,
+                    decoration: InputDecoration(
+                        prefixIcon: widget.icon == null
+                            ? null
+                            : IconTheme(
+                                data:
+                                    IconThemeData(color: Colors.grey, size: 18),
+                                child: SizedBox(
+                                    child: widget.icon, width: 24, height: 24)),
+                        prefixIconConstraints:
+                            BoxConstraints(maxHeight: 24, minWidth: 32),
+                        isDense: true,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(widget.radius),
+                            borderSide: BorderSide.none),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(widget.radius),
+                            borderSide: BorderSide.none),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(widget.radius),
+                            borderSide: BorderSide.none),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(widget.radius),
+                            borderSide: BorderSide.none),
+                        filled: true,
+                        fillColor:
+                            widget.transparent ? null : _colorTween.value,
+                        disabledBorder: InputBorder.none,
+                        hintStyle: TextStyle(color: Color(0xFFC5C5C5)),
+                        hintText: widget.hintText)),
               ),
               if (widget.controller != null)
                 ValueListenableBuilder(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/components/avatar.dart';
+import 'package:get/get.dart';
+import 'package:hikee/components/core/avatar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/time.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class TopicTile extends StatefulWidget {
   final Topic? topic;
@@ -17,13 +19,20 @@ class TopicTile extends StatefulWidget {
 class _TopicTileState extends State<TopicTile> {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onTap: widget.onTap,
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16.0),
-              boxShadow: [Themes.lightShadow]),
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [Themes.lightShadow]),
+      child: Material(
+        color: Colors.white,
+        child: InkWell(
+          onTap: widget.onTap ??
+              () {
+                if (widget.topic != null)
+                  Get.toNamed('/topics/${widget.topic!.id}');
+              },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,15 +58,32 @@ class _TopicTileState extends State<TopicTile> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               widget.topic == null
                                   ? Shimmer(fontSize: 16, width: 120)
-                                  : Text(widget.topic!.title,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16)),
+                                  : Expanded(
+                                      child: Text(widget.topic!.title,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16)),
+                                    ),
+                              widget.topic == null
+                                  ? Shimmer(fontSize: 16, width: 48)
+                                  : Row(
+                                      children: [
+                                        Icon(
+                                          LineAwesomeIcons.thumbs_up,
+                                          size: 14,
+                                        ),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(widget.topic!.likeCount.toString())
+                                      ],
+                                    )
                             ],
                           ),
                           SizedBox(
@@ -117,6 +143,8 @@ class _TopicTileState extends State<TopicTile> {
               ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/event_tile.dart';
+import 'package:hikee/components/events/event_tile.dart';
 import 'package:hikee/components/latest_events/latest_events_controller.dart';
 
 class LatestEvents extends StatelessWidget {
@@ -8,7 +8,6 @@ class LatestEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //super.build(context);
     return controller.obx(
         (state) => SingleChildScrollView(
               clipBehavior: Clip.none,
@@ -21,8 +20,14 @@ class LatestEvents extends StatelessWidget {
                     .toList(),
               ),
             ),
-        onLoading: Center(
-          child: CircularProgressIndicator(),
+        onLoading: SingleChildScrollView(
+          clipBehavior: Clip.none,
+          padding: EdgeInsets.all(16),
+          scrollDirection: Axis.horizontal,
+          child: Wrap(spacing: 16, children: [
+            EventTile(event: null, width: 240),
+            EventTile(event: null, width: 240)
+          ]),
         ));
   }
 }

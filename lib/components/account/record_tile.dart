@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/calendar_date.dart';
+import 'package:hikee/components/core/calendar_date.dart';
 import 'package:hikee/models/record.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:intl/intl.dart';
 
-class RecordListTile extends StatelessWidget {
+class RecordTile extends StatelessWidget {
   final Record record;
 
-  const RecordListTile({Key? key, required this.record}) : super(key: key);
+  const RecordTile({Key? key, required this.record}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

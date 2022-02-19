@@ -1,14 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/calendar_date.dart';
+import 'package:hikee/components/core/calendar_date.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/pages/event/event_binding.dart';
 import 'package:hikee/pages/event/event_page.dart';
 import 'package:hikee/themes.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class EventTile extends StatelessWidget {
   final Event? event;

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
-import 'package:hikee/components/mutation_builder.dart';
+import 'package:hikee/components/core/button.dart';
+import 'package:hikee/components/core/mutation_builder.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/models/token.dart';
 import 'package:hikee/pages/auth/register_controller.dart';

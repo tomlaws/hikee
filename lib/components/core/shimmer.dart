@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hikee/utils/color.dart';
 import 'package:shimmer/shimmer.dart' as S;
 
 class Shimmer extends StatelessWidget {
@@ -9,7 +10,8 @@ class Shimmer extends StatelessWidget {
       this.width,
       this.height = 17.5,
       this.radius,
-      this.fontSize})
+      this.fontSize,
+      this.color = const Color(0xFFFAFAFA)})
       : super(key: key);
 
   final Widget? child;
@@ -18,6 +20,7 @@ class Shimmer extends StatelessWidget {
   final double height;
   final double? radius;
   final double? fontSize;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +36,8 @@ class Shimmer extends StatelessWidget {
       renderHeight = size.height;
     }
     return S.Shimmer.fromColors(
-      baseColor: Colors.grey[200]!,
-      highlightColor: Colors.grey[50]!,
+      baseColor: ColorUtils.darken(color, .1),
+      highlightColor: color,
       enabled: enabled,
       child: child ??
           Container(

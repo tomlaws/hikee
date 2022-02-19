@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/messages.dart';
+import 'package:hikee/middlewares/auth.dart';
 import 'package:hikee/pages/account/password/account_password_binding.dart';
 import 'package:hikee/pages/account/password/account_password_page.dart';
+import 'package:hikee/pages/account/preferences/account_preferences_binding.dart';
+import 'package:hikee/pages/account/preferences/account_preferences_page.dart';
 import 'package:hikee/pages/account/privacy/account_privacy_binding.dart';
 import 'package:hikee/pages/account/privacy/account_privacy_page.dart';
 import 'package:hikee/pages/account/records/account_records_binding.dart';
@@ -33,6 +36,7 @@ import 'package:hikee/pages/trails/category/trail_category_binding.dart';
 import 'package:hikee/pages/trails/category/trail_category_page.dart';
 import 'package:hikee/pages/trails/create/create_trail_binding.dart';
 import 'package:hikee/pages/trails/create/create_trail_page.dart';
+import 'package:hikee/providers/preferences.dart';
 import 'package:hikee/themes.dart';
 
 void main() {
@@ -94,10 +98,10 @@ class CustomOverscrollIndicator extends ScrollBehavior {
 }
 
 class MyApp extends StatelessWidget {
+  final preferencesProvider = Get.put(PreferencesProvider());
+
   @override
   Widget build(BuildContext context) {
-    //MapMarker();
-    var locale = Locale('zh');
     Get.testMode = true;
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
@@ -105,8 +109,8 @@ class MyApp extends StatelessWidget {
       theme: Themes.light,
       translations: Messages(),
       defaultTransition: Transition.cupertino,
-      locale: Locale('en', 'US'),
       initialRoute: '/',
+      fallbackLocale: Locale('en', 'US'),
       builder: (_, widget) {
         if (widget == null) return Container();
         return ScrollConfiguration(
@@ -119,10 +123,10 @@ class MyApp extends StatelessWidget {
           binding: HomeBinding(),
         ),
         GetPage(
-          name: '/trails/create',
-          page: () => CreateTrailPage(),
-          binding: CreateTrailBinding(),
-        ),
+            name: '/trails/create',
+            page: () => CreateTrailPage(),
+            binding: CreateTrailBinding(),
+            middlewares: [AuthMiddleware()]),
         GetPage(
           name: '/trails/categories',
           page: () => TrailCategoriesPage(),
@@ -147,21 +151,25 @@ class MyApp extends StatelessWidget {
           name: '/events/create/:trailId',
           page: () => CreateEventPage(),
           binding: CreateEventBinding(),
+          middlewares: [AuthMiddleware()],
         ),
         GetPage(
           name: '/records/:id',
           page: () => RecordPage(),
           binding: RecordBinding(),
+          middlewares: [AuthMiddleware()],
         ),
         GetPage(
           name: '/records',
           page: () => AccountRecordsPage(),
           binding: AccountRecordsBinding(),
+          middlewares: [AuthMiddleware()],
         ),
         GetPage(
           name: '/topics/create',
           page: () => CreateTopicPage(),
           binding: CreateTopicBinding(),
+          middlewares: [AuthMiddleware()],
         ),
         GetPage(
           name: '/topics/:id',
@@ -169,14 +177,26 @@ class MyApp extends StatelessWidget {
           binding: TopicBinding(),
         ),
         GetPage(
+          name: '/topics/:topicId/reply',
+          page: () => CreateTopicPage(),
+          binding: CreateTopicBinding(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
           name: '/profiles/:id',
           page: () => ProfilePage(),
           binding: ProfileBinding(),
         ),
         GetPage(
+          name: '/preferences',
+          page: () => AccountPreferencesPage(),
+          binding: AccountPreferencesBinding(),
+        ),
+        GetPage(
           name: '/privacy',
           page: () => AccountPrivacyPage(),
           binding: AccountPrivacyBinding(),
+          middlewares: [AuthMiddleware()],
         ),
         GetPage(
           name: '/password',

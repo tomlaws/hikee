@@ -4,7 +4,7 @@ import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/providers/trail.dart';
 
-class TrailCategoryController extends PaginationController<Paginated<Trail>> {
+class TrailCategoryController extends PaginationController<Trail> {
   final _trailProvider = Get.put(TrailProvider());
   int? categoryId;
   var categoryName = '';

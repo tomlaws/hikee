@@ -2,14 +2,20 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/avatar.dart';
+import 'package:hikee/components/core/avatar.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
+import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/models/topic.dart';
+import 'package:hikee/components/core/text_may_overflow.dart';
+import 'package:hikee/components/core/mutation_builder.dart';
+import 'package:hikee/models/topic_base.dart';
+import 'package:hikee/models/topic_reply.dart';
 import 'package:hikee/pages/topic/topic_controller.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/image.dart';
 import 'package:hikee/utils/time.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 
 class TopicPage extends GetView<TopicController> {
@@ -17,24 +23,98 @@ class TopicPage extends GetView<TopicController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: HikeeAppBar(
-            title: controller.obx((state) => Text(state!.title),
-                onLoading: Shimmer())),
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _topic(),
+          title: controller.obx((state) => TextMayOverflow(state!.title),
+              onLoading: Shimmer()),
+          actions: [
+            controller.obx(
+                (state) => MutationBuilder(
+                    userOnly: true,
+                    mutation: () {
+                      return controller.toggleLike();
+                    },
+                    builder: (mutate, loading) {
+                      return Container(
+                        child: Button(
+                            child: Row(children: [
+                              Icon(
+                                LineAwesomeIcons.thumbs_up,
+                                color: state?.liked == true
+                                    ? Colors.green
+                                    : Colors.black54,
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                state?.likeCount.toString() ?? '0',
+                                style: TextStyle(
+                                    color: state?.liked == true
+                                        ? Colors.green
+                                        : Colors.black54),
+                              )
+                            ]),
+                            invert: true,
+                            loading: loading,
+                            onPressed: () {
+                              mutate();
+                            }),
+                      );
+                    }),
+                onLoading: Shimmer(
+                  width: 80,
+                ))
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                child: InfiniteScroller<TopicReply>(
+                  refreshable: true,
+                  controller: controller.topicReplyController,
+                  scrollController: controller.scrollController,
+                  empty: 'No replies yet',
+                  separator: SizedBox(height: 16),
+                  footers: [],
+                  headers: [
+                    Padding(
+                        padding: const EdgeInsets.only(
+                            top: 16.0, left: 16.0, right: 16.0),
+                        child: controller.obx((state) => _topic(state),
+                            onLoading: _topic(null)))
+                  ],
+                  loadingItemCount: 10,
+                  loadingBuilder: _topic(null),
+                  builder: (reply) {
+                    return Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: _topic(reply));
+                  },
+                ),
               ),
             ),
-            SliverList(
-              delegate: SliverChildListDelegate([]),
-            )
+            Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    boxShadow: [Themes.bottomBarShadow], color: Colors.white),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Button(
+                          onPressed: () {
+                            if (controller.state != null)
+                              Get.toNamed(
+                                  '/topics/${controller.state!.id}/reply');
+                          },
+                          child: Text('Reply')),
+                    )
+                  ],
+                ))
           ],
         ));
   }
 
-  Widget _topic() {
+  Widget _topic(TopicBase? topic) {
     return Container(
       decoration: BoxDecoration(
           boxShadow: [Themes.shadow],
@@ -45,46 +125,45 @@ class TopicPage extends GetView<TopicController> {
         children: [
           Padding(
             padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
             child: Row(
               children: [
-                controller.obx((state) => Avatar(user: state?.user, height: 48),
-                    onLoading: Avatar(user: null, height: 48)),
+                topic != null
+                    ? Avatar(user: topic.user, height: 48)
+                    : Avatar(user: null, height: 48),
                 SizedBox(
                   width: 8,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    controller.obx((state) => Text(state!.user.nickname),
-                        onLoading: Shimmer(
-                          width: 88,
-                        )),
+                    topic != null
+                        ? Text(topic.user.nickname)
+                        : Shimmer(
+                            width: 88,
+                          ),
                     SizedBox(
                       height: 4,
                     ),
-                    controller.obx(
-                        (state) => Text(
-                            TimeUtils.timeAgoSinceDate(state!.createdAt),
+                    topic != null
+                        ? Text(TimeUtils.timeAgoSinceDate(topic.createdAt),
                             style:
-                                TextStyle(fontSize: 12, color: Colors.black54)),
-                        onLoading: Shimmer(
-                          width: 88,
-                          fontSize: 12,
-                        ))
+                                TextStyle(fontSize: 12, color: Colors.black54))
+                        : Shimmer(
+                            width: 88,
+                            fontSize: 12,
+                          )
                   ],
                 )
               ],
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: controller.obx((state) => Text(state!.content),
-                onLoading: Shimmer()),
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8.0),
+            child: topic == null ? Shimmer() : Text(topic.content),
           ),
-          controller.obx(
-              (state) => (state?.images == null || state?.images?.length == 0)
+          topic != null
+              ? (topic.images == null || topic.images?.length == 0)
                   ? SizedBox()
                   : Container(
                       height: 240,
@@ -96,7 +175,7 @@ class TopicPage extends GetView<TopicController> {
                           aspectRatio: 1,
                           viewportFraction: 0.8,
                         ),
-                        items: state!.images!
+                        items: topic.images!
                             .map((e) => InkWell(
                                   onTap: () => _fullscreen(e),
                                   child: Container(
@@ -112,8 +191,8 @@ class TopicPage extends GetView<TopicController> {
                                 ))
                             .toList(),
                       ),
-                    ),
-              onLoading: SizedBox()),
+                    )
+              : SizedBox(),
           SizedBox(
             height: 8,
           ),

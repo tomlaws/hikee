@@ -5,7 +5,7 @@ import 'package:hikee/models/event.dart';
 import 'package:hikee/providers/event.dart';
 import 'package:hikee/providers/user.dart';
 
-class AccountEventsController extends PaginationController<Paginated<Event>> {
+class AccountEventsController extends PaginationController<Event> {
   final _userProvider = Get.put(UserProvider());
 
   @override

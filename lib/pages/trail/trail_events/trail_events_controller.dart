@@ -4,7 +4,7 @@ import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/providers/event.dart';
 
-class TrailEventsController extends PaginationController<Paginated<Event>> {
+class TrailEventsController extends PaginationController<Event> {
   final _eventProvider = Get.put(EventProvider());
   late int trailId;
 

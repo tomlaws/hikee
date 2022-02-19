@@ -53,6 +53,11 @@ class Themes {
       spreadRadius: -5,
       color: Colors.black.withOpacity(.06),
       offset: Offset(0, 6));
+  static final bottomBarShadow = BoxShadow(
+      blurRadius: 16,
+      spreadRadius: -8,
+      color: Colors.black.withOpacity(.09),
+      offset: Offset(0, -6));
   static BoxShadow buttonShadow(Color? color) {
     return BoxShadow(
         blurRadius: 16,

@@ -65,9 +65,13 @@ class ActiveTrailProvider extends BaseProvider {
       }
       // location tracking
       if (activeTrail.value == null) {
-        if (tracking) _stopLocationTracking();
+        if (tracking) {
+          _stopLocationTracking();
+        }
       } else {
-        if (!tracking) _startLocationTracking();
+        if (!tracking) {
+          _startLocationTracking();
+        }
       }
     });
 
@@ -89,6 +93,8 @@ class ActiveTrailProvider extends BaseProvider {
   @override
   void onClose() {
     activeTrail.close();
+    IsolateNameServer.removePortNameMapping(
+        LocationServiceRepository.isolateName);
     port.close();
     super.onClose();
   }
@@ -135,13 +141,10 @@ class ActiveTrailProvider extends BaseProvider {
                 notificationChannelName: 'Location tracking',
                 notificationTitle: 'Hikee',
                 notificationMsg: 'Hikee navigation is active',
-                notificationBigMsg: recordMode
-                    ? 'You\'re in recording mode.'
-                    : 'Trail selected. Tap to see more details.',
+                notificationBigMsg: notificationText,
                 notificationIconColor: Colors.grey,
                 notificationTapCallback:
                     LocationCallbackHandler.notificationCallback)));
-
     tracking = true;
   }
 
@@ -166,7 +169,7 @@ class ActiveTrailProvider extends BaseProvider {
         });
       }
 
-      updateNotification(activeTrail.value!.length);
+      updateNotification();
       if (location.altitude != 0) {
         activeTrail.update((t) {
           t?.userElevation.add(location.altitude);
@@ -181,9 +184,18 @@ class ActiveTrailProvider extends BaseProvider {
     }
   }
 
-  void updateNotification(double km) {
-    BackgroundLocator.updateNotificationText(
-        bigMsg: "You've walked ${km.toString()} km");
+  String get notificationText {
+    return activeTrail.value?.isStarted == true
+        ? "You've walked ${activeTrail.value!.length.toString()} km"
+        : (recordMode
+            ? 'You\'re in recording mode. Tap to see more details.'
+            : 'Trail selected. Tap to see more details.');
+  }
+
+  Future<void> updateNotification() async {
+    if (tracking) {
+      BackgroundLocator.updateNotificationText(bigMsg: notificationText);
+    }
   }
 
   Future<void> _load() async {
@@ -191,6 +203,7 @@ class ActiveTrailProvider extends BaseProvider {
     if (!prefs.containsKey('activeTrail')) return;
     String serialized = prefs.getString('activeTrail')!;
     dynamic decoded = jsonDecode(serialized);
+    if (decoded == null) return;
     activeTrail.value = ActiveTrail.fromJson(decoded);
   }
 
@@ -222,6 +235,7 @@ class ActiveTrailProvider extends BaseProvider {
           currentLocation.value!.latLng, activeTrail.value!.trail!.path![0]);
       isCloseToGoal.value = GeoUtils.isCloseToPoint(
           currentLocation.value!.latLng, activeTrail.value!.trail!.path!.last);
+      updateNotification();
     } catch (ex) {
       print(ex);
     }
@@ -239,7 +253,7 @@ class ActiveTrailProvider extends BaseProvider {
           t?.userPath.add(currentLocation.value!.latLng);
         });
       }
-      updateNotification(0);
+      updateNotification();
     } catch (ex) {
       print(ex);
     }
@@ -247,6 +261,7 @@ class ActiveTrailProvider extends BaseProvider {
 
   record() async {
     activeTrail.value = ActiveTrail(startTime: null);
+    updateNotification();
   }
 
   quit() async {

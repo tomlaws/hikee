@@ -85,10 +85,10 @@ class TopicCategories extends GetView<TopicCategoriesController> {
                                       controller.currentCategory.value)
                                   .name_en,
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
+                              fontSize: 20, fontWeight: FontWeight.bold)),
                     ),
                 onLoading: Shimmer(
-                  fontSize: 18,
+                  fontSize: 20,
                   width: 88,
                 )),
             SizedBox(width: 8),

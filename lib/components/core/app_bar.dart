@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 
 class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HikeeAppBar(
@@ -44,7 +44,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
               style: TextStyle(
                   color: Get.theme.textTheme.bodyText1?.color ?? Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                  fontSize: 20),
               child: Padding(
                 padding: EdgeInsets.only(
                     left:
@@ -80,11 +80,13 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: actions!
-                      .map((e) => SizedBox(
-                            height: 44,
-                            width: 44,
-                            child: e,
-                          ))
+                      .map((e) => e is Button
+                          ? SizedBox(
+                              height: 44,
+                              width: 44,
+                              child: e,
+                            )
+                          : e)
                       .toList(),
                 ),
               )

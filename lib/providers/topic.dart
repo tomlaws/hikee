@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/topic.dart';
 import 'package:hikee/models/topic_category.dart';
+import 'package:hikee/models/topic_reply.dart';
 import 'package:hikee/providers/shared/base.dart';
 
 class TopicProvider extends BaseProvider {
@@ -17,6 +18,24 @@ class TopicProvider extends BaseProvider {
   Future<Topic> getTopic(int id) async {
     var res = await get('topics/$id');
     return Topic.fromJson(res.body);
+  }
+
+  Future<Topic> like(int id) async {
+    var res = await post('topics/$id/likes', {});
+    return Topic.fromJson(res.body);
+  }
+
+  Future<Topic> revokeLike(int id) async {
+    var res = await delete('topics/$id/likes');
+    return Topic.fromJson(res.body);
+  }
+
+  Future<Paginated<TopicReply>> getTopicReplies(
+      int topicId, Map<String, dynamic>? query) async {
+    return await get('topics/$topicId/replies', query: query).then((value) {
+      return Paginated<TopicReply>.fromJson(
+          value.body, (o) => TopicReply.fromJson(o as Map<String, dynamic>));
+    });
   }
 
   Future<List<TopicCategory>> getCategories() async {
@@ -55,5 +74,28 @@ class TopicProvider extends BaseProvider {
     var res = await post('topics', form);
     Topic newTopic = Topic.fromJson(res.body);
     return newTopic;
+  }
+
+  createTopicReply(
+      {required int topicId,
+      required String content,
+      required List<Uint8List> images}) async {
+    var params = {
+      'content': content,
+      'images': images
+          .asMap()
+          .map((i, e) => MapEntry(
+              i,
+              MultipartFile(
+                e,
+                filename: '${i.toString()}.jpeg',
+              )))
+          .values
+          .toList()
+    };
+    final form = FormData(params);
+    var res = await post('topics/$topicId/replies', form);
+    TopicReply newReply = TopicReply.fromJson(res.body);
+    return newReply;
   }
 }

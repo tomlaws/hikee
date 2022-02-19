@@ -51,15 +51,23 @@ class Avatar extends StatelessWidget {
             imageUrl: ImageUtils.imageLink(user.icon!),
             width: height,
             fit: BoxFit.cover,
+            imageBuilder: (context, imageProvider) {
+              return Ink.image(
+                image: imageProvider,
+                fit: BoxFit.cover,
+              );
+            },
           );
-    return InkWell(
-      onTap: () {
-        if (onTap != null)
-          onTap!();
-        else
-          Get.toNamed('/profiles/${user.id.toString()}');
-      },
-      child: avatar,
+    return Material(
+      child: InkWell(
+        onTap: () {
+          if (onTap != null)
+            onTap!();
+          else
+            Get.toNamed('/profiles/${user.id.toString()}');
+        },
+        child: avatar,
+      ),
     );
   }
 }

@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/core/dropdown.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/map/map_controller.dart';
 import 'package:hikee/models/facility.dart';
 import 'package:hikee/models/record.dart';
+import 'package:hikee/models/region.dart';
 import 'package:hikee/providers/active_trail.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:hikee/providers/geodata.dart';
@@ -16,10 +18,11 @@ import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/components/sliding_up_panel.dart';
+import 'package:hikee/components/compass/sliding_up_panel.dart';
 import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompassController extends GetxController
@@ -29,8 +32,9 @@ class CompassController extends GetxController
   final _geodataProvider = Get.put(GeodataProvider());
   final _recordProvider = Get.put(RecordProvider());
   final panelController = PanelController();
-  final panelPageController = Rxn<PageController>(null);
-  late StreamSubscription<ActiveTrail?> subscription;
+  final panelPageController = PageController(
+    initialPage: 0,
+  );
   HikeeMapController? mapController;
 
   // UI
@@ -51,21 +55,8 @@ class CompassController extends GetxController
   @override
   void onInit() {
     super.onInit();
-    subscription = activeTrailProvider.activeTrail.listen((trail) {
-      if (trail != null) {
-        if (panelPageController.value == null) {
-          panelPageController.value = PageController(
-            initialPage: 0,
-          )..addListener(() {
-              panelPage.value = panelPageController.value!.page ?? 0;
-            });
-        }
-      } else {
-        if (panelPageController.value != null) {
-          panelPageController.value!.dispose();
-          panelPageController.value = null;
-        }
-      }
+    panelPageController.addListener(() {
+      panelPage.value = panelPageController.page ?? 0;
     });
 
     tooltipController = AnimationController(
@@ -79,14 +70,17 @@ class CompassController extends GetxController
   @override
   void onClose() {
     _timer?.cancel();
-    subscription.cancel();
-    panelPageController.value?.dispose();
+    panelPageController.dispose();
     tooltipController.dispose();
     super.onClose();
   }
 
   RxBool get isCloseToStart {
     return activeTrailProvider.isCloseToStart;
+  }
+
+  RxBool get isCloseToGoal {
+    return activeTrailProvider.isCloseToGoal;
   }
 
   Rxn<ActiveTrail> get activeTrail {
@@ -126,18 +120,23 @@ class CompassController extends GetxController
     }
   }
 
-  Future<String> getRecordName() async {
+  Future<Tuple2<String, int>> customizeRecord() async {
     String? trailName =
-        activeTrail.value!.trail?.name_en ?? activeTrail.value!.name;
+        activeTrail.value!.name ?? activeTrail.value!.trail?.name_en;
+    int? regionId = activeTrail.value!.regionId ??
+        activeTrail.value!.trail?.regionId ??
+        GeoUtils.determineRegion(activeTrail.value!.userPath)?.id;
     final formkey = GlobalKey<FormState>();
+    var regions = Region.allRegions().toList();
     await DialogUtils.showActionDialog(
-        "Give a name",
+        "Record",
         Form(
             key: formkey,
             child: Column(
               children: [
                 TextInput(
                   label: 'Record Name',
+                  hintText: 'Give this record a name',
                   initialValue: trailName,
                   onSaved: (v) {
                     trailName = v;
@@ -148,24 +147,32 @@ class CompassController extends GetxController
                     }
                     return null;
                   },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Dropdown<Region>(
+                    label: 'Region',
+                    items: regions,
+                    selected: regions
+                        .firstWhereOrNull((element) => element.id == regionId),
+                    itemBuilder: (r) {
+                      return Text(r.name_en);
+                    },
+                    onChanged: (r) {
+                      regionId = r.id;
+                    },
+                  ),
                 )
               ],
             )), onOk: () {
-      if (formkey.currentState?.validate() == true) {
+      if (formkey.currentState?.validate() == true && regionId != null) {
         formkey.currentState?.save();
         return true;
       } else {
-        return false;
+        throw new Error();
       }
     });
-    return trailName!;
-  }
-
-  rename() async {
-    String name = await getRecordName();
-    activeTrail.update((val) {
-      val?.name = name;
-    });
+    return Tuple2(trailName!, regionId!);
   }
 
   finishTrail() async {
@@ -181,8 +188,12 @@ class CompassController extends GetxController
         String? recordName;
         if (activeTrailProvider.recordMode) {
           recordName = activeTrail.value!.name;
-          if (recordName == null) recordName = await getRecordName();
-          regionId = GeoUtils.determineRegion(activeTrail.value!.userPath).id;
+          regionId = GeoUtils.determineRegion(activeTrail.value!.userPath)!.id;
+          if (recordName == null) {
+            var t = await customizeRecord();
+            recordName = t.item1;
+            regionId = t.item2;
+          }
         } else {
           //upload stats
           trailId = activeTrail.value!.trail!.id;
@@ -278,9 +289,7 @@ class CompassController extends GetxController
             ));
       }
     } catch (ex) {
-      print(ex);
       throw ex;
-      return;
     }
     activeTrailProvider.quit();
     panelController.close();

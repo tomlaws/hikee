@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/text_input.dart';
+import 'package:hikee/components/core/mutation_builder.dart';
 import 'package:hikee/pages/topics/create/create_topic_controller.dart';
 
 class CreateTopicPage extends GetView<CreateTopicController> {
@@ -11,31 +11,42 @@ class CreateTopicPage extends GetView<CreateTopicController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HikeeAppBar(
-        title: Text('Create Topic'),
+        title:
+            controller.isReplying ? Text('Reply Topic') : Text('Create Topic'),
         actions: [
-          Button(
-            icon: Icon(Icons.send),
-            onPressed: () async {
-              var topic = await controller.createTopic();
-            },
-            backgroundColor: Colors.transparent,
-          )
+          MutationBuilder(
+              userOnly: true,
+              mutation: () async {
+                if (controller.isReplying)
+                  return await controller.createReply();
+                return await controller.createTopic();
+              },
+              builder: (mutate, loading) {
+                return Button(
+                  icon: Icon(Icons.send),
+                  loading: loading,
+                  onPressed: mutate,
+                  backgroundColor: Colors.transparent,
+                );
+              })
         ],
       ),
       body: Column(
         children: [
-          SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: TextInput(
-              maxLines: 1,
-              hintText: "Title",
-              controller: controller.titleController,
+          if (!controller.isReplying) ...[
+            SizedBox(height: 16),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: TextInput(
+                maxLines: 1,
+                hintText: "Title",
+                controller: controller.titleController,
+              ),
             ),
-          ),
+          ],
           SizedBox(height: 16),
           Expanded(
-            child: Container(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: TextInput(
                 expand: true,

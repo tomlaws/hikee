@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/components/trail_tile.dart';
-import 'package:hikee/components/mutation_builder.dart';
+import 'package:hikee/components/trails/trail_tile.dart';
+import 'package:hikee/components/core/mutation_builder.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/pages/event/event_binding.dart';
 import 'package:hikee/pages/event/event_page.dart';
@@ -79,28 +79,32 @@ class CreateEventPage extends GetView<CreateEventController> {
                     color: Colors.black.withOpacity(.09),
                     offset: Offset(0, -6))
               ]),
-              child: MutationBuilder<Event>(mutation: () {
-                return controller.createEvent();
-              }, onDone: (evt) {
-                if (evt != null) {
-                  var id = evt.id;
-                  Get.back();
-                  Get.to(EventPage(),
-                      transition: Transition.cupertino,
-                      arguments: {'id': id},
-                      binding: EventBinding());
-                  var c = Get.find<TrailEventsController>();
-                  c.refetch();
-                }
-              }, builder: (mutate, loading) {
-                return Button(
-                  minWidth: double.infinity,
-                  onPressed: () {
-                    mutate();
+              child: MutationBuilder<Event>(
+                  userOnly: true,
+                  mutation: () {
+                    return controller.createEvent();
                   },
-                  child: Text('Create Event'),
-                );
-              }),
+                  onDone: (evt) {
+                    if (evt != null) {
+                      var id = evt.id;
+                      Get.back();
+                      Get.to(EventPage(),
+                          transition: Transition.cupertino,
+                          arguments: {'id': id},
+                          binding: EventBinding());
+                      var c = Get.find<TrailEventsController>();
+                      c.refetch();
+                    }
+                  },
+                  builder: (mutate, loading) {
+                    return Button(
+                      minWidth: double.infinity,
+                      onPressed: () {
+                        mutate();
+                      },
+                      child: Text('Create Event'),
+                    );
+                  }),
             )
           ],
         ));

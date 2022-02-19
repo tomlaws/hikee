@@ -91,10 +91,11 @@ class GeoUtils {
     return km.toStringAsFixed(2) + 'km';
   }
 
-  static Region determineRegion(List<LatLng> path) {
+  static Region? determineRegion(List<LatLng> path) {
     var min = double.infinity;
-    late Region result;
-    Region.allRegions().forEach((region) {
+    var allRegions = Region.allRegions();
+    Region? result;
+    allRegions.forEach((region) {
       var td = 0.0;
       path.forEach((location) {
         td += calculateDistance(location, region.center!);

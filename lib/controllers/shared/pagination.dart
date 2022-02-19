@@ -2,8 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:hikee/models/paginated.dart';
 
-abstract class PaginationController<T extends Paginated?> extends GetxController
-    with StateMixin<T> {
+typedef PaginationController<T> = InternalPaginationController<Paginated<T>, T>;
+
+abstract class InternalPaginationController<T extends Paginated<U>, U>
+    extends GetxController with StateMixin<T> {
   String? _query;
   String? cursor;
   String? sort;
@@ -25,6 +27,7 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
   }
 
   next() async {
+    if (state?.hasMore == false) return;
     if (fetchingMore) return;
     cursor = state?.cursor;
     fetchingMore = true;
@@ -33,13 +36,12 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
     else
       change(state, status: RxStatus.loading());
     var newData = await fetch(getQueryParams());
-    if (newData?.data.length == 0) {
-      change(state, status: RxStatus.success());
-      return;
-    }
+    // if (newData.data.length == 0) {
+    //   change(state, status: RxStatus.success());
+    //   return;
+    // }
     if (state != null)
-      change(state?.concat(newData as Paginated) as T?,
-          status: RxStatus.success());
+      change(state?.concat(newData) as T?, status: RxStatus.success());
     else
       change(newData, status: RxStatus.success());
     WidgetsBinding.instance?.addPostFrameCallback((_) => fetchingMore =
@@ -63,5 +65,23 @@ abstract class PaginationController<T extends Paginated?> extends GetxController
     next();
   }
 
+  forceUpdate(T? newState) {
+    change(newState as T, status: RxStatus.success());
+  }
+
   Future<T> fetch(Map<String, dynamic> queryParams);
+}
+
+class GetPaginationController<T> extends PaginationController<T> {
+  late Future<Paginated<T>> Function(Map<String, dynamic> query) _fetch;
+
+  GetPaginationController(
+      Future<Paginated<T>> fetch(Map<String, dynamic> query)) {
+    this._fetch = fetch;
+  }
+
+  @override
+  Future<Paginated<T>> fetch(Map<String, dynamic> queryParams) {
+    return this._fetch(queryParams);
+  }
 }

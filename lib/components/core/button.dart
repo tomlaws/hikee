@@ -53,13 +53,11 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         : (widget.invert
             ? Colors.white
             : (widget.secondary
-                ? Color.fromARGB(255, 160, 173, 182)
+                ? Color.fromRGBO(109, 160, 176, 1)
                 : Get.theme.primaryColor)));
 
     var textColor = (widget.invert
-            ? (widget.icon != null
-                ? Get.theme.primaryColor
-                : Get.theme.textTheme.bodyText1?.color ?? Colors.black)
+            ? (widget.icon != null ? Get.theme.primaryColor : Colors.black)
             : Colors.white)
         .withOpacity((widget.disabled || widget.loading) ? .75 : 1);
     if (widget.secondary)
@@ -86,7 +84,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
         color: buttonColor,
         child: InkWell(
           onTap: () {
-            if (!widget.disabled) widget.onPressed();
+            if (!widget.disabled && !widget.loading) widget.onPressed();
           },
           child: SafeArea(
             top: false,
@@ -115,7 +113,9 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white,
+                              color: widget.invert
+                                  ? Get.theme.primaryColor
+                                  : Colors.white,
                             ),
                           ),
                         ),
@@ -125,10 +125,8 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                         child: (widget.icon != null
                                 ? IconTheme(
                                     data: IconThemeData(
-                                        color: widget.secondary
-                                            ? Get.theme.textTheme.bodyText1
-                                                ?.color
-                                            : Get.theme.primaryColor),
+                                        color: Get
+                                            .theme.textTheme.bodyText1?.color),
                                     child: widget.icon!)
                                 : widget.child) ??
                             SizedBox(),

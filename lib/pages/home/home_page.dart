@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/keep_alive.dart';
-import 'package:hikee/components/map/map_controller.dart';
+import 'package:hikee/components/core/keep_alive.dart';
 import 'package:hikee/controllers/shared/auth.dart';
 import 'package:hikee/pages/events/event_categories.dart';
 import 'package:hikee/pages/account/account_controller.dart';
@@ -17,7 +17,6 @@ import 'package:hikee/pages/trails/trails_page.dart';
 import 'package:hikee/pages/topics/topics_controller.dart';
 import 'package:hikee/pages/topics/topics_page.dart';
 import 'package:hikee/providers/active_trail.dart';
-
 import 'home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -34,16 +33,22 @@ class HomePage extends GetView<HomeController> {
     Get.lazyPut(() => EventCategoriesController());
     Get.lazyPut(() => TopicsController());
     Get.lazyPut(() => AccountController());
-    var pageView = PageView(
+    var tabs = [
+      KeepAlivePage(child: CompassPage()),
+      TrailsPage(),
+      EventsPage(),
+      TopicsPage(),
+      AccountPage()
+    ];
+    var pageView = PageView.builder(
         controller: controller.pageController,
         physics: NeverScrollableScrollPhysics(),
-        children: [
-          KeepAlivePage(child: CompassPage()),
-          TrailsPage(),
-          EventsPage(),
-          TopicsPage(),
-          AccountPage()
-        ]);
+        itemCount: tabs.length,
+        onPageChanged: (i) {
+          if (i == 0)
+            SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+        },
+        itemBuilder: (context, index) => tabs[index]);
     return Scaffold(
         extendBodyBehindAppBar: true,
         body: Obx(() {

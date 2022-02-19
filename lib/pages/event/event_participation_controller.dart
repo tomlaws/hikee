@@ -6,7 +6,7 @@ import 'package:hikee/models/paginated.dart';
 import 'package:hikee/providers/event.dart';
 
 class EventParticipationController
-    extends PaginationController<Paginated<EventParticipation>> {
+    extends PaginationController<EventParticipation> {
   final _eventProvider = Get.put(EventProvider());
   late int id;
 

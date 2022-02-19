@@ -2,9 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/drag_marker.dart';
+import 'package:hikee/components/core/text_may_overflow.dart';
+import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/map/map.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
@@ -194,35 +195,12 @@ class TrailPage extends GetView<TrailController> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             controller.obx(
-                                                (state) => AutoSizeText(
+                                                (state) => TextMayOverflow(
                                                     state!.name_en,
-                                                    minFontSize: 18,
                                                     style: TextStyle(
                                                         fontSize: 18,
                                                         fontWeight:
-                                                            FontWeight.bold),
-                                                    maxLines: 1,
-                                                    overflowReplacement:
-                                                        SizedBox(
-                                                      height: 22,
-                                                      child: Marquee(
-                                                        blankSpace: 20.0,
-                                                        fadingEdgeStartFraction:
-                                                            .2,
-                                                        fadingEdgeEndFraction:
-                                                            .2,
-                                                        pauseAfterRound:
-                                                            Duration(
-                                                                seconds: 1),
-                                                        velocity: 24.0,
-                                                        text: state.name_en,
-                                                        style: TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    )),
+                                                            FontWeight.bold)),
                                                 onLoading: Shimmer(
                                                   fontSize: 18,
                                                 )),
@@ -522,49 +500,11 @@ class TrailPage extends GetView<TrailController> {
                 ],
               ),
             ),
-            // if (!(Get.arguments?['hideButtons'] == true))
-            //   Row(
-            //     children: [
-            //       Expanded(
-            //         child: Button(
-            //           radius: 0,
-            //           safeArea: true,
-            //           onPressed: () {
-            //             HomeController hc = Get.find<HomeController>();
-            //             hc.switchTab(0);
-            //             CompassController cc = Get.find<CompassController>();
-            //             cc.selectTrail(controller.state!);
-            //             Get.back();
-            //           },
-            //           child: Text('Select Trail'),
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: Button(
-            //           radius: 0,
-            //           safeArea: true,
-            //           backgroundColor: Colors.teal,
-            //           onPressed: () {
-            //             Get.to(TrailEventsPage(),
-            //                 transition: Transition.cupertino,
-            //                 arguments: {'id': Get.arguments['id']},
-            //                 binding: TrailEventsBinding());
-            //           },
-            //           child: Text('FIND EVENTS'),
-            //         ),
-            //       ),
-            //     ],
-            //   )
           ),
           Container(
             padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                  blurRadius: 16,
-                  spreadRadius: -8,
-                  color: Colors.black.withOpacity(.09),
-                  offset: Offset(0, -6))
-            ]),
+            decoration: BoxDecoration(
+                color: Colors.white, boxShadow: [Themes.bottomBarShadow]),
             child: Row(
               children: [
                 Expanded(
@@ -574,8 +514,8 @@ class TrailPage extends GetView<TrailController> {
                       hc.switchTab(0);
                       CompassController cc = Get.find<CompassController>();
                       cc.activeTrailProvider.select(controller.state!);
-                      Navigator.pop(
-                          context); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
+                      Navigator.of(context).popUntil((route) => route
+                          .isFirst); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
                     },
                     child: Text('Select Now'),
                   ),

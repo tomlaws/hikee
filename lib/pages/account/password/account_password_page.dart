@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/button.dart';
+import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/pages/account/password/account_password_controller.dart';
@@ -22,18 +22,21 @@ class AccountPasswordPage extends GetView<AccountPasswordController> {
                     children: [
                       TextInput(
                         label: 'Current Password',
+                        hintText: 'Password currently using',
                       ),
                       SizedBox(
                         height: 16,
                       ),
                       TextInput(
                         label: 'New Password',
+                        hintText: 'New password for login',
                       ),
                       SizedBox(
                         height: 16,
                       ),
                       TextInput(
                         label: 'Confirm New Password',
+                        hintText: 'Confirm by typing again',
                       )
                     ],
                   ),

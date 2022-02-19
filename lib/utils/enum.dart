@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class EnumUtil {
+class EnumUtils {
   static T fromString<T>(List<T> values, String enumString) {
     T e = values[0];
     values.forEach((item) {

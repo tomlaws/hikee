@@ -13,7 +13,7 @@ final int defaultMaxDuration = 10 * 60;
 final int defaultMinLength = 0; //meters
 final int defaultMaxLength = 20 * 1000;
 
-class TrailsController extends PaginationController<Paginated<Trail>> {
+class TrailsController extends PaginationController<Trail> {
   final _trailProvider = Get.put(TrailProvider());
 
   Set<int> regions = {...defaultRegions};

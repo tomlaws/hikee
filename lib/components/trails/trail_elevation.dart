@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/elevation_profile.dart';
+import 'package:hikee/components/trails/elevation_profile.dart';
 import 'package:hikee/models/elevation.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/providers/trail.dart';

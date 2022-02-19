@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/components/elevation_profile.dart';
 import 'package:hikee/components/map/map.dart';
 import 'package:hikee/pages/record/record_controller.dart';
 import 'package:hikee/utils/geo.dart';
@@ -19,6 +18,7 @@ class RecordPage extends GetView<RecordController> {
       body: Stack(
         children: [
           Positioned.fill(
+            top: 0.0,
             bottom: bottomPanelHeight - 18.0,
             child: controller.obx((state) {
               var decoded = GeoUtils.decodePath(state!.userPath);

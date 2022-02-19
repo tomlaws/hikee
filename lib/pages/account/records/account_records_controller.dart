@@ -5,7 +5,7 @@ import 'package:hikee/models/record.dart';
 import 'package:hikee/providers/record.dart';
 import 'package:hikee/pages/trails/trails_controller.dart';
 
-class AccountRecordsController extends PaginationController<Paginated<Record>> {
+class AccountRecordsController extends PaginationController<Record> {
   final _recordProvider = Get.put(RecordProvider());
 
   Set<int> regions = {...defaultRegions};

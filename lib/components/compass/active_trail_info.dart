@@ -16,7 +16,7 @@ class ActiveTrailInfo extends StatelessWidget {
   }
 
   String get name {
-    return activeTrail.trail?.name_en ?? activeTrail.name ?? 'Unnamed';
+    return activeTrail.name ?? activeTrail.trail?.name_en ?? 'Unnamed';
   }
 
   double get length {

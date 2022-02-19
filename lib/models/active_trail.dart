@@ -12,6 +12,7 @@ class ActiveTrail {
   late List<LatLng> userPath;
   late List<double> userElevation;
   int? startTime;
+  int? regionId;
 
   bool get isStarted => startTime != null;
 
