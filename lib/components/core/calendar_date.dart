@@ -6,11 +6,13 @@ class CalendarDate extends StatelessWidget {
       : super(key: key);
   final DateTime date;
   final double size;
+  final Color color = const Color.fromARGB(255, 212, 94, 79);
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          color: Colors.red[400], borderRadius: BorderRadius.circular(6.0)),
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(6.0)),
       child: SizedBox(
         width: size,
         height: size,
@@ -22,28 +24,28 @@ class CalendarDate extends StatelessWidget {
                   clipBehavior: Clip.none,
                   alignment: Alignment.topCenter,
                   children: [
-                    Positioned(
-                        left: size / 4,
-                        top: size / 6 / -2,
-                        child: Container(
-                          width: size / 8,
-                          height: size / 6,
-                          decoration: BoxDecoration(
-                              color: Colors.red[400],
-                              border: Border.all(width: 2, color: Colors.white),
-                              borderRadius: BorderRadius.circular(6.0)),
-                        )),
-                    Positioned(
-                        right: size / 4,
-                        top: size / 6 / -2,
-                        child: Container(
-                          width: size / 8,
-                          height: size / 6,
-                          decoration: BoxDecoration(
-                              color: Colors.pink[400],
-                              border: Border.all(width: 2, color: Colors.white),
-                              borderRadius: BorderRadius.circular(6.0)),
-                        )),
+                    // Positioned(
+                    //     left: size / 4,
+                    //     top: size / 6 / -2,
+                    //     child: Container(
+                    //       width: size / 8,
+                    //       height: size / 6,
+                    //       decoration: BoxDecoration(
+                    //           color: color,
+                    //           border: Border.all(width: 2, color: Colors.white),
+                    //           borderRadius: BorderRadius.circular(6.0)),
+                    //     )),
+                    // Positioned(
+                    //     right: size / 4,
+                    //     top: size / 6 / -2,
+                    //     child: Container(
+                    //       width: size / 8,
+                    //       height: size / 6,
+                    //       decoration: BoxDecoration(
+                    //           color: color,
+                    //           border: Border.all(width: 2, color: Colors.white),
+                    //           borderRadius: BorderRadius.circular(6.0)),
+                    //     )),
                     Positioned(
                       top: 0,
                       bottom: size - 20 + 1,
@@ -71,8 +73,7 @@ class CalendarDate extends StatelessWidget {
                                 bottom: Radius.circular(5.0))),
                         child: Text(date.day.toString(),
                             style: TextStyle(
-                                color: Colors.red[400],
-                                fontSize: size * 0.375)),
+                                color: color, fontSize: size * 0.375)),
                       ),
                     )
                   ]),

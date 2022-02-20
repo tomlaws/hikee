@@ -68,8 +68,8 @@ FEB
 5. add recording mode (determine region by the recorded path as well)
 6. allow custom map provider
 TODO:
-add land dep logo on the map face
 emergency update
-check inside hong kong
+check if the user location is in hong kong
 date filter
 offline mode
+ui when location permission is rejected

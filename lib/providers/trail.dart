@@ -69,6 +69,7 @@ class TrailProvider extends BaseProvider {
       'length': length,
       'regionId': regionId,
       'path': path,
+      'pins': jsonEncode(pins),
       'images': images
           .asMap()
           .map((i, e) => MapEntry(
@@ -79,7 +80,6 @@ class TrailProvider extends BaseProvider {
               )))
           .values
           .toList(),
-      'pins': jsonEncode(pins.map((e) => e.toJson()).toList()),
     };
     final form = FormData(params);
     var res = await post('trails', form);

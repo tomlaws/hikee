@@ -9,6 +9,9 @@ part of 'trail.dart';
 Trail _$TrailFromJson(Map<String, dynamic> json) {
   return Trail(
     id: json['id'] as int,
+    creator: json['creator'] == null
+        ? null
+        : User.fromJson(json['creator'] as Map<String, dynamic>),
     name_zh: json['name_zh'] as String,
     name_en: json['name_en'] as String,
     regionId: json['regionId'] as int,
@@ -33,6 +36,7 @@ Trail _$TrailFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$TrailToJson(Trail instance) => <String, dynamic>{
       'id': instance.id,
+      'creator': instance.creator,
       'name_zh': instance.name_zh,
       'name_en': instance.name_en,
       'regionId': instance.regionId,

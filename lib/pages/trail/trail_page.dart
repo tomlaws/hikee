@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/core/avatar.dart';
 import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/text_may_overflow.dart';
@@ -355,145 +356,204 @@ class TrailPage extends GetView<TrailController> {
                             height: 48,
                           ),
                           Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text('Description',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ))),
-                          controller.obx(
-                              (state) => ReadMoreText(
-                                    state!.description_en,
-                                    trimLines: 3,
-                                    colorClickableText: Colors.pink,
-                                    trimMode: TrimMode.Line,
-                                    trimCollapsedText: 'Show more',
-                                    trimExpandedText: 'Show less',
-                                    style: TextStyle(
-                                        height: 1.6,
-                                        color: Get.theme.textTheme.bodyText1
-                                                ?.color ??
-                                            Colors.black),
-                                    moreStyle: TextStyle(
-                                      color: Get.theme.colorScheme.secondary,
-                                    ),
-                                    lessStyle: TextStyle(
-                                        color: Get.theme.colorScheme.secondary),
-                                  ),
-                              onLoading: Shimmer(
-                                fontSize: 16,
-                              )),
-                          Container(
-                            height: 16,
-                          ),
-                          Container(
-                              height: 240,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16.0)),
-                              child: controller.obx((state) {
-                                var path = GeoUtils.decodePath(state!.path);
-                                return HikeeMap(
-                                  path: path,
-                                  pathOnly: true,
-                                  markers: state.pins == null
-                                      ? null
-                                      : state.pins!
-                                          .map(
-                                            (pos) => DragMarker(
-                                              draggable: false,
-                                              point: pos.location,
-                                              width: 10,
-                                              height: 10,
-                                              hasPopup: pos.message != null,
-                                              onTap: (_) {
-                                                DialogUtils.showDialog(
-                                                    "Message", pos.message!);
-                                              },
-                                              builder: (_) {
-                                                return Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.transparent,
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          )
-                                          .toList(),
-                                );
-                              },
-                                  onLoading: Shimmer(
-                                    height: 240,
-                                  ))),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
                             child: Column(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Reviews',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w500)),
-                                          Button(
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              icon: Icon(
-                                                Icons.add,
-                                                color: Colors.black38,
-                                              ),
-                                              onPressed: () async {
-                                                //await trailReviewDialog();
-                                              })
-                                        ]),
-                                    Container(
-                                      height: 8,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Text('Creator',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ))),
+                                  controller.obx(
+                                      (state) => state?.creator != null
+                                          ? GestureDetector(
+                                              behavior:
+                                                  HitTestBehavior.translucent,
+                                              onTap: () {
+                                                Get.toNamed(
+                                                    '/profiles/${state!.creator!.id}');
+                                              },
+                                              child: Row(children: [
+                                                Avatar(
+                                                    user: state!.creator,
+                                                    height: 24),
+                                                SizedBox(
+                                                  width: 8,
+                                                ),
+                                                Text(state.creator!.nickname)
+                                              ]),
+                                            )
+                                          : Text('From HKGOV'),
+                                      onLoading: Row(children: [
+                                        Avatar(user: null, height: 24),
+                                        SizedBox(
+                                          width: 8,
+                                        ),
+                                        Shimmer(
+                                          width: 60,
+                                        )
+                                      ])),
+                                  Container(
+                                    height: 8,
+                                  ),
+                                  Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 8.0, bottom: 4),
+                                      child: Text('Description',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ))),
+                                  controller.obx(
+                                      (state) => ReadMoreText(
+                                            state!.description_en,
+                                            trimLines: 3,
+                                            colorClickableText: Colors.pink,
+                                            trimMode: TrimMode.Line,
+                                            trimCollapsedText: 'Show more',
+                                            trimExpandedText: 'Show less',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                                height: 1.6,
+                                                color: Get.theme.textTheme
+                                                        .bodyText1?.color ??
+                                                    Colors.black),
+                                            moreStyle: TextStyle(
+                                              color: Get
+                                                  .theme.colorScheme.secondary,
+                                            ),
+                                            lessStyle: TextStyle(
+                                                color: Get.theme.colorScheme
+                                                    .secondary),
+                                          ),
+                                      onLoading: Shimmer(
+                                        fontSize: 16,
+                                      )),
+                                  Container(
+                                    height: 16,
+                                  ),
+                                  Container(
+                                      height: 240,
+                                      clipBehavior: Clip.antiAlias,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(16.0)),
+                                      child: controller.obx((state) {
+                                        var path =
+                                            GeoUtils.decodePath(state!.path);
+                                        return HikeeMap(
+                                          path: path,
+                                          pathOnly: true,
+                                          markers: state.pins == null
+                                              ? null
+                                              : state.pins!
+                                                  .map(
+                                                    (pos) => DragMarker(
+                                                      draggable: false,
+                                                      point: pos.location,
+                                                      width: 10,
+                                                      height: 10,
+                                                      hasPopup:
+                                                          pos.message != null,
+                                                      onTap: (_) {
+                                                        DialogUtils.showDialog(
+                                                            "Message",
+                                                            pos.message!);
+                                                      },
+                                                      builder: (_) {
+                                                        return Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors
+                                                                .transparent,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                        );
+                                      },
+                                          onLoading: Shimmer(
+                                            height: 240,
+                                          ))),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 8),
+                                    child: Column(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text('Reviews',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                                  Button(
+                                                      backgroundColor:
+                                                          Colors.transparent,
+                                                      icon: Icon(
+                                                        Icons.add,
+                                                        color: Colors.black38,
+                                                      ),
+                                                      onPressed: () async {
+                                                        //await trailReviewDialog();
+                                                      })
+                                                ]),
+                                            Container(
+                                              height: 8,
+                                            ),
+                                            //_reviewList(3),
+                                            // Selector<TrailReviewsProvider, bool>(
+                                            //     builder: (context, more, __) {
+                                            //       if (!more) return SizedBox();
+                                            //       return Padding(
+                                            //         padding: const EdgeInsets.only(top: 8.0),
+                                            //         child: SizedBox(
+                                            //           width: double.infinity,
+                                            //           child: Button(
+                                            //               child: Text('SHOW MORE'),
+                                            //               secondary: true,
+                                            //               onPressed: () {
+                                            //                 Navigator.of(context)
+                                            //                     .push(CupertinoPageTrail(
+                                            //                         builder: (_) => Container(
+                                            //                               color: Colors.white,
+                                            //                               child: Column(children: [
+                                            //                                 HikeeAppBar(
+                                            //                                   title:
+                                            //                                       Text('Reviews'),
+                                            //                                 ),
+                                            //                                 Padding(
+                                            //                                   padding:
+                                            //                                       const EdgeInsets
+                                            //                                           .all(16.0),
+                                            //                                   //child:
+                                            //                                   //_reviewList(null),
+                                            //                                 ),
+                                            //                               ]),
+                                            //                             )));
+                                            //               }),
+                                            //         ),
+                                            //       );
+                                            //     },
+                                            //     selector: (_, p) => p.items.length > 3)
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    //_reviewList(3),
-                                    // Selector<TrailReviewsProvider, bool>(
-                                    //     builder: (context, more, __) {
-                                    //       if (!more) return SizedBox();
-                                    //       return Padding(
-                                    //         padding: const EdgeInsets.only(top: 8.0),
-                                    //         child: SizedBox(
-                                    //           width: double.infinity,
-                                    //           child: Button(
-                                    //               child: Text('SHOW MORE'),
-                                    //               secondary: true,
-                                    //               onPressed: () {
-                                    //                 Navigator.of(context)
-                                    //                     .push(CupertinoPageTrail(
-                                    //                         builder: (_) => Container(
-                                    //                               color: Colors.white,
-                                    //                               child: Column(children: [
-                                    //                                 HikeeAppBar(
-                                    //                                   title:
-                                    //                                       Text('Reviews'),
-                                    //                                 ),
-                                    //                                 Padding(
-                                    //                                   padding:
-                                    //                                       const EdgeInsets
-                                    //                                           .all(16.0),
-                                    //                                   //child:
-                                    //                                   //_reviewList(null),
-                                    //                                 ),
-                                    //                               ]),
-                                    //                             )));
-                                    //               }),
-                                    //         ),
-                                    //       );
-                                    //     },
-                                    //     selector: (_, p) => p.items.length > 3)
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  )
+                                ]),
                           )
                         ],
                       )),

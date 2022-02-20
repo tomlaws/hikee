@@ -1,5 +1,6 @@
 import 'package:hikee/models/bookmark.dart';
 import 'package:hikee/models/pin.dart';
+import 'package:hikee/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hikee/models/region.dart';
 
@@ -8,6 +9,7 @@ part 'trail.g.dart';
 @JsonSerializable()
 class Trail {
   final int id;
+  final User? creator;
   final String name_zh;
   final String name_en;
   final int regionId;
@@ -26,6 +28,7 @@ class Trail {
 
   Trail(
       {required this.id,
+      this.creator,
       required this.name_zh,
       required this.name_en,
       required this.regionId,
