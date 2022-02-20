@@ -75,7 +75,6 @@ class TopicPage extends GetView<TopicController> {
                   scrollController: controller.scrollController,
                   empty: 'No replies yet',
                   separator: SizedBox(height: 16),
-                  footers: [],
                   headers: [
                     Padding(
                         padding: const EdgeInsets.only(

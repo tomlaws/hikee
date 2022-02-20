@@ -21,12 +21,12 @@ class AccountPage extends GetView<AccountController> {
               if (authProvider.loggedIn.value)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: AccountHeader(
-                    future: authProvider.getMe(),
-                    onAvatarTap: () {
-                      controller.promptUploadIcon();
-                    },
-                  ),
+                  child: Obx(() => AccountHeader(
+                        user: controller.user.value,
+                        onAvatarTap: () {
+                          controller.promptUploadIcon();
+                        },
+                      )),
                 ),
               Container(
                 margin: EdgeInsets.all(16),

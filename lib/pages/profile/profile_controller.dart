@@ -11,8 +11,7 @@ class ProfileController extends PaginationController<Record> {
   final _recordProvider = Get.put(RecordProvider());
   final userProvider = Get.put(UserProvider());
   late int userId;
-  late Future<User> getUser;
-  final isPrivate = Rxn<bool>(null);
+  final user = Rxn<User>(null);
 
   Set<int> regions = {...defaultRegions};
   int minDuration = defaultMinDuration;
@@ -24,9 +23,8 @@ class ProfileController extends PaginationController<Record> {
   void onInit() {
     super.onInit();
     userId = int.parse(Get.parameters['id']!);
-    getUser = userProvider.getUser(userId);
-    getUser.then((user) {
-      isPrivate.value = user.isPrivate;
+    userProvider.getUser(userId).then((user) {
+      this.user.value = user;
     });
   }
 

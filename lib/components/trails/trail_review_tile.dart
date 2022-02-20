@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:hikee/components/core/avatar.dart';
 import 'package:hikee/models/trail_review.dart';
+import 'package:hikee/themes.dart';
 
 class TrailReviewTile extends StatelessWidget {
-  const TrailReviewTile({Key? key, required this.trailReview})
+  const TrailReviewTile(
+      {Key? key, required this.trailReview, this.contained = true})
       : super(key: key);
   final TrailReview trailReview;
+  final bool contained;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: contained ? EdgeInsets.all(16.0) : null,
+      decoration: contained
+          ? BoxDecoration(
+              color: Colors.white,
+              boxShadow: [Themes.lightShadow],
+              borderRadius: BorderRadius.circular(16.0))
+          : null,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,12 +33,8 @@ class TrailReviewTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
-                    Container(
-                      height: 36,
-                      width: 36,
-                      decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(18)),
+                    Avatar(
+                      user: trailReview.reviewer,
                     ),
                     Container(
                       width: 12,

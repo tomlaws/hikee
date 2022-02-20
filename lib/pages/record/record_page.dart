@@ -66,7 +66,9 @@ class RecordPage extends GetView<RecordController> {
                                 state!.name,
                                 style: TextStyle(),
                               ),
-                          onLoading: Shimmer()),
+                          onLoading: Shimmer(
+                            width: 80,
+                          )),
                       SizedBox(
                         height: 16,
                       ),

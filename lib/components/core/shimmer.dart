@@ -8,7 +8,8 @@ class Shimmer extends StatelessWidget {
       this.child,
       this.enabled = true,
       this.width,
-      this.height = 17.5,
+      this.height,
+      this.expanded = false,
       this.radius,
       this.fontSize,
       this.color = const Color(0xFFFAFAFA)})
@@ -17,7 +18,8 @@ class Shimmer extends StatelessWidget {
   final Widget? child;
   final bool enabled;
   final double? width;
-  final double height;
+  final double? height;
+  final bool expanded;
   final double? radius;
   final double? fontSize;
   final Color color;
@@ -25,7 +27,7 @@ class Shimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var renderHeight = height;
-    if (fontSize != null) {
+    if (height == null) {
       final Size size = (TextPainter(
               text: TextSpan(text: '', style: TextStyle(fontSize: fontSize)),
               maxLines: 1,
@@ -41,9 +43,6 @@ class Shimmer extends StatelessWidget {
       enabled: enabled,
       child: child ??
           Container(
-            constraints: width == null && renderHeight == null
-                ? BoxConstraints.expand()
-                : null,
             decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(radius ?? 8)),

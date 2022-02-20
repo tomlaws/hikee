@@ -7,8 +7,8 @@ import 'package:hikee/themes.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class AccountHeader extends GetView {
-  const AccountHeader({required this.future, this.onAvatarTap});
-  final Future<User> future;
+  const AccountHeader({this.user, this.onAvatarTap});
+  final User? user;
   final void Function()? onAvatarTap;
 
   @override
@@ -20,18 +20,11 @@ class AccountHeader extends GetView {
         ),
         Column(mainAxisSize: MainAxisSize.min, children: [
           Column(mainAxisSize: MainAxisSize.min, children: [
-            FutureBuilder<User>(
-                future: future,
-                builder: (_, snapshot) {
-                  if (snapshot.data == null)
-                    return Shimmer(height: 128, width: 128, radius: 64);
-                  else
-                    return Avatar(
-                      user: snapshot.data!,
-                      height: 128,
-                      onTap: onAvatarTap,
-                    );
-                })
+            Avatar(
+              user: user,
+              height: 128,
+              onTap: onAvatarTap,
+            )
           ]),
         ]),
         Row(
@@ -42,18 +35,13 @@ class AccountHeader extends GetView {
               Container(
                 height: 48,
                 child: Center(
-                  child: FutureBuilder<User>(
-                      future: future,
-                      builder: (_, snapshot) {
-                        if (snapshot.data == null)
-                          return Shimmer(
+                    child: user == null
+                        ? Shimmer(
                             fontSize: 24,
-                          );
-                        else
-                          return Text(snapshot.data?.nickname ?? 'Unnamed',
-                              style: TextStyle(fontSize: 24));
-                      }),
-                ),
+                            width: 90,
+                          )
+                        : Text(user?.nickname ?? 'Unnamed',
+                            style: TextStyle(fontSize: 24))),
               )
             ]),
         Container(
@@ -78,23 +66,15 @@ class AccountHeader extends GetView {
                           color: Theme.of(context).primaryColor,
                         ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
-                        FutureBuilder<User>(
-                            future: future,
-                            builder: (_, snapshot) {
-                              if (snapshot.data == null)
-                                return Shimmer(
-                                  fontSize: 20,
-                                );
-                              else
-                                return Text(
-                                  (snapshot.data!.minutes! / 60)
-                                      .floor()
-                                      .toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20),
-                                );
-                            }),
+                        user == null
+                            ? Shimmer(
+                                fontSize: 20,
+                              )
+                            : Text(
+                                (user!.minutes! / 60).floor().toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 20),
+                              ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
                           'hours',
@@ -124,23 +104,15 @@ class AccountHeader extends GetView {
                           color: Theme.of(context).primaryColor,
                         ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
-                        FutureBuilder<User>(
-                            future: future,
-                            builder: (_, snapshot) {
-                              if (snapshot.data == null)
-                                return Shimmer(
-                                  fontSize: 20,
-                                );
-                              else
-                                return Text(
-                                  (snapshot.data!.trailCount!)
-                                      .floor()
-                                      .toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20),
-                                );
-                            }),
+                        user == null
+                            ? Shimmer(
+                                fontSize: 20,
+                              )
+                            : Text(
+                                (user!.trailCount!).floor().toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 20),
+                              ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
                           'trails',
@@ -170,23 +142,17 @@ class AccountHeader extends GetView {
                           color: Theme.of(context).primaryColor,
                         ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
-                        FutureBuilder<User>(
-                            future: future,
-                            builder: (_, snapshot) {
-                              if (snapshot.data == null)
-                                return Shimmer(
-                                  fontSize: 20,
-                                );
-                              else
-                                return Text(
-                                  (snapshot.data!.meters! * 0.0006213712)
-                                      .toStringAsFixed(1)
-                                      .replaceFirst('.0', ''),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20),
-                                );
-                            }),
+                        user == null
+                            ? Shimmer(
+                                fontSize: 20,
+                              )
+                            : Text(
+                                (user!.meters! * 0.0006213712)
+                                    .toStringAsFixed(1)
+                                    .replaceFirst('.0', ''),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 20),
+                              ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
                           'miles',
@@ -216,21 +182,15 @@ class AccountHeader extends GetView {
                           color: Theme.of(context).primaryColor,
                         ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
-                        FutureBuilder<User>(
-                            future: future,
-                            builder: (_, snapshot) {
-                              if (snapshot.data == null)
-                                return Shimmer(
-                                  fontSize: 20,
-                                );
-                              else
-                                return Text(
-                                  snapshot.data!.eventCount.toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20),
-                                );
-                            }),
+                        user == null
+                            ? Shimmer(
+                                fontSize: 20,
+                              )
+                            : Text(
+                                user!.eventCount.toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 20),
+                              ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
                           'events',

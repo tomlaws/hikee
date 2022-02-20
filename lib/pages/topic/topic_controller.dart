@@ -17,17 +17,16 @@ class TopicController extends GetxController with StateMixin<Topic> {
     scrollController = ScrollController();
     id = int.parse(Get.parameters['id']!);
     append(() => () => _topicProvider.getTopic(id));
-    topicReplyController = GetPaginationController((queries) {
+    topicReplyController = Get.put(GetPaginationController((queries) {
       queries['sort'] = 'id';
       queries['order'] = 'ASC';
       return _topicProvider.getTopicReplies(id, queries);
-    });
+    }));
   }
 
   @override
   void onClose() {
     scrollController.dispose();
-    topicReplyController.dispose();
     super.onClose();
   }
 

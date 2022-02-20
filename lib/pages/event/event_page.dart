@@ -54,11 +54,11 @@ class EventPage extends GetView<EventController> {
                         children: [
                           Text('Date',
                               style: TextStyle(
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               )),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            padding: const EdgeInsets.symmetric(vertical: 24.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -119,11 +119,11 @@ class EventPage extends GetView<EventController> {
                           ),
                           Text('Participants',
                               style: TextStyle(
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               )),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            padding: const EdgeInsets.symmetric(vertical: 24.0),
                             child: SizedBox(
                                 height: 32,
                                 child: _participantList(
@@ -133,11 +133,11 @@ class EventPage extends GetView<EventController> {
                           ),
                           Text('Description',
                               style: TextStyle(
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               )),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            padding: const EdgeInsets.symmetric(vertical: 24.0),
                             child: Text(event.description),
                           ),
                         ],
@@ -224,7 +224,6 @@ class EventPage extends GetView<EventController> {
       controller: controller,
       take: take,
       empty: 'No participants yet',
-      shrinkWrap: true,
       padding: EdgeInsets.zero,
       separator: SizedBox(width: spacing),
       horizontal: summary,

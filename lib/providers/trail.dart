@@ -7,6 +7,7 @@ import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/pin.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/models/trail_category.dart';
+import 'package:hikee/models/trail_review.dart';
 import 'package:hikee/providers/shared/base.dart';
 
 class TrailProvider extends BaseProvider {
@@ -17,6 +18,14 @@ class TrailProvider extends BaseProvider {
     return await get('trails', query: query).then((value) {
       return Paginated<Trail>.fromJson(
           value.body, (o) => Trail.fromJson(o as Map<String, dynamic>));
+    });
+  }
+
+  Future<Paginated<TrailReview>> getTrailReviews(
+      int trailId, Map<String, dynamic>? query) async {
+    return await get('trails/$trailId/reviews', query: query).then((value) {
+      return Paginated<TrailReview>.fromJson(
+          value.body, (o) => TrailReview.fromJson(o as Map<String, dynamic>));
     });
   }
 
@@ -85,5 +94,16 @@ class TrailProvider extends BaseProvider {
     var res = await post('trails', form);
     Trail newTopic = Trail.fromJson(res.body);
     return newTopic;
+  }
+
+  Future<TrailReview> createTrailReview(
+      {required int id, required int rating, required String content}) async {
+    var params = {
+      'rating': rating,
+      'content': content,
+    };
+    var res = await post('trails/$id/reviews', params);
+    TrailReview newReview = TrailReview.fromJson(res.body);
+    return newReview;
   }
 }

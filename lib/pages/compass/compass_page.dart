@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/trails/elevation_profile.dart';
 import 'package:hikee/components/map/map.dart';
@@ -755,7 +754,12 @@ class CompassPage extends GetView<CompassController> {
                             children: [
                               Button(
                                 invert: true,
-                                child: Text('Discover Trails'),
+                                child: Text(
+                                  'Discover Trails',
+                                  style: TextStyle(
+                                      color: ColorUtils.darken(
+                                          Get.theme.primaryColor, 0.2)),
+                                ),
                                 onPressed: () {
                                   var hc = Get.find<HomeController>();
                                   hc.switchTab(1);
@@ -767,7 +771,10 @@ class CompassPage extends GetView<CompassController> {
                               ),
                               Button(
                                 invert: true,
-                                child: Text('Record Trail'),
+                                child: Text('Record Trail',
+                                    style: TextStyle(
+                                        color: ColorUtils.darken(
+                                            Get.theme.primaryColor, 0.2))),
                                 onPressed: () {
                                   controller.record();
                                 },

@@ -5,10 +5,13 @@ import 'package:get/get.dart';
 import 'package:hikee/components/core/avatar.dart';
 import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
+import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_may_overflow.dart';
 import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/map/map.dart';
 import 'package:hikee/components/core/shimmer.dart';
+import 'package:hikee/components/trails/trail_review_tile.dart';
+import 'package:hikee/models/trail_review.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/home/home_controller.dart';
 import 'package:hikee/pages/trail/trail_controller.dart';
@@ -18,9 +21,7 @@ import 'package:hikee/utils/geo.dart';
 import 'package:hikee/utils/image.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:marquee/marquee.dart';
 import 'package:readmore/readmore.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:photo_view/photo_view.dart';
 
 class TrailPage extends GetView<TrailController> {
@@ -31,115 +32,10 @@ class TrailPage extends GetView<TrailController> {
         body: Column(children: [
           Expanded(
             child: SingleChildScrollView(
+              controller: controller.scrollController,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // SliverAppBar(
-                  //   expandedHeight: 250.0,
-                  //   backgroundColor: Colors.white,
-                  //   automaticallyImplyLeading: false,
-                  //   leadingWidth: 36 + 18,
-                  //   leading: Container(
-                  //     padding: const EdgeInsets.only(left: 16.0),
-                  //     margin: EdgeInsets.symmetric(vertical: 8),
-                  //     child: Button(
-                  //         height: 36,
-                  //         backgroundColor: Colors.white,
-                  //         minWidth: 36,
-                  //         radius: 36,
-                  //         icon: Icon(
-                  //           Icons.chevron_left,
-                  //           color: Colors.black87,
-                  //           size: 20,
-                  //         ),
-                  //         onPressed: Get.back),
-                  //   ),
-                  //   actions: [
-                  //     controller.obx((state) {
-                  //       var bookmarked = state!.bookmark != null;
-                  //       return Container(
-                  //         padding: const EdgeInsets.only(right: 16.0),
-                  //         margin: EdgeInsets.symmetric(vertical: 8),
-                  //         width: 36 + 18,
-                  //         child: Button(
-                  //             backgroundColor: Colors.white,
-                  //             radius: 36,
-                  //             height: 36,
-                  //             minWidth: 36,
-                  //             icon: Icon(
-                  //               bookmarked
-                  //                   ? Icons.bookmark
-                  //                   : Icons.bookmark_outline,
-                  //               color: Colors.black87,
-                  //               size: 20,
-                  //             ),
-                  //             onPressed: () {}),
-                  //       );
-                  //     }, onLoading: SizedBox())
-                  //   ],
-                  //   flexibleSpace: Stack(
-                  //     children: <Widget>[
-                  //       Positioned.fill(
-                  //           child: controller.obx((state) {
-                  //         var images = state!.images
-                  //             .map((img) => CachedNetworkImage(
-                  //                   placeholder: (_, __) => Shimmer(),
-                  //                   imageUrl: img,
-                  //                   fit: BoxFit.cover,
-                  //                 ))
-                  //             .toList();
-                  //         return Container(
-                  //           clipBehavior: Clip.antiAlias,
-                  //           margin: EdgeInsets.symmetric(horizontal: 8),
-                  //           decoration: BoxDecoration(
-                  //               borderRadius: BorderRadius.vertical(
-                  //                   bottom: Radius.circular(16))),
-                  //           child: PageView(
-                  //             controller: controller.carouselController,
-                  //             children: images,
-                  //           ),
-                  //         );
-                  //       }, onLoading: SizedBox())),
-                  //       Positioned(
-                  //         bottom: 8,
-                  //         left: 0,
-                  //         right: 0,
-                  //         child: Center(
-                  //           child: controller.obx((state) {
-                  //             return SizedBox(
-                  //               height: 8,
-                  //               child: ListView.separated(
-                  //                   scrollDirection: Axis.horizontal,
-                  //                   shrinkWrap: true,
-                  //                   separatorBuilder: (_, __) => Container(
-                  //                         width: 8,
-                  //                       ),
-                  //                   itemCount: state!.images.length,
-                  //                   itemBuilder: (_, i) {
-                  //                     return Obx(
-                  //                       () => AnimatedContainer(
-                  //                         duration:
-                  //                             const Duration(milliseconds: 250),
-                  //                         width: 8,
-                  //                         height: 8,
-                  //                         decoration: BoxDecoration(
-                  //                             color: controller.carouselPage
-                  //                                         .round() ==
-                  //                                     i
-                  //                                 ? Theme.of(context).primaryColor
-                  //                                 : Colors.black38,
-                  //                             borderRadius:
-                  //                                 BorderRadius.circular(4.0)),
-                  //                       ),
-                  //                     );
-                  //                   }),
-                  //             );
-                  //           }, onLoading: SizedBox()),
-                  //         ),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
                   Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Column(
@@ -234,6 +130,7 @@ class TrailPage extends GetView<TrailController> {
                                                             ),
                                                         onLoading: Shimmer(
                                                           fontSize: 12,
+                                                          width: 50,
                                                         )),
                                                     SizedBox(
                                                       width: 16,
@@ -256,6 +153,7 @@ class TrailPage extends GetView<TrailController> {
                                                             ),
                                                         onLoading: Shimmer(
                                                           fontSize: 12,
+                                                          width: 30,
                                                         )),
                                                   ],
                                                 ),
@@ -283,6 +181,7 @@ class TrailPage extends GetView<TrailController> {
                                                             ),
                                                         onLoading: Shimmer(
                                                           fontSize: 12,
+                                                          width: 30,
                                                         )),
                                                     SizedBox(
                                                       width: 16,
@@ -307,6 +206,7 @@ class TrailPage extends GetView<TrailController> {
                                                             ),
                                                         onLoading: Shimmer(
                                                           fontSize: 12,
+                                                          width: 30,
                                                         )),
                                                   ],
                                                 )
@@ -362,11 +262,11 @@ class TrailPage extends GetView<TrailController> {
                                 children: [
                                   Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
+                                          vertical: 16.0),
                                       child: Text('Creator',
                                           style: TextStyle(
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.bold,
                                           ))),
                                   controller.obx(
                                       (state) => state?.creator != null
@@ -402,11 +302,11 @@ class TrailPage extends GetView<TrailController> {
                                   ),
                                   Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 8.0, bottom: 4),
+                                          top: 16.0, bottom: 12.0),
                                       child: Text('Description',
                                           style: TextStyle(
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.bold,
                                           ))),
                                   controller.obx(
                                       (state) => ReadMoreText(
@@ -482,77 +382,65 @@ class TrailPage extends GetView<TrailController> {
                                             height: 240,
                                           ))),
                                   Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8),
-                                    child: Column(
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text('Reviews',
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                  Button(
-                                                      backgroundColor:
-                                                          Colors.transparent,
-                                                      icon: Icon(
-                                                        Icons.add,
-                                                        color: Colors.black38,
-                                                      ),
-                                                      onPressed: () async {
-                                                        //await trailReviewDialog();
-                                                      })
-                                                ]),
-                                            Container(
-                                              height: 8,
+                                    padding: EdgeInsets.only(top: 20),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Reviews',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold)),
+                                          SizedBox(
+                                            width: 32,
+                                            height: 32,
+                                            child: Button(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                icon: Icon(
+                                                  Icons.add,
+                                                  color: Colors.black38,
+                                                ),
+                                                onPressed: () {
+                                                  controller.addReview();
+                                                }),
+                                          )
+                                        ]),
+                                  ),
+                                  InfiniteScroller(
+                                    take: controller.takeReviews,
+                                    padding: EdgeInsets.only(top: 16.0),
+                                    controller:
+                                        controller.trailReviewsController,
+                                    separator: SizedBox(height: 16),
+                                    empty: 'No reviews yet',
+                                    footersBuilder: (hasMore) {
+                                      if (hasMore) {
+                                        return [
+                                          Container(
+                                            margin: EdgeInsets.only(top: 8.0),
+                                            child: Button(
+                                              backgroundColor:
+                                                  Colors.grey.shade200,
+                                              minWidth: double.infinity,
+                                              onPressed: () {
+                                                controller.viewMoreReviews();
+                                              },
+                                              child: Text('View More'),
+                                              invert: true,
                                             ),
-                                            //_reviewList(3),
-                                            // Selector<TrailReviewsProvider, bool>(
-                                            //     builder: (context, more, __) {
-                                            //       if (!more) return SizedBox();
-                                            //       return Padding(
-                                            //         padding: const EdgeInsets.only(top: 8.0),
-                                            //         child: SizedBox(
-                                            //           width: double.infinity,
-                                            //           child: Button(
-                                            //               child: Text('SHOW MORE'),
-                                            //               secondary: true,
-                                            //               onPressed: () {
-                                            //                 Navigator.of(context)
-                                            //                     .push(CupertinoPageTrail(
-                                            //                         builder: (_) => Container(
-                                            //                               color: Colors.white,
-                                            //                               child: Column(children: [
-                                            //                                 HikeeAppBar(
-                                            //                                   title:
-                                            //                                       Text('Reviews'),
-                                            //                                 ),
-                                            //                                 Padding(
-                                            //                                   padding:
-                                            //                                       const EdgeInsets
-                                            //                                           .all(16.0),
-                                            //                                   //child:
-                                            //                                   //_reviewList(null),
-                                            //                                 ),
-                                            //                               ]),
-                                            //                             )));
-                                            //               }),
-                                            //         ),
-                                            //       );
-                                            //     },
-                                            //     selector: (_, p) => p.items.length > 3)
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  )
+                                          )
+                                        ];
+                                      } else {
+                                        return [];
+                                      }
+                                    },
+                                    builder: (TrailReview trailReview) {
+                                      return TrailReviewTile(
+                                          contained: false,
+                                          trailReview: trailReview);
+                                    },
+                                  ),
                                 ]),
                           )
                         ],

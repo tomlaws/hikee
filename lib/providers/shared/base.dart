@@ -11,7 +11,7 @@ class BaseProvider extends GetConnect {
 
   String getUrl() {
     var endpoint = FlavorConfig.instance.variables["API_ENDPOINT"] ??
-        "https://ew325bz0yi.execute-api.ap-southeast-1.amazonaws.com/dev/";
+        "https://api.hikees.com/";
     return endpoint;
   }
 
@@ -27,9 +27,7 @@ class BaseProvider extends GetConnect {
       }
       if (request.url.path.contains('/auth')) return request;
       if (_tokenManager.token != null) {
-        //var accessToken = _tokenManager.token!.accessToken;
         if (_tokenManager.nearlyExpire) {
-          //refresh
           print('Token expired. Trying to refresh.');
           await _refreshToken();
         }

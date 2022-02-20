@@ -1,16 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/models/paginated.dart';
 
 class InfiniteScroller<U> extends StatefulWidget {
   const InfiniteScroller(
       {Key? key,
       this.headers,
-      this.footers,
-      this.shrinkWrap = false,
+      this.footersBuilder,
       required this.builder,
       this.controller,
       this.controllerBuilder,
@@ -29,9 +25,8 @@ class InfiniteScroller<U> extends StatefulWidget {
       this.sliversBuilder})
       : super(key: key);
 
-  final bool shrinkWrap;
   final List<Widget>? headers;
-  final List<Widget>? footers;
+  final List<Widget> Function(bool hasMore)? footersBuilder;
   final Widget Function(U item) builder;
   final PaginationController<U>? controller;
   final PaginationController<U> Function()? controllerBuilder;
@@ -115,22 +110,6 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
       if (widget.take != null) {
         itemCount = itemCount.clamp(0, widget.take!);
       }
-      // if (itemCount == 0 && widget.empty != null) {
-      //   if (widget.empty is String) {
-      //     var w = CustomScrollView(
-      //       slivers: [
-      //         SliverFillRemaining(
-      //           child: Center(child: Text(widget.empty)),
-      //         )
-      //       ],
-      //     );
-      //     if (widget.refreshable) {
-      //       return RefreshIndicator(child: w, onRefresh: controller.refetch);
-      //     }
-      //     return w;
-      //   }
-      //   return widget.empty;
-      // }
       return _list(itemCount, (_, i) {
         if (widget.take != null &&
             i == widget.take! - 1 &&
@@ -151,100 +130,74 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
   }
 
   Widget _list(int itemCount, Widget Function(BuildContext, int) itemBuilder) {
-    Widget? ret;
-    if (true) {
-      Widget list = SliverPadding(
-          padding: widget.padding,
-          sliver: SliverList(
-              delegate: SliverChildBuilderDelegate((c, i) {
-            //print('count' +
-            //     (widget.separator != null ? itemCount * 2 - 1 : itemCount)
-            //         .toString());
-            // print(i);
-            if (widget.separator != null) {
-              if (i.isOdd) return widget.separator;
-              return itemBuilder(c, i ~/ 2);
-            } else {
-              return itemBuilder(c, i);
-            }
-          },
-                  childCount: widget.separator != null
-                      ? itemCount * 2 - 1
-                      : itemCount)));
-      Widget footer = SliverFillRemaining(
-          hasScrollBody: false,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (itemCount == 0 && widget.empty != null)
-                Expanded(
-                  child: widget.empty is String
-                      ? Center(
-                          child: Text(
-                          widget.empty,
-                          style: TextStyle(
-                            color: Colors.black45,
-                          ),
-                        ))
-                      : widget.empty,
-                ),
-              if (widget.footers != null) ...widget.footers!
-            ],
-          ));
+    Widget list = SliverPadding(
+        padding: widget.padding,
+        sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((c, i) {
+          if (widget.separator != null) {
+            if (i.isOdd) return widget.separator;
+            return itemBuilder(c, i ~/ 2);
+          } else {
+            return itemBuilder(c, i);
+          }
+        },
+                childCount:
+                    widget.separator != null ? itemCount * 2 - 1 : itemCount)));
 
-      ret = CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics()),
-          slivers: [
-            if (widget.headers != null)
-              SliverToBoxAdapter(
-                child: Column(children: widget.headers!),
-              ),
-            if (widget.sliversBuilder == null)
-              list
-            else
-              ...widget.sliversBuilder!(list),
-            footer
-          ]);
+    Widget footer = Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (itemCount == 0 && widget.empty != null)
+          Flexible(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              width: double.infinity,
+              child: widget.empty is String
+                  ? Center(
+                      child: Text(
+                      widget.empty,
+                      style: TextStyle(
+                        color: Colors.black45,
+                      ),
+                    ))
+                  : widget.empty,
+            ),
+          ),
+        if (widget.footersBuilder != null)
+          ...widget.footersBuilder!(
+              controller.hasMore || itemCount < controller.totalCount)
+      ],
+    );
+    if (widget.take == null) {
+      footer = SliverFillRemaining(hasScrollBody: false, child: footer);
     } else {
-      ret = widget.separator != null
-          ? ListView.separated(
-              clipBehavior: Clip.none,
-              scrollDirection:
-                  widget.horizontal ? Axis.horizontal : Axis.vertical,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.headers == null
-                  ? widget.padding
-                  : EdgeInsets.only(
-                      left: widget.padding.left,
-                      right: widget.padding.right,
-                      bottom: widget.padding.bottom),
-              controller: _scrollController,
-              itemCount: itemCount,
-              separatorBuilder: (_, __) => widget.separator!,
-              itemBuilder: (c, i) {
-                if (widget.headers == null || i > 0) return itemBuilder(c, i);
-                return Column(
-                  children: [...widget.headers!, itemBuilder(c, i)],
-                );
-              })
-          : ListView.builder(
-              clipBehavior: Clip.none,
-              scrollDirection:
-                  widget.horizontal ? Axis.horizontal : Axis.vertical,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.padding,
-              controller: _scrollController,
-              itemCount: itemCount,
-              itemBuilder: (c, i) {
-                if (widget.headers == null || i > 0) return itemBuilder(c, i);
-                return Column(
-                  children: [...widget.headers!, itemBuilder(c, i)],
-                );
-              });
+      footer = SliverToBoxAdapter(
+        child: footer,
+      );
     }
-    if (widget.refreshable) {
+
+    Widget ret = CustomScrollView(
+        scrollDirection: widget.horizontal ? Axis.horizontal : Axis.vertical,
+        shrinkWrap: widget.take != null,
+        controller: _scrollController,
+        physics: widget.take == null
+            ? const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics())
+            : null,
+        slivers: [
+          if (widget.headers != null)
+            SliverToBoxAdapter(
+              child: Column(children: widget.headers!),
+            ),
+          if (widget.sliversBuilder == null)
+            list
+          else
+            ...widget.sliversBuilder!(list),
+          footer
+        ]);
+    if (widget.refreshable && widget.take == null) {
       ret = RefreshIndicator(
           child: ret,
           onRefresh: () {

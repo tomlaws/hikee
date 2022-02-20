@@ -13,8 +13,13 @@ abstract class InternalPaginationController<T extends Paginated<U>, U>
   bool fetchingMore = false;
 
   @override
-  onInit() {
+  void onInit() {
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
   }
 
   Map<String, dynamic> getQueryParams() {
@@ -63,6 +68,14 @@ abstract class InternalPaginationController<T extends Paginated<U>, U>
     _clear();
     _query = query;
     next();
+  }
+
+  bool get hasMore {
+    return state?.hasMore ?? false;
+  }
+
+  int get totalCount {
+    return state?.totalCount ?? 0;
   }
 
   forceUpdate(T? newState) {

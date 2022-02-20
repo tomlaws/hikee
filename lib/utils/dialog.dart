@@ -22,7 +22,7 @@ class DialogUtils {
             ),
             if (showDismiss)
               SizedBox(
-                height: 24,
+                height: 16,
               ),
             if (showDismiss)
               Button(
@@ -37,7 +37,8 @@ class DialogUtils {
   }
 
   static Future<T?> showActionDialog<T>(String title, Widget content,
-      {Function? onOk, MutationBuilder? mutationBuilder}) async {
+      {Function? onOk, bool mutate = true}) async {
+    final _loading = false.obs;
     return await Get.defaultDialog(
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
@@ -49,7 +50,7 @@ class DialogUtils {
               child: content,
             ),
             SizedBox(
-              height: 24,
+              height: 16,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -61,25 +62,33 @@ class DialogUtils {
                       onPressed: () {
                         Get.back();
                       },
-                      child:
-                          Text(mutationBuilder != null ? 'Cancel' : 'Dismiss'),
+                      child: Text(mutate ? 'Cancel' : 'Dismiss'),
                     ),
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: Button(
+                      child: Obx(
+                    () => Button(
+                      loading: _loading.value,
                       onPressed: () async {
                         if (onOk != null) {
-                          var result = await onOk();
-                          Get.back();
-                          return result;
+                          try {
+                            _loading.value = true;
+                            var result = await onOk();
+                            Get.back(result: result);
+                            _loading.value = false;
+                          } catch (ex) {
+                            _loading.value = false;
+                            print(ex);
+                          }
                         } else {
                           Get.back();
+                          _loading.value = false;
                         }
                       },
-                      child: Text(mutationBuilder != null ? 'Submit' : 'OK'),
+                      child: Text(mutate ? 'Submit' : 'OK'),
                     ),
-                  )
+                  ))
                 ],
               ),
             )
