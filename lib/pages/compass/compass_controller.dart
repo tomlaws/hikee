@@ -179,11 +179,11 @@ class CompassController extends GetxController
                         ),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Estimated time',
+                                'Estimated Time',
                                 style: TextStyle(
                                     fontSize: 12, color: Colors.black54),
                               ),
@@ -192,7 +192,7 @@ class CompassController extends GetxController
                               ),
                               Obx(() => Text(
                                     speed == null || speed! == 0
-                                        ? 'Not available'
+                                        ? 'N/A'
                                         : '~' +
                                             TimeUtils.formatMinutes(
                                                 (GeoUtils.calculateDistance(
