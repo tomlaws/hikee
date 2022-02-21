@@ -220,6 +220,7 @@ class EventPage extends GetView<EventController> {
               (avatarHeight + spacing))
           .floor();
     }
+    print('take' + take.toString());
     return InfiniteScroller<EventParticipation>(
       controller: controller,
       take: take,
@@ -230,9 +231,11 @@ class EventPage extends GetView<EventController> {
       builder: (participation) {
         return Avatar(user: participation.participant);
       },
+      //loadingBuilder: Avatar(user: null),
+      //loadingItemCount: 5,
       overflowBuilder: (participation, displayCount, totalCount) {
         return Stack(children: [
-          Avatar(user: participation.participant),
+          Avatar(user: participation?.participant),
           Positioned.fill(
               child: Container(
                   alignment: Alignment.center,

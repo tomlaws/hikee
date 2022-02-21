@@ -25,6 +25,12 @@ class AccountController extends GetxController {
     super.onClose();
   }
 
+  void refreshAccount() {
+    print('refresh');
+    user.value = null;
+    _authProvider.getMe().then((user) => this.user.value = user);
+  }
+
   void promptUploadIcon() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);

@@ -9,9 +9,16 @@ class PopularTrailsController extends GetxController
   @override
   void onInit() {
     super.onInit();
-    append(() => () async {
-          var res = await _trailProvider.getPopularTrails();
-          return res.data;
-        });
+    append(() => _load);
+  }
+
+  Future<List<Trail>> _load() async {
+    var res = await _trailProvider.getPopularTrails();
+    return res.data;
+  }
+
+  void refetch() {
+    change(null, status: RxStatus.loading());
+    append(() => _load);
   }
 }

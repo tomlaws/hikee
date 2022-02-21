@@ -61,15 +61,22 @@ added features:
 
 
 FEB
-1. add profile page, display trail history (can be disabled in privacy setting, opt-in approach)
-2. show distance between facility and current location & pin the facility on the map view
-3. add lands department logo on the map face
-4. show original trail for each record
-5. add recording mode (determine region by the recorded path as well)
-6. allow custom map provider
+1.  add profile page (tapping other user's avatar)
+    - display trail history (can be disabled in privacy setting, opt-in approach)
+    - show original trail and referenced trail for each record (for comparison / completion probably)
+2. allow custom map provider in preferences settings (with attribution on the map face accordingly)
+3. nearby facilities
+    - show distance between facility and current location in the list
+    - allow putting a pin of the facility on the map view
+    - view estimated arrival time to the facility
+4. add recording mode (determine region by the recorded path as well)
+    - able to rename record and save
+    - may able to publish as a new trail in the future (feature)
+
 TODO:
 emergency update
 check if the user location is in hong kong
 date filter
 offline mode
 ui when location permission is rejected
+turn on/off weather report, custom weather refresh interval, for battery saving

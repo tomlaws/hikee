@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/controllers/shared/pagination.dart';
@@ -35,7 +37,7 @@ class InfiniteScroller<U> extends StatefulWidget {
   final int? take;
 
   /// When number of items is greater than take, the last showing item will be built with [overflowBuilder]
-  final Widget Function(U item, int displayCount, int totalCount)?
+  final Widget Function(U? item, int displayCount, int totalCount)?
       overflowBuilder;
 
   /// Whether to fetch for the first time
@@ -123,7 +125,16 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
         onLoading: Center(
           child: widget.loadingBuilder != null
               ? _list(
-                  widget.loadingItemCount, (_, __) => widget.loadingBuilder!)
+                  min(widget.loadingItemCount,
+                      widget.take ?? widget.loadingItemCount), (_, i) {
+                  if (widget.take != null &&
+                      i == widget.take! - 1 &&
+                      widget.overflowBuilder != null) {
+                    return widget.overflowBuilder!(
+                        null, widget.take! - 1, widget.loadingItemCount);
+                  }
+                  return widget.loadingBuilder!;
+                })
               : CircularProgressIndicator(),
         ),
         onEmpty: SizedBox());
@@ -153,7 +164,7 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
             flex: 1,
             child: Container(
               padding: EdgeInsets.all(8.0),
-              width: double.infinity,
+              width: widget.horizontal ? null : double.infinity,
               child: widget.empty is String
                   ? Center(
                       child: Text(
@@ -170,7 +181,7 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
               controller.hasMore || itemCount < controller.totalCount)
       ],
     );
-    if (widget.take == null) {
+    if (widget.take == null || widget.horizontal) {
       footer = SliverFillRemaining(hasScrollBody: false, child: footer);
     } else {
       footer = SliverToBoxAdapter(
@@ -199,10 +210,10 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
         ]);
     if (widget.refreshable && widget.take == null) {
       ret = RefreshIndicator(
-          child: ret,
-          onRefresh: () {
-            return controller.refetch();
-          });
+        child: ret,
+        onRefresh: controller.refetch,
+        displacement: 80.0,
+      );
     }
     return ret;
   }

@@ -23,6 +23,7 @@ class Facility {
     return GeoUtils.convertFromEPSG2326(Tuple2(x, y));
   }
 
+  // in km
   calculateDistance(LatLng loc) {
     return GeoUtils.calculateDistance(loc, location);
   }

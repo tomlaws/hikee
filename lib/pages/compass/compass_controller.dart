@@ -99,6 +99,7 @@ class CompassController extends GetxController
     return activeTrailProvider.activeTrail.value?.userPath;
   }
 
+  // km per hour
   double? get speed {
     return activeTrailProvider.activeTrail.value?.speed;
   }

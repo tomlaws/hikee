@@ -116,7 +116,7 @@ class TopicPage extends GetView<TopicController> {
   Widget _topic(TopicBase? topic) {
     return Container(
       decoration: BoxDecoration(
-          boxShadow: [Themes.shadow],
+          boxShadow: [Themes.lightShadow],
           color: Colors.white,
           borderRadius: BorderRadius.circular(16)),
       child: Column(

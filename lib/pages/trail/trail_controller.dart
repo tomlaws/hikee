@@ -32,10 +32,9 @@ class TrailController extends GetxController with StateMixin<Trail> {
   void onInit() {
     super.onInit();
     id = int.parse(Get.parameters['trailId'] ?? Get.parameters['id'] ?? '');
-    append(() => loadTrail);
+    append(() => _loadTrail);
     scrollController = ScrollController();
     trailReviewsController = Get.put(GetPaginationController((queries) {
-      queries['order'] = 'DESC';
       return _trailProvider.getTrailReviews(id, queries);
     }));
     carouselController.addListener(() {
@@ -44,7 +43,12 @@ class TrailController extends GetxController with StateMixin<Trail> {
     });
   }
 
-  Future<Trail> loadTrail() async {
+  void refreshTrail() {
+    change(null, status: RxStatus.loading());
+    append(() => _loadTrail);
+  }
+
+  Future<Trail> _loadTrail() async {
     var trail = await _trailProvider.getTrail(id);
     bookmarked.value = trail.bookmark != null;
     points.value = GeoUtils.decodePath(trail.path);
@@ -52,10 +56,13 @@ class TrailController extends GetxController with StateMixin<Trail> {
   }
 
   void viewMoreReviews() {
+    var _trailReviewsController = Get.put(GetPaginationController((queries) {
+      return _trailProvider.getTrailReviews(id, queries);
+    }), tag: 'trails-$id-reviews');
     Get.to(Scaffold(
       appBar: HikeeAppBar(title: Text('Reviews')),
       body: InfiniteScroller(
-        controller: trailReviewsController,
+        controller: _trailReviewsController,
         separator: SizedBox(height: 16),
         builder: (TrailReview trailReview) {
           return TrailReviewTile(trailReview: trailReview);
@@ -117,14 +124,12 @@ class TrailController extends GetxController with StateMixin<Trail> {
     final newReview = await _trailProvider.createTrailReview(
         id: id, rating: rating, content: content);
     var reviewsState = trailReviewsController.state;
-    if (reviewsState?.hasMore == false) {
-      reviewsState!..data.insert(0, newReview);
-      // check if exceeds
-      if (reviewsState.data.length > takeReviews) {
-        reviewsState.hasMore = true;
-      }
-      trailReviewsController.forceUpdate(reviewsState);
+    reviewsState!..data.insert(0, newReview);
+    // check if exceeds
+    if (reviewsState.data.length > takeReviews) {
+      reviewsState.hasMore = true;
     }
+    trailReviewsController.forceUpdate(reviewsState);
   }
 
   @override

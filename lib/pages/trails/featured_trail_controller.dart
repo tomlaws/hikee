@@ -10,4 +10,9 @@ class FeaturedTrailController extends GetxController with StateMixin<Trail> {
     super.onInit();
     append(() => _trailProvider.getFeaturedTrail);
   }
+
+  void refetch() {
+    change(null, status: RxStatus.loading());
+    append(() => _trailProvider.getFeaturedTrail);
+  }
 }

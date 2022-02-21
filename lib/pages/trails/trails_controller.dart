@@ -4,7 +4,10 @@ import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/region.dart';
 import 'package:hikee/models/trail.dart';
+import 'package:hikee/pages/trails/popular_trails_controller.dart';
 import 'package:hikee/providers/trail.dart';
+
+import 'featured_trail_controller.dart';
 
 // default
 final Set<int> defaultRegions = Region.allRegions().map((e) => e.id).toSet();

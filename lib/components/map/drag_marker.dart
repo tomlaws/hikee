@@ -146,7 +146,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
               behavior: HitTestBehavior.translucent,
               onTap: marker.onPopupTap,
               child: Container(
-                  child: Column(
+                  child: Stack(
                 children: [
                   Container(
                     decoration: BoxDecoration(
@@ -166,12 +166,20 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
                       size: 16,
                     ),
                   ),
-                  ClipPath(
-                    clipper: TriangleClipper(),
-                    child: Container(
-                      color: marker.popupColor,
-                      height: 6,
-                      width: 12,
+                  Positioned(
+                    bottom: 1,
+                    left: 0,
+                    right: 0,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: ClipPath(
+                        clipper: TriangleClipper(),
+                        child: Container(
+                          color: marker.popupColor,
+                          height: 6,
+                          width: 12,
+                        ),
+                      ),
                     ),
                   ),
                 ],

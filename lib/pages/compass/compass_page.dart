@@ -816,10 +816,61 @@ class CompassPage extends GetView<CompassController> {
             height: 10,
             hasPopup: true,
             popupColor: Color.fromARGB(255, 64, 66, 196),
-            popupIcon: LineAwesomeIcons.star,
+            popupIcon: Icons.star,
             onTap: (_) {
               DialogUtils.showDialog(
-                  "Facility", controller.pinnedFacility.value!.name);
+                  controller.pinnedFacility.value!.name,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Distance',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          if (controller.currentLocation.value != null)
+                            Obx(() => Text(
+                                  '~' +
+                                      GeoUtils.formatDistance(controller
+                                          .pinnedFacility.value
+                                          ?.calculateDistance(controller
+                                              .currentLocation.value!.latLng)),
+                                  style: TextStyle(fontSize: 14),
+                                ))
+                        ],
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Estimated time',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          Obx(() => Text(
+                                controller.speed == null ||
+                                        controller.speed! == 0
+                                    ? 'Not available'
+                                    : '~' +
+                                        TimeUtils.formatMinutes((controller
+                                                    .pinnedFacility.value
+                                                    ?.calculateDistance(
+                                                        controller
+                                                            .currentLocation
+                                                            .value!
+                                                            .latLng) /
+                                                (controller.speed! / 60))
+                                            .round()),
+                                style: TextStyle(fontSize: 14),
+                              ))
+                        ],
+                      )
+                    ],
+                  ));
             },
           ),
         );

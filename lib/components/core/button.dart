@@ -57,7 +57,9 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                 : Get.theme.primaryColor)));
 
     var textColor = (widget.invert
-            ? (widget.icon != null ? Get.theme.primaryColor : Colors.black)
+            ? (widget.icon != null
+                ? Get.theme.primaryColor
+                : Color.fromARGB(255, 99, 99, 99))
             : Colors.white)
         .withOpacity((widget.disabled || widget.loading) ? .75 : 1);
     if (widget.secondary)
