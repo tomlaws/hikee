@@ -733,6 +733,8 @@ class CompassPage extends GetView<CompassController> {
                                                       color: Colors.black),
                                                   maxLines: 1,
                                                   textAlign: TextAlign.center,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ],
                                             ),

@@ -245,6 +245,9 @@ class CompassController extends GetxController
       required String title,
       String? message,
       Color color = const Color.fromARGB(255, 64, 66, 196)}) {
+    if (message != null && message.length == 0) {
+      message = null;
+    }
     activeTrail.update((t) {
       t?.markers.add(MapMarker(
           location: location, title: title, message: message, color: color));
@@ -265,6 +268,15 @@ class CompassController extends GetxController
                 label: 'Title',
                 hintText: 'Title of the marker',
                 onSaved: (v) => title = v ?? '',
+                validator: (v) {
+                  if (v == null || v.length == 0) {
+                    return 'Cannot be empty';
+                  }
+                  if (v.length > 50) {
+                    return 'Title length exceeded the limit';
+                  }
+                  return null;
+                },
               ),
               SizedBox(
                 height: 16,
@@ -274,20 +286,23 @@ class CompassController extends GetxController
                 hintText: 'Put some message here...',
                 onSaved: (v) => message = v ?? '',
                 maxLines: 5,
+                validator: (v) {
+                  if (v != null && v.length > 500) {
+                    return 'Title length exceeded the limit';
+                  }
+                  return null;
+                },
               )
             ],
           ),
         ), onOk: () {
       if (formkey.currentState?.validate() == true) {
         formkey.currentState?.save();
-
-        activeTrail.update((t) {
-          t?.markers.add(MapMarker(
-              location: location,
-              title: title,
-              message: message,
-              color: Colors.indigo));
-        });
+        addMarker(
+            location: location,
+            title: title,
+            message: message,
+            color: Colors.indigo);
         return true;
       } else {
         throw new Error();
