@@ -25,6 +25,7 @@ class HikeeMap extends StatelessWidget {
       this.positionStream,
       this.headingStream,
       this.onTap,
+      this.onLongPress,
       this.markers,
       this.onMapCreated,
       this.interactiveFlag,
@@ -49,6 +50,7 @@ class HikeeMap extends StatelessWidget {
   final Stream<LocationMarkerPosition?>? positionStream;
   final Stream<LocationMarkerHeading?>? headingStream;
   final Function(LatLng)? onTap;
+  final void Function(LatLng)? onLongPress;
   final List<DragMarker>? markers;
   final void Function(HikeeMapController)? onMapCreated;
   final int? interactiveFlag;
@@ -227,18 +229,6 @@ class HikeeMap extends StatelessWidget {
           ),
       ],
       nonRotatedChildren: [
-        // Align(
-        //   alignment: watermarkAlignment,
-        //   child: Opacity(
-        //     opacity: .4,
-        //     child: Container(
-        //       margin: contentMargin,
-        //       width: 32,
-        //       height: 32,
-        //       child: Image.asset('assets/images/lands_department.png'),
-        //     ),
-        //   ),
-        // ),
         Align(
           alignment: Alignment.bottomRight,
           child: Container(
@@ -329,6 +319,9 @@ class HikeeMap extends StatelessWidget {
               }
             }
           },
+          onLongPress: onLongPress == null
+              ? null
+              : (_, location) => onLongPress!(location),
           zoom: zoom,
           maxZoom: 17,
           minZoom: 11,

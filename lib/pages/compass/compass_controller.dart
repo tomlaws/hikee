@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/dropdown.dart';
 import 'package:hikee/components/core/text_input.dart';
+import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/map/map_controller.dart';
 import 'package:hikee/models/facility.dart';
+import 'package:hikee/models/map_marker.dart';
 import 'package:hikee/models/record.dart';
 import 'package:hikee/models/region.dart';
 import 'package:hikee/providers/active_trail.dart';
@@ -24,6 +27,7 @@ import 'package:hikee/models/distance_post.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:collection/collection.dart';
 
 class CompassController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -44,8 +48,8 @@ class CompassController extends GetxController
   final double panelHeaderHeight = 60;
   final lockPosition = false.obs;
   final nearbyFacilities = Rxn<List<Facility>>();
-  final pinnedFacility = Rxn<Facility>();
   final nearestDistancePost = Rxn<DistancePost>();
+  final markers = Rx<List<DragMarker>>([]);
 
   // tooltip
   late AnimationController tooltipController;
@@ -106,6 +110,189 @@ class CompassController extends GetxController
 
   int? get estimatedFinishTime {
     return activeTrailProvider.activeTrail.value?.estimatedFinishTime;
+  }
+
+  List<DragMarker> get mapMarkers {
+    List<DragMarker> result = [];
+    if (activeTrail.value == null) return result;
+    if (activeTrail.value!.trail?.pins != null) {
+      result.addAll(activeTrail.value!.trail!.pins!.map(
+        (pos) => DragMarker(
+          draggable: false,
+          point: pos.location,
+          width: 10,
+          height: 10,
+          hasPopup: pos.message != null,
+          onTap: (_) {
+            DialogUtils.showDialog("Message", pos.message!);
+          },
+        ),
+      ));
+    }
+    result.addAll(activeTrail.value!.markers.mapIndexed(
+      (i, e) => DragMarker(
+        draggable: false,
+        point: e.location,
+        width: 10,
+        height: 10,
+        hasPopup: true,
+        popupColor: e.color,
+        popupIcon: Icons.star,
+        onTap: (_) {
+          DialogUtils.showActionDialog(
+              e.title,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Distance',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.black54),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              if (currentLocation.value != null)
+                                Obx(() => Text(
+                                      '~' +
+                                          GeoUtils.formatDistance(
+                                              GeoUtils.calculateDistance(
+                                                  currentLocation.value!.latLng,
+                                                  e.location)),
+                                      style: TextStyle(fontSize: 14),
+                                    ))
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Estimated time',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.black54),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Obx(() => Text(
+                                    speed == null || speed! == 0
+                                        ? 'Not available'
+                                        : '~' +
+                                            TimeUtils.formatMinutes(
+                                                (GeoUtils.calculateDistance(
+                                                            currentLocation
+                                                                .value!.latLng,
+                                                            e.location) /
+                                                        (speed! / 60))
+                                                    .round()),
+                                    style: TextStyle(fontSize: 14),
+                                  ))
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (e.message != null) ...[
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        'Message',
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                      ),
+                      SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        e.message!,
+                        maxLines: 10,
+                      )
+                    ]
+                  ],
+                ),
+              ),
+              mutate: false,
+              cancelText: 'Remove', onCancel: () {
+            activeTrail.update((t) {
+              t?.markers.removeAt(i);
+            });
+            Get.back();
+          });
+        },
+      ),
+    ));
+    return result;
+  }
+
+  void addMarker(
+      {required LatLng location,
+      required String title,
+      String? message,
+      Color color = const Color.fromARGB(255, 64, 66, 196)}) {
+    activeTrail.update((t) {
+      t?.markers.add(MapMarker(
+          location: location, title: title, message: message, color: color));
+    });
+  }
+
+  void promptAddMarker(LatLng location) {
+    final formkey = GlobalKey<FormState>();
+    var title = '';
+    var message = '';
+    DialogUtils.showActionDialog(
+        'Add Marker',
+        Form(
+          key: formkey,
+          child: Column(
+            children: [
+              TextInput(
+                label: 'Title',
+                hintText: 'Title of the marker',
+                onSaved: (v) => title = v ?? '',
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              TextInput(
+                label: 'Message',
+                hintText: 'Put some message here...',
+                onSaved: (v) => message = v ?? '',
+                maxLines: 5,
+              )
+            ],
+          ),
+        ), onOk: () {
+      if (formkey.currentState?.validate() == true) {
+        formkey.currentState?.save();
+
+        activeTrail.update((t) {
+          t?.markers.add(MapMarker(
+              location: location,
+              title: title,
+              message: message,
+              color: Colors.indigo));
+        });
+        return true;
+      } else {
+        throw new Error();
+      }
+    });
   }
 
   void record() {

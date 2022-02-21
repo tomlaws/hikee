@@ -69,7 +69,12 @@ FEB
     - show distance between facility and current location in the list
     - allow putting a pin of the facility on the map view
     - view estimated arrival time to the facility
-4. add recording mode (determine region by the recorded path as well)
+4. custom pins
+    - similar to pinning of nearby facilities
+    - allowing users to put pins manually (custom title & message)
+        - by long pressing on the map face
+    - view estimated arrival time to the location as well
+5. add recording mode (determine region by the recorded path as well)
     - able to rename record and save
     - may able to publish as a new trail in the future (feature)
 

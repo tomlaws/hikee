@@ -205,10 +205,13 @@ class ActiveTrailProvider extends BaseProvider {
     dynamic decoded = jsonDecode(serialized);
     if (decoded == null) return;
     activeTrail.value = ActiveTrail.fromJson(decoded);
+    print('markers');
+    print(activeTrail.value?.markers);
   }
 
   Future<void> _save() async {
     String serialized = jsonEncode(activeTrail);
+    print(serialized);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('activeTrail', serialized);
   }

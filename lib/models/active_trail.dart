@@ -1,3 +1,4 @@
+import 'package:hikee/models/map_marker.dart';
 import 'package:hikee/models/reference_trail.dart';
 import 'package:hikee/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
@@ -9,8 +10,9 @@ part 'active_trail.g.dart';
 class ActiveTrail {
   ReferenceTrail? trail;
   String? name;
-  late List<LatLng> userPath;
-  late List<double> userElevation;
+  List<LatLng> userPath;
+  List<double> userElevation;
+  List<MapMarker> markers;
   int? startTime;
   int? regionId;
 
@@ -46,10 +48,10 @@ class ActiveTrail {
     }
   }
 
-  ActiveTrail({this.trail, this.startTime}) {
-    this.userPath = [];
-    this.userElevation = [];
-  }
+  ActiveTrail({this.trail, this.startTime})
+      : userPath = [],
+        userElevation = [],
+        markers = [];
 
   factory ActiveTrail.fromJson(Map<String, dynamic> json) =>
       _$ActiveTrailFromJson(json);

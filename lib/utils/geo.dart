@@ -18,6 +18,7 @@ class GeoUtils {
     return result.map((e) => LatLng(e[0].toDouble(), e[1].toDouble())).toList();
   }
 
+  // in km
   static double calculateDistance(LatLng location1, LatLng location2) {
     var p = 0.017453292519943295;
     var c = cos;

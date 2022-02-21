@@ -503,14 +503,15 @@ class CompassPage extends GetView<CompassController> {
                                               SizedBox(width: 16),
                                               Button(
                                                 icon: Icon(
-                                                  LineAwesomeIcons.map_marker,
-                                                  //color: Colors.white,
-                                                ),
+                                                    LineAwesomeIcons.thumbtack,
+                                                    color: Colors.black54),
                                                 backgroundColor:
-                                                    Colors.transparent,
+                                                    Colors.grey.shade100,
                                                 onPressed: () {
-                                                  controller.pinnedFacility
-                                                      .value = facility;
+                                                  controller.addMarker(
+                                                      location:
+                                                          facility.location,
+                                                      title: facility.name);
                                                   controller.mapController
                                                       ?.focus(
                                                           facility.location);
@@ -582,7 +583,7 @@ class CompassPage extends GetView<CompassController> {
               clipBehavior: Clip.none,
               children: [
                 if (hasActiveTrail)
-                  _map(controller.activeTrail.value!)
+                  _map()
                 else
                   Positioned(
                     bottom: 0,
@@ -789,96 +790,18 @@ class CompassPage extends GetView<CompassController> {
         ));
   }
 
-  Widget _map(ActiveTrail activeTrail) {
+  Widget _map() {
     return Obx(() {
+      var activeTrail = controller.activeTrail.value!;
       var lock = controller.lockPosition.value; // do not remove this line
-      List<DragMarker> markers = [];
-      if (activeTrail.trail?.pins != null) {
-        markers.addAll(activeTrail.trail!.pins!.map(
-          (pos) => DragMarker(
-            draggable: false,
-            point: pos.location,
-            width: 10,
-            height: 10,
-            hasPopup: pos.message != null,
-            onTap: (_) {
-              DialogUtils.showDialog("Message", pos.message!);
-            },
-          ),
-        ));
-      }
-      if (controller.pinnedFacility.value != null) {
-        markers.add(
-          DragMarker(
-            draggable: false,
-            point: controller.pinnedFacility.value!.location,
-            width: 10,
-            height: 10,
-            hasPopup: true,
-            popupColor: Color.fromARGB(255, 64, 66, 196),
-            popupIcon: Icons.star,
-            onTap: (_) {
-              DialogUtils.showDialog(
-                  controller.pinnedFacility.value!.name,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Distance',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          if (controller.currentLocation.value != null)
-                            Obx(() => Text(
-                                  '~' +
-                                      GeoUtils.formatDistance(controller
-                                          .pinnedFacility.value
-                                          ?.calculateDistance(controller
-                                              .currentLocation.value!.latLng)),
-                                  style: TextStyle(fontSize: 14),
-                                ))
-                        ],
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Estimated time',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Obx(() => Text(
-                                controller.speed == null ||
-                                        controller.speed! == 0
-                                    ? 'Not available'
-                                    : '~' +
-                                        TimeUtils.formatMinutes((controller
-                                                    .pinnedFacility.value
-                                                    ?.calculateDistance(
-                                                        controller
-                                                            .currentLocation
-                                                            .value!
-                                                            .latLng) /
-                                                (controller.speed! / 60))
-                                            .round()),
-                                style: TextStyle(fontSize: 14),
-                              ))
-                        ],
-                      )
-                    ],
-                  ));
-            },
-          ),
-        );
-      }
+
       return HikeeMap(
         key: Key('compass-map-${activeTrail.hashCode}'),
         onMapCreated: (mapController) {
           controller.mapController = mapController;
+        },
+        onLongPress: (location) {
+          controller.promptAddMarker(location);
         },
         path: activeTrail.trail?.path,
         userPath: controller.userPath,
@@ -886,7 +809,7 @@ class CompassPage extends GetView<CompassController> {
         showCenterOnLocationUpdateButton: true,
         positionStream: controller.currentLocation.stream,
         headingStream: controller.currentHeading.stream,
-        markers: markers,
+        markers: controller.mapMarkers,
         contentMargin: EdgeInsets.only(
             top: 8,
             left: 8,

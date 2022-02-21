@@ -37,7 +37,11 @@ class DialogUtils {
   }
 
   static Future<T?> showActionDialog<T>(String title, Widget content,
-      {Function? onOk, bool mutate = true}) async {
+      {Function? onOk,
+      Function? onCancel,
+      String? okText,
+      String? cancelText,
+      bool mutate = true}) async {
     final _loading = false.obs;
     return await Get.defaultDialog(
         title: title,
@@ -59,10 +63,15 @@ class DialogUtils {
                   Expanded(
                     child: Button(
                       secondary: true,
-                      onPressed: () {
+                      backgroundColor: onCancel != null ? Colors.red : null,
+                      onPressed: () async {
+                        if (onCancel != null) {
+                          return await onCancel();
+                        }
                         Get.back();
                       },
-                      child: Text(mutate ? 'Cancel' : 'Dismiss'),
+                      child:
+                          Text(cancelText ?? (mutate ? 'Cancel' : 'Dismiss')),
                     ),
                   ),
                   SizedBox(width: 16),
@@ -86,7 +95,7 @@ class DialogUtils {
                           _loading.value = false;
                         }
                       },
-                      child: Text(mutate ? 'Submit' : 'OK'),
+                      child: Text(okText ?? (mutate ? 'Submit' : 'OK')),
                     ),
                   ))
                 ],
