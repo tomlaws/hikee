@@ -1,3 +1,4 @@
+import 'package:hikee/models/region.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -9,6 +10,7 @@ class Record {
   DateTime date;
   int time;
   String name;
+  Region? region;
   Trail? referenceTrail;
   String userPath;
   List<double> altitudes;
@@ -16,6 +18,7 @@ class Record {
   Record({
     required this.id,
     required this.time,
+    this.region,
     required this.name,
     this.referenceTrail,
     required this.userPath,

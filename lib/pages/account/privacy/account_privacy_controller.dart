@@ -7,15 +7,16 @@ class AccountPrivacyController extends GetxController {
   final userProvider = Get.put(UserProvider());
   final _authProvider = Get.find<AuthProvider>();
   final isPrivate = true.obs;
-  late Future<User> getMe;
 
   @override
   void onInit() {
     super.onInit();
-    getMe = _authProvider.getMe();
-    getMe.then((user) {
-      isPrivate.value = user.isPrivate;
-    });
+    _authProvider.refreshMe().then(
+        (_) => isPrivate.value = _authProvider.me.value?.isPrivate ?? true);
+  }
+
+  get user {
+    return _authProvider.me.value;
   }
 
   @override

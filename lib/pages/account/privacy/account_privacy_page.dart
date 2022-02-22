@@ -21,28 +21,24 @@ class AccountPrivacyPage extends GetView<AccountPrivacyController> {
             borderRadius: BorderRadius.circular(16.0)),
         child: Column(
           children: [
-            FutureBuilder(
-                future: controller.getMe,
-                builder: ((context, snapshot) {
-                  return MutationBuilder(
-                      userOnly: true,
-                      mutation: () {
-                        return controller.updatePrivacy();
+            MutationBuilder(
+                userOnly: true,
+                mutation: () {
+                  return controller.updatePrivacy();
+                },
+                builder: (mutate, loading) {
+                  return Obx(
+                    () => MenuListTile(
+                      loading: loading || controller.user == null,
+                      switchValue: controller.isPrivate.value,
+                      onSwitchValueChanged: (v) {
+                        controller.isPrivate.toggle();
+                        mutate();
                       },
-                      builder: (mutate, loading) {
-                        return Obx(
-                          () => MenuListTile(
-                            loading: snapshot.data == null || loading,
-                            switchValue: controller.isPrivate.value,
-                            onSwitchValueChanged: (v) {
-                              controller.isPrivate.toggle();
-                              mutate();
-                            },
-                            title: "Hide Trail Records",
-                          ),
-                        );
-                      });
-                })),
+                      title: "Hide Trail Records",
+                    ),
+                  );
+                }),
             MenuListTile(
               onTap: () {
                 Get.toNamed('/password');

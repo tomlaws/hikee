@@ -7,6 +7,7 @@ import 'package:hikee/providers/shared/base.dart';
 class AuthProvider extends BaseProvider {
   static TokenManager _tokenManager = TokenManager();
   var loggedIn = false.obs;
+  final me = Rxn<User>();
 
   @override
   void onInit() {
@@ -14,6 +15,9 @@ class AuthProvider extends BaseProvider {
     loggedIn.value = _tokenManager.token != null;
     _tokenManager.onTokenChange((t) {
       loggedIn.value = t != null;
+      if (t != null) {
+        _getMe();
+      }
     });
   }
 
@@ -22,13 +26,18 @@ class AuthProvider extends BaseProvider {
     return _tokenManager.token = Token.fromJson(res.body);
   }
 
-  Future<User> getMe() async {
+  Future<User> _getMe() async {
+    me.value = null;
     int? userId = _tokenManager.userId;
     if (userId == null) {
       throw new Error();
     }
     var res = await get('users/${userId.toString()}');
-    return User.fromJson(res.body);
+    return me.value = User.fromJson(res.body);
+  }
+
+  Future<void> refreshMe() async {
+    await _getMe();
   }
 
   Future<Token?> register(String email, String password) async {
@@ -39,5 +48,6 @@ class AuthProvider extends BaseProvider {
 
   void logout() {
     _tokenManager.token = null;
+    me.value = null;
   }
 }

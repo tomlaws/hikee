@@ -867,11 +867,7 @@ class CompassPage extends GetView<CompassController> {
                       Obx(() => ActiveTrailInfo(
                             activeTrail: controller.activeTrail.value!,
                             onEdit: () async {
-                              var r = await controller.customizeRecord();
-                              controller.activeTrail.update((t) {
-                                t?.name = r.item1;
-                                t?.regionId = r.item2;
-                              });
+                              await controller.customizeRecord();
                             },
                           )),
                       SizedBox(height: 8),
@@ -922,8 +918,8 @@ class CompassPage extends GetView<CompassController> {
                         child: Text(controller.activeTrailProvider.recordMode
                             ? 'Finish Recording'
                             : 'Finish Trail'),
-                        disabled: !controller.activeTrailProvider.recordMode ||
-                            controller.isCloseToGoal.value,
+                        disabled: !controller.activeTrailProvider.recordMode &&
+                            !controller.isCloseToGoal.value,
                         onPressed: () {
                           controller.finishTrail();
                         }),

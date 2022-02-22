@@ -51,7 +51,7 @@ class RecordProvider extends BaseProvider {
     }
     var body = {
       'name': name,
-      'date': date.toString(),
+      //'date': date.toString(),
       'time': time,
       'regionId': regionId,
       'userPath': GeoUtils.encodePath(userPath),

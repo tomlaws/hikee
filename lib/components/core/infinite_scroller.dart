@@ -24,6 +24,7 @@ class InfiniteScroller<U> extends StatefulWidget {
       this.loadingBuilder,
       this.loadingItemCount = 5,
       this.refreshable = true,
+      this.edgeOffset = 0.0,
       this.sliversBuilder})
       : super(key: key);
 
@@ -64,6 +65,8 @@ class InfiniteScroller<U> extends StatefulWidget {
   final int loadingItemCount;
 
   final bool refreshable;
+
+  final double edgeOffset;
 
   final List<Widget> Function(Widget list)? sliversBuilder;
 
@@ -213,6 +216,7 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
         child: ret,
         onRefresh: controller.refetch,
         displacement: 80.0,
+        edgeOffset: widget.edgeOffset,
       );
     }
     return ret;

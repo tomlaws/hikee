@@ -323,7 +323,7 @@ class CompassController extends GetxController
     }
   }
 
-  Future<Tuple2<String, int>> customizeRecord() async {
+  Future<bool> customizeRecord() async {
     String? trailName =
         activeTrail.value!.name ?? activeTrail.value!.trail?.name_en;
     int? regionId = activeTrail.value!.regionId ??
@@ -331,7 +331,7 @@ class CompassController extends GetxController
         GeoUtils.determineRegion(activeTrail.value!.userPath)?.id;
     final formkey = GlobalKey<FormState>();
     var regions = Region.allRegions().toList();
-    await DialogUtils.showActionDialog(
+    var result = await DialogUtils.showActionDialog(
         "Record",
         Form(
             key: formkey,
@@ -372,10 +372,18 @@ class CompassController extends GetxController
         formkey.currentState?.save();
         return true;
       } else {
-        throw new Error();
+        return false;
       }
     });
-    return Tuple2(trailName!, regionId!);
+    if (result != null) {
+      activeTrail.update((t) {
+        t?.name = trailName;
+        t?.regionId = regionId;
+      });
+      return true;
+    } else {
+      return false;
+    }
   }
 
   finishTrail() async {
@@ -391,11 +399,13 @@ class CompassController extends GetxController
         String? recordName;
         if (activeTrailProvider.recordMode) {
           recordName = activeTrail.value!.name;
-          regionId = GeoUtils.determineRegion(activeTrail.value!.userPath)!.id;
+          regionId = activeTrail.value!.regionId =
+              GeoUtils.determineRegion(activeTrail.value!.userPath)!.id;
           if (recordName == null) {
-            var t = await customizeRecord();
-            recordName = t.item1;
-            regionId = t.item2;
+            bool result = await customizeRecord();
+            if (!result) return;
+            recordName = activeTrail.value!.name;
+            regionId = activeTrail.value!.regionId!;
           }
         } else {
           //upload stats
@@ -406,7 +416,7 @@ class CompassController extends GetxController
         Record record = await _recordProvider.createRecord(
             date: date,
             time: elapsed,
-            name: recordName,
+            name: recordName!,
             referenceTrailId: trailId,
             regionId: regionId,
             length: (GeoUtils.getPathLength(path: userPath) * 1000).truncate(),

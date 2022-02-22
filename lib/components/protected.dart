@@ -16,8 +16,9 @@ class Protected extends StatelessWidget {
     final authProvider = Get.put(AuthProvider());
     return Obx(() {
       if (authProvider.loggedIn.value) {
-        var getMe = authProvider.getMe();
-        return authenticatedBuilder(context, getMe);
+        return SizedBox();
+        //var getMe = authProvider.getMe();
+        //return authenticatedBuilder(context, getMe);
       } else {
         if (unauthenticatedBuilder != null) {
           return unauthenticatedBuilder!(context);

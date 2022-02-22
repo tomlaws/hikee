@@ -50,11 +50,11 @@ class DialogUtils {
         content: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: content,
             ),
             SizedBox(
-              height: 16,
+              height: 24,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),

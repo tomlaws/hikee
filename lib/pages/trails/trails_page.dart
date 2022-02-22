@@ -19,11 +19,11 @@ class TrailsPage extends GetView<TrailsController> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: RefreshIndicator(
+          displacement: 80.0,
           onRefresh: () async {
             popularTrailsController.refetch();
             featuredTrailsController.refetch();
           },
-          edgeOffset: 80.0,
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics()),

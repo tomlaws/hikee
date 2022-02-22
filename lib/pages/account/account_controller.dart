@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/user.dart';
 import 'package:hikee/providers/auth.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -10,14 +9,10 @@ class AccountController extends GetxController {
   var page = 0.0.obs;
   File? avatar;
   final _authProvider = Get.put(AuthProvider());
-  final user = Rxn<User>();
 
   @override
   void onInit() {
     super.onInit();
-    if (_authProvider.loggedIn.value) {
-      _authProvider.getMe().then((user) => this.user.value = user);
-    }
   }
 
   @override
@@ -25,10 +20,12 @@ class AccountController extends GetxController {
     super.onClose();
   }
 
+  get user {
+    return _authProvider.me;
+  }
+
   void refreshAccount() {
-    print('refresh');
-    user.value = null;
-    _authProvider.getMe().then((user) => this.user.value = user);
+    _authProvider.refreshMe();
   }
 
   void promptUploadIcon() async {

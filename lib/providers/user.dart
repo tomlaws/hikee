@@ -20,6 +20,7 @@ class UserProvider extends BaseProvider {
     Map<String, dynamic> payload = {};
     if (nickname != null) payload['nickname'] = nickname;
     if (isPrivate != null) payload['isPrivate'] = isPrivate;
+    print(payload);
     return await patch('users', payload).then((value) {
       return User.fromJson(value.body);
     });

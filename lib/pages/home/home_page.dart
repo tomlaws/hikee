@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/keep_alive.dart';
-import 'package:hikee/controllers/shared/auth.dart';
 import 'package:hikee/pages/events/event_categories.dart';
 import 'package:hikee/pages/account/account_controller.dart';
 import 'package:hikee/pages/account/account_page.dart';
@@ -17,10 +16,11 @@ import 'package:hikee/pages/trails/trails_page.dart';
 import 'package:hikee/pages/topics/topics_controller.dart';
 import 'package:hikee/pages/topics/topics_page.dart';
 import 'package:hikee/providers/active_trail.dart';
+import 'package:hikee/providers/auth.dart';
 import 'home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
-  final _authController = Get.put(AuthController());
+  final _authProvider = Get.find<AuthProvider>();
   final _activeTrailProvider = Get.put(ActiveTrailProvider());
 
   @override
@@ -53,7 +53,7 @@ class HomePage extends GetView<HomeController> {
         extendBodyBehindAppBar: true,
         body: Obx(() {
           // ensures rebuild everything if login state changed
-          var loggedIn = _authController.loggedIn.value;
+          var loggedIn = _authProvider.loggedIn.value;
           return pageView;
         }),
         bottomNavigationBar: Obx(

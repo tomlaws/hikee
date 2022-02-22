@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/controllers/shared/auth.dart';
 import 'package:hikee/models/error/error_response.dart';
+import 'package:hikee/providers/auth.dart';
 
 class MutationBuilder<T> extends StatefulWidget {
   const MutationBuilder(
@@ -29,7 +29,7 @@ class _MutationBuilderState<T> extends State<MutationBuilder<T>> {
   Widget build(BuildContext context) {
     return widget.builder(() async {
       if (widget.userOnly) {
-        var auth = Get.find<AuthController>();
+        var auth = Get.find<AuthProvider>();
         if (!auth.loggedIn.value) {
           Get.toNamed('/login');
           return;

@@ -75,8 +75,7 @@ class RecordPage extends GetView<RecordController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 120,
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -97,27 +96,44 @@ class RecordPage extends GetView<RecordController> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            width: 32,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Time',
+                                    style: TextStyle(
+                                      color: Colors.black38,
+                                    )),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                controller.obx(
+                                    (state) => Text(
+                                          DateFormat('HH:mm:ss')
+                                              .format(state!.date),
+                                          style: TextStyle(),
+                                        ),
+                                    onLoading: Shimmer()),
+                              ],
+                            ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Time',
-                                  style: TextStyle(
-                                    color: Colors.black38,
-                                  )),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              controller.obx(
-                                  (state) => Text(
-                                        DateFormat('HH:mm:ss')
-                                            .format(state!.date),
-                                        style: TextStyle(),
-                                      ),
-                                  onLoading: Shimmer()),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Region',
+                                    style: TextStyle(
+                                      color: Colors.black38,
+                                    )),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                controller.obx(
+                                    (state) =>
+                                        Text(state!.region?.name_en ?? 'N/A'),
+                                    onLoading: Shimmer()),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -127,8 +143,7 @@ class RecordPage extends GetView<RecordController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 120,
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -148,27 +163,27 @@ class RecordPage extends GetView<RecordController> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            width: 32,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Time Used',
+                                    style: TextStyle(
+                                      color: Colors.black38,
+                                    )),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                controller.obx(
+                                    (state) => Text(
+                                          TimeUtils.formatSeconds(state!.time),
+                                          style: TextStyle(),
+                                        ),
+                                    onLoading: Shimmer()),
+                              ],
+                            ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Time Used',
-                                  style: TextStyle(
-                                    color: Colors.black38,
-                                  )),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              controller.obx(
-                                  (state) => Text(
-                                        TimeUtils.formatSeconds(state!.time),
-                                        style: TextStyle(),
-                                      ),
-                                  onLoading: Shimmer()),
-                            ],
-                          )
+                          Expanded(child: SizedBox())
                         ],
                       ),
                       // controller.obx((state) {

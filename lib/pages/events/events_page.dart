@@ -38,7 +38,6 @@ class EventsPage extends StatelessWidget {
             pinned: true,
             elevation: 2,
             shadowColor: Colors.black45,
-            backgroundColor: Colors.white,
             flexibleSpace: HikeeAppBar(
                 elevation: 0,
                 actions: [
