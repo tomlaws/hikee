@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/core/floating_tooltip.dart';
 import 'package:hikee/pages/compass/compass_page.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -140,50 +141,18 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
           ),
         if (marker.hasPopup)
           Positioned(
-            width: 24,
-            height: 24 + 6,
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: marker.onPopupTap,
-              child: Container(
-                  child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        color: marker.popupColor,
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 6,
-                              offset: Offset(0, 5))
-                        ]),
-                    height: 24,
-                    width: 24,
-                    child: Icon(
-                      marker.popupIcon,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 1,
-                    left: 0,
-                    right: 0,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: ClipPath(
-                        clipper: TriangleClipper(),
-                        child: Container(
-                          color: marker.popupColor,
-                          height: 6,
-                          width: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )),
+              child: FloatingTooltip(
+                  ignorePointer: false,
+                  compact: true,
+                  color: marker.popupColor,
+                  child: Icon(
+                    marker.popupIcon,
+                    color: Colors.white,
+                    size: 16,
+                  )),
             ),
             left: pixelPosition.x +
                 ((isDragging && (marker.feedbackOffset != null))

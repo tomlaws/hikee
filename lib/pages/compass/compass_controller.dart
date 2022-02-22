@@ -25,9 +25,7 @@ import 'package:hikee/components/compass/sliding_up_panel.dart';
 import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/models/distance_post.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:collection/collection.dart';
 
 class CompassController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -45,6 +43,7 @@ class CompassController extends GetxController
   final double collapsedPanelHeight = kBottomNavigationBarHeight;
   final panelPosition = 0.0.obs;
   final panelPage = 0.0.obs;
+  final double maxPanelHeight = 320.0;
   final double panelHeaderHeight = 60;
   final lockPosition = false.obs;
   final nearbyFacilities = Rxn<List<Facility>>();

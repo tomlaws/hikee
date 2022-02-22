@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/core/floating_tooltip.dart';
 import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/trails/elevation_profile.dart';
 import 'package:hikee/components/map/map.dart';
@@ -38,7 +39,7 @@ class CompassPage extends GetView<CompassController> {
           child: SlidingUpPanel(
               controller: controller.panelController,
               renderPanelSheet: false,
-              maxHeight: 320,
+              maxHeight: controller.maxPanelHeight,
               minHeight: controller.collapsedPanelHeight,
               color: Colors.transparent,
               onPanelSlide: (position) {
@@ -53,56 +54,25 @@ class CompassPage extends GetView<CompassController> {
               }),
               body: _body(context)),
         ),
-        AnimatedBuilder(
-          animation: controller.tooltipController,
-          builder: (_, __) => Positioned(
+        Obx(() => Positioned(
               bottom: controller.panelPosition.value *
-                      (296 - controller.collapsedPanelHeight) +
+                      (controller.maxPanelHeight -
+                          controller.collapsedPanelHeight) +
                   controller.collapsedPanelHeight +
-                  10 +
-                  controller.alpha.value,
-              left: 0,
-              child: Obx(
-                () => controller.activeTrail.value?.isStarted == true &&
-                        controller.activeTrailProvider.isCloseToGoal.value
-                    ? Opacity(
-                        opacity:
-                            (1 - controller.panelPosition.value).clamp(0, 1),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 8.0),
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: Themes.gradientColors,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0)),
-                              child: Text('Swipe up to finish the trail!',
-                                  style: TextStyle(color: Colors.white)),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(left: 32),
-                              child: ClipPath(
-                                clipper: TriangleClipper(),
-                                child: Container(
-                                  color: Themes.gradientColors[0],
-                                  height: 10,
-                                  width: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : SizedBox(),
-              )),
-        ),
+                  16,
+              left: 8,
+              child: controller.activeTrail.value?.isStarted == true &&
+                      controller.activeTrailProvider.isCloseToGoal.value &&
+                      !controller.activeTrailProvider.recordMode
+                  ? Opacity(
+                      opacity: 1 - controller.panelPosition.value,
+                      child: FloatingTooltip(
+                          animation: true,
+                          child: Text('Swipe up to finish the trail!',
+                              style: TextStyle(fontWeight: FontWeight.w500))),
+                    )
+                  : SizedBox(),
+            )),
         Positioned(
           bottom: 0,
           left: 0,
@@ -1069,18 +1039,4 @@ class CompassPage extends GetView<CompassController> {
     //                 })
     //           ]);
   }
-}
-
-class TriangleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(size.width, 0.0);
-    path.lineTo(size.width / 2, size.height);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(TriangleClipper oldClipper) => false;
 }
