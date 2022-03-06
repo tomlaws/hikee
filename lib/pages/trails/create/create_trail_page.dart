@@ -10,7 +10,6 @@ import 'package:hikee/components/map/map.dart';
 import 'package:hikee/components/core/mutation_builder.dart';
 import 'package:hikee/models/region.dart';
 import 'package:hikee/models/trail.dart';
-import 'package:hikee/utils/dialog.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
@@ -53,7 +52,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
             }));
       }
       return Scaffold(
-          appBar: HikeeAppBar(title: Text("Create Trail"), actions: actions),
+          appBar: HikeeAppBar(title: Text("createTrail".tr), actions: actions),
           body: body);
     });
   }
@@ -76,7 +75,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       borderRadius: BorderRadius.circular(24)),
                   child: controller.images.length == 0
                       ? Button(
-                          child: Text('Upload image'),
+                          child: Text('uploadImage'.tr),
                           onPressed: () {
                             controller.pickImages();
                           },
@@ -145,7 +144,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16)),
                                 child: Button(
-                                    child: Text('Upload image'),
+                                    child: Text('uploadImage'.tr),
                                     onPressed: () {
                                       controller.pickImages();
                                     },
@@ -195,8 +194,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: TextInput(
-                  label: 'Trail Name',
-                  hintText: "Trail name",
+                  label: 'trailName'.tr,
+                  hintText: 'trailName'.tr,
                   controller: controller.nameController,
                 ),
               ),
@@ -209,8 +208,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: TextInput(
-                          label: 'Duration',
-                          hintText: "Duration in minutes",
+                          label: 'duration'.tr,
+                          hintText: 'minutes'.tr,
                           controller: controller.durationController,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
@@ -230,11 +229,11 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Dropdown<Region>(
-                            label: 'Region',
+                            label: 'region'.tr,
                             items: Region.allRegions().toList(),
                             selected: controller.region.value,
                             itemBuilder: (r) {
-                              return Text(r.name_en);
+                              return Text(r.name);
                             },
                             onChanged: (r) {
                               controller.region.value = r;
@@ -246,7 +245,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8),
-                child: Text('Difficulty',
+                child: Text('difficulty'.tr,
                     style: TextStyle(
                         color: Colors.black54, fontWeight: FontWeight.bold)),
               ),
@@ -274,11 +273,11 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 child: SizedBox(
                   height: 160,
                   child: TextInput(
-                      label: 'Description',
+                      label: 'description'.tr,
                       expand: true,
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
-                      hintText: "Description",
+                      hintText: 'description'.tr,
                       controller: controller.descriptionController),
                 ),
               ),
@@ -314,7 +313,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     onPressed: () {
                       mutate();
                     },
-                    child: Text('Publish'),
+                    child: Text('publish'.tr),
                   ),
                   onDone: (Trail? trail) {
                     if (trail != null) {
@@ -372,7 +371,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     ),
                     Button(
                         child: Text(
-                          'Next',
+                          'next'.tr,
                         ),
                         disabled: controller.coordinates.length < 2,
                         onPressed: () {

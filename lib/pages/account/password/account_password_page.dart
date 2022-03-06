@@ -10,7 +10,7 @@ class AccountPasswordPage extends GetView<AccountPasswordController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: HikeeAppBar(title: Text('Update Password')),
+        appBar: HikeeAppBar(title: Text('updatePassword'.tr)),
         body: Column(
           children: [
             Expanded(
@@ -21,22 +21,22 @@ class AccountPasswordPage extends GetView<AccountPasswordController> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextInput(
-                        label: 'Current Password',
-                        hintText: 'Password currently using',
+                        label: 'currentPassword'.tr,
+                        hintText: 'password'.tr,
                       ),
                       SizedBox(
                         height: 16,
                       ),
                       TextInput(
-                        label: 'New Password',
-                        hintText: 'New password for login',
+                        label: 'newPassword'.tr,
+                        hintText: 'password'.tr,
                       ),
                       SizedBox(
                         height: 16,
                       ),
                       TextInput(
-                        label: 'Confirm New Password',
-                        hintText: 'Confirm by typing again',
+                        label: 'confirmNewPassword'.tr,
+                        hintText: 'password'.tr,
                       )
                     ],
                   ),
@@ -55,7 +55,7 @@ class AccountPasswordPage extends GetView<AccountPasswordController> {
               child: Button(
                 minWidth: double.infinity,
                 onPressed: () {},
-                child: Text('Update'),
+                child: Text('update'.tr),
               ),
             )
           ],

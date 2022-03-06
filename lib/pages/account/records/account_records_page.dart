@@ -14,7 +14,7 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xffffffff),
-      appBar: HikeeAppBar(title: Text('Records'), actions: [
+      appBar: HikeeAppBar(title: Text('records'.tr), actions: [
         Button(
           onPressed: () {
             Get.to(AccountRecordsFilter(
@@ -47,7 +47,7 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
           separator: SizedBox(
             height: 16,
           ),
-          empty: 'No records',
+          empty: 'noRecords'.tr,
           builder: (record) {
             return RecordTile(record: record);
           }),

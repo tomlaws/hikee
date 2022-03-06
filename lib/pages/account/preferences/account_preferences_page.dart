@@ -15,7 +15,7 @@ class AccountPreferencesPage extends GetView<AccountPrivacyController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HikeeAppBar(title: Text('Preferences')),
+      appBar: HikeeAppBar(title: Text('preferences'.tr)),
       body: SingleChildScrollView(
           child: Container(
         margin: EdgeInsets.all(16),
@@ -29,7 +29,7 @@ class AccountPreferencesPage extends GetView<AccountPrivacyController> {
             MenuListTile(
               onTap: () {
                 DialogUtils.showDialog(
-                    'Map Provider',
+                    'mapProvider'.tr,
                     Obx(() => Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -57,7 +57,7 @@ class AccountPreferencesPage extends GetView<AccountPrivacyController> {
                           ],
                         )));
               },
-              title: "Map Provider",
+              title: "mapProvider".tr,
               trailing: Obx(() {
                 var mapProvider =
                     _preferencesProvider.preferences.value!.mapProvider;
@@ -67,7 +67,7 @@ class AccountPreferencesPage extends GetView<AccountPrivacyController> {
             MenuListTile(
               onTap: () {
                 DialogUtils.showDialog(
-                    'Language',
+                    'language'.tr,
                     Obx(() => Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -95,7 +95,7 @@ class AccountPreferencesPage extends GetView<AccountPrivacyController> {
                           ],
                         )));
               },
-              title: "Language",
+              title: "language".tr,
               trailing: Obx(() {
                 var language = _preferencesProvider.preferences.value!.language;
                 return Text(language.readableString);

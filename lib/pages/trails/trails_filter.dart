@@ -74,7 +74,7 @@ class _TrailsFilterState extends State<TrailsFilter> {
                               .map(
                                 (r) => Obx(
                                   () => Check(
-                                      label: r.name_en,
+                                      label: r.name,
                                       checked: _regions.value.contains(r.id),
                                       onTap: (v) {
                                         toggleRegion(r.id);

@@ -17,8 +17,8 @@ class Preferences {
         return Get.deviceLocale ?? Locale('en', 'US');
       case Language.EN:
         return Locale('en', 'US');
-      case Language.ZH:
-        return Locale('zh');
+      case Language.ZH_HK:
+        return Locale('zh', 'HK');
       case Language.ZH_CN:
         return Locale('zh', 'CN');
     }
@@ -35,7 +35,7 @@ class Preferences {
 }
 
 enum MapProvider { OpenStreetMap, OpenStreetMapCyclOSM, LandsDepartment }
-enum Language { DEFAULT, EN, ZH, ZH_CN }
+enum Language { DEFAULT, EN, ZH_HK, ZH_CN }
 
 extension MapProviderExtension on MapProvider {
   String get readableString {
@@ -55,7 +55,7 @@ extension LanguageExtension on Language {
     switch (this) {
       case Language.EN:
         return 'English';
-      case Language.ZH:
+      case Language.ZH_HK:
         return '繁體中文';
       case Language.ZH_CN:
         return '简体中文';

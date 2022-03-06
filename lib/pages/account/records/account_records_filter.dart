@@ -63,7 +63,7 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
 
     return Scaffold(
         appBar: HikeeAppBar(
-          title: Text('Filter'),
+          title: Text('filter'.tr),
         ),
         body: Column(
           children: [
@@ -73,7 +73,7 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Regions',
+                    Text('regions'.tr,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Padding(
@@ -85,7 +85,7 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
                               .map(
                                 (r) => Obx(
                                   () => Check(
-                                      label: r.name_en,
+                                      label: r.name,
                                       checked: _regions.value.contains(r.id),
                                       onTap: (v) {
                                         toggleRegion(r.id);
@@ -104,7 +104,7 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
                     SizedBox(
                       height: 16,
                     ),
-                    Text('Duration',
+                    Text('duration'.tr,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Obx(() => Row(
@@ -148,7 +148,7 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
                             ),
                           ],
                         )),
-                    Text('Length',
+                    Text('length'.tr,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Obx(() => Row(
@@ -197,7 +197,7 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
               children: [
                 Expanded(
                     child: Button(
-                        child: Text("Apply"),
+                        child: Text("apply".tr),
                         onPressed: () {
                           apply();
                         }))

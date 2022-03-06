@@ -5,7 +5,6 @@ import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
 import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/models/paginated.dart';
 import 'package:hikee/pages/search/search_controller.dart';
 
 class SearchPage<U, C extends PaginationController<U>> extends StatefulWidget {
@@ -57,7 +56,7 @@ class _SearchPageState<U, C extends PaginationController<U>>
           ],
           title: TextInput(
             textEditingController: _searchController.searchController,
-            hintText: 'Search...',
+            hintText: 'search'.tr + '...',
             textInputAction: TextInputAction.search,
             icon: Icon(Icons.search),
             autoFocus: true,
@@ -104,7 +103,7 @@ class _SearchPageState<U, C extends PaginationController<U>>
                     controller: _controller,
                     firstFetch: false,
                     empty: Center(
-                      child: Text('No results found'),
+                      child: Text('noResultsFound'.tr),
                     ),
                     separator: SizedBox(
                       height: 16,

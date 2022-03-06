@@ -40,7 +40,7 @@ class AccountHeader extends GetView {
                             fontSize: 24,
                             width: 90,
                           )
-                        : Text(user?.nickname ?? 'Unnamed',
+                        : Text(user?.nickname ?? 'unnamed'.tr,
                             style: TextStyle(fontSize: 24))),
               )
             ]),
@@ -77,7 +77,7 @@ class AccountHeader extends GetView {
                               ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
-                          'hours',
+                          'hours'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.w200,
                             letterSpacing: 1,
@@ -99,7 +99,7 @@ class AccountHeader extends GetView {
                     child: Column(
                       children: [
                         Icon(
-                          LineAwesomeIcons.map_pin,
+                          LineAwesomeIcons.route,
                           size: 32,
                           color: Theme.of(context).primaryColor,
                         ),
@@ -115,7 +115,7 @@ class AccountHeader extends GetView {
                               ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
-                          'trails',
+                          'trails'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.w200,
                             letterSpacing: 1,
@@ -155,7 +155,7 @@ class AccountHeader extends GetView {
                               ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
-                          'miles',
+                          'miles'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.w200,
                             letterSpacing: 1,
@@ -193,7 +193,7 @@ class AccountHeader extends GetView {
                               ),
                         Padding(padding: const EdgeInsets.only(top: 8)),
                         Text(
-                          'events',
+                          'events'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.w200,
                             letterSpacing: 1,

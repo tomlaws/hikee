@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hikee/themes.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikee/models/elevation.dart';
@@ -20,7 +21,7 @@ class ElevationProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     if (elevations.length == 0) {
       return Center(
-        child: Text('No data'),
+        child: Text('noData'.tr),
       );
     }
 
@@ -56,7 +57,7 @@ class ElevationProfile extends StatelessWidget {
     int interval = ((maxE - minE) / 6).round();
     if (interval == 0) {
       return Center(
-        child: Text('No data'),
+        child: Text('noData'.tr),
       );
     }
     bool _showCurrent = true;
@@ -74,7 +75,7 @@ class ElevationProfile extends StatelessWidget {
               show: true,
               leftTitle: AxisTitle(
                   showTitle: false,
-                  titleText: 'Elevation',
+                  titleText: 'elevation'.tr,
                   textStyle: TextStyle(color: Colors.blueGrey))),
           titlesData: FlTitlesData(
             topTitles: SideTitles(showTitles: false),

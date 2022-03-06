@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/messages.dart';
 import 'package:hikee/middlewares/auth.dart';
+import 'package:hikee/pages/account/bookmarks/account_bookmarks_binding.dart';
+import 'package:hikee/pages/account/bookmarks/account_bookmarks_page.dart';
 import 'package:hikee/pages/account/password/account_password_binding.dart';
 import 'package:hikee/pages/account/password/account_password_page.dart';
 import 'package:hikee/pages/account/preferences/account_preferences_binding.dart';
 import 'package:hikee/pages/account/preferences/account_preferences_page.dart';
 import 'package:hikee/pages/account/privacy/account_privacy_binding.dart';
 import 'package:hikee/pages/account/privacy/account_privacy_page.dart';
+import 'package:hikee/pages/account/profile/account_profile_binding.dart';
+import 'package:hikee/pages/account/profile/account_profile_page.dart';
 import 'package:hikee/pages/account/records/account_records_binding.dart';
 import 'package:hikee/pages/account/records/account_records_page.dart';
 import 'package:hikee/pages/auth/login_binding.dart';
@@ -196,6 +200,18 @@ class MyApp extends StatelessWidget {
           name: '/privacy',
           page: () => AccountPrivacyPage(),
           binding: AccountPrivacyBinding(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: '/profile',
+          page: () => AccountProfilePage(),
+          binding: AccountProfileBinding(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: '/bookmarks',
+          page: () => AccountBookmarksPage(),
+          binding: AccountBookmarksBinding(),
           middlewares: [AuthMiddleware()],
         ),
         GetPage(

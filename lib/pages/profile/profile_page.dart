@@ -28,7 +28,7 @@ class ProfilePage extends GetView<ProfileController> {
               SizedBox(height: 8),
               if (controller.user.value?.isPrivate == true)
                 Expanded(
-                    child: Center(child: Text('Trail records are hidden'))),
+                    child: Center(child: Text('trailRecordsAreHidden'.tr))),
             ])
           : InfiniteScroller<Record>(
               headers: [
@@ -43,7 +43,7 @@ class ProfilePage extends GetView<ProfileController> {
               separator: SizedBox(
                 height: 16,
               ),
-              empty: 'No records',
+              empty: 'noRecords'.tr,
               loadingItemCount: 5,
               loadingBuilder: RecordTile(record: null),
               builder: (record) {

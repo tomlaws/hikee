@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/floating_tooltip.dart';
-import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/trails/elevation_profile.dart';
 import 'package:hikee/components/map/map.dart';
 import 'package:hikee/components/core/mutation_builder.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/color.dart';
 import 'package:latlong2/latlong.dart' hide Path;
@@ -17,7 +17,6 @@ import 'package:hikee/components/core/keep_alive.dart';
 import 'package:hikee/components/compass/mountain_deco.dart';
 import 'package:hikee/components/compass/active_trail_info.dart';
 import 'package:hikee/components/compass/sliding_up_panel.dart';
-import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/compass/weather_controller.dart';
 import 'package:hikee/pages/home/home_controller.dart';
@@ -29,6 +28,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CompassPage extends GetView<CompassController> {
   final _weatherController = Get.find<WeatherController>();
+  final _authProvider = Get.find<AuthProvider>();
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
@@ -68,7 +68,7 @@ class CompassPage extends GetView<CompassController> {
                       opacity: 1 - controller.panelPosition.value,
                       child: FloatingTooltip(
                           animation: true,
-                          child: Text('Swipe up to finish the trail!',
+                          child: Text('swipeUpToFinishTheTrail'.tr + '!',
                               style: TextStyle(fontWeight: FontWeight.w500))),
                     )
                   : SizedBox(),
@@ -265,11 +265,11 @@ class CompassPage extends GetView<CompassController> {
                           children: [
                             Text(
                               controller.activeTrailProvider.recordMode
-                                  ? 'You\'re in recording mode'
+                                  ? 'youreInRecordingMode'.tr
                                   : controller.activeTrailProvider
                                           .isCloseToStart.value
-                                      ? 'You\'re now at the start of the trail'
-                                      : 'You\'re far away from the trail',
+                                      ? 'youreNowAtTheStartOfTheTrail'.tr
+                                      : 'youreFarAwayFromTheTrail'.tr,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -288,8 +288,9 @@ class CompassPage extends GetView<CompassController> {
                                                   .isCloseToStart.value ||
                                               controller.activeTrailProvider
                                                   .recordMode
-                                          ? 'Swipe up to start recording!'
-                                          : 'Please reach to the starting point first',
+                                          ? 'swipeUpToStartRecording'.tr
+                                          : 'pleaseReachToTheStartingPointFirst'
+                                              .tr,
                                       style: TextStyle(fontSize: 12)),
                                 ),
                                 Positioned(
@@ -301,11 +302,12 @@ class CompassPage extends GetView<CompassController> {
                                     child: Text(
                                         controller
                                                 .activeTrailProvider.recordMode
-                                            ? 'Start when you\'re ready!'
+                                            ? 'startWhenYoureReady'.tr
                                             : controller.activeTrailProvider
                                                     .isCloseToStart.value
-                                                ? 'Let\'s get started!'
-                                                : 'Please reach to the starting point first',
+                                                ? 'letsGetStarted'.tr
+                                                : 'pleaseReachToTheStartingPointFirst'
+                                                    .tr,
                                         style: TextStyle(fontSize: 12)),
                                   ),
                                 )
@@ -372,7 +374,7 @@ class CompassPage extends GetView<CompassController> {
                                               size: 18,
                                             ),
                                             Text(
-                                              'Nearby Facilities',
+                                              'nearbyFacilities'.tr,
                                             )
                                           ]),
                                     );
@@ -400,7 +402,7 @@ class CompassPage extends GetView<CompassController> {
                                               size: 18,
                                             ),
                                             Text(
-                                              'Emergency',
+                                              'emergency'.tr,
                                             )
                                           ]),
                                     );
@@ -439,7 +441,7 @@ class CompassPage extends GetView<CompassController> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    facility.name,
+                                                    facility.localizedName,
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold),
@@ -481,7 +483,8 @@ class CompassPage extends GetView<CompassController> {
                                                   controller.addMarker(
                                                       location:
                                                           facility.location,
-                                                      title: facility.name);
+                                                      title: facility
+                                                          .localizedName);
                                                   controller.mapController
                                                       ?.focus(
                                                           facility.location);
@@ -506,8 +509,8 @@ class CompassPage extends GetView<CompassController> {
                                                         .nearbyFacilities
                                                         .value ==
                                                     null
-                                                ? 'Discover nearby facilities'
-                                                : 'No nearby facilities')),
+                                                ? 'discoverNearbyFacilities'.tr
+                                                : 'noNearbyFacilities'.tr)),
                                         SizedBox(
                                           height: 16,
                                         ),
@@ -524,8 +527,8 @@ class CompassPage extends GetView<CompassController> {
                                                         .nearbyFacilities
                                                         .value ==
                                                     null
-                                                ? 'Discover facilities'
-                                                : 'Refresh'),
+                                                ? 'discoverFacilities'.tr
+                                                : 'refresh'.tr),
                                           );
                                         }),
                                       ],
@@ -662,7 +665,7 @@ class CompassPage extends GetView<CompassController> {
                                         child: GestureDetector(
                                           onTap: () {
                                             DialogUtils.showDialog(
-                                                'Warning',
+                                                'warning'.tr,
                                                 Column(
                                                   children: [
                                                     Padding(
@@ -728,7 +731,7 @@ class CompassPage extends GetView<CompassController> {
                               Button(
                                 invert: true,
                                 child: Text(
-                                  'Discover Trails',
+                                  'discoverTrails'.tr,
                                   style: TextStyle(
                                       color: ColorUtils.darken(
                                           Get.theme.primaryColor, 0.2)),
@@ -739,19 +742,21 @@ class CompassPage extends GetView<CompassController> {
                                   Get.toNamed('/', id: 1);
                                 },
                               ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Button(
-                                invert: true,
-                                child: Text('Record Trail',
-                                    style: TextStyle(
-                                        color: ColorUtils.darken(
-                                            Get.theme.primaryColor, 0.2))),
-                                onPressed: () {
-                                  controller.record();
-                                },
-                              )
+                              if (_authProvider.loggedIn.value) ...[
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Button(
+                                  invert: true,
+                                  child: Text('recordTrail'.tr,
+                                      style: TextStyle(
+                                          color: ColorUtils.darken(
+                                              Get.theme.primaryColor, 0.2))),
+                                  onPressed: () {
+                                    controller.record();
+                                  },
+                                )
+                              ]
                             ],
                           ))
                       ],
@@ -864,8 +869,8 @@ class CompassPage extends GetView<CompassController> {
                   Expanded(
                     child: Button(
                         child: Text(controller.activeTrailProvider.recordMode
-                            ? 'Start Recording'
-                            : 'Start Now'),
+                            ? 'startRecording'.tr
+                            : 'startNow'.tr),
                         backgroundColor: closeEnough || recordMode
                             ? Get.theme.primaryColor
                             : Colors.grey,
@@ -886,8 +891,8 @@ class CompassPage extends GetView<CompassController> {
                   Expanded(
                     child: Button(
                         child: Text(controller.activeTrailProvider.recordMode
-                            ? 'Finish Recording'
-                            : 'Finish Trail'),
+                            ? 'finishRecording'.tr
+                            : 'finishTrail'.tr),
                         disabled: !controller.activeTrailProvider.recordMode &&
                             !controller.isCloseToGoal.value,
                         onPressed: () {
@@ -898,8 +903,8 @@ class CompassPage extends GetView<CompassController> {
                 Expanded(
                   child: Button(
                       child: Text(controller.activeTrailProvider.recordMode
-                          ? 'Quit Recording'
-                          : 'Quit Trail'),
+                          ? 'quitRecording'.tr
+                          : 'quitTrail'.tr),
                       secondary: true,
                       onPressed: () {
                         controller.activeTrailProvider.quit();
@@ -920,24 +925,24 @@ class CompassPage extends GetView<CompassController> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Seems too far away...'),
+          title: Text('seemsTooFarAway'.tr + '...'),
           content: SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
-                Text('You\'re not at the start of the trail'),
-                Text('Would you like to check how to reach there?'),
+              children: [
+                Text('youreNotAtTheStartOfTheTrail'.tr),
+                Text('wouldYouLikeToCheckHowToReachThere'.tr),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('No, thanks'),
+              child: Text('noThanks'.tr),
               onPressed: () {
                 Get.back();
               },
             ),
             TextButton(
-              child: const Text('Yes'),
+              child: Text('yes'.tr),
               onPressed: () {
                 controller.googleMapDir();
                 Get.back();

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/connection_error.dart';
 import 'package:hikee/controllers/shared/pagination.dart';
 
 class InfiniteScroller<U> extends StatefulWidget {
@@ -140,6 +141,7 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
                 })
               : CircularProgressIndicator(),
         ),
+        onError: (error) => ConnectionError(),
         onEmpty: SizedBox());
   }
 

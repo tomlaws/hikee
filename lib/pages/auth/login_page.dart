@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/button.dart';
@@ -19,20 +18,27 @@ class LoginPage extends GetView<LoginController> {
         children: [
           Container(
             height: 100,
+            child: Text(
+              'Hikees',
+              style: TextStyle(
+                  fontSize: 64,
+                  fontWeight: FontWeight.bold,
+                  color: Get.theme.primaryColor),
+            ),
           ),
           Padding(
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
                 TextInput(
-                  hintText: 'Email',
+                  hintText: 'email'.tr,
                   controller: controller.emailController,
                 ),
                 Container(
                   height: 16,
                 ),
                 TextInput(
-                  hintText: 'Password',
+                  hintText: 'password'.tr,
                   obscureText: true,
                   controller: controller.passwordController,
                 ),
@@ -49,7 +55,7 @@ class LoginPage extends GetView<LoginController> {
                     onError: controller.onError,
                     builder: (mutate, loading) {
                       return Button(
-                          child: Text('LOGIN'),
+                          child: Text('login'.tr),
                           loading: loading,
                           onPressed: mutate);
                     },
@@ -59,7 +65,7 @@ class LoginPage extends GetView<LoginController> {
                   height: 16,
                 ),
                 GestureDetector(
-                  child: Text('Or sign up now'),
+                  child: Text('orSignUpNow'.tr),
                   onTap: () {
                     Get.offNamed('/register');
                   },

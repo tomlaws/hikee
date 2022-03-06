@@ -48,7 +48,7 @@ K _$enumDecode<K, V>(
 const _$LanguageEnumMap = {
   Language.DEFAULT: 'DEFAULT',
   Language.EN: 'EN',
-  Language.ZH: 'ZH',
+  Language.ZH_HK: 'ZH_HK',
   Language.ZH_CN: 'ZH_CN',
 };
 

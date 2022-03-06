@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/events/event_tile.dart';
-import 'package:hikee/models/event.dart';
-import 'package:hikee/pages/account/events/account_events_controller.dart';
+import 'package:hikee/components/trails/trail_tile.dart';
+import 'package:hikee/models/bookmark.dart';
+import 'package:hikee/pages/account/bookmarks/account_bookmarks_controller.dart';
 
-class AccountEventsPage extends GetView<AccountEventsController> {
+class AccountBookmarksPage extends GetView<AccountBookmarksController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HikeeAppBar(
-        title: Text('events'.tr),
+        title: Text('bookmarks'.tr),
       ),
-      body: InfiniteScroller<Event>(
+      body: InfiniteScroller<Bookmark>(
         controller: controller,
         empty: Center(
           child: Text('noParticipatedEvents'.tr),
@@ -21,9 +21,9 @@ class AccountEventsPage extends GetView<AccountEventsController> {
         separator: SizedBox(
           height: 16,
         ),
-        builder: (event) {
-          return EventTile(
-            event: event,
+        builder: (bookmark) {
+          return TrailTile(
+            trail: bookmark.trail,
           );
         },
       ),

@@ -12,7 +12,7 @@ class TrailEventsPage extends GetView<TrailEventsController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: HikeeAppBar(
-          title: Text('Trail Events'.tr),
+          title: Text('events'.tr),
         ),
         body: Column(
           children: [
@@ -23,7 +23,7 @@ class TrailEventsPage extends GetView<TrailEventsController> {
                   height: 16,
                 ),
                 empty: Center(
-                  child: Text('There\'s no event for this trail currently.'),
+                  child: Text('theresNoEventForThisTrailCurrently'.tr),
                 ),
                 builder: (event) {
                   return EventTile(
@@ -44,7 +44,7 @@ class TrailEventsPage extends GetView<TrailEventsController> {
               child: Row(children: [
                 Expanded(
                   child: Button(
-                      child: Text('Create Event'),
+                      child: Text('createEvent'.tr),
                       onPressed: () {
                         Get.offAndToNamed(
                             '/events/create/${controller.trailId}');

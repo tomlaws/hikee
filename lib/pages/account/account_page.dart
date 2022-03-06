@@ -11,114 +11,134 @@ class AccountPage extends GetView<AccountController> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Get.put(AuthProvider());
-    return Scaffold(
-      backgroundColor: Color(0xffffffff),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          controller.refreshAccount();
-        },
-        child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics()),
-            child: SafeArea(
-              child: Obx(
-                () => Column(
-                  children: [
-                    if (authProvider.loggedIn.value)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Obx(() => AccountHeader(
-                              user: controller.user.value,
-                              onAvatarTap: () {
-                                controller.promptUploadIcon();
-                              },
-                            )),
+    final content = SafeArea(
+      child: Obx(
+        () => Column(
+          children: [
+            if (authProvider.loggedIn.value)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Obx(() => AccountHeader(
+                      user: controller.user.value,
+                      onAvatarTap: () {
+                        controller.promptUploadIcon();
+                      },
+                    )),
+              ),
+            Container(
+              margin: EdgeInsets.all(16),
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                  boxShadow: [Themes.lightShadow],
+                  borderRadius: BorderRadius.circular(16.0)),
+              child: Column(
+                children: [
+                  if (authProvider.loggedIn.value)
+                    MenuListTile(
+                      onTap: () {
+                        Get.toNamed('/records');
+                      },
+                      title: "records".tr,
+                      icon: Icon(
+                        LineAwesomeIcons.trophy,
+                        size: 32,
+                        color: Colors.black26,
                       ),
-                    Container(
-                      margin: EdgeInsets.all(16),
-                      clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                          boxShadow: [Themes.lightShadow],
-                          borderRadius: BorderRadius.circular(16.0)),
-                      child: Column(
-                        children: [
-                          if (authProvider.loggedIn.value)
-                            MenuListTile(
-                              onTap: () {
-                                Get.toNamed('/records');
-                              },
-                              title: "Records",
-                              icon: Icon(
-                                LineAwesomeIcons.trophy,
-                                size: 32,
-                                color: Colors.black26,
-                              ),
-                            ),
-                          if (authProvider.loggedIn.value)
-                            MenuListTile(
-                              onTap: () {},
-                              title: "Profile",
-                              icon: Icon(
-                                LineAwesomeIcons.user,
-                                size: 32,
-                                color: Colors.black26,
-                              ),
-                            ),
-                          MenuListTile(
-                            onTap: () {
-                              Get.toNamed('/preferences');
-                            },
-                            title: "Preferences",
-                            icon: Icon(
-                              LineAwesomeIcons.horizontal_sliders,
-                              size: 32,
-                              color: Colors.black26,
-                            ),
-                          ),
-                          if (authProvider.loggedIn.value)
-                            MenuListTile(
-                              onTap: () {
-                                Get.toNamed('/privacy');
-                              },
-                              title: "Privacy & Security",
-                              icon: Icon(
-                                LineAwesomeIcons.user_secret,
-                                size: 32,
-                                color: Colors.black26,
-                              ),
-                            ),
-                          if (authProvider.loggedIn.value)
-                            MenuListTile(
-                              onTap: () {
-                                controller.logout();
-                              },
-                              title: "Logout",
-                              icon: Icon(
-                                LineAwesomeIcons.door_open,
-                                size: 32,
-                                color: Colors.black26,
-                              ),
-                            )
-                          else
-                            MenuListTile(
-                              onTap: () {
-                                Get.toNamed('/login');
-                              },
-                              title: "Login",
-                              icon: Icon(
-                                LineAwesomeIcons.door_closed,
-                                size: 32,
-                                color: Colors.black26,
-                              ),
-                            ),
-                        ],
+                    ),
+                  if (authProvider.loggedIn.value)
+                    MenuListTile(
+                      onTap: () {
+                        Get.toNamed('/bookmarks');
+                      },
+                      title: "bookmarks".tr,
+                      icon: Icon(
+                        LineAwesomeIcons.bookmark,
+                        size: 32,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  if (authProvider.loggedIn.value)
+                    MenuListTile(
+                      onTap: () {
+                        Get.toNamed('/profile');
+                      },
+                      title: "profile".tr,
+                      icon: Icon(
+                        LineAwesomeIcons.user,
+                        size: 32,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  MenuListTile(
+                    onTap: () {
+                      Get.toNamed('/preferences');
+                    },
+                    title: "preferences".tr,
+                    icon: Icon(
+                      LineAwesomeIcons.horizontal_sliders,
+                      size: 32,
+                      color: Colors.black26,
+                    ),
+                  ),
+                  if (authProvider.loggedIn.value)
+                    MenuListTile(
+                      onTap: () {
+                        Get.toNamed('/privacy');
+                      },
+                      title: "privacyAndSecurity".tr,
+                      icon: Icon(
+                        LineAwesomeIcons.user_secret,
+                        size: 32,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  if (authProvider.loggedIn.value)
+                    MenuListTile(
+                      onTap: () {
+                        controller.logout();
+                      },
+                      title: "logout".tr,
+                      icon: Icon(
+                        LineAwesomeIcons.door_open,
+                        size: 32,
+                        color: Colors.black26,
                       ),
                     )
-                  ],
-                ),
+                  else
+                    MenuListTile(
+                      onTap: () {
+                        Get.toNamed('/login');
+                      },
+                      title: 'login'.tr,
+                      icon: Icon(
+                        LineAwesomeIcons.door_closed,
+                        size: 32,
+                        color: Colors.black26,
+                      ),
+                    ),
+                ],
               ),
-            )),
+            )
+          ],
+        ),
       ),
+    );
+    return Scaffold(
+      backgroundColor: Color(0xffffffff),
+      body: Obx(() {
+        if (authProvider.loggedIn.value)
+          return RefreshIndicator(
+            onRefresh: () async {
+              controller.refreshAccount();
+            },
+            child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                child: content),
+          );
+        else
+          return content;
+      }),
     );
   }
 }

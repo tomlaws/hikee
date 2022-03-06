@@ -10,7 +10,7 @@ class TrailCategoriesPage extends GetView<TrailCategoriesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: HikeeAppBar(title: Text("Categories")),
+        appBar: HikeeAppBar(title: Text("categories".tr)),
         body: controller.obx(
           (state) => GridView.count(
             padding: EdgeInsets.all(16),
@@ -40,7 +40,7 @@ class TrailCategoriesPage extends GetView<TrailCategoriesController> {
           onTap: () {
             if (category != null)
               Get.toNamed('/trails/categories/${category.id}',
-                  arguments: {'categoryName': category.name_en});
+                  arguments: {'categoryName': category.name});
           },
           child: Container(
             child: Column(
@@ -59,7 +59,7 @@ class TrailCategoriesPage extends GetView<TrailCategoriesController> {
                   ),
                 ),
                 SizedBox(height: 16),
-                category == null ? Shimmer() : Text(category.name_en)
+                category == null ? Shimmer() : Text(category.name)
               ],
             ),
           ),

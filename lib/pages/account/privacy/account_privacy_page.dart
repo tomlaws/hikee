@@ -10,7 +10,7 @@ class AccountPrivacyPage extends GetView<AccountPrivacyController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HikeeAppBar(title: Text('Privacy & Security')),
+      appBar: HikeeAppBar(title: Text('privacyAndSecurity'.tr)),
       body: SingleChildScrollView(
           child: Container(
         margin: EdgeInsets.all(16),
@@ -35,7 +35,7 @@ class AccountPrivacyPage extends GetView<AccountPrivacyController> {
                         controller.isPrivate.toggle();
                         mutate();
                       },
-                      title: "Hide Trail Records",
+                      title: "hideTrailRecords".tr,
                     ),
                   );
                 }),
@@ -43,7 +43,7 @@ class AccountPrivacyPage extends GetView<AccountPrivacyController> {
               onTap: () {
                 Get.toNamed('/password');
               },
-              title: "Update Password",
+              title: "updatePassword".tr,
             ),
           ],
         ),

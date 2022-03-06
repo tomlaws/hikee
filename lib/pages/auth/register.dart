@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/button.dart';
@@ -17,20 +16,27 @@ class RegisterPage extends GetView<RegisterController> {
         children: [
           Container(
             height: 100,
+            child: Text(
+              'Hikees',
+              style: TextStyle(
+                  fontSize: 64,
+                  fontWeight: FontWeight.bold,
+                  color: Get.theme.primaryColor),
+            ),
           ),
           Padding(
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
                 TextInput(
-                  hintText: 'Email',
+                  hintText: 'email'.tr,
                   controller: controller.emailController,
                 ),
                 Container(
                   height: 16,
                 ),
                 TextInput(
-                  hintText: 'Password',
+                  hintText: 'password'.tr,
                   obscureText: true,
                   controller: controller.passwordController,
                 ),
@@ -38,7 +44,7 @@ class RegisterPage extends GetView<RegisterController> {
                   height: 16,
                 ),
                 TextInput(
-                  hintText: 'Confirm password',
+                  hintText: 'confirmPassword'.tr,
                   obscureText: true,
                   controller: controller.confirmPasswordController,
                 ),
@@ -53,7 +59,7 @@ class RegisterPage extends GetView<RegisterController> {
                     onDone: controller.onDone,
                     builder: (mutate, loading) {
                       return Button(
-                          child: Text('REGISTER'),
+                          child: Text('register'.tr),
                           loading: loading,
                           onPressed: mutate);
                     },
@@ -63,7 +69,7 @@ class RegisterPage extends GetView<RegisterController> {
                   height: 16,
                 ),
                 GestureDetector(
-                  child: Text('Or sign in now'),
+                  child: Text('orSignInNow'.tr),
                   onTap: () {
                     Get.offNamed('/login');
                   },

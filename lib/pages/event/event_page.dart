@@ -52,7 +52,7 @@ class EventPage extends GetView<EventController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Date',
+                          Text('date'.tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -103,8 +103,7 @@ class EventPage extends GetView<EventController> {
                                         description:
                                             controller.state?.description ?? '',
                                         location:
-                                            controller.state?.trail.name_en ??
-                                                '',
+                                            controller.state?.trail.name ?? '',
                                         startDate: startDate,
                                         endDate: endDate);
                                     Add2Calendar.addEvent2Cal(event);
@@ -117,7 +116,7 @@ class EventPage extends GetView<EventController> {
                               ],
                             ),
                           ),
-                          Text('Participants',
+                          Text('paticipants'.tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -131,7 +130,7 @@ class EventPage extends GetView<EventController> {
                                     true,
                                     context)),
                           ),
-                          Text('Description',
+                          Text('description'.tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -185,17 +184,17 @@ class EventPage extends GetView<EventController> {
                           onPressed: () {
                             if (event.isExpired) {
                               DialogUtils.showDialog(
-                                  'Error', 'This event has expired.');
+                                  'error'.tr, 'thisEventHasExpired'.tr);
                               return;
                             }
                             mutate();
                           },
                           safeArea: true,
                           child: Text(event.isExpired
-                              ? 'Expired'
+                              ? 'expired'.tr
                               : joined
-                                  ? 'Quit'
-                                  : 'Join'),
+                                  ? 'quit'.tr
+                                  : 'join'.tr),
                         );
                       },
                     ),
@@ -220,11 +219,10 @@ class EventPage extends GetView<EventController> {
               (avatarHeight + spacing))
           .floor();
     }
-    print('take' + take.toString());
     return InfiniteScroller<EventParticipation>(
       controller: controller,
       take: take,
-      empty: 'No participants yet',
+      empty: 'noParticipants'.tr,
       padding: EdgeInsets.zero,
       separator: SizedBox(width: spacing),
       horizontal: summary,

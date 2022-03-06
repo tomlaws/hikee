@@ -75,7 +75,7 @@ class TrailTile extends StatelessWidget {
                   children: [
                     trail == null
                         ? Shimmer(fontSize: 16)
-                        : Text(trail!.name_en,
+                        : Text(trail!.name,
                             maxLines: 1,
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold)),
@@ -89,7 +89,7 @@ class TrailTile extends StatelessWidget {
                         trail == null
                             ? Shimmer(fontSize: 12, width: 88)
                             : Text(
-                                trail!.region.name_en,
+                                trail!.region.name,
                                 maxLines: 1,
                                 style: TextStyle(
                                     color: Colors.black54, fontSize: 12),

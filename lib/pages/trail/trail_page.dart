@@ -6,6 +6,7 @@ import 'package:hikee/components/core/avatar.dart';
 import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/infinite_scroller.dart';
+import 'package:hikee/components/core/mutation_builder.dart';
 import 'package:hikee/components/core/text_may_overflow.dart';
 import 'package:hikee/components/map/drag_marker.dart';
 import 'package:hikee/components/map/map.dart';
@@ -15,6 +16,7 @@ import 'package:hikee/models/trail_review.dart';
 import 'package:hikee/pages/compass/compass_controller.dart';
 import 'package:hikee/pages/home/home_controller.dart';
 import 'package:hikee/pages/trail/trail_controller.dart';
+import 'package:hikee/providers/auth.dart';
 import 'package:hikee/themes.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:hikee/utils/geo.dart';
@@ -25,6 +27,7 @@ import 'package:readmore/readmore.dart';
 import 'package:photo_view/photo_view.dart';
 
 class TrailPage extends GetView<TrailController> {
+  final _authProvider = Get.find<AuthProvider>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +58,11 @@ class TrailPage extends GetView<TrailController> {
                                     SizedBox(
                                       height: 280,
                                       child: controller.obx((state) {
-                                        var images = state!.images
+                                        List<Widget> images = (state!
+                                                        .images.length ==
+                                                    0
+                                                ? [state.image]
+                                                : state.images)
                                             .map((img) => GestureDetector(
                                                   onTap: () => _fullscreen(img),
                                                   child: CachedNetworkImage(
@@ -100,7 +107,7 @@ class TrailPage extends GetView<TrailController> {
                                             children: [
                                               controller.obx(
                                                   (state) => TextMayOverflow(
-                                                      state!.name_en,
+                                                      state!.name,
                                                       style: TextStyle(
                                                           fontSize: 18,
                                                           fontWeight:
@@ -129,7 +136,7 @@ class TrailPage extends GetView<TrailController> {
                                                       controller.obx(
                                                           (state) => Text(
                                                                 state!.region
-                                                                    .name_en,
+                                                                    .name,
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         12,
@@ -247,25 +254,63 @@ class TrailPage extends GetView<TrailController> {
                                           onPressed: Get.back),
                                     ),
                                     Positioned(
-                                        top: 16,
                                         right: 16,
-                                        child: controller.obx((state) {
-                                          var bookmarked =
-                                              state!.bookmark != null;
-                                          return Button(
-                                              backgroundColor: Colors.white,
-                                              radius: 36,
-                                              height: 36,
-                                              minWidth: 36,
-                                              icon: Icon(
-                                                bookmarked
-                                                    ? Icons.bookmark
-                                                    : Icons.bookmark_outline,
-                                                color: Colors.black87,
-                                                size: 20,
-                                              ),
-                                              onPressed: () {});
-                                        }, onLoading: SizedBox())),
+                                        top: 16,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Obx(() => _authProvider
+                                                    .loggedIn.value
+                                                ? Positioned(
+                                                    top: 16,
+                                                    right: 64,
+                                                    child:
+                                                        controller.obx((state) {
+                                                      var bookmarked =
+                                                          state!.bookmark !=
+                                                              null;
+                                                      return MutationBuilder(
+                                                          mutation: controller
+                                                              .toggleBookmark,
+                                                          builder: (mutate,
+                                                              loading) {
+                                                            return Button(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                                radius: 36,
+                                                                height: 36,
+                                                                minWidth: 36,
+                                                                loading:
+                                                                    loading,
+                                                                icon: Icon(
+                                                                  bookmarked
+                                                                      ? Icons
+                                                                          .bookmark
+                                                                      : Icons
+                                                                          .bookmark_outline,
+                                                                  color: Colors
+                                                                      .black87,
+                                                                  size: 20,
+                                                                ),
+                                                                onPressed:
+                                                                    mutate);
+                                                          });
+                                                    }, onLoading: SizedBox()))
+                                                : SizedBox()),
+                                            // Button(
+                                            //     backgroundColor: Colors.white,
+                                            //     radius: 36,
+                                            //     height: 36,
+                                            //     minWidth: 36,
+                                            //     icon: Icon(
+                                            //       Icons.share,
+                                            //       color: Colors.black87,
+                                            //       size: 20,
+                                            //     ),
+                                            //     onPressed: () {})
+                                          ],
+                                        )),
                                   ]),
                             ),
                             SizedBox(
@@ -279,7 +324,7 @@ class TrailPage extends GetView<TrailController> {
                                     Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 16.0),
-                                        child: Text('Creator',
+                                        child: Text('creator'.tr,
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -303,7 +348,7 @@ class TrailPage extends GetView<TrailController> {
                                                   Text(state.creator!.nickname)
                                                 ]),
                                               )
-                                            : Text('From HKGOV'),
+                                            : Text('afcd'.tr),
                                         onLoading: Row(children: [
                                           Avatar(user: null, height: 24),
                                           SizedBox(
@@ -319,19 +364,19 @@ class TrailPage extends GetView<TrailController> {
                                     Padding(
                                         padding: const EdgeInsets.only(
                                             top: 16.0, bottom: 12.0),
-                                        child: Text('Description',
+                                        child: Text('description'.tr,
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ))),
                                     controller.obx(
                                         (state) => ReadMoreText(
-                                              state!.description_en,
+                                              state!.description,
                                               trimLines: 3,
                                               colorClickableText: Colors.pink,
                                               trimMode: TrimMode.Line,
-                                              trimCollapsedText: 'Show more',
-                                              trimExpandedText: 'Show less',
+                                              trimCollapsedText: 'showMore'.tr,
+                                              trimExpandedText: 'showLess'.tr,
                                               textAlign: TextAlign.start,
                                               style: TextStyle(
                                                   height: 1.6,
@@ -378,7 +423,7 @@ class TrailPage extends GetView<TrailController> {
                                                         onTap: (_) {
                                                           DialogUtils
                                                               .showDialog(
-                                                                  "Message",
+                                                                  "message".tr,
                                                                   pos.message!);
                                                         },
                                                         builder: (_) {
@@ -406,7 +451,7 @@ class TrailPage extends GetView<TrailController> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            Text('Reviews',
+                                            Text('reviews'.tr,
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -432,7 +477,7 @@ class TrailPage extends GetView<TrailController> {
                                       controller:
                                           controller.trailReviewsController,
                                       separator: SizedBox(height: 16),
-                                      empty: 'No reviews yet',
+                                      empty: 'noReviews'.tr,
                                       footersBuilder: (hasMore) {
                                         if (hasMore) {
                                           return [
@@ -445,7 +490,7 @@ class TrailPage extends GetView<TrailController> {
                                                 onPressed: () {
                                                   controller.viewMoreReviews();
                                                 },
-                                                child: Text('View More'),
+                                                child: Text('showMore'.tr),
                                                 invert: true,
                                               ),
                                             )
@@ -485,7 +530,7 @@ class TrailPage extends GetView<TrailController> {
                       Navigator.of(context).popUntil((route) => route
                           .isFirst); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
                     },
-                    child: Text('Select Now'),
+                    child: Text('selectNow'.tr),
                   ),
                 ),
                 SizedBox(
@@ -498,7 +543,7 @@ class TrailPage extends GetView<TrailController> {
                       if (controller.state != null)
                         Get.toNamed('/trails/events/${controller.state!.id}');
                     },
-                    child: Text('Find Events'),
+                    child: Text('findEvents'.tr),
                   ),
                 ),
               ],
@@ -509,7 +554,7 @@ class TrailPage extends GetView<TrailController> {
 
   _fullscreen(String image) {
     var widget = Scaffold(
-      appBar: HikeeAppBar(title: Text("Gallery")),
+      appBar: HikeeAppBar(title: Text("gallery".tr)),
       backgroundColor: Colors.black,
       body: controller.obx(
           (state) => (state?.images == null || state?.images.length == 0)
@@ -538,33 +583,4 @@ class TrailPage extends GetView<TrailController> {
     );
     Get.to(widget, transition: Transition.zoom, fullscreenDialog: true);
   }
-  // Future<Map<String, dynamic>?> trailReviewDialog() async {
-  //   return await showDialog<Map<String, dynamic>?>(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return TrailReviewDialog(
-  //         trailId: widget.id,
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Widget _reviewList(int? take) {
-  //   return InfiniteScroll<TrailReviewsProvider, TrailReview>(
-  //       take: take,
-  //       init: take != null,
-  //       empty: 'No reviews yet',
-  //       shrinkWrap: true,
-  //       selector: (p) => p.items,
-  //       padding: EdgeInsets.zero,
-  //       separator: SizedBox(height: 8),
-  //       builder: (trailReview) {
-  //         return TrailReviewTile(
-  //           trailReview: trailReview,
-  //         );
-  //       },
-  //       fetch: (next) {
-  //         return context.read<TrailReviewsProvider>().fetch(next);
-  //       });
-  // }
 }

@@ -3,8 +3,12 @@ import 'package:hikee/models/weather.dart';
 
 class WeatherProvider extends GetConnect {
   Future<Weather> getWeather() async {
+    var langMapping = {'HK': 'tc', 'TW': 'tc', 'CH': 'sc', 'US': 'en'};
     try {
-      Map<String, dynamic> query = {'dataType': 'rhrread', 'lang': 'en'};
+      Map<String, dynamic> query = {
+        'dataType': 'rhrread',
+        'lang': langMapping[Get.locale?.countryCode] ?? 'en'
+      };
       var res = (await get(
               'https://data.weather.gov.hk/weatherAPI/opendata/weather.php',
               query: query))

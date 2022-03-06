@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hikee/models/active_trail.dart';
 import 'package:hikee/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -16,7 +17,7 @@ class ActiveTrailInfo extends StatelessWidget {
   }
 
   String get name {
-    return activeTrail.name ?? activeTrail.trail?.name_en ?? 'Unnamed';
+    return activeTrail.name ?? activeTrail.trail?.name ?? 'unnamed'.tr;
   }
 
   double get length {

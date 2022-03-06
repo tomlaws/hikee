@@ -11,8 +11,9 @@ class CreateTopicPage extends GetView<CreateTopicController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HikeeAppBar(
-        title:
-            controller.isReplying ? Text('Reply Topic') : Text('Create Topic'),
+        title: controller.isReplying
+            ? Text('replyTopic'.tr)
+            : Text('createTopic'.tr),
         actions: [
           MutationBuilder(
               userOnly: true,
@@ -39,7 +40,7 @@ class CreateTopicPage extends GetView<CreateTopicController> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: TextInput(
                 maxLines: 1,
-                hintText: "Title",
+                hintText: "title".tr,
                 controller: controller.titleController,
               ),
             ),
@@ -50,7 +51,7 @@ class CreateTopicPage extends GetView<CreateTopicController> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: TextInput(
                 expand: true,
-                hintText: "Content",
+                hintText: "message".tr,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 controller: controller.contentController,
@@ -125,17 +126,23 @@ class CreateTopicPage extends GetView<CreateTopicController> {
                 spacing: 8.0,
                 children: [
                   Button(
-                      icon: Icon(Icons.image_rounded),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Icon(Icons.image_rounded),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text('addImage'.tr)
+                      ]),
                       onPressed: () {
                         controller.pickImages();
                       },
                       backgroundColor: Colors.transparent,
                       secondary: true),
-                  Button(
-                      icon: Icon(Icons.location_pin),
-                      onPressed: () {},
-                      backgroundColor: Colors.transparent,
-                      secondary: true)
+                  // Button(
+                  //     icon: Icon(Icons.location_pin),
+                  //     onPressed: () {},
+                  //     backgroundColor: Colors.transparent,
+                  //     secondary: true)
                 ],
               )),
         ],

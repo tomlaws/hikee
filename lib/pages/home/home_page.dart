@@ -65,27 +65,27 @@ class HomePage extends GetView<HomeController> {
                   icon: Icon(controller.currentTabIndex.value == 0
                       ? Icons.explore
                       : Icons.explore_outlined),
-                  label: 'Compass'),
+                  label: 'navigation'.tr),
               BottomNavigationBarItem(
                   icon: Icon(controller.currentTabIndex.value == 1
                       ? Icons.menu_book
                       : Icons.menu_book_outlined),
-                  label: 'Trails'),
+                  label: 'trails'.tr),
               BottomNavigationBarItem(
                   icon: Icon(controller.currentTabIndex.value == 2
                       ? Icons.public
                       : Icons.public_outlined),
-                  label: 'Events'),
+                  label: 'events'.tr),
               BottomNavigationBarItem(
                   icon: Icon(controller.currentTabIndex.value == 3
                       ? Icons.sms
                       : Icons.sms_outlined),
-                  label: 'Topics'),
+                  label: 'topics'.tr),
               BottomNavigationBarItem(
                   icon: Icon(controller.currentTabIndex.value == 4
                       ? Icons.account_box
                       : Icons.account_box_outlined),
-                  label: 'Account')
+                  label: 'account'.tr)
             ],
             currentIndex: controller.currentTabIndex.value,
             onTap: (i) {

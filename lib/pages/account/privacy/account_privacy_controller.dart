@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hikee/models/user.dart';
 import 'package:hikee/providers/auth.dart';
@@ -11,8 +12,7 @@ class AccountPrivacyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _authProvider.refreshMe().then(
-        (_) => isPrivate.value = _authProvider.me.value?.isPrivate ?? true);
+    isPrivate.value = _authProvider.me.value?.isPrivate ?? true;
   }
 
   get user {
@@ -25,6 +25,8 @@ class AccountPrivacyController extends GetxController {
   }
 
   Future<User> updatePrivacy() async {
-    return await userProvider.update(isPrivate: isPrivate.value);
+    final result = await userProvider.update(isPrivate: isPrivate.value);
+    _authProvider.refreshMe();
+    return result;
   }
 }

@@ -154,7 +154,7 @@ class CompassController extends GetxController
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Distance',
+                                'distance'.tr,
                                 style: TextStyle(
                                     fontSize: 12, color: Colors.black54),
                               ),
@@ -182,7 +182,7 @@ class CompassController extends GetxController
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Estimated Time',
+                                'estimatedTime'.tr,
                                 style: TextStyle(
                                     fontSize: 12, color: Colors.black54),
                               ),
@@ -212,7 +212,7 @@ class CompassController extends GetxController
                         height: 8,
                       ),
                       Text(
-                        'Message',
+                        'message'.tr,
                         style: TextStyle(fontSize: 12, color: Colors.black54),
                       ),
                       SizedBox(
@@ -227,7 +227,7 @@ class CompassController extends GetxController
                 ),
               ),
               mutate: false,
-              cancelText: 'Remove', onCancel: () {
+              cancelText: 'remove'.tr, onCancel: () {
             activeTrail.update((t) {
               t?.markers.removeAt(i);
             });
@@ -258,21 +258,21 @@ class CompassController extends GetxController
     var title = '';
     var message = '';
     DialogUtils.showActionDialog(
-        'Add Marker',
+        'addMarker'.tr,
         Form(
           key: formkey,
           child: Column(
             children: [
               TextInput(
-                label: 'Title',
-                hintText: 'Title of the marker',
+                label: 'title'.tr,
+                hintText: 'title'.tr,
                 onSaved: (v) => title = v ?? '',
                 validator: (v) {
                   if (v == null || v.length == 0) {
-                    return 'Cannot be empty';
+                    return 'fieldCannotBeEmpty'.trParams({'field': 'title'.tr});
                   }
                   if (v.length > 50) {
-                    return 'Title length exceeded the limit';
+                    return 'fieldTooLong'.trParams({'field': 'title'.tr});
                   }
                   return null;
                 },
@@ -281,13 +281,13 @@ class CompassController extends GetxController
                 height: 16,
               ),
               TextInput(
-                label: 'Message',
-                hintText: 'Put some message here...',
+                label: 'message'.tr,
+                hintText: 'message'.tr,
                 onSaved: (v) => message = v ?? '',
                 maxLines: 5,
                 validator: (v) {
                   if (v != null && v.length > 500) {
-                    return 'Title length exceeded the limit';
+                    return 'fieldTooLong'.trParams({'field': 'message'.tr});
                   }
                   return null;
                 },
@@ -324,28 +324,28 @@ class CompassController extends GetxController
 
   Future<bool> customizeRecord() async {
     String? trailName =
-        activeTrail.value!.name ?? activeTrail.value!.trail?.name_en;
+        activeTrail.value!.name ?? activeTrail.value!.trail?.name;
     int? regionId = activeTrail.value!.regionId ??
         activeTrail.value!.trail?.regionId ??
         GeoUtils.determineRegion(activeTrail.value!.userPath)?.id;
     final formkey = GlobalKey<FormState>();
     var regions = Region.allRegions().toList();
     var result = await DialogUtils.showActionDialog(
-        "Record",
+        "record".tr,
         Form(
             key: formkey,
             child: Column(
               children: [
                 TextInput(
-                  label: 'Record Name',
-                  hintText: 'Give this record a name',
+                  label: 'recordName'.tr,
+                  hintText: 'recordName'.tr,
                   initialValue: trailName,
                   onSaved: (v) {
                     trailName = v;
                   },
                   validator: (v) {
                     if (v == null || v.length == 0) {
-                      return "Record name cannot be empty";
+                      return 'recordName'.tr + ' ' + 'cannotBeEmpty'.tr;
                     }
                     return null;
                   },
@@ -353,12 +353,12 @@ class CompassController extends GetxController
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: Dropdown<Region>(
-                    label: 'Region',
+                    label: 'region'.tr,
                     items: regions,
                     selected: regions
                         .firstWhereOrNull((element) => element.id == regionId),
                     itemBuilder: (r) {
-                      return Text(r.name_en);
+                      return Text(r.name);
                     },
                     onChanged: (r) {
                       regionId = r.id;
@@ -409,7 +409,7 @@ class CompassController extends GetxController
         } else {
           //upload stats
           trailId = activeTrail.value!.trail!.id;
-          recordName = activeTrail.value!.trail!.name_en;
+          recordName = activeTrail.value!.trail!.name;
           regionId = activeTrail.value!.trail!.regionId;
         }
         Record record = await _recordProvider.createRecord(
@@ -422,10 +422,10 @@ class CompassController extends GetxController
             userPath: userPath!,
             altitudes: altitudes);
         DialogUtils.showDialog(
-            "Congratulations",
+            "congratulations".tr,
             Column(
               children: [
-                Text("You've completed the trail!"),
+                Text("youveCompletedTheTrail".tr),
                 SizedBox(
                   height: 8,
                 ),
@@ -465,7 +465,7 @@ class CompassController extends GetxController
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Start Time'),
+                          Text('startTime'.tr),
                           Text(DateFormat('yyyy-MM-dd HH:mm').format(date))
                         ],
                       ),
@@ -475,7 +475,7 @@ class CompassController extends GetxController
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Time Used'),
+                          Text('timeUsed'.tr),
                           Text(TimeUtils.formatSeconds(elapsed))
                         ],
                       ),
@@ -485,7 +485,7 @@ class CompassController extends GetxController
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Distance'),
+                          Text('distance'.tr),
                           Text(
                             '${(distance / 1000).toString()}km',
                           )

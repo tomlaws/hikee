@@ -1,7 +1,9 @@
+import 'package:get/get.dart';
 import 'package:hikee/models/elevation.dart';
 import 'package:hikee/models/pin.dart';
 import 'package:hikee/models/trail.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/lang.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -29,6 +31,16 @@ class ReferenceTrail {
       required this.path,
       required this.elevations,
       this.pins});
+
+  get name {
+    if (Get.locale?.languageCode.toLowerCase() == 'zh') {
+      if (Get.locale?.countryCode == 'CN') {
+        return LangUtils.tcToSc(name_zh);
+      }
+      return name_zh;
+    }
+    return name_en;
+  }
 
   static ReferenceTrail fromTrail(Trail trail,
       {required List<Elevation> elevations}) {

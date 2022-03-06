@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TimeUtils {
@@ -31,21 +32,21 @@ class TimeUtils {
     //   return (numericDates) ? '1 week ago' : 'Last week';
     // } else
     if (difference.inDays >= 2) {
-      return '${difference.inDays} days ago';
+      return '${difference.inDays} ' + 'daysAgo'.tr;
     } else if (difference.inDays >= 1) {
-      return (numericDates) ? '1 day ago' : 'Yesterday';
+      return (numericDates) ? '1 ' + 'daysAgo'.tr : 'yesterday'.tr;
     } else if (difference.inHours >= 2) {
-      return '${difference.inHours} hours ago';
+      return '${difference.inHours} ' + 'hoursAgo'.tr;
     } else if (difference.inHours >= 1) {
-      return (numericDates) ? '1 hour ago' : 'An hour ago';
+      return (numericDates) ? '1 ' + 'hourAgo'.tr : 'An ' + 'hourAgo'.tr;
     } else if (difference.inMinutes >= 2) {
-      return '${difference.inMinutes} minutes ago';
+      return '${difference.inMinutes} ' + 'minutesAgo'.tr;
     } else if (difference.inMinutes >= 1) {
-      return (numericDates) ? '1 minute ago' : 'A minute ago';
+      return (numericDates) ? '1 ' + 'minuteAgo'.tr : 'A ' + 'minuteAgo'.tr;
     } else if (difference.inSeconds >= 3) {
-      return '${difference.inSeconds} seconds ago';
+      return '${difference.inSeconds} ' + 'secondsAgo'.tr;
     } else {
-      return 'Just now';
+      return 'justNow'.tr;
     }
   }
 }

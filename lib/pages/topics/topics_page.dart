@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikee/components/core/button.dart';
@@ -69,93 +68,14 @@ class TopicsPage extends GetView<TopicsController> {
                     },
                   )
                 ],
-                title: TopicCategories()),
+                title: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text('topics'.tr),
+                )),
           ),
           list
         ],
       ),
     );
   }
-
-  // _showSortMenu() {
-  //   DialogUtils.show(
-  //       context,
-  //       Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Padding(
-  //             padding: EdgeInsets.only(bottom: 8),
-  //             child: Text('Sort'),
-  //           ),
-  //           Selector<TopicsProvider, TopicSortable>(
-  //             selector: (_, p) => p.sort,
-  //             builder: (_, sort, __) => Wrap(
-  //                 spacing: 8.0,
-  //                 runSpacing: 8.0,
-  //                 children: TopicSortable.values
-  //                     .map(
-  //                       (e) => Button(
-  //                         backgroundColor: sort == e ? null : Color(0xFFF5F5F5),
-  //                         child: Text(e.name,
-  //                             style: sort == e
-  //                                 ? null
-  //                                 : TextStyle(
-  //                                     color: Theme.of(context)
-  //                                         .textTheme
-  //                                         .bodyText1!
-  //                                         .color)),
-  //                         onPressed: () {
-  //                           context.read<TopicsProvider>().sort = e;
-  //                         },
-  //                       ),
-  //                     )
-  //                     .toList()),
-  //           ),
-  //           Padding(
-  //             padding: EdgeInsets.symmetric(vertical: 8),
-  //             child: Text('Order'),
-  //           ),
-  //           Selector<TopicsProvider, Order>(
-  //             selector: (_, p) => p.order,
-  //             builder: (_, order, __) => Row(
-  //               children: [
-  //                 Button(
-  //                   backgroundColor:
-  //                       order == Order.ASC ? null : Color(0xFFF5F5F5),
-  //                   child: Text('Ascending',
-  //                       style: order == Order.ASC
-  //                           ? null
-  //                           : TextStyle(
-  //                               color: Theme.of(context)
-  //                                   .textTheme
-  //                                   .bodyText1!
-  //                                   .color)),
-  //                   onPressed: () {
-  //                     //context.read<TopicsProvider>().order = Order.ASC;
-  //                   },
-  //                 ),
-  //                 SizedBox(
-  //                   width: 8,
-  //                 ),
-  //                 Button(
-  //                   backgroundColor:
-  //                       order == Order.DESC ? null : Color(0xFFF5F5F5),
-  //                   child: Text('Descending',
-  //                       style: order == Order.DESC
-  //                           ? null
-  //                           : TextStyle(
-  //                               color: Theme.of(context)
-  //                                   .textTheme
-  //                                   .bodyText1!
-  //                                   .color)),
-  //                   onPressed: () {
-  //                     //context.read<TopicsProvider>().order = Order.DESC;
-  //                   },
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ));
-  // }
 }

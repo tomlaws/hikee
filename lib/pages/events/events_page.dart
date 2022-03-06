@@ -25,7 +25,7 @@ class EventsPage extends StatelessWidget {
         separator: SizedBox(
           height: 16,
         ),
-        empty: 'No events',
+        empty: 'noEvents'.tr,
         loadingItemCount: 3,
         loadingBuilder: EventTile(event: null),
         builder: (e) {
@@ -55,7 +55,7 @@ class EventsPage extends StatelessWidget {
                 ],
                 title: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('Events'),
+                  child: Text('events'.tr),
                 )),
           ),
           list

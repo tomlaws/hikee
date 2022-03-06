@@ -1,6 +1,8 @@
+import 'package:get/get.dart';
 import 'package:hikee/models/bookmark.dart';
 import 'package:hikee/models/pin.dart';
 import 'package:hikee/models/user.dart';
+import 'package:hikee/utils/lang.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hikee/models/region.dart';
 
@@ -23,7 +25,7 @@ class Trail {
   final int duration; // minutes
   final int length; //meters
   final String path;
-  final Bookmark? bookmark;
+  Bookmark? bookmark;
   final List<Pin>? pins;
 
   Trail(
@@ -48,19 +50,23 @@ class Trail {
   factory Trail.fromJson(Map<String, dynamic> json) => _$TrailFromJson(json);
   Map<String, dynamic> toJson() => _$TrailToJson(this);
 
-  // String name(WidgetRef ref) {
-  //   Locale l = ref.read(localeProvider);
-  //   return {
-  //     Locale('en'): name_en,
-  //     Locale('zh'): name_zh
-  //   }[l]!;
-  // }
+  get name {
+    if (Get.locale?.languageCode.toLowerCase() == 'zh') {
+      if (Get.locale?.countryCode == 'CN') {
+        return LangUtils.tcToSc(name_zh);
+      }
+      return name_zh;
+    }
+    return name_en;
+  }
 
-  // String description(WidgetRef ref) {
-  //   Locale l = ref.read(localeProvider);
-  //   return {
-  //     Locale('en'): description_en,
-  //     Locale('zh'): description_zh
-  //   }[l]!;
-  // }
+  get description {
+    if (Get.locale?.languageCode.toLowerCase() == 'zh') {
+      if (Get.locale?.countryCode == 'CN') {
+        return LangUtils.tcToSc(description_zh);
+      }
+      return description_zh;
+    }
+    return description_en;
+  }
 }

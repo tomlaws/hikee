@@ -73,7 +73,7 @@ class TopicPage extends GetView<TopicController> {
                   refreshable: true,
                   controller: controller.topicReplyController,
                   scrollController: controller.scrollController,
-                  empty: 'No replies yet',
+                  empty: 'noReplies'.tr,
                   separator: SizedBox(height: 16),
                   headers: [
                     Padding(
@@ -105,7 +105,7 @@ class TopicPage extends GetView<TopicController> {
                               Get.toNamed(
                                   '/topics/${controller.state!.id}/reply');
                           },
-                          child: Text('Reply')),
+                          child: Text('reply'.tr)),
                     )
                   ],
                 ))
@@ -202,7 +202,7 @@ class TopicPage extends GetView<TopicController> {
 
   _fullscreen(String image) {
     var widget = Scaffold(
-      appBar: HikeeAppBar(title: Text("Gallery")),
+      appBar: HikeeAppBar(title: Text("gallery".tr)),
       backgroundColor: Colors.black,
       body: controller.obx(
           (state) => (state?.images == null || state?.images?.length == 0)

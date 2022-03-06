@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/core/shimmer.dart';
 import 'package:hikee/components/map/map.dart';
@@ -14,7 +13,7 @@ class RecordPage extends GetView<RecordController> {
   Widget build(BuildContext context) {
     var bottomPanelHeight = 200.0;
     return Scaffold(
-      appBar: HikeeAppBar(title: Text('Record')),
+      appBar: HikeeAppBar(title: Text('record'.tr)),
       body: Stack(
         children: [
           Positioned.fill(
@@ -52,7 +51,7 @@ class RecordPage extends GetView<RecordController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Trail',
+                      Text('trail'.tr,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -79,7 +78,7 @@ class RecordPage extends GetView<RecordController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Date',
+                                Text('date'.tr,
                                     style: TextStyle(
                                       color: Colors.black38,
                                     )),
@@ -100,7 +99,7 @@ class RecordPage extends GetView<RecordController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Time',
+                                Text('time'.tr,
                                     style: TextStyle(
                                       color: Colors.black38,
                                     )),
@@ -121,7 +120,7 @@ class RecordPage extends GetView<RecordController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Region',
+                                Text('region'.tr,
                                     style: TextStyle(
                                       color: Colors.black38,
                                     )),
@@ -130,7 +129,7 @@ class RecordPage extends GetView<RecordController> {
                                 ),
                                 controller.obx(
                                     (state) =>
-                                        Text(state!.region?.name_en ?? 'N/A'),
+                                        Text(state!.region?.name ?? 'N/A'),
                                     onLoading: Shimmer()),
                               ],
                             ),
@@ -147,7 +146,7 @@ class RecordPage extends GetView<RecordController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Distance',
+                                Text('distance'.tr,
                                     style: TextStyle(
                                       color: Colors.black38,
                                     )),
@@ -167,7 +166,7 @@ class RecordPage extends GetView<RecordController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Time Used',
+                                Text('timeUsed'.tr,
                                     style: TextStyle(
                                       color: Colors.black38,
                                     )),

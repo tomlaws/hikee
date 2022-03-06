@@ -27,7 +27,7 @@ class Protected extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Login to enjoy hiking',
+              'Login to enjoy hiking'.tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             Container(height: 32),

@@ -1,4 +1,6 @@
+import 'package:get/get.dart';
 import 'package:hikee/utils/geo.dart';
+import 'package:hikee/utils/lang.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:tuple/tuple.dart';
@@ -21,6 +23,13 @@ class Facility {
 
   LatLng get location {
     return GeoUtils.convertFromEPSG2326(Tuple2(x, y));
+  }
+
+  String get localizedName {
+    if (Get.locale?.countryCode == 'CN') {
+      return LangUtils.tcToSc(name);
+    }
+    return name;
   }
 
   // in km

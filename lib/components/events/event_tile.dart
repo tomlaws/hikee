@@ -78,7 +78,8 @@ class EventTile extends StatelessWidget {
                             event == null
                                 ? Shimmer(fontSize: 12, width: 88)
                                 : Text(
-                                    '${event!.participantCount} participants',
+                                    '${event!.participantCount} ' +
+                                        'participants'.tr,
                                     maxLines: 1,
                                     style: TextStyle(
                                         color: Colors.black54, fontSize: 12),

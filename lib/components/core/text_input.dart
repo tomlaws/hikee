@@ -119,6 +119,7 @@ class _TextInputState extends State<TextInput>
                     expands: widget.expand,
                     keyboardType: widget.keyboardType,
                     cursorColor: Theme.of(context).primaryColor,
+                    style: TextStyle(height: 1.25),
                     decoration: InputDecoration(
                         prefixIcon: widget.icon == null
                             ? null

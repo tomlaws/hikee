@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+import 'package:hikee/utils/lang.dart';
 import 'package:latlong2/latlong.dart';
 
 class Region {
@@ -21,14 +23,15 @@ class Region {
   Map<String, dynamic> toJson() =>
       {'id': id, 'name_zh': name_zh, 'name_en': name_en, 'center': center};
 
-  // String name(WidgetRef ref) {
-  //   var l = ref.read(localeProvider);
-  //   if (l == Locale('en')) {
-  //     return name_en;
-  //   } else {
-  //     return name_zh;
-  //   }
-  // }
+  get name {
+    if (Get.locale?.languageCode.toLowerCase() == 'zh') {
+      if (Get.locale?.countryCode == 'CN') {
+        return LangUtils.tcToSc(name_zh);
+      }
+      return name_zh;
+    }
+    return name_en;
+  }
 
   static Set<Region> allRegions() {
     return {

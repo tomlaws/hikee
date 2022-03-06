@@ -78,7 +78,14 @@ FEB
     - able to rename record and save
     - may able to publish as a new trail in the future (feature)
 
+MAR
+1. View created resources (notification when someone replied)
+2. Internationalization
+3. Play store & share
+4. offline library
+
 TODO:
+Share through app link
 emergency update
 check if the user location is in hong kong
 date filter

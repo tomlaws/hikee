@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikee/components/connection_error.dart';
 import 'package:hikee/components/core/button.dart';
 import 'package:hikee/components/core/app_bar.dart';
 import 'package:hikee/components/trails/trail_tile.dart';
@@ -39,7 +40,7 @@ class TrailsPage extends GetView<TrailsController> {
                   elevation: 0,
                   title: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("Trails"),
+                    child: Text("trails".tr),
                   ),
                   actions: [
                     Button(
@@ -81,7 +82,7 @@ class TrailsPage extends GetView<TrailsController> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                       child: Text(
-                        'Popular',
+                        'popular'.tr,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 20,
@@ -100,6 +101,7 @@ class TrailsPage extends GetView<TrailsController> {
                                     .toList(),
                               ),
                             ),
+                        onError: (error) => ConnectionError(),
                         onLoading: SingleChildScrollView(
                             clipBehavior: Clip.none,
                             padding: EdgeInsets.all(16),
@@ -118,7 +120,7 @@ class TrailsPage extends GetView<TrailsController> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'Featured',
+                        'featured'.tr,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -130,6 +132,7 @@ class TrailsPage extends GetView<TrailsController> {
                       child: featuredTrailsController.obx(
                           (state) =>
                               TrailTile(trail: state!, aspectRatio: 4 / 3),
+                          onError: (error) => ConnectionError(),
                           onLoading:
                               TrailTile(trail: null, aspectRatio: 4 / 3)),
                     ),

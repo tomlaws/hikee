@@ -34,7 +34,7 @@ class _DropdownState<T> extends State<Dropdown<T>> {
     return GestureDetector(
         onTap: () {
           DialogUtils.showDialog(
-              widget.label ?? 'Select...',
+              widget.label ?? 'select...'.tr,
               Column(
                 children: widget.items
                     .map((e) => Material(
@@ -79,7 +79,7 @@ class _DropdownState<T> extends State<Dropdown<T>> {
                 child: Obx(
                   () => _selected.value != null
                       ? widget.itemBuilder(_selected.value!)
-                      : Text("Select...",
+                      : Text("select...".tr,
                           style: TextStyle(color: Color(0xFFC5C5C5))),
                 )),
           ),

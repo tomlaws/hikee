@@ -8,6 +8,7 @@ import 'package:hikee/components/core/text_input.dart';
 import 'package:hikee/components/trails/trail_review_tile.dart';
 import 'package:hikee/controllers/shared/pagination.dart';
 import 'package:hikee/models/trail_review.dart';
+import 'package:hikee/providers/bookmark.dart';
 import 'package:hikee/utils/dialog.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikee/models/trail.dart';
@@ -16,6 +17,7 @@ import 'package:hikee/utils/geo.dart';
 
 class TrailController extends GetxController with StateMixin<Trail> {
   final _trailProvider = Get.put(TrailProvider());
+  final _bookmarkProvider = Get.put(BookmarkProvider());
   late GetPaginationController<TrailReview> trailReviewsController;
   late ScrollController scrollController;
 
@@ -60,7 +62,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
       return _trailProvider.getTrailReviews(id, queries);
     }), tag: 'trails-$id-reviews');
     Get.to(Scaffold(
-      appBar: HikeeAppBar(title: Text('Reviews')),
+      appBar: HikeeAppBar(title: Text('reviews'.tr)),
       body: InfiniteScroller(
         controller: _trailReviewsController,
         separator: SizedBox(height: 16),
@@ -71,36 +73,49 @@ class TrailController extends GetxController with StateMixin<Trail> {
     ));
   }
 
+  Future<void> toggleBookmark() async {
+    if (state == null) return;
+    if (state!.bookmark == null) {
+      var bm = await _bookmarkProvider.createBookmark(id);
+      state!.bookmark = bm;
+      change(state, status: RxStatus.success());
+    } else {
+      _bookmarkProvider.removeBookmark(id);
+      state!.bookmark = null;
+      change(state, status: RxStatus.success());
+    }
+  }
+
   Future<dynamic> addReview() async {
     final formkey = GlobalKey<FormState>();
     int _rating = 0;
     String _content = '';
     final result = await DialogUtils.showActionDialog(
-        'Review',
+        'review'.tr,
         Form(
           key: formkey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               RatingInput(
-                label: 'Rating',
-                invalidRatingMessage: 'Please rate the trail',
+                label: 'rating'.tr,
+                invalidRatingMessage: 'pleaseRateTheTrail'.tr,
                 onSaved: (rating) => _rating = rating ?? 0,
               ),
               SizedBox(
                 height: 16,
               ),
               TextInput(
-                hintText: 'Leave your review here',
                 maxLines: 5,
-                label: 'Review',
+                label: 'review'.tr,
                 initialValue: _content,
                 onSaved: (v) {
                   _content = v ?? '';
                 },
                 validator: (v) {
                   if (v == null || v.length == 0) {
-                    return "Review cannot be empty";
+                    return "fieldCannotBeEmpty"
+                        .trParams({'field': 'review'.tr});
                   }
                   return null;
                 },

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
@@ -28,7 +29,7 @@ class User {
       : _nickname = nickname;
 
   String get nickname {
-    return _nickname ?? 'Unnamed';
+    return _nickname ?? 'unnamed'.tr;
   }
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);

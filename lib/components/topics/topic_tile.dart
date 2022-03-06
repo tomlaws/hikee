@@ -106,7 +106,8 @@ class _TopicTileState extends State<TopicTile> {
                                   widget.topic == null
                                       ? Shimmer(width: 64, fontSize: 12)
                                       : Text(
-                                          '${widget.topic!.replyCount} replies',
+                                          '${widget.topic!.replyCount} ' +
+                                              'replies'.tr,
                                           style: TextStyle(fontSize: 12)),
                                   Icon(
                                     Icons.chevron_right,

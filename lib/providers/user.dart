@@ -1,3 +1,4 @@
+import 'package:hikee/models/bookmark.dart';
 import 'package:hikee/models/event.dart';
 import 'package:hikee/models/paginated.dart';
 import 'package:hikee/models/user.dart';
@@ -16,11 +17,17 @@ class UserProvider extends BaseProvider {
     });
   }
 
+  Future<Paginated<Bookmark>> getBookmarks(Map<String, dynamic>? query) async {
+    return await get('users/bookmarks', query: query).then((value) {
+      return Paginated<Bookmark>.fromJson(
+          value.body, (o) => Bookmark.fromJson(o as Map<String, dynamic>));
+    });
+  }
+
   Future<User> update({String? nickname, bool? isPrivate}) async {
     Map<String, dynamic> payload = {};
     if (nickname != null) payload['nickname'] = nickname;
     if (isPrivate != null) payload['isPrivate'] = isPrivate;
-    print(payload);
     return await patch('users', payload).then((value) {
       return User.fromJson(value.body);
     });

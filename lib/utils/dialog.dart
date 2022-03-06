@@ -30,7 +30,7 @@ class DialogUtils {
                 onPressed: () {
                   Get.back();
                 },
-                child: Text('Dismiss'),
+                child: Text('dismiss'.tr),
               )
           ],
         ));
@@ -70,8 +70,8 @@ class DialogUtils {
                         }
                         Get.back();
                       },
-                      child:
-                          Text(cancelText ?? (mutate ? 'Cancel' : 'Dismiss')),
+                      child: Text(
+                          cancelText ?? (mutate ? 'cancel'.tr : 'dismiss'.tr)),
                     ),
                   ),
                   SizedBox(width: 16),
@@ -95,7 +95,7 @@ class DialogUtils {
                           _loading.value = false;
                         }
                       },
-                      child: Text(okText ?? (mutate ? 'Submit' : 'OK')),
+                      child: Text(okText ?? (mutate ? 'submit'.tr : 'ok'.tr)),
                     ),
                   ))
                 ],
