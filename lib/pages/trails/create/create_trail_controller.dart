@@ -29,6 +29,20 @@ class CreateTrailController extends GetxController {
   var publishing = false.obs;
 
   @override
+  void onInit() {
+    super.onInit();
+    if (Get.arguments.containsKey('path')) {
+      var decoded = GeoUtils.decodePath(Get.arguments['path']!);
+      coordinates.value =
+          decoded.map((e) => new Pin(location: e, message: null)).toList();
+      nameController.text = Get.arguments['name'].toString();
+      durationController.text = Get.arguments['duration'].toString();
+      region.value = Get.arguments['region'];
+      step.value = 1;
+    }
+  }
+
+  @override
   void onClose() {
     pointMessageTextController.dispose();
     nameController.dispose();

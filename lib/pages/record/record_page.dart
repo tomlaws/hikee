@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/pages/record/record_controller.dart';
@@ -13,7 +14,26 @@ class RecordPage extends GetView<RecordController> {
   Widget build(BuildContext context) {
     var bottomPanelHeight = 220.0;
     return Scaffold(
-      appBar: HikeeAppBar(title: Text('record'.tr)),
+      appBar: HikeeAppBar(
+        title: Text('record'.tr),
+        actions: [
+          Button(
+              icon: Icon(Icons.upload),
+              invert: true,
+              onPressed: () {
+                if (controller.state == null) {
+                  return;
+                }
+                var record = controller.state!;
+                Get.toNamed('/trails/create', arguments: {
+                  'path': record.userPath,
+                  'name': record.name,
+                  'duration': record.time,
+                  'region': record.region
+                });
+              })
+        ],
+      ),
       body: Stack(
         children: [
           Positioned.fill(

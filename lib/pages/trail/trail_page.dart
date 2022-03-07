@@ -87,7 +87,7 @@ class TrailPage extends GetView<TrailController> {
                                             children: images,
                                           ),
                                         );
-                                      }, onLoading: SizedBox()),
+                                      }, onLoading: Shimmer()),
                                     ),
                                     Positioned(
                                         bottom: -40,
@@ -260,51 +260,60 @@ class TrailPage extends GetView<TrailController> {
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Button(
-                                                backgroundColor: Colors.white,
-                                                radius: 36,
-                                                height: 36,
-                                                minWidth: 36,
-                                                icon: Icon(
-                                                  Icons.download,
-                                                  color: Colors.black87,
-                                                  size: 20,
-                                                ),
-                                                onPressed: () {}),
-                                            SizedBox(width: 8),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 8.0),
+                                              child: Button(
+                                                  backgroundColor: Colors.white,
+                                                  radius: 36,
+                                                  height: 36,
+                                                  minWidth: 36,
+                                                  icon: Icon(
+                                                    Icons.download,
+                                                    color: Colors.black87,
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () {}),
+                                            ),
                                             Obx(() => _authProvider
                                                     .loggedIn.value
                                                 ? controller.obx((state) {
                                                     var bookmarked =
                                                         state!.bookmark != null;
-                                                    return MutationBuilder(
-                                                        mutation: controller
-                                                            .toggleBookmark,
-                                                        builder:
-                                                            (mutate, loading) {
-                                                          return Button(
-                                                              backgroundColor:
-                                                                  Colors.white,
-                                                              radius: 36,
-                                                              height: 36,
-                                                              minWidth: 36,
-                                                              loading: loading,
-                                                              icon: Icon(
-                                                                bookmarked
-                                                                    ? Icons
-                                                                        .bookmark
-                                                                    : Icons
-                                                                        .bookmark_outline,
-                                                                color: Colors
-                                                                    .black87,
-                                                                size: 20,
-                                                              ),
-                                                              onPressed:
-                                                                  mutate);
-                                                        });
+                                                    return Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 8.0),
+                                                      child: MutationBuilder(
+                                                          mutation: controller
+                                                              .toggleBookmark,
+                                                          builder: (mutate,
+                                                              loading) {
+                                                            return Button(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                                radius: 36,
+                                                                height: 36,
+                                                                minWidth: 36,
+                                                                loading:
+                                                                    loading,
+                                                                icon: Icon(
+                                                                  bookmarked
+                                                                      ? Icons
+                                                                          .bookmark
+                                                                      : Icons
+                                                                          .bookmark_outline,
+                                                                  color: Colors
+                                                                      .black87,
+                                                                  size: 20,
+                                                                ),
+                                                                onPressed:
+                                                                    mutate);
+                                                          }),
+                                                    );
                                                   }, onLoading: SizedBox())
                                                 : SizedBox()),
-                                            SizedBox(width: 8),
                                             Button(
                                                 backgroundColor: Colors.white,
                                                 radius: 36,
