@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:hikee/manager/token.dart';
-import 'package:hikee/models/error/error_response.dart';
-import 'package:hikee/models/token.dart';
+import 'package:hikees/manager/token.dart';
+import 'package:hikees/models/error/error_response.dart';
+import 'package:hikees/models/token.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 

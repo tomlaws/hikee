@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/error/error_response.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikees/models/error/error_response.dart';
+import 'package:hikees/providers/auth.dart';
 
 class MutationBuilder<T> extends StatefulWidget {
   const MutationBuilder(

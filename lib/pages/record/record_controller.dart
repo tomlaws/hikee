@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:hikee/models/record.dart';
-import 'package:hikee/providers/record.dart';
+import 'package:hikees/models/record.dart';
+import 'package:hikees/providers/record.dart';
 
 class RecordController extends GetxController with StateMixin<Record> {
   final _recordProvider = Get.put(RecordProvider());

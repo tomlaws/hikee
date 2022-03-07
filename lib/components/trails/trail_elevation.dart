@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/trails/elevation_profile.dart';
-import 'package:hikee/models/elevation.dart';
-import 'package:hikee/pages/compass/compass_controller.dart';
-import 'package:hikee/providers/trail.dart';
+import 'package:hikees/components/trails/elevation_profile.dart';
+import 'package:hikees/models/elevation.dart';
+import 'package:hikees/pages/compass/compass_controller.dart';
+import 'package:hikees/providers/trail.dart';
 
 class TrailElevationController extends GetxController
     with StateMixin<List<Elevation>> {}

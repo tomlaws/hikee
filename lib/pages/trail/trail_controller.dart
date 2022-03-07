@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/core/rating_input.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/components/trails/trail_review_tile.dart';
-import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/models/trail_review.dart';
-import 'package:hikee/providers/bookmark.dart';
-import 'package:hikee/utils/dialog.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/core/rating_input.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/components/trails/trail_review_tile.dart';
+import 'package:hikees/controllers/shared/pagination.dart';
+import 'package:hikees/models/trail_review.dart';
+import 'package:hikees/pages/account/bookmarks/account_bookmarks_controller.dart';
+import 'package:hikees/providers/bookmark.dart';
+import 'package:hikees/utils/dialog.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/providers/trail.dart';
-import 'package:hikee/utils/geo.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/providers/trail.dart';
+import 'package:hikees/utils/geo.dart';
 
 class TrailController extends GetxController with StateMixin<Trail> {
   final _trailProvider = Get.put(TrailProvider());
@@ -83,6 +84,9 @@ class TrailController extends GetxController with StateMixin<Trail> {
       _bookmarkProvider.removeBookmark(id);
       state!.bookmark = null;
       change(state, status: RxStatus.success());
+
+      var abc = Get.find<AccountBookmarksController>();
+      abc.remove(state!.id);
     }
   }
 

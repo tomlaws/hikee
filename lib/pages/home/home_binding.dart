@@ -1,4 +1,4 @@
-import 'package:hikee/pages/home/home_controller.dart';
+import 'package:hikees/pages/home/home_controller.dart';
 import 'package:get/get.dart';
 
 class HomeBinding implements Bindings {

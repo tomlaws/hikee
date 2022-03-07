@@ -1,5 +1,5 @@
-import 'package:hikee/models/topic_base.dart';
-import 'package:hikee/models/user.dart';
+import 'package:hikees/models/topic_base.dart';
+import 'package:hikees/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'topic.g.dart';

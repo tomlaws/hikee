@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/models/faq_item.dart';
+import 'package:hikees/models/faq_item.dart';
 
 // stores ExpansionPanel state information
 
@@ -39,8 +39,7 @@ class _FAQScreenState extends State<FAQScreen> {
           'Someone should know your hiking itinerary (include name of the trip leader/ permit holder if not you), your rim destination after the hike, and the date of your return home.',
     ),
     FaqItem(
-      headerValue:
-          'What should i look for in a backpack?',
+      headerValue: 'What should i look for in a backpack?',
       expandedValue:
           'The options for backpacks are abundant, to say the least: many companies create a wide range of types, sizes, and colors. Each pack model will have its own array of features.\n\nThe bottom line is we recommend getting a quality pack from major companies like Deuter, Osprey, Black Diamond, Patagonia, North Face, Gregory, Kelty, and Cotopaxi. You want it to have a firm support system, a waist belt, and a sternum strap.\n\nA very handy feature to look for is also a pouch for a hydration system so you can drink while hiking.',
     ),

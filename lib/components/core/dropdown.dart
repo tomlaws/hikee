@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/utils/dialog.dart';
+import 'package:hikees/utils/dialog.dart';
 
 class Dropdown<T> extends StatefulWidget {
   const Dropdown(

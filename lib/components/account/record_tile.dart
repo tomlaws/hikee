@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/calendar_date.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/models/record.dart';
-import 'package:hikee/themes.dart';
-import 'package:hikee/utils/geo.dart';
+import 'package:hikees/components/core/calendar_date.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/models/record.dart';
+import 'package:hikees/themes.dart';
+import 'package:hikees/utils/geo.dart';
 
 class RecordTile extends StatelessWidget {
   final Record? record;

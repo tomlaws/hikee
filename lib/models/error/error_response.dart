@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:hikee/models/error/field_error.dart';
+import 'package:hikees/models/error/field_error.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'error_response.g.dart';

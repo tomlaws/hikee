@@ -155,7 +155,8 @@ class Messages extends Translations {
           "addImage": "Add Images",
           "review": "Review",
           "rating": "Rating",
-          "pleaseRateTheTrail": "Please rate the trail"
+          "pleaseRateTheTrail": "Please rate the trail",
+          "noBookmarks": "No bookmarks"
         },
         'zh_CN': {
           "bookmarks": "书籤",
@@ -203,7 +204,7 @@ class Messages extends Translations {
           "swipeUpToFinishTheTrail": "向上滑动以完成路径",
           "youreInRecordingMode": "您处于录制模式",
           "youreNowAtTheStartOfTheTrail": "您现在处于路径的起点",
-          "youreFarAwayFromTheTrail": "你离小道很远",
+          "youreFarAwayFromTheTrail": "你离路径很远",
           "swipeUpToStartRecording": "向上滑动开始录制",
           "pleaseReachToTheStartingPointFirst": "请先到达起点",
           "startWhenYoureReady": "准备好后开始",
@@ -304,7 +305,8 @@ class Messages extends Translations {
           "addImage": "新增图片",
           "review": "评论",
           "rating": "評分",
-          "pleaseRateTheTrail": "请为路线评分"
+          "pleaseRateTheTrail": "请为路线评分",
+          "noBookmarks": "没有书籤"
         },
         'zh_HK': {
           "bookmarks": "書籤",
@@ -352,7 +354,7 @@ class Messages extends Translations {
           "swipeUpToFinishTheTrail": "向上滑動以完成路徑",
           "youreInRecordingMode": "您處於錄製模式",
           "youreNowAtTheStartOfTheTrail": "您現在處於路徑的起點",
-          "youreFarAwayFromTheTrail": "你離小道很遠",
+          "youreFarAwayFromTheTrail": "你離路徑很遠",
           "swipeUpToStartRecording": "向上滑動開始錄製",
           "pleaseReachToTheStartingPointFirst": "請先到達起點",
           "startWhenYoureReady": "準備好後開始",
@@ -453,7 +455,8 @@ class Messages extends Translations {
           "addImage": "新增圖片",
           "review": "評論",
           "rating": "評分",
-          "pleaseRateTheTrail": "請為路線評分"
+          "pleaseRateTheTrail": "請為路線評分",
+          "noBookmarks": "沒有書籤"
         },
       };
 }

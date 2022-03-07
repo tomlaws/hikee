@@ -1,5 +1,5 @@
-import 'package:hikee/models/bookmark.dart';
-import 'package:hikee/providers/shared/base.dart';
+import 'package:hikees/models/bookmark.dart';
+import 'package:hikees/providers/shared/base.dart';
 
 class BookmarkProvider extends BaseProvider {
   Future<bool> removeBookmark(int trailId) async {

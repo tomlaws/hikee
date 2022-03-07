@@ -11,14 +11,14 @@ import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/active_trail.dart';
-import 'package:hikee/models/elevation.dart';
-import 'package:hikee/models/reference_trail.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/providers/shared/base.dart';
-import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/location_callback_handler.dart';
-import 'package:hikee/utils/location_service_repository.dart';
+import 'package:hikees/models/active_trail.dart';
+import 'package:hikees/models/elevation.dart';
+import 'package:hikees/models/reference_trail.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/providers/shared/base.dart';
+import 'package:hikees/utils/geo.dart';
+import 'package:hikees/utils/location_callback_handler.dart';
+import 'package:hikees/utils/location_service_repository.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latlong2/latlong.dart';
@@ -223,11 +223,16 @@ class ActiveTrailProvider extends BaseProvider {
     }
   }
 
-  select(Trail trail) async {
+  Future<void> select(Trail trail) async {
     try {
       var decodedPath = GeoUtils.decodePath(trail.path);
       // get elevations
-      var elevations = await _getElevations(trail.id);
+      List<Elevation> elevations = [];
+      try {
+        elevations = await _getElevations(trail.id);
+      } catch (ex) {
+        print(ex);
+      }
       activeTrail.value = ActiveTrail(
           trail: ReferenceTrail.fromTrail(trail, elevations: elevations),
           startTime: null);

@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/map/drag_marker.dart';
-import 'package:hikee/components/map/map_controller.dart';
-import 'package:hikee/models/preferences.dart';
-import 'package:hikee/providers/preferences.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/map/drag_marker.dart';
+import 'package:hikees/components/map/map_controller.dart';
+import 'package:hikees/models/preferences.dart';
+import 'package:hikees/providers/preferences.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/utils/geo.dart';
+import 'package:hikees/utils/geo.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class HikeeMap extends StatelessWidget {
@@ -150,15 +150,15 @@ class HikeeMap extends StatelessWidget {
             options: TileLayerOptions(
               urlTemplate: urlTemplate,
               subdomains: ['a', 'b', 'c'],
-              errorTileCallback: (_, __) {},
-              evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
-              backgroundColor: Colors.transparent,
-              attributionAlignment: Alignment.bottomLeft,
-              attributionBuilder: mapProvider == MapProvider.LandsDepartment
-                  ? null
-                  : (_) {
-                      return providerAttribution;
-                    },
+              //errorTileCallback: (_, __) {},
+              //evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
+              //backgroundColor: Colors.transparent,
+              //attributionAlignment: Alignment.bottomLeft,
+              // attributionBuilder: mapProvider == MapProvider.LandsDepartment
+              //     ? null
+              //     : (_) {
+              //         return providerAttribution;
+              //       },
             ))),
         Obx(() => mapProvider == MapProvider.LandsDepartment
             ? TileLayerWidget(
@@ -176,7 +176,6 @@ class HikeeMap extends StatelessWidget {
             : SizedBox()),
         PolylineLayerWidget(
           options: PolylineLayerOptions(
-            polylineCulling: false,
             polylines: [
               if (path != null)
                 Polyline(

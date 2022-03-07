@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/account/record_tile.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/models/record.dart';
-import 'package:hikee/pages/account/records/account_records_controller.dart';
-import 'package:hikee/pages/account/records/account_records_filter.dart';
-import 'package:hikee/pages/search/search_page.dart';
+import 'package:hikees/components/account/record_tile.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/models/record.dart';
+import 'package:hikees/pages/account/records/account_records_controller.dart';
+import 'package:hikees/pages/account/records/account_records_filter.dart';
+import 'package:hikees/pages/search/search_page.dart';
 
 class AccountRecordsPage extends GetView<AccountRecordsController> {
   @override

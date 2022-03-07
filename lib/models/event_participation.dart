@@ -1,4 +1,4 @@
-import 'package:hikee/models/user.dart';
+import 'package:hikees/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'event_participation.g.dart';

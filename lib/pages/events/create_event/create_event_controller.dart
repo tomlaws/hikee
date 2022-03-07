@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/models/event.dart';
-import 'package:hikee/providers/event.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/models/event.dart';
+import 'package:hikees/providers/event.dart';
 import 'package:intl/intl.dart';
 
 class CreateEventController extends GetxController {

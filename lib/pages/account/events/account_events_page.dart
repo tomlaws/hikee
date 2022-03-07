@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/events/event_tile.dart';
-import 'package:hikee/models/event.dart';
-import 'package:hikee/pages/account/events/account_events_controller.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/events/event_tile.dart';
+import 'package:hikees/models/event.dart';
+import 'package:hikees/pages/account/events/account_events_controller.dart';
 
 class AccountEventsPage extends GetView<AccountEventsController> {
   @override

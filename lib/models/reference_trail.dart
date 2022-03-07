@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:hikee/models/elevation.dart';
-import 'package:hikee/models/pin.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/lang.dart';
+import 'package:hikees/models/elevation.dart';
+import 'package:hikees/models/pin.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/utils/geo.dart';
+import 'package:hikees/utils/lang.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:latlong2/latlong.dart';
 

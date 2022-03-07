@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikees/providers/auth.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AccountController extends GetxController {

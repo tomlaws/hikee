@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:hikee/models/error/error_response.dart';
+import 'package:hikees/models/error/error_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 

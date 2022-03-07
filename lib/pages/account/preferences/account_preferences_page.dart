@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/models/preferences.dart';
-import 'package:hikee/pages/account/account_page.dart';
-import 'package:hikee/pages/account/privacy/account_privacy_controller.dart';
-import 'package:hikee/providers/preferences.dart';
-import 'package:hikee/themes.dart';
-import 'package:hikee/utils/dialog.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/models/preferences.dart';
+import 'package:hikees/pages/account/account_page.dart';
+import 'package:hikees/pages/account/privacy/account_privacy_controller.dart';
+import 'package:hikees/providers/preferences.dart';
+import 'package:hikees/themes.dart';
+import 'package:hikees/utils/dialog.dart';
 
 class AccountPreferencesPage extends GetView<AccountPrivacyController> {
   final _preferencesProvider = Get.find<PreferencesProvider>();

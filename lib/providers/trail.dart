@@ -2,19 +2,20 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
-import 'package:hikee/models/elevation.dart';
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/models/pin.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/models/trail_category.dart';
-import 'package:hikee/models/trail_review.dart';
-import 'package:hikee/providers/shared/base.dart';
+import 'package:hikees/models/elevation.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/models/pin.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/models/trail_category.dart';
+import 'package:hikees/models/trail_review.dart';
+import 'package:hikees/providers/shared/base.dart';
 
 class TrailProvider extends BaseProvider {
   Future<Trail> getTrail(int id) async =>
       await get('trails/$id').then((value) => Trail.fromJson(value.body));
 
   Future<Paginated<Trail>> getTrails(Map<String, dynamic>? query) async {
+    print('getting trails');
     return await get('trails', query: query).then((value) {
       return Paginated<Trail>.fromJson(
           value.body, (o) => Trail.fromJson(o as Map<String, dynamic>));

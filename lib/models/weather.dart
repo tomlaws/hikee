@@ -1,4 +1,4 @@
-import 'package:hikee/models/temperature.dart';
+import 'package:hikees/models/temperature.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'weather.g.dart';

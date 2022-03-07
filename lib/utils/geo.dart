@@ -2,7 +2,7 @@ import 'dart:math' show sin, cos, sqrt, asin, pi;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get_utils/src/extensions/double_extensions.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
-import 'package:hikee/models/region.dart';
+import 'package:hikees/models/region.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:proj4dart/proj4dart.dart' as proj4;
 import 'package:tuple/tuple.dart';

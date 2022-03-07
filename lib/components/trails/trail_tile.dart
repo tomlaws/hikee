@@ -2,12 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/pages/trail/trail_binding.dart';
-import 'package:hikee/pages/trail/trail_page.dart';
-import 'package:hikee/themes.dart';
-import 'package:hikee/utils/image.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/pages/trail/trail_binding.dart';
+import 'package:hikees/pages/trail/trail_page.dart';
+import 'package:hikees/themes.dart';
+import 'package:hikees/utils/image.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class TrailTile extends StatelessWidget {

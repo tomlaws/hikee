@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/avatar.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/models/topic.dart';
-import 'package:hikee/themes.dart';
-import 'package:hikee/utils/time.dart';
+import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/models/topic.dart';
+import 'package:hikees/themes.dart';
+import 'package:hikees/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class TopicTile extends StatefulWidget {

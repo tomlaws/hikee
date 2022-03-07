@@ -79,10 +79,9 @@ FEB
     - may able to publish as a new trail in the future (feature)
 
 MAR
-1. View created resources (notification when someone replied)
-2. Internationalization
-3. Play store & share
-4. offline library
+1. Internationalization (translated everything into 3 languages 英繁簡)
+2. Share trail (through whatsapp)
+3. Download trail for offline review
 
 TODO:
 Share through app link

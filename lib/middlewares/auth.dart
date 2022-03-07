@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikees/providers/auth.dart';
 
 class AuthMiddleware extends GetMiddleware {
   final authProvider = Get.put(AuthProvider());

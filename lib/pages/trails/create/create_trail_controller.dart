@@ -2,13 +2,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/models/pin.dart';
-import 'package:hikee/models/region.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/providers/trail.dart';
-import 'package:hikee/utils/dialog.dart';
-import 'package:hikee/utils/geo.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/models/pin.dart';
+import 'package:hikees/models/region.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/providers/trail.dart';
+import 'package:hikees/utils/dialog.dart';
+import 'package:hikees/utils/geo.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 

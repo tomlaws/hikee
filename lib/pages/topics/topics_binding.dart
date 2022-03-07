@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/pages/topics/topics_controller.dart';
+import 'package:hikees/pages/topics/topics_controller.dart';
 
 class TopicsBinding implements Bindings {
   @override

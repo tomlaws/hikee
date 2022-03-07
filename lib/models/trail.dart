@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import 'package:hikee/models/bookmark.dart';
-import 'package:hikee/models/pin.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/utils/lang.dart';
+import 'package:hikees/models/bookmark.dart';
+import 'package:hikees/models/pin.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/utils/lang.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:hikee/models/region.dart';
+import 'package:hikees/models/region.dart';
 
 part 'trail.g.dart';
 

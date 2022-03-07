@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/topics/topic_tile.dart';
-import 'package:hikee/models/topic.dart';
-import 'package:hikee/pages/search/search_page.dart';
-import 'package:hikee/pages/topics/topic_categories.dart';
-import 'package:hikee/pages/topics/topic_categories_controller.dart';
-import 'package:hikee/pages/topics/topics_controller.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/topics/topic_tile.dart';
+import 'package:hikees/models/topic.dart';
+import 'package:hikees/pages/search/search_page.dart';
+import 'package:hikees/pages/topics/topic_categories.dart';
+import 'package:hikees/pages/topics/topic_categories_controller.dart';
+import 'package:hikees/pages/topics/topics_controller.dart';
 
 class TopicsPage extends GetView<TopicsController> {
   final categoriesController = Get.put(TopicCategoriesController());

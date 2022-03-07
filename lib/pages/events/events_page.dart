@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/components/events/event_tile.dart';
-import 'package:hikee/models/event.dart';
-import 'package:hikee/pages/events/event_categories.dart';
-import 'package:hikee/pages/events/events_controller.dart';
-import 'package:hikee/pages/search/search_page.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/components/events/event_tile.dart';
+import 'package:hikees/models/event.dart';
+import 'package:hikees/pages/events/events_controller.dart';
+import 'package:hikees/pages/search/search_page.dart';
 
-class EventsPage extends StatelessWidget {
-  final controller = Get.find<EventsController>();
-  final _eventCategoriesController = Get.find<EventCategoriesController>();
-
+class EventsPage extends GetView<EventsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

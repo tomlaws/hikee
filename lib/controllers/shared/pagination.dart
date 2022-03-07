@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/paginated.dart';
+import 'package:hikees/models/paginated.dart';
 
 typedef PaginationController<T> = InternalPaginationController<Paginated<T>, T>;
 

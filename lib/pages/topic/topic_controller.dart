@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/models/topic.dart';
-import 'package:hikee/models/topic_reply.dart';
-import 'package:hikee/providers/topic.dart';
+import 'package:hikees/controllers/shared/pagination.dart';
+import 'package:hikees/models/topic.dart';
+import 'package:hikees/models/topic_reply.dart';
+import 'package:hikees/providers/topic.dart';
 
 class TopicController extends GetxController with StateMixin<Topic> {
   final _topicProvider = Get.put(TopicProvider());

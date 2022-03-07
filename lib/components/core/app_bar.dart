@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
+import 'package:hikees/components/core/button.dart';
 
 class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HikeeAppBar(

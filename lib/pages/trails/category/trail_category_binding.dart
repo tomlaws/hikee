@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/pages/trails/category/trail_category_controller.dart';
+import 'package:hikees/pages/trails/category/trail_category_controller.dart';
 
 class TrailCategoryBinding implements Bindings {
   @override

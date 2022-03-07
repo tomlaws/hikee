@@ -1,5 +1,5 @@
-import 'package:hikee/models/region.dart';
-import 'package:hikee/models/trail.dart';
+import 'package:hikees/models/region.dart';
+import 'package:hikees/models/trail.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'record.g.dart';

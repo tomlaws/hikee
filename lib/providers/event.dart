@@ -1,8 +1,8 @@
-import 'package:hikee/models/event.dart';
-import 'package:hikee/models/event_category.dart';
-import 'package:hikee/models/event_participation.dart';
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/providers/shared/base.dart';
+import 'package:hikees/models/event.dart';
+import 'package:hikees/models/event_category.dart';
+import 'package:hikees/models/event_participation.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/providers/shared/base.dart';
 
 class EventProvider extends BaseProvider {
   Future<Event> getEvent(int id) async =>

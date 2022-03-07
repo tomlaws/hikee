@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:hikee/manager/token.dart';
-import 'package:hikee/models/token.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/providers/shared/base.dart';
+import 'package:hikees/manager/token.dart';
+import 'package:hikees/models/token.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/providers/shared/base.dart';
 
 class AuthProvider extends BaseProvider {
   static TokenManager _tokenManager = TokenManager();

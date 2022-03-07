@@ -3,11 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/models/topic.dart';
-import 'package:hikee/models/topic_reply.dart';
-import 'package:hikee/pages/topic/topic_controller.dart';
-import 'package:hikee/providers/topic.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/models/topic.dart';
+import 'package:hikees/models/topic_reply.dart';
+import 'package:hikees/pages/topic/topic_controller.dart';
+import 'package:hikees/providers/topic.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateTopicController extends GetxController {

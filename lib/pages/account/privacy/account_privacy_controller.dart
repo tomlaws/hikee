@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/providers/user.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/providers/auth.dart';
+import 'package:hikees/providers/user.dart';
 
 class AccountPrivacyController extends GetxController {
   final userProvider = Get.put(UserProvider());

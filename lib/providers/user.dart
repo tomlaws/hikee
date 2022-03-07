@@ -1,8 +1,8 @@
-import 'package:hikee/models/bookmark.dart';
-import 'package:hikee/models/event.dart';
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/providers/shared/base.dart';
+import 'package:hikees/models/bookmark.dart';
+import 'package:hikees/models/event.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/providers/shared/base.dart';
 
 class UserProvider extends BaseProvider {
   Future<User> getUser(int userId) async {

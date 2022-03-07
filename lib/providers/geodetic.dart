@@ -1,5 +1,5 @@
-// import 'package:hikee/models/facility.dart';
-// import 'package:hikee/providers/shared/base.dart';
+// import 'package:hikees/models/facility.dart';
+// import 'package:hikees/providers/shared/base.dart';
 // import 'package:latlong2/latlong.dart';
 // import 'package:tuple/tuple.dart';
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/components/core/mutation_builder.dart';
-import 'package:hikee/pages/topics/create/create_topic_controller.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/pages/topics/create/create_topic_controller.dart';
 
 class CreateTopicPage extends GetView<CreateTopicController> {
   @override

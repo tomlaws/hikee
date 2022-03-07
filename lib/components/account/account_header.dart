@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/avatar.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/themes.dart';
+import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/themes.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class AccountHeader extends GetView {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/trails/trail_tile.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/pages/trails/category/trail_category_controller.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/trails/trail_tile.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/pages/trails/category/trail_category_controller.dart';
 
 class TrailCategoryPage extends GetView<TrailCategoryController> {
   @override

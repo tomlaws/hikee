@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/account/account_header.dart';
-import 'package:hikee/components/account/record_tile.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/models/record.dart';
-import 'package:hikee/pages/profile/profile_controller.dart';
+import 'package:hikees/components/account/account_header.dart';
+import 'package:hikees/components/account/record_tile.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/models/record.dart';
+import 'package:hikees/pages/profile/profile_controller.dart';
 
 class ProfilePage extends GetView<ProfileController> {
   @override

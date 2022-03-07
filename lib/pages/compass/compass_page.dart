@@ -3,26 +3,27 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/floating_tooltip.dart';
-import 'package:hikee/components/trails/elevation_profile.dart';
-import 'package:hikee/components/map/map.dart';
-import 'package:hikee/components/core/mutation_builder.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/themes.dart';
-import 'package:hikee/utils/color.dart';
+import 'package:hikees/components/connection_error.dart';
+import 'package:hikees/components/core/floating_tooltip.dart';
+import 'package:hikees/components/trails/elevation_profile.dart';
+import 'package:hikees/components/map/map.dart';
+import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/providers/auth.dart';
+import 'package:hikees/themes.dart';
+import 'package:hikees/utils/color.dart';
 import 'package:latlong2/latlong.dart' hide Path;
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/compass/compass.dart';
-import 'package:hikee/components/core/keep_alive.dart';
-import 'package:hikee/components/compass/mountain_deco.dart';
-import 'package:hikee/components/compass/active_trail_info.dart';
-import 'package:hikee/components/compass/sliding_up_panel.dart';
-import 'package:hikee/pages/compass/compass_controller.dart';
-import 'package:hikee/pages/compass/weather_controller.dart';
-import 'package:hikee/pages/home/home_controller.dart';
-import 'package:hikee/utils/dialog.dart';
-import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/time.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/compass/compass.dart';
+import 'package:hikees/components/core/keep_alive.dart';
+import 'package:hikees/components/compass/mountain_deco.dart';
+import 'package:hikees/components/compass/active_trail_info.dart';
+import 'package:hikees/components/compass/sliding_up_panel.dart';
+import 'package:hikees/pages/compass/compass_controller.dart';
+import 'package:hikees/pages/compass/weather_controller.dart';
+import 'package:hikees/pages/home/home_controller.dart';
+import 'package:hikees/utils/dialog.dart';
+import 'package:hikees/utils/geo.dart';
+import 'package:hikees/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -641,6 +642,7 @@ class CompassPage extends GetView<CompassController> {
                                                     ),
                                                   )
                                                 : SizedBox(),
+                                            onError: (_) => ConnectionError(),
                                             onLoading: SizedBox()),
                                       ),
                                       Container(
@@ -716,7 +718,9 @@ class CompassPage extends GetView<CompassController> {
                                       );
                                     }
                                     return SizedBox();
-                                  }, onLoading: SizedBox()),
+                                  },
+                                      onError: (_) => ConnectionError(),
+                                      onLoading: SizedBox()),
                                 ],
                               ),
                             ),

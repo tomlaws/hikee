@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/pages/profile/profile_controller.dart';
+import 'package:hikees/pages/profile/profile_controller.dart';
 
 class ProfileBinding implements Bindings {
   @override

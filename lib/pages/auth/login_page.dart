@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/mutation_builder.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/models/token.dart';
-import 'package:hikee/pages/auth/login_controller.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/models/token.dart';
+import 'package:hikees/pages/auth/login_controller.dart';
 
 class LoginPage extends GetView<LoginController> {
   const LoginPage({Key? key}) : super(key: key);

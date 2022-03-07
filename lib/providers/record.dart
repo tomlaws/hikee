@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/models/record.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/providers/shared/base.dart';
-import 'package:hikee/utils/geo.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/models/record.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/providers/shared/base.dart';
+import 'package:hikees/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
 
 class RecordProvider extends BaseProvider {

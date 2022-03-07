@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/mutation_builder.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/mutation_builder.dart';
 
 class DialogUtils {
   static showDialog(String title, dynamic content, {bool showDismiss = true}) {

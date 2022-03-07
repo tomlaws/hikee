@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/providers/user.dart';
-import 'package:hikee/utils/dialog.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/providers/auth.dart';
+import 'package:hikees/providers/user.dart';
+import 'package:hikees/utils/dialog.dart';
 
 class AccountProfileController extends GetxController {
   final userProvider = Get.put(UserProvider());

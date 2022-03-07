@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/preferences.dart';
+import 'package:hikees/models/preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesProvider extends GetLifeCycle {

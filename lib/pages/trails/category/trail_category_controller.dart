@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/providers/trail.dart';
+import 'package:hikees/controllers/shared/pagination.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/providers/trail.dart';
 
 class TrailCategoryController extends PaginationController<Trail> {
   final _trailProvider = Get.put(TrailProvider());

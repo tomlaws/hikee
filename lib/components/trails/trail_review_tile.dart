@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:hikee/components/core/avatar.dart';
-import 'package:hikee/models/trail_review.dart';
-import 'package:hikee/themes.dart';
+import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/models/trail_review.dart';
+import 'package:hikees/themes.dart';
 
 class TrailReviewTile extends StatelessWidget {
   const TrailReviewTile(

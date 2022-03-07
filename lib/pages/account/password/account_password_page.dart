@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/pages/account/password/account_password_controller.dart';
-import 'package:hikee/themes.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/pages/account/password/account_password_controller.dart';
+import 'package:hikees/themes.dart';
 
 class AccountPasswordPage extends GetView<AccountPasswordController> {
   @override

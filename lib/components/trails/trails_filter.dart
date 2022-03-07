@@ -1,8 +1,8 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
-// import 'package:hikee/components/core/button.dart';
-// import 'package:hikee/components/core/app_bar.dart';
-// import 'package:hikee/old_providers/trails.dart';
+// import 'package:hikees/components/core/button.dart';
+// import 'package:hikees/components/core/app_bar.dart';
+// import 'package:hikees/old_providers/trails.dart';
 // import 'package:provider/provider.dart';
 
 // class TrailsFilter extends StatefulWidget {

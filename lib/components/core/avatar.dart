@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/utils/image.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/utils/image.dart';
 
 class Avatar extends StatelessWidget {
   const Avatar({Key? key, this.user, this.height = 32, this.onTap})

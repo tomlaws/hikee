@@ -1,4 +1,4 @@
-import 'package:hikee/models/user.dart';
+import 'package:hikees/models/user.dart';
 
 abstract class TopicBase {
   final int id;

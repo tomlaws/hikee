@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/models/record.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/pages/trails/trails_controller.dart';
-import 'package:hikee/providers/record.dart';
-import 'package:hikee/providers/user.dart';
+import 'package:hikees/controllers/shared/pagination.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/models/record.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/pages/trails/trails_controller.dart';
+import 'package:hikees/providers/record.dart';
+import 'package:hikees/providers/user.dart';
 
 class ProfileController extends PaginationController<Record> {
   final _recordProvider = Get.put(RecordProvider());

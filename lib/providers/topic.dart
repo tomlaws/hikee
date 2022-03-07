@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/models/topic.dart';
-import 'package:hikee/models/topic_category.dart';
-import 'package:hikee/models/topic_reply.dart';
-import 'package:hikee/providers/shared/base.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/models/topic.dart';
+import 'package:hikees/models/topic_category.dart';
+import 'package:hikees/models/topic_reply.dart';
+import 'package:hikees/providers/shared/base.dart';
 
 class TopicProvider extends BaseProvider {
   Future<Paginated<Topic>> getTopics(Map<String, dynamic>? query) async {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/utils/color.dart';
+import 'package:hikees/utils/color.dart';
 import 'package:shimmer/shimmer.dart' as S;
 
 class Shimmer extends StatelessWidget {

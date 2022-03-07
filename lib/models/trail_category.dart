@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/utils/lang.dart';
+import 'package:hikees/utils/lang.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'trail_category.g.dart';

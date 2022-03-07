@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/themes.dart';
+import 'package:hikees/themes.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/models/elevation.dart';
-import 'package:hikee/utils/geo.dart';
+import 'package:hikees/models/elevation.dart';
+import 'package:hikees/utils/geo.dart';
 
 class ElevationProfile extends StatelessWidget {
   ElevationProfile({Key? key, required this.elevations, this.myLocation})

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/models/user.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/models/user.dart';
+import 'package:hikees/providers/auth.dart';
 
 class Protected extends StatelessWidget {
   final Widget Function(BuildContext context)? unauthenticatedBuilder;

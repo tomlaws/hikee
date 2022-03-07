@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/components/map/map.dart';
-import 'package:hikee/pages/record/record_controller.dart';
-import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/time.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/components/map/map.dart';
+import 'package:hikees/pages/record/record_controller.dart';
+import 'package:hikees/utils/geo.dart';
+import 'package:hikees/utils/time.dart';
 import 'package:intl/intl.dart';
 
 class RecordPage extends GetView<RecordController> {
   @override
   Widget build(BuildContext context) {
-    var bottomPanelHeight = 200.0;
+    var bottomPanelHeight = 220.0;
     return Scaffold(
       appBar: HikeeAppBar(title: Text('record'.tr)),
       body: Stack(

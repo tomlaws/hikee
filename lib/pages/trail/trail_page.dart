@@ -2,29 +2,30 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/avatar.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/core/mutation_builder.dart';
-import 'package:hikee/components/core/text_may_overflow.dart';
-import 'package:hikee/components/map/drag_marker.dart';
-import 'package:hikee/components/map/map.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/components/trails/trail_review_tile.dart';
-import 'package:hikee/models/trail_review.dart';
-import 'package:hikee/pages/compass/compass_controller.dart';
-import 'package:hikee/pages/home/home_controller.dart';
-import 'package:hikee/pages/trail/trail_controller.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/themes.dart';
-import 'package:hikee/utils/dialog.dart';
-import 'package:hikee/utils/geo.dart';
-import 'package:hikee/utils/image.dart';
-import 'package:hikee/utils/time.dart';
+import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/components/core/text_may_overflow.dart';
+import 'package:hikees/components/map/drag_marker.dart';
+import 'package:hikees/components/map/map.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/components/trails/trail_review_tile.dart';
+import 'package:hikees/models/trail_review.dart';
+import 'package:hikees/pages/compass/compass_controller.dart';
+import 'package:hikees/pages/home/home_controller.dart';
+import 'package:hikees/pages/trail/trail_controller.dart';
+import 'package:hikees/providers/auth.dart';
+import 'package:hikees/themes.dart';
+import 'package:hikees/utils/dialog.dart';
+import 'package:hikees/utils/geo.dart';
+import 'package:hikees/utils/image.dart';
+import 'package:hikees/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:share_plus/share_plus.dart';
 
 class TrailPage extends GetView<TrailController> {
   final _authProvider = Get.find<AuthProvider>();
@@ -259,56 +260,67 @@ class TrailPage extends GetView<TrailController> {
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
+                                            Button(
+                                                backgroundColor: Colors.white,
+                                                radius: 36,
+                                                height: 36,
+                                                minWidth: 36,
+                                                icon: Icon(
+                                                  Icons.download,
+                                                  color: Colors.black87,
+                                                  size: 20,
+                                                ),
+                                                onPressed: () {}),
+                                            SizedBox(width: 8),
                                             Obx(() => _authProvider
                                                     .loggedIn.value
-                                                ? Positioned(
-                                                    top: 16,
-                                                    right: 64,
-                                                    child:
-                                                        controller.obx((state) {
-                                                      var bookmarked =
-                                                          state!.bookmark !=
-                                                              null;
-                                                      return MutationBuilder(
-                                                          mutation: controller
-                                                              .toggleBookmark,
-                                                          builder: (mutate,
-                                                              loading) {
-                                                            return Button(
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                radius: 36,
-                                                                height: 36,
-                                                                minWidth: 36,
-                                                                loading:
-                                                                    loading,
-                                                                icon: Icon(
-                                                                  bookmarked
-                                                                      ? Icons
-                                                                          .bookmark
-                                                                      : Icons
-                                                                          .bookmark_outline,
-                                                                  color: Colors
-                                                                      .black87,
-                                                                  size: 20,
-                                                                ),
-                                                                onPressed:
-                                                                    mutate);
-                                                          });
-                                                    }, onLoading: SizedBox()))
+                                                ? controller.obx((state) {
+                                                    var bookmarked =
+                                                        state!.bookmark != null;
+                                                    return MutationBuilder(
+                                                        mutation: controller
+                                                            .toggleBookmark,
+                                                        builder:
+                                                            (mutate, loading) {
+                                                          return Button(
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                              radius: 36,
+                                                              height: 36,
+                                                              minWidth: 36,
+                                                              loading: loading,
+                                                              icon: Icon(
+                                                                bookmarked
+                                                                    ? Icons
+                                                                        .bookmark
+                                                                    : Icons
+                                                                        .bookmark_outline,
+                                                                color: Colors
+                                                                    .black87,
+                                                                size: 20,
+                                                              ),
+                                                              onPressed:
+                                                                  mutate);
+                                                        });
+                                                  }, onLoading: SizedBox())
                                                 : SizedBox()),
-                                            // Button(
-                                            //     backgroundColor: Colors.white,
-                                            //     radius: 36,
-                                            //     height: 36,
-                                            //     minWidth: 36,
-                                            //     icon: Icon(
-                                            //       Icons.share,
-                                            //       color: Colors.black87,
-                                            //       size: 20,
-                                            //     ),
-                                            //     onPressed: () {})
+                                            SizedBox(width: 8),
+                                            Button(
+                                                backgroundColor: Colors.white,
+                                                radius: 36,
+                                                height: 36,
+                                                minWidth: 36,
+                                                icon: Icon(
+                                                  Icons.share,
+                                                  color: Colors.black87,
+                                                  size: 20,
+                                                ),
+                                                onPressed: () {
+                                                  var t = controller.state;
+                                                  if (t != null)
+                                                    Share.share(
+                                                        '${t.name}\nhttps://hikees.com/trails/${t.id}');
+                                                })
                                           ],
                                         )),
                                   ]),
@@ -407,6 +419,7 @@ class TrailPage extends GetView<TrailController> {
                                           var path =
                                               GeoUtils.decodePath(state!.path);
                                           return HikeeMap(
+                                            key: Key(state.id.toString()),
                                             path: path,
                                             pathOnly: true,
                                             markers: state.pins == null
@@ -456,19 +469,23 @@ class TrailPage extends GetView<TrailController> {
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.bold)),
-                                            SizedBox(
-                                              height: 32,
-                                              width: 32,
-                                              child: Button(
-                                                  icon: Icon(
-                                                    Icons.add,
-                                                    color: Colors.black38,
-                                                  ),
-                                                  invert: true,
-                                                  onPressed: () {
-                                                    controller.addReview();
-                                                  }),
-                                            )
+                                            Obx(() => _authProvider
+                                                    .loggedIn.value
+                                                ? SizedBox(
+                                                    height: 32,
+                                                    width: 32,
+                                                    child: Button(
+                                                        icon: Icon(
+                                                          Icons.add,
+                                                          color: Colors.black38,
+                                                        ),
+                                                        invert: true,
+                                                        onPressed: () {
+                                                          controller
+                                                              .addReview();
+                                                        }),
+                                                  )
+                                                : SizedBox())
                                           ]),
                                     ),
                                     InfiniteScroller(
@@ -521,16 +538,20 @@ class TrailPage extends GetView<TrailController> {
             child: Row(
               children: [
                 Expanded(
-                  child: Button(
-                    onPressed: () {
+                  child: MutationBuilder(
+                    mutation: () async {
                       HomeController hc = Get.find<HomeController>();
                       hc.switchTab(0);
                       CompassController cc = Get.find<CompassController>();
-                      cc.activeTrailProvider.select(controller.state!);
+                      await cc.activeTrailProvider.select(controller.state!);
                       Navigator.of(context).popUntil((route) => route
                           .isFirst); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
                     },
-                    child: Text('selectNow'.tr),
+                    builder: (mutate, loading) => Button(
+                      onPressed: mutate,
+                      loading: loading,
+                      child: Text('selectNow'.tr),
+                    ),
                   ),
                 ),
                 SizedBox(

@@ -1,6 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:hikee/models/token.dart';
+import 'package:hikees/models/token.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class TokenManager {

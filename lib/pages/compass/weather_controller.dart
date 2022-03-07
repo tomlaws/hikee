@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
-import 'package:hikee/models/weather.dart';
-import 'package:hikee/providers/weather.dart';
+import 'package:hikees/models/weather.dart';
+import 'package:hikees/providers/weather.dart';
 
 class WeatherController extends GetxController with StateMixin<Weather> {
   final _weatherProvider = Get.put(WeatherProvider());

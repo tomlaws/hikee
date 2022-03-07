@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/pages/topics/topic_categories_controller.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/pages/topics/topic_categories_controller.dart';
 
 class TopicCategories extends GetView<TopicCategoriesController> {
   final controller = Get.find<TopicCategoriesController>();

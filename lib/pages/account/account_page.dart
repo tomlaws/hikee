@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hikee/components/account/account_header.dart';
+import 'package:hikees/components/account/account_header.dart';
 import 'package:get/get.dart';
-import 'package:hikee/pages/account/account_controller.dart';
-import 'package:hikee/providers/auth.dart';
-import 'package:hikee/themes.dart';
+import 'package:hikees/pages/account/account_controller.dart';
+import 'package:hikees/providers/auth.dart';
+import 'package:hikees/themes.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class AccountPage extends GetView<AccountController> {

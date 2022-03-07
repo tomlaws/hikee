@@ -1,19 +1,19 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/avatar.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/calendar_date.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/core/shimmer.dart';
-import 'package:hikee/components/trails/trail_tile.dart';
-import 'package:hikee/components/core/mutation_builder.dart';
-import 'package:hikee/models/event_participation.dart';
-import 'package:hikee/pages/event/event_controller.dart';
-import 'package:hikee/pages/event/event_participation_controller.dart';
-import 'package:hikee/utils/dialog.dart';
-import 'package:hikee/utils/time.dart';
+import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/calendar_date.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/components/trails/trail_tile.dart';
+import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/models/event_participation.dart';
+import 'package:hikees/pages/event/event_controller.dart';
+import 'package:hikees/pages/event/event_participation_controller.dart';
+import 'package:hikees/utils/dialog.dart';
+import 'package:hikees/utils/time.dart';
 import 'package:intl/intl.dart';
 
 class EventPage extends GetView<EventController> {

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/pages/search/search_controller.dart';
+import 'package:hikees/pages/search/search_controller.dart';
 
 class SearchBinding implements Bindings {
   @override

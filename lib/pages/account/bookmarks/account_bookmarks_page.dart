@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/trails/trail_tile.dart';
-import 'package:hikee/models/bookmark.dart';
-import 'package:hikee/pages/account/bookmarks/account_bookmarks_controller.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/trails/trail_tile.dart';
+import 'package:hikees/models/bookmark.dart';
+import 'package:hikees/pages/account/bookmarks/account_bookmarks_controller.dart';
 
 class AccountBookmarksPage extends GetView<AccountBookmarksController> {
   @override
@@ -16,7 +16,7 @@ class AccountBookmarksPage extends GetView<AccountBookmarksController> {
       body: InfiniteScroller<Bookmark>(
         controller: controller,
         empty: Center(
-          child: Text('noParticipatedEvents'.tr),
+          child: Text('noBookmarks'.tr),
         ),
         separator: SizedBox(
           height: 16,

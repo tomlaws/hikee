@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/pages/account/password/account_password_controller.dart';
+import 'package:hikees/pages/account/password/account_password_controller.dart';
 
 class AccountPasswordBinding implements Bindings {
   @override

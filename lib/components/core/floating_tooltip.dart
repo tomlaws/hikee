@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hikee/themes.dart';
+import 'package:hikees/themes.dart';
 
 class FloatingTooltip extends StatefulWidget {
   const FloatingTooltip(

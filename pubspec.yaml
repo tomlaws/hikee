@@ -1,4 +1,4 @@
-name: hikee
+name: hikees
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.0+4
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -57,16 +57,32 @@ dependencies:
   flutter_svg: ^0.23.0+1
   syncfusion_flutter_sliders: ^19.3.54
   flutter_map: ^0.14.0
-  flutter_map_tappable_polyline: ^3.1.0
   flutter_map_location_marker: ^3.0.2
   proj4dart: ^2.0.0
   uni_links: ^0.5.1
+  flutter_launcher_icons: ^0.9.2
+  share_plus: ^3.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.0.6
   json_serializable: ^4.1.4
 
+dependency_overrides:
+  flutter_map:
+    git:
+      url: git@github.com:ibrierley/flutter_map.git
+      ref: opacity_hairline_fix
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path_ios: "assets/icon/ios_icon.png"
+  image_path_android: "assets/icon/android_icon.png"
+  adaptive_icon_foreground: "assets/icon/icon.png"
+  adaptive_icon_background: "#1ec28c"
+  remove_alpha_ios: true
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

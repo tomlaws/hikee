@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/pages/record/record_controller.dart';
+import 'package:hikees/pages/record/record_controller.dart';
 
 class RecordBinding implements Bindings {
   @override

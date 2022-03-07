@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/connection_error.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/trails/trail_tile.dart';
-import 'package:hikee/models/trail.dart';
-import 'package:hikee/pages/trails/popular_trails_controller.dart';
-import 'package:hikee/pages/trails/trails_controller.dart';
-import 'package:hikee/pages/search/search_page.dart';
+import 'package:hikees/components/connection_error.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/trails/trail_tile.dart';
+import 'package:hikees/models/trail.dart';
+import 'package:hikees/pages/trails/popular_trails_controller.dart';
+import 'package:hikees/pages/trails/trails_controller.dart';
+import 'package:hikees/pages/search/search_page.dart';
 
 import 'featured_trail_controller.dart';
 

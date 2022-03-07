@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/pages/account/account_page.dart';
-import 'package:hikee/pages/account/profile/account_profile_controller.dart';
-import 'package:hikee/themes.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/pages/account/account_page.dart';
+import 'package:hikees/pages/account/profile/account_profile_controller.dart';
+import 'package:hikees/themes.dart';
 
 class AccountProfilePage extends GetView<AccountProfileController> {
   @override

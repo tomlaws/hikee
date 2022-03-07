@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/keep_alive.dart';
-import 'package:hikee/pages/events/event_categories.dart';
-import 'package:hikee/pages/account/account_controller.dart';
-import 'package:hikee/pages/account/account_page.dart';
-import 'package:hikee/pages/compass/compass_controller.dart';
-import 'package:hikee/pages/compass/compass_page.dart';
-import 'package:hikee/pages/compass/weather_controller.dart';
-import 'package:hikee/pages/events/events_controller.dart';
-import 'package:hikee/pages/events/events_page.dart';
-import 'package:hikee/pages/trails/featured_trail_controller.dart';
-import 'package:hikee/pages/trails/popular_trails_controller.dart';
-import 'package:hikee/pages/trails/trails_page.dart';
-import 'package:hikee/pages/topics/topics_controller.dart';
-import 'package:hikee/pages/topics/topics_page.dart';
-import 'package:hikee/providers/active_trail.dart';
-import 'package:hikee/providers/auth.dart';
+import 'package:hikees/components/core/keep_alive.dart';
+import 'package:hikees/pages/account/account_controller.dart';
+import 'package:hikees/pages/account/account_page.dart';
+import 'package:hikees/pages/compass/compass_controller.dart';
+import 'package:hikees/pages/compass/compass_page.dart';
+import 'package:hikees/pages/compass/weather_controller.dart';
+import 'package:hikees/pages/events/events_controller.dart';
+import 'package:hikees/pages/events/events_page.dart';
+import 'package:hikees/pages/trails/featured_trail_controller.dart';
+import 'package:hikees/pages/trails/popular_trails_controller.dart';
+import 'package:hikees/pages/trails/trails_page.dart';
+import 'package:hikees/pages/topics/topics_controller.dart';
+import 'package:hikees/pages/topics/topics_page.dart';
+import 'package:hikees/providers/active_trail.dart';
+import 'package:hikees/providers/auth.dart';
 import 'home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -30,7 +29,6 @@ class HomePage extends GetView<HomeController> {
     Get.lazyPut(() => PopularTrailsController());
     Get.lazyPut(() => FeaturedTrailController());
     Get.lazyPut(() => EventsController());
-    Get.lazyPut(() => EventCategoriesController());
     Get.lazyPut(() => TopicsController());
     Get.lazyPut(() => AccountController());
     var tabs = [

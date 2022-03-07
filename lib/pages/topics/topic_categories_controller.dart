@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 
-import 'package:hikee/models/topic_category.dart';
-import 'package:hikee/pages/topics/topics_controller.dart';
-import 'package:hikee/providers/topic.dart';
+import 'package:hikees/models/topic_category.dart';
+import 'package:hikees/pages/topics/topics_controller.dart';
+import 'package:hikees/providers/topic.dart';
 
 class TopicCategoriesController extends GetxController
     with StateMixin<List<TopicCategory>> {

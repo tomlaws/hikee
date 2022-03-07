@@ -1,5 +1,5 @@
-import 'package:hikee/models/event_category.dart';
-import 'package:hikee/models/trail.dart';
+import 'package:hikees/models/event_category.dart';
+import 'package:hikees/models/trail.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'event.g.dart';

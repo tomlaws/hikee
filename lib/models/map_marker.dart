@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:hikee/utils/color.dart';
+import 'package:hikees/utils/color.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:latlong2/latlong.dart';
 

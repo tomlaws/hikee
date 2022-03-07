@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikee/models/weather.dart';
+import 'package:hikees/models/weather.dart';
 
 class WeatherProvider extends GetConnect {
   Future<Weather> getWeather() async {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/core/button.dart';
-import 'package:hikee/components/core/app_bar.dart';
-import 'package:hikee/components/core/infinite_scroller.dart';
-import 'package:hikee/components/core/text_input.dart';
-import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/pages/search/search_controller.dart';
+import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/infinite_scroller.dart';
+import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/controllers/shared/pagination.dart';
+import 'package:hikees/pages/search/search_controller.dart';
 
 class SearchPage<U, C extends PaginationController<U>> extends StatefulWidget {
   const SearchPage(

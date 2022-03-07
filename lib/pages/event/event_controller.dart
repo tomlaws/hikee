@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:hikee/pages/account/events/account_events_controller.dart';
-import 'package:hikee/providers/event.dart';
-import 'package:hikee/models/event.dart';
+import 'package:hikees/pages/account/events/account_events_controller.dart';
+import 'package:hikees/providers/event.dart';
+import 'package:hikees/models/event.dart';
 
 class EventController extends GetxController with StateMixin<Event> {
   final _eventProvider = Get.put(EventProvider());

@@ -1,4 +1,4 @@
-import 'package:hikee/models/user.dart';
+import 'package:hikees/models/user.dart';
 
 class HikingPost {
   final int id;
@@ -8,7 +8,8 @@ class HikingPost {
   final int likes;
   final List<Comment> comments;
 
-  HikingPost(this.id, this.user, this.title, this.content, this.likes, this.comments);
+  HikingPost(
+      this.id, this.user, this.title, this.content, this.likes, this.comments);
 
   HikingPost.fromJson(Map<String, dynamic> json)
       : id = json['id'],

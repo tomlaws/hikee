@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikee/components/connection_error.dart';
-import 'package:hikee/controllers/shared/pagination.dart';
+import 'package:hikees/components/connection_error.dart';
+import 'package:hikees/controllers/shared/pagination.dart';
 
 class InfiniteScroller<U> extends StatefulWidget {
   const InfiniteScroller(

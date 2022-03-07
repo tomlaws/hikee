@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:hikee/controllers/shared/pagination.dart';
-import 'package:hikee/models/paginated.dart';
-import 'package:hikee/models/event.dart';
-import 'package:hikee/providers/event.dart';
-import 'package:hikee/providers/user.dart';
+import 'package:hikees/controllers/shared/pagination.dart';
+import 'package:hikees/models/paginated.dart';
+import 'package:hikees/models/event.dart';
+import 'package:hikees/providers/event.dart';
+import 'package:hikees/providers/user.dart';
 
 class AccountEventsController extends PaginationController<Event> {
   final _userProvider = Get.put(UserProvider());

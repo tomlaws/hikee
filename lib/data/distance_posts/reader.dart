@@ -2,8 +2,8 @@ import 'package:csv/csv.dart';
 import 'package:csv/csv_settings_autodetection.dart';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikee/models/distance_post.dart';
-import 'package:hikee/utils/geo.dart';
+import 'package:hikees/models/distance_post.dart';
+import 'package:hikees/utils/geo.dart';
 
 class DistancePostsReader {
   static var d = FirstOccurrenceSettingsDetector(eols: ['\r\n', '\n']);

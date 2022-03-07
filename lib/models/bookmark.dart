@@ -1,4 +1,4 @@
-import 'package:hikee/models/trail.dart';
+import 'package:hikees/models/trail.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'bookmark.g.dart';
