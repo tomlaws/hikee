@@ -81,7 +81,8 @@ FEB
 MAR
 1. Internationalization (translated everything into 3 languages 英繁簡)
 2. Share trail (through whatsapp)
-3. Download trail for offline review
+
+3. [In progress] Download trail for offline review, Offline map, publish to play store
 
 TODO:
 Share through app link

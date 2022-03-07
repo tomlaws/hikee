@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map/flutter_map.dart'
+    hide Polyline, PolylineLayer, PolylineLayerOptions, PolylineLayerWidget;
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/button.dart';
@@ -12,6 +13,8 @@ import 'package:hikees/providers/preferences.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+
+import 'polyline_layer.dart';
 
 class HikeeMap extends StatelessWidget {
   HikeeMap(
