@@ -23,7 +23,7 @@ class CreateEventPage extends GetView<CreateEventController> {
         Get.put(TrailController(), tag: 'create-event-${controller.trailId}');
     return Scaffold(
         appBar: HikeeAppBar(
-          title: Text('Create Event'),
+          title: Text('createEvent'.tr),
         ),
         body: Column(
           children: [
@@ -46,14 +46,14 @@ class CreateEventPage extends GetView<CreateEventController> {
                     ),
                     TextInput(
                       controller: controller.nameController,
-                      label: 'Event name',
+                      label: 'eventName'.tr,
                     ),
                     SizedBox(
                       height: 16,
                     ),
                     TextInput(
                       controller: controller.descriptionController,
-                      label: 'Description',
+                      label: 'description'.tr,
                       maxLines: 5,
                     ),
                     SizedBox(
@@ -61,7 +61,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                     ),
                     TextInput(
                       controller: controller.dateController,
-                      label: 'Date & Time',
+                      label: 'date'.tr,
                       onTap: () {
                         _showDatePicker(context);
                       },
@@ -102,7 +102,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                       onPressed: () {
                         mutate();
                       },
-                      child: Text('Create Event'),
+                      child: Text('createEvent'.tr),
                     );
                   }),
             )
@@ -132,7 +132,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                   ),
                   // Close the modal
                   CupertinoButton(
-                    child: Text('OK'),
+                    child: Text('ok'.tr),
                     onPressed: () {
                       controller.dateController.text =
                           DateFormat('yyyy-MM-dd HH:mm')

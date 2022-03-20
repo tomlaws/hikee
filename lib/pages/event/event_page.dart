@@ -116,7 +116,7 @@ class EventPage extends GetView<EventController> {
                               ],
                             ),
                           ),
-                          Text('paticipants'.tr,
+                          Text('participants'.tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,

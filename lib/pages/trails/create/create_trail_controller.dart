@@ -31,7 +31,7 @@ class CreateTrailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments.containsKey('path')) {
+    if (Get.arguments?.containsKey('path') == true) {
       var decoded = GeoUtils.decodePath(Get.arguments['path']!);
       coordinates.value =
           decoded.map((e) => new Pin(location: e, message: null)).toList();
@@ -61,30 +61,44 @@ class CreateTrailController extends GetxController {
     selectedCoordinates.value = null;
   }
 
-  void addMessage() async {
-    if (selectedCoordinates.value == null) {
+  void editMessage(Pin? pin) async {
+    if (pin == null) {
       DialogUtils.showDialog("Error", "Please select a point");
       return;
     }
+    final formkey = GlobalKey<FormState>();
     await DialogUtils.showActionDialog(
         "Message",
-        Column(
-          children: [
-            TextInput(
-              hintText: "Custom message here...",
-              maxLines: 6,
-              controller: pointMessageTextController,
-            )
-          ],
+        Form(
+          key: formkey,
+          child: Column(
+            children: [
+              TextInput(
+                hintText: "Custom message here...",
+                maxLines: 6,
+                initialValue: pin.message,
+                onSaved: (v) => pin.message = v ?? '',
+                validator: (v) {
+                  if (v == null || v.length == 0) {
+                    return 'fieldCannotBeEmpty'
+                        .trParams({'field': 'message'.tr});
+                  }
+                  if (v.length > 100) {
+                    return 'fieldTooLong'.trParams({'field': 'message'.tr});
+                  }
+                  return null;
+                },
+              )
+            ],
+          ),
         ), onOk: () {
-      if (pointMessageTextController.text.length == 0) {
-        DialogUtils.showDialog("Error", "Message cannot be empty");
-        throw new Error();
+      if (formkey.currentState?.validate() == true) {
+        formkey.currentState?.save();
+        coordinates.refresh();
+        return true;
+      } else {
+        return null;
       }
-      if (selectedCoordinates.value != null) {
-        selectedCoordinates.value!.message = pointMessageTextController.text;
-      }
-      coordinates.refresh();
     });
     pointMessageTextController.text = '';
   }
@@ -93,26 +107,6 @@ class CreateTrailController extends GetxController {
     if (selectedCoordinates.value != null) {
       selectedCoordinates.value!.message = null;
     }
-  }
-
-  void editMessage(Pin pos) async {
-    if (pos.message == null) return;
-    pointMessageTextController.text = pos.message!;
-    await DialogUtils.showActionDialog(
-        "Message",
-        Column(
-          children: [
-            TextInput(
-              hintText: "Custom message here...",
-              maxLines: 6,
-              controller: pointMessageTextController,
-            )
-          ],
-        ), onOk: () {
-      pos.message = pointMessageTextController.text;
-      coordinates.refresh();
-    });
-    pointMessageTextController.text = '';
   }
 
   void remove(int i) {

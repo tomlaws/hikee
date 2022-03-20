@@ -70,4 +70,12 @@ class Themes {
     const Color(0xff23b6e6),
     const Color(0xff02d39a),
   ];
+  static final List<Color> lightenedGradientColors = [
+    const Color(0xff5ac8ec),
+    const Color(0xff22fcc1),
+  ];
+  static final List<Color> darkenedGradientColors = [
+    const Color(0xff094558),
+    const Color(0xff019e73),
+  ];
 }

@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/models/active_trail.dart';
-import 'package:hikees/models/elevation.dart';
+import 'package:hikees/models/hk_datum.dart';
 import 'package:hikees/models/reference_trail.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/providers/shared/base.dart';
@@ -23,6 +23,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:vector_math/vector_math.dart' as vmath;
+import 'package:collection/collection.dart';
 
 // Core Provider
 class ActiveTrailProvider extends BaseProvider {
@@ -124,18 +125,19 @@ class ActiveTrailProvider extends BaseProvider {
       return;
     }
     Map<String, dynamic> data = {'countInit': 1};
+
     await BackgroundLocator.registerLocationUpdate(
         LocationCallbackHandler.callback,
         initCallback: LocationCallbackHandler.initCallback,
         initDataCallback: data,
         disposeCallback: LocationCallbackHandler.disposeCallback,
         iosSettings: IOSSettings(
-            accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
+            accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 1),
         autoStop: false,
         androidSettings: AndroidSettings(
             accuracy: LocationAccuracy.NAVIGATION,
             interval: 5,
-            distanceFilter: 0,
+            distanceFilter: 1,
             client: LocationClient.google,
             androidNotificationSettings: AndroidNotificationSettings(
                 notificationChannelName: 'Location tracking',
@@ -165,16 +167,11 @@ class ActiveTrailProvider extends BaseProvider {
       LatLng latlng = LatLng(location.latitude, location.longitude);
       if (activeTrail.value!.userPath.last != latlng) {
         activeTrail.update((t) {
-          t?.userPath.add(latlng);
+          t?.addPoint(latlng);
         });
       }
 
       updateNotification();
-      if (location.altitude != 0) {
-        activeTrail.update((t) {
-          t?.userElevation.add(location.altitude);
-        });
-      }
     }
     if (activeTrail.value?.trail?.path != null) {
       isCloseToStart.value = GeoUtils.isCloseToPoint(
@@ -213,28 +210,18 @@ class ActiveTrailProvider extends BaseProvider {
     await prefs.setString('activeTrail', serialized);
   }
 
-  Future<List<Elevation>> _getElevations(int trailId) async {
-    try {
-      return await get('trails/$trailId/elevation').then((value) {
-        return (value.body as List).map((e) => Elevation.fromJson(e)).toList();
-      });
-    } catch (ex) {
-      return [];
-    }
-  }
-
   Future<void> select(Trail trail) async {
     try {
       var decodedPath = GeoUtils.decodePath(trail.path);
       // get elevations
-      List<Elevation> elevations = [];
+      List<HKDatum> heights = [];
       try {
-        elevations = await _getElevations(trail.id);
+        heights = await GeoUtils.getHKDPs(decodedPath);
       } catch (ex) {
         print(ex);
       }
       activeTrail.value = ActiveTrail(
-          trail: ReferenceTrail.fromTrail(trail, elevations: elevations),
+          trail: ReferenceTrail.fromTrail(trail, heights: heights),
           startTime: null);
       isCloseToStart.value = GeoUtils.isCloseToPoint(
           currentLocation.value!.latLng, activeTrail.value!.trail!.path![0]);
@@ -255,7 +242,7 @@ class ActiveTrailProvider extends BaseProvider {
       });
       if (currentLocation.value != null) {
         activeTrail.update((t) {
-          t?.userPath.add(currentLocation.value!.latLng);
+          t?.addPoint(currentLocation.value!.latLng);
         });
       }
       updateNotification();

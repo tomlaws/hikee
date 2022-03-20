@@ -1,3 +1,4 @@
+import 'package:hikees/models/hk_datum.dart';
 import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/reference_trail.dart';
 import 'package:hikees/utils/geo.dart';
@@ -11,7 +12,7 @@ class ActiveTrail {
   ReferenceTrail? trail;
   String? name;
   List<LatLng> userPath;
-  List<double> userElevation;
+  List<HKDatum> userHeights;
   List<MapMarker> markers;
   int? startTime;
   int? regionId;
@@ -48,9 +49,21 @@ class ActiveTrail {
     }
   }
 
+  //bool _processingPoint = false;
+  Future<void> addPoint(LatLng point) async {
+    //while (_processingPoint) {}
+    //_processingPoint = true;
+    try {
+      List<HKDatum> heights = await GeoUtils.getHKDPs([point]);
+      userPath.add(point);
+      userHeights.add(heights.first);
+    } catch (ex) {}
+    //_processingPoint = false;
+  }
+
   ActiveTrail({this.trail, this.startTime})
       : userPath = [],
-        userElevation = [],
+        userHeights = [],
         markers = [];
 
   factory ActiveTrail.fromJson(Map<String, dynamic> json) =>

@@ -11,6 +11,7 @@ import 'package:hikees/pages/events/events_controller.dart';
 import 'package:hikees/pages/events/events_page.dart';
 import 'package:hikees/pages/trails/featured_trail_controller.dart';
 import 'package:hikees/pages/trails/popular_trails_controller.dart';
+import 'package:hikees/pages/trails/trails_controller.dart';
 import 'package:hikees/pages/trails/trails_page.dart';
 import 'package:hikees/pages/topics/topics_controller.dart';
 import 'package:hikees/pages/topics/topics_page.dart';
@@ -26,6 +27,7 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => CompassController());
     Get.lazyPut(() => WeatherController());
+    Get.lazyPut(() => TrailsController());
     Get.lazyPut(() => PopularTrailsController());
     Get.lazyPut(() => FeaturedTrailController());
     Get.lazyPut(() => EventsController());
@@ -48,7 +50,7 @@ class HomePage extends GetView<HomeController> {
         },
         itemBuilder: (context, index) => tabs[index]);
     return Scaffold(
-        extendBodyBehindAppBar: true,
+        //extendBodyBehindAppBar: true,
         body: Obx(() {
           // ensures rebuild everything if login state changed
           var loggedIn = _authProvider.loggedIn.value;

@@ -60,7 +60,7 @@ class AccountProfileController extends GetxController {
         final result = await userProvider.update(nickname: nickname);
         return true;
       } else {
-        throw new Error();
+        return null;
       }
     });
     _authProvider.refreshMe();

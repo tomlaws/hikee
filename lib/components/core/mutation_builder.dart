@@ -28,6 +28,7 @@ class _MutationBuilderState<T> extends State<MutationBuilder<T>> {
   @override
   Widget build(BuildContext context) {
     return widget.builder(() async {
+      if (_loading) return;
       if (widget.userOnly) {
         var auth = Get.find<AuthProvider>();
         if (!auth.loggedIn.value) {

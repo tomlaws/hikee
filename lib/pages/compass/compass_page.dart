@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/connection_error.dart';
 import 'package:hikees/components/core/floating_tooltip.dart';
-import 'package:hikees/components/trails/elevation_profile.dart';
+import 'package:hikees/components/trails/hkpd_profile.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/providers/auth.dart';
@@ -36,25 +36,23 @@ class CompassPage extends GetView<CompassController> {
     return Container(
       color: Theme.of(context).primaryColor,
       child: Stack(children: [
-        Container(
-          child: SlidingUpPanel(
-              controller: controller.panelController,
-              renderPanelSheet: false,
-              maxHeight: controller.maxPanelHeight,
-              minHeight: controller.collapsedPanelHeight,
-              color: Colors.transparent,
-              onPanelSlide: (position) {
-                controller.panelPosition.value = position;
-              },
-              panel: Obx(() {
-                if (controller.activeTrail.value == null) {
-                  return Container();
-                } else {
-                  return _panel();
-                }
-              }),
-              body: _body(context)),
-        ),
+        SlidingUpPanel(
+            controller: controller.panelController,
+            renderPanelSheet: false,
+            maxHeight: controller.maxPanelHeight,
+            minHeight: controller.collapsedPanelHeight,
+            color: Colors.transparent,
+            onPanelSlide: (position) {
+              controller.panelPosition.value = position;
+            },
+            panel: Obx(() {
+              if (controller.activeTrail.value == null) {
+                return Container();
+              } else {
+                return _panel();
+              }
+            }),
+            body: _body(context)),
         Obx(() => Positioned(
               bottom: controller.panelPosition.value *
                       (controller.maxPanelHeight -
@@ -719,7 +717,7 @@ class CompassPage extends GetView<CompassController> {
                                     }
                                     return SizedBox();
                                   },
-                                      onError: (_) => ConnectionError(),
+                                      onError: (_) => SizedBox(),
                                       onLoading: SizedBox()),
                                 ],
                               ),
@@ -784,6 +782,7 @@ class CompassPage extends GetView<CompassController> {
         onLongPress: (location) {
           controller.promptAddMarker(location);
         },
+        offlineTrail: activeTrail.trail?.offline ?? false,
         path: activeTrail.trail?.path,
         userPath: controller.userPath,
         pathOnly: true,
@@ -791,6 +790,7 @@ class CompassPage extends GetView<CompassController> {
         positionStream: controller.currentLocation.stream,
         headingStream: controller.currentHeading.stream,
         markers: controller.mapMarkers,
+        verticalDatum: false,
         contentMargin: EdgeInsets.only(
             top: 8,
             left: 8,
@@ -828,38 +828,54 @@ class CompassPage extends GetView<CompassController> {
       child:
           Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Expanded(
-          child: Obx(
-            () => Container(
-                decoration: BoxDecoration(
-                    border: Border(
-                        bottom:
-                            BorderSide(color: Colors.black.withOpacity(.05)))),
-                margin: EdgeInsets.only(
-                  bottom: 16.0,
-                  top: 4.0,
-                ),
-                padding: const EdgeInsets.only(
-                    top: 0, left: 8.0, right: 16.0, bottom: 16.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Obx(() => ActiveTrailInfo(
-                            activeTrail: controller.activeTrail.value!,
-                            onEdit: () async {
-                              await controller.customizeRecord();
-                            },
-                          )),
-                      SizedBox(height: 8),
-                      Expanded(
-                        child: ElevationProfile(
-                          elevations: controller.activeTrailProvider.recordMode
-                              ? controller.activeTrail.value!.userElevation
-                              : controller.activeTrail.value!.trail!.elevations,
-                          myLocation: controller.currentLocation.value?.latLng,
-                        ),
-                      ),
-                    ])),
-          ),
+          child: Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom:
+                          BorderSide(color: Colors.black.withOpacity(.05)))),
+              margin: EdgeInsets.only(
+                bottom: 16.0,
+                top: 4.0,
+              ),
+              padding: const EdgeInsets.only(
+                  top: 0, left: 8.0, right: 16.0, bottom: 0.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Obx(() => ActiveTrailInfo(
+                          activeTrail: controller.activeTrail.value!,
+                          onEdit: () async {
+                            await controller.customizeRecord();
+                          },
+                        )),
+                    SizedBox(height: 8),
+                    Expanded(
+                        child: HKPDProfile(
+                      header: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${controller.activeTrailLength.toString()}km',
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.black54),
+                            ),
+                            Text(
+                              '/',
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.black54),
+                            ),
+                            Text(
+                              TimeUtils.formatMinutes(
+                                  controller.activeTrailDuration),
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.black54),
+                            ),
+                          ]),
+                      datums: controller.activeTrail.value!.trail?.heights ??
+                          controller.activeTrail.value!.userHeights,
+                      myLocation: controller.currentLocation.value?.latLng,
+                    )),
+                  ])),
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),

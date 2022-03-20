@@ -5,16 +5,10 @@ import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/trails/trail_tile.dart';
 import 'package:hikees/models/trail.dart';
-import 'package:hikees/pages/trails/popular_trails_controller.dart';
 import 'package:hikees/pages/trails/trails_controller.dart';
 import 'package:hikees/pages/search/search_page.dart';
 
-import 'featured_trail_controller.dart';
-
 class TrailsPage extends GetView<TrailsController> {
-  final popularTrailsController = Get.find<PopularTrailsController>();
-  final featuredTrailsController = Get.find<FeaturedTrailController>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,8 +16,8 @@ class TrailsPage extends GetView<TrailsController> {
         body: RefreshIndicator(
           displacement: 80.0,
           onRefresh: () async {
-            popularTrailsController.refetch();
-            featuredTrailsController.refetch();
+            controller.popularTrailsController.refetch();
+            controller.featuredTrailsController.refetch();
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(
@@ -89,7 +83,7 @@ class TrailsPage extends GetView<TrailsController> {
                         ),
                       ),
                     ),
-                    popularTrailsController.obx(
+                    controller.popularTrailsController.obx(
                         (state) => SingleChildScrollView(
                               clipBehavior: Clip.none,
                               padding: EdgeInsets.all(16),
@@ -129,7 +123,7 @@ class TrailsPage extends GetView<TrailsController> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: featuredTrailsController.obx(
+                      child: controller.featuredTrailsController.obx(
                           (state) =>
                               TrailTile(trail: state!, aspectRatio: 4 / 3),
                           onError: (error) => ConnectionError(),

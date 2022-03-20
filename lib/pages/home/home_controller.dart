@@ -47,8 +47,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void handleAppLink(Uri link) {
     RegExp regExp = new RegExp(r'/(\w+)/(\d+)');
     if (link.path.length == 0) return;
-    print('deep link detected');
-    print(link.path);
     var matches = regExp.allMatches(link.path);
     if (matches.length > 0) {
       var m = matches.elementAt(0);

@@ -17,8 +17,8 @@ ActiveTrail _$ActiveTrailFromJson(Map<String, dynamic> json) {
     ..userPath = (json['userPath'] as List<dynamic>)
         .map((e) => LatLng.fromJson(e as Map<String, dynamic>))
         .toList()
-    ..userElevation = (json['userElevation'] as List<dynamic>)
-        .map((e) => (e as num).toDouble())
+    ..userHeights = (json['userHeights'] as List<dynamic>)
+        .map((e) => HKDatum.fromJson(e as Map<String, dynamic>))
         .toList()
     ..markers = (json['markers'] as List<dynamic>)
         .map((e) => MapMarker.fromJson(e as Map<String, dynamic>))
@@ -31,7 +31,7 @@ Map<String, dynamic> _$ActiveTrailToJson(ActiveTrail instance) =>
       'trail': instance.trail,
       'name': instance.name,
       'userPath': instance.userPath,
-      'userElevation': instance.userElevation,
+      'userHeights': instance.userHeights,
       'markers': instance.markers,
       'startTime': instance.startTime,
       'regionId': instance.regionId,

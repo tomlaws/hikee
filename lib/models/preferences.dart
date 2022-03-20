@@ -8,8 +8,12 @@ part 'preferences.g.dart';
 class Preferences {
   Language language;
   MapProvider mapProvider;
+  MapProvider? offlineMapProvider;
 
-  Preferences({required this.language, required this.mapProvider});
+  Preferences(
+      {required this.language,
+      required this.mapProvider,
+      this.offlineMapProvider});
 
   Locale get locale {
     switch (language) {
@@ -26,7 +30,9 @@ class Preferences {
 
   static Preferences defaultPreferences() {
     return Preferences(
-        language: Language.DEFAULT, mapProvider: MapProvider.OpenStreetMap);
+        language: Language.DEFAULT,
+        mapProvider: MapProvider.OpenStreetMap,
+        offlineMapProvider: null);
   }
 
   factory Preferences.fromJson(Map<String, dynamic> json) =>
@@ -45,8 +51,12 @@ extension MapProviderExtension on MapProvider {
       case MapProvider.OpenStreetMapCyclOSM:
         return 'OpenStreetMap CyclOSM';
       case MapProvider.LandsDepartment:
-        return 'HKGOV - Lands Department';
+        return 'Lands Department @ HKGOV';
     }
+  }
+
+  String get resIdentifier {
+    return this.toString().split('.').last;
   }
 }
 

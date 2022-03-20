@@ -10,6 +10,8 @@ import 'package:hikees/controllers/shared/pagination.dart';
 import 'package:hikees/models/trail_review.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_controller.dart';
 import 'package:hikees/providers/bookmark.dart';
+import 'package:hikees/providers/map_tiles.dart';
+import 'package:hikees/providers/preferences.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/models/trail.dart';
@@ -19,6 +21,7 @@ import 'package:hikees/utils/geo.dart';
 class TrailController extends GetxController with StateMixin<Trail> {
   final _trailProvider = Get.put(TrailProvider());
   final _bookmarkProvider = Get.put(BookmarkProvider());
+  final _mapTilesProvider = Get.put(MapTilesProvider());
   late GetPaginationController<TrailReview> trailReviewsController;
   late ScrollController scrollController;
 
@@ -30,12 +33,20 @@ class TrailController extends GetxController with StateMixin<Trail> {
   final points = Rxn<List<LatLng>>();
 
   final int takeReviews = 5;
+  bool offline = false;
 
   @override
   void onInit() {
     super.onInit();
-    id = int.parse(Get.parameters['trailId'] ?? Get.parameters['id'] ?? '');
-    append(() => _loadTrail);
+    if (Get.arguments != null && Get.arguments['trail'] != null) {
+      offline = true;
+      Trail trail = Get.arguments['trail'];
+      append(() => () => Future.value(trail));
+      id = trail.id;
+    } else {
+      id = int.parse(Get.parameters['trailId'] ?? Get.parameters['id'] ?? '');
+      append(() => _loadTrail);
+    }
     scrollController = ScrollController();
     trailReviewsController = Get.put(GetPaginationController((queries) {
       return _trailProvider.getTrailReviews(id, queries);
@@ -47,6 +58,9 @@ class TrailController extends GetxController with StateMixin<Trail> {
   }
 
   void refreshTrail() {
+    if (offline) {
+      return;
+    }
     change(null, status: RxStatus.loading());
     append(() => _loadTrail);
   }
@@ -132,7 +146,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
         await _submitReview(rating: _rating, content: _content);
         return true;
       } else {
-        throw new Error();
+        return null;
       }
     });
     return result;
@@ -149,6 +163,16 @@ class TrailController extends GetxController with StateMixin<Trail> {
       reviewsState.hasMore = true;
     }
     trailReviewsController.forceUpdate(reviewsState);
+  }
+
+  Future<void> downloadTrail() async {
+    if (state == null) return;
+    var _preferenceProvider = Get.find<PreferencesProvider>();
+    _mapTilesProvider.downloadAndSave(
+      GeoUtils.getPathBounds(GeoUtils.decodePath(state!.path)),
+      state!,
+      _preferenceProvider.preferences.value?.mapProvider,
+    );
   }
 
   @override

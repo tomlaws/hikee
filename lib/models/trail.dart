@@ -27,6 +27,7 @@ class Trail {
   final String path;
   Bookmark? bookmark;
   final List<Pin>? pins;
+  bool? offline;
 
   Trail(
       {required this.id,
@@ -45,7 +46,8 @@ class Trail {
       required this.length,
       required this.path,
       this.pins,
-      this.bookmark});
+      this.bookmark,
+      this.offline = false});
 
   factory Trail.fromJson(Map<String, dynamic> json) => _$TrailFromJson(json);
   Map<String, dynamic> toJson() => _$TrailToJson(this);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/text_may_overflow.dart';
 import 'package:hikees/models/active_trail.dart';
+import 'package:hikees/themes.dart';
 import 'package:hikees/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
@@ -40,8 +41,9 @@ class ActiveTrailInfo extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Icon(
-            LineAwesomeIcons.map_signs,
-            color: Colors.black45,
+            Icons.location_pin,
+            color: Themes.gradientColors.first,
+            size: 16,
           ),
           Container(width: 8),
           Expanded(
@@ -54,56 +56,37 @@ class ActiveTrailInfo extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                  margin: const EdgeInsets.only(left: 8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      onEdit();
-                    },
-                    child: Icon(
-                      LineAwesomeIcons.edit,
-                      color: Colors.black45,
-                    ),
-                  )),
+              Material(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(6.0),
+                clipBehavior: Clip.hardEdge,
+                child: InkWell(
+                  onTap: () {
+                    onEdit();
+                  },
+                  child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 3.0, horizontal: 5.0),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        runAlignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 4.0,
+                        children: [
+                          Icon(
+                            Icons.edit,
+                            size: 12,
+                            color: Colors.black45,
+                          ),
+                          Text(
+                            'edit'.tr,
+                            style: TextStyle(fontSize: 13),
+                          )
+                        ],
+                      )),
+                ),
+              ),
             ]),
-          ),
-        ],
-      ),
-      Container(height: 8),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  LineAwesomeIcons.ruler,
-                  color: Colors.black45,
-                ),
-                Container(width: 8),
-                Text(
-                  '${(length).toString()}km',
-                  style: TextStyle(),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  LineAwesomeIcons.clock,
-                  color: Colors.black45,
-                ),
-                Container(width: 8),
-                Text(
-                  TimeUtils.formatMinutes(duration),
-                  style: TextStyle(),
-                ),
-              ],
-            ),
           ),
         ],
       ),

@@ -10,6 +10,8 @@ Preferences _$PreferencesFromJson(Map<String, dynamic> json) {
   return Preferences(
     language: _$enumDecode(_$LanguageEnumMap, json['language']),
     mapProvider: _$enumDecode(_$MapProviderEnumMap, json['mapProvider']),
+    offlineMapProvider:
+        _$enumDecodeNullable(_$MapProviderEnumMap, json['offlineMapProvider']),
   );
 }
 
@@ -17,6 +19,7 @@ Map<String, dynamic> _$PreferencesToJson(Preferences instance) =>
     <String, dynamic>{
       'language': _$LanguageEnumMap[instance.language],
       'mapProvider': _$MapProviderEnumMap[instance.mapProvider],
+      'offlineMapProvider': _$MapProviderEnumMap[instance.offlineMapProvider],
     };
 
 K _$enumDecode<K, V>(
@@ -57,3 +60,14 @@ const _$MapProviderEnumMap = {
   MapProvider.OpenStreetMapCyclOSM: 'OpenStreetMapCyclOSM',
   MapProvider.LandsDepartment: 'LandsDepartment',
 };
+
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
+  dynamic source, {
+  K? unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
+}

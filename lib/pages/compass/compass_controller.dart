@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:geoimage/geoimage.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/dropdown.dart';
 import 'package:hikees/components/core/text_input.dart';
@@ -109,6 +112,18 @@ class CompassController extends GetxController
 
   int? get estimatedFinishTime {
     return activeTrailProvider.activeTrail.value?.estimatedFinishTime;
+  }
+
+  double get activeTrailLength {
+    if (activeTrail.value?.trail == null) {
+      return activeTrail.value?.length ?? 0.0;
+    }
+    return ((activeTrail.value?.trail?.length ?? 0) / 1000);
+  }
+
+  int get activeTrailDuration {
+    return activeTrail.value?.trail?.duration ??
+        ((activeTrail.value?.elapsed ?? 0.0) / 60).round();
   }
 
   List<DragMarker> get mapMarkers {
@@ -304,7 +319,7 @@ class CompassController extends GetxController
             color: Colors.indigo);
         return true;
       } else {
-        throw new Error();
+        return null;
       }
     });
   }
@@ -371,7 +386,7 @@ class CompassController extends GetxController
         formkey.currentState?.save();
         return true;
       } else {
-        return false;
+        return null;
       }
     });
     if (result != null) {
@@ -391,7 +406,9 @@ class CompassController extends GetxController
         int? trailId;
         int elapsed = activeTrail.value!.elapsed;
         int startTime = activeTrail.value!.startTime!;
-        List<double> altitudes = activeTrail.value!.userElevation;
+        List<double> altitudes = activeTrail.value!.userHeights
+            .map((e) => e.datum.toDouble())
+            .toList();
         double distance = activeTrail.value!.length;
         DateTime date = DateTime.fromMillisecondsSinceEpoch(startTime);
         late int regionId;

@@ -156,7 +156,15 @@ class Messages extends Translations {
           "review": "Review",
           "rating": "Rating",
           "pleaseRateTheTrail": "Please rate the trail",
-          "noBookmarks": "No bookmarks"
+          "noBookmarks": "No bookmarks",
+          "eventName": "Event name",
+          "none": "None",
+          "offlineMapProvider": "Offline Map Provider",
+          "downloading": "Downloading",
+          "heightsPending": "Start recording to view heights",
+          "edit": "Edit",
+          "info": "Info",
+          "offlineTrails": "Downloaded Trails"
         },
         'zh_CN': {
           "bookmarks": "书籤",
@@ -268,7 +276,7 @@ class Messages extends Translations {
           "minutes": "分钟",
           "difficulty": "困难",
           "publish": "发布",
-          "next": "下一个",
+          "next": "下一步",
           "categories": "类别",
           "daysAgo": "日前",
           "dayAgo": "日前",
@@ -306,7 +314,15 @@ class Messages extends Translations {
           "review": "评论",
           "rating": "評分",
           "pleaseRateTheTrail": "请为路线评分",
-          "noBookmarks": "没有书籤"
+          "noBookmarks": "没有书籤",
+          "eventName": "活动名称",
+          "none": "没有",
+          "offlineMapProvider": "离线地图提供者",
+          "downloading": "下载中",
+          "heightsPending": "开始录制以查看高度",
+          "edit": "编辑",
+          "info": "资讯",
+          "offlineTrails": "已下载路线"
         },
         'zh_HK': {
           "bookmarks": "書籤",
@@ -418,7 +434,7 @@ class Messages extends Translations {
           "minutes": "分鐘",
           "difficulty": "困難",
           "publish": "發布",
-          "next": "下一個",
+          "next": "下一步",
           "categories": "類別",
           "daysAgo": "日前",
           "dayAgo": "日前",
@@ -456,7 +472,15 @@ class Messages extends Translations {
           "review": "評論",
           "rating": "評分",
           "pleaseRateTheTrail": "請為路線評分",
-          "noBookmarks": "沒有書籤"
+          "noBookmarks": "沒有書籤",
+          "eventName": "活動名稱",
+          "none": "沒有",
+          "offlineMapProvider": "離線地圖提供者",
+          "downloading": "下載中",
+          "heightsPending": "開始錄製以查看高度",
+          "edit": "編輯",
+          "info": "資訊",
+          "offlineTrails": "已下載路線"
         },
       };
 }

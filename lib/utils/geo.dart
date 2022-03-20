@@ -1,11 +1,18 @@
+import 'dart:io';
 import 'dart:math' show sin, cos, sqrt, asin, pi;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:get/get_utils/src/extensions/double_extensions.dart';
+import 'package:get/get.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
+import 'package:hikees/models/hk_datum.dart';
 import 'package:hikees/models/region.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:proj4dart/proj4dart.dart' as proj4;
 import 'package:tuple/tuple.dart';
+import 'package:hikees/models/georaster.dart';
+import 'package:dart_jts/dart_jts.dart';
 
 class GeoUtils {
   static String encodePath(List<LatLng> points) {
@@ -128,5 +135,43 @@ class GeoUtils {
     var projDst = proj4.Projection.get('EPSG:4326')!;
     var pointForward = projSrc.transform(projDst, pointSrc).toArray();
     return LatLng(pointForward[1], pointForward[0]);
+  }
+
+  Future<File> _writeToCache(String dataFile) async {
+    final byteData = await rootBundle.load('assets/data/$dataFile');
+    final file = File('${(await getTemporaryDirectory()).path}/$dataFile');
+    await file.writeAsBytes(byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    return file;
+  }
+
+  // Future<double> _getHKPD(LatLng point) async {
+  //   final byteData = await rootBundle.load('assets/data/hong_kong_terrain.tif');
+  //   GeoRaster image = GeoRaster(byteData.buffer.asUint8List());
+  //   image.read();
+  //   Coordinate c = Coordinate.empty2D();
+  //   var res = GeoUtils.convertToEPSG2326(point);
+  //   image.geoInfo?.worldToPixel(Coordinate(res.item1, res.item2), c);
+  //   double dp = image.getDouble(c.x.toInt(), c.y.toInt());
+  //   return dp;
+  // }
+  static GeoRaster? _cache;
+  static Future<List<HKDatum>> getHKDPs(List<LatLng> path) async {
+    if (_cache == null) {
+      ByteData data = await DefaultAssetBundle.of(Get.context!)
+          .load('assets/data/hong_kong_terrain.tif');
+      GeoRaster image = GeoRaster(data.buffer.asUint8List());
+      image.read();
+      _cache = image;
+    }
+
+    List<HKDatum> result = path.map((pt) {
+      Coordinate c = Coordinate.empty2D();
+      var res = GeoUtils.convertToEPSG2326(pt);
+      _cache!.geoInfo?.worldToPixel(Coordinate(res.item1, res.item2), c);
+      int dp = _cache!.getInt(c.x.toInt(), c.y.toInt());
+      return HKDatum(dp, pt);
+    }).toList();
+    return result;
   }
 }

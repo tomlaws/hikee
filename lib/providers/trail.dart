@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
-import 'package:hikees/models/elevation.dart';
+import 'package:hikees/models/hk_datum.dart';
 import 'package:hikees/models/paginated.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/trail.dart';
@@ -15,7 +15,6 @@ class TrailProvider extends BaseProvider {
       await get('trails/$id').then((value) => Trail.fromJson(value.body));
 
   Future<Paginated<Trail>> getTrails(Map<String, dynamic>? query) async {
-    print('getting trails');
     return await get('trails', query: query).then((value) {
       return Paginated<Trail>.fromJson(
           value.body, (o) => Trail.fromJson(o as Map<String, dynamic>));
@@ -30,11 +29,11 @@ class TrailProvider extends BaseProvider {
     });
   }
 
-  Future<List<Elevation>> getElevations(int trailId) async {
-    return await get('trails/$trailId/elevation').then((value) {
-      return (value.body as List).map((e) => Elevation.fromJson(e)).toList();
-    });
-  }
+  // Future<List<Elevation>> getElevations(int trailId) async {
+  //   return await get('trails/$trailId/elevation').then((value) {
+  //     return (value.body as List).map((e) => Elevation.fromJson(e)).toList();
+  //   });
+  // }
 
   Future<Paginated<Trail>> getPopularTrails() async {
     var query = {'sort': 'rating', 'order': 'DESC'};

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' hide TextInput;
 import 'package:flutter_map/flutter_map.dart';
@@ -10,6 +11,7 @@ import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
+import 'package:hikees/themes.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
@@ -41,7 +43,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
               backgroundColor: Colors.transparent,
               icon: Icon(Icons.add_comment_rounded),
               onPressed: () {
-                controller.addMessage();
+                controller.editMessage(controller.selectedCoordinates.value);
               }));
         actions.add(Button(
             secondary: true,
@@ -166,25 +168,24 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                         controller.coordinates.map((c) => c.location).toList(),
                     interactiveFlag: InteractiveFlag.none,
                     markers: controller.coordinates
+                        .where((c) => ![
+                              controller.coordinates.first,
+                              controller.coordinates.last
+                            ].contains(c))
                         .map(
                           (pos) => DragMarker(
                             draggable: false,
                             point: pos.location,
-                            width: 10,
-                            height: 10,
+                            width: 7,
+                            height: 7,
                             hasPopup: pos.message != null,
                             builder: (_) {
                               return Container(
                                 decoration: BoxDecoration(
-                                    color:
-                                        controller.selectedCoordinates.value ==
-                                                pos
-                                            ? Colors.orange
-                                            : Colors.orange.shade50,
+                                    color: Colors.transparent,
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                        width: 1,
-                                        color: Colors.deepOrange.shade900)),
+                                        width: 1.5, color: Colors.white)),
                               );
                             },
                           ),
@@ -388,6 +389,20 @@ class CreateTrailPage extends GetView<CreateTrailController> {
   }
 
   Widget _map() {
+    double startMarkerAngle = 0.0;
+    if (controller.coordinates.length > 1) {
+      var prevPt = controller.coordinates.elementAt(0);
+      var pt = controller.coordinates.elementAt(1);
+      var startLat = prevPt.location.latitude * pi / 180;
+      var startLng = prevPt.location.longitude * pi / 180;
+      var destLat = pt.location.latitude * pi / 180;
+      var destLng = pt.location.longitude * pi / 180;
+      var y = sin(destLng - startLng) * cos(destLat);
+      var x = cos(startLat) * sin(destLat) -
+          sin(startLat) * cos(destLat) * cos(destLng - startLng);
+      double theta = atan2(y, x);
+      startMarkerAngle = theta;
+    }
     return HikeeMap(
       key: Key('create-trail-map'),
       zoom: 10,
@@ -396,27 +411,34 @@ class CreateTrailPage extends GetView<CreateTrailController> {
           .map(
             (pos) => DragMarker(
               point: pos.location,
-              width: pos == controller.coordinates.last ? 25 : 10,
-              height: pos == controller.coordinates.last ? 25 : 10,
+              width: pos == controller.coordinates.last ||
+                      pos == controller.coordinates.first
+                  ? 20
+                  : 7,
+              height: pos == controller.coordinates.last ||
+                      pos == controller.coordinates.first
+                  ? 20
+                  : 7,
               hasPopup: pos.message != null,
               onPopupTap: () {
                 controller.editMessage(pos);
               },
               builder: (_) {
-                if (pos == controller.coordinates.last)
+                if (pos == controller.coordinates.first)
                   return Container(
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12.5),
-                        color: Color.fromARGB(255, 149, 65, 197)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Icon(
-                        Icons.flag_rounded,
-                        size: 16,
-                        color: Colors.white,
-                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.transparent,
                     ),
+                    child: Center(),
+                  );
+                else if (pos == controller.coordinates.last)
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.transparent,
+                    ),
+                    child: Center(),
                   );
                 return Container(
                   decoration: BoxDecoration(
@@ -424,7 +446,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                           ? Colors.white
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(width: 2, color: Colors.white)),
+                      border: Border.all(width: 1.25, color: Colors.white)),
                 );
               },
               onTap: (LatLng latlng) {

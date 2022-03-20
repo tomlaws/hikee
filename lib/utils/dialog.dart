@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/button.dart';
-import 'package:hikees/components/core/mutation_builder.dart';
 
 class DialogUtils {
-  static showDialog(String title, dynamic content, {bool showDismiss = true}) {
-    Get.defaultDialog(
+  static Future<dynamic> showDialog(String title, dynamic content,
+      {String? dismissText, bool showDismiss = true, Function? onDismiss}) {
+    return Get.defaultDialog(
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
         contentPadding: EdgeInsets.symmetric(horizontal: 8),
+        barrierDismissible: false,
         content: Column(
           children: [
             Padding(
@@ -28,9 +29,10 @@ class DialogUtils {
               Button(
                 secondary: true,
                 onPressed: () {
+                  if (onDismiss != null) onDismiss();
                   Get.back();
                 },
-                child: Text('dismiss'.tr),
+                child: Text(dismissText ?? 'dismiss'.tr),
               )
           ],
         ));
@@ -47,6 +49,7 @@ class DialogUtils {
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
         contentPadding: EdgeInsets.symmetric(horizontal: 8),
+        barrierDismissible: false,
         content: Column(
           children: [
             Padding(
@@ -84,7 +87,7 @@ class DialogUtils {
                           try {
                             _loading.value = true;
                             var result = await onOk();
-                            Get.back(result: result);
+                            if (result != null) Get.back(result: result);
                             _loading.value = false;
                           } catch (ex) {
                             _loading.value = false;

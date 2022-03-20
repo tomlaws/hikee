@@ -4,6 +4,8 @@ import 'package:hikees/messages.dart';
 import 'package:hikees/middlewares/auth.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_binding.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_page.dart';
+import 'package:hikees/pages/account/offline_trails/offline_trails_binding.dart';
+import 'package:hikees/pages/account/offline_trails/offline_trails_page.dart';
 import 'package:hikees/pages/account/password/account_password_binding.dart';
 import 'package:hikees/pages/account/password/account_password_page.dart';
 import 'package:hikees/pages/account/preferences/account_preferences_binding.dart';
@@ -43,7 +45,7 @@ import 'package:hikees/pages/trails/create/create_trail_page.dart';
 import 'package:hikees/providers/preferences.dart';
 import 'package:hikees/themes.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 
@@ -106,7 +108,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.testMode = true;
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hikee',
@@ -213,6 +214,12 @@ class MyApp extends StatelessWidget {
           page: () => AccountBookmarksPage(),
           binding: AccountBookmarksBinding(),
           middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: '/offline-trails',
+          page: () => OfflineTrailsPage(),
+          binding: OfflineTrailsBinding(),
+          middlewares: [],
         ),
         GetPage(
           name: '/password',

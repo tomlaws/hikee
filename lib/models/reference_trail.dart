@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikees/models/elevation.dart';
+import 'package:hikees/models/hk_datum.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/utils/geo.dart';
@@ -19,7 +19,8 @@ class ReferenceTrail {
   int duration;
   List<Pin>? pins;
   List<LatLng>? path;
-  List<Elevation> elevations;
+  List<HKDatum> heights;
+  bool offline;
 
   ReferenceTrail(
       {required this.id,
@@ -29,7 +30,8 @@ class ReferenceTrail {
       required this.length,
       required this.duration,
       required this.path,
-      required this.elevations,
+      required this.heights,
+      this.offline = false,
       this.pins});
 
   get name {
@@ -43,7 +45,7 @@ class ReferenceTrail {
   }
 
   static ReferenceTrail fromTrail(Trail trail,
-      {required List<Elevation> elevations}) {
+      {required List<HKDatum> heights}) {
     return ReferenceTrail(
         id: trail.id,
         regionId: trail.regionId,
@@ -53,7 +55,8 @@ class ReferenceTrail {
         duration: trail.duration,
         pins: trail.pins,
         path: GeoUtils.decodePath(trail.path),
-        elevations: elevations);
+        offline: trail.offline ?? false,
+        heights: heights);
   }
 
   factory ReferenceTrail.fromJson(Map<String, dynamic> json) =>

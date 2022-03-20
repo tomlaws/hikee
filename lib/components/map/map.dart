@@ -1,18 +1,28 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart'
     hide Polyline, PolylineLayer, PolylineLayerOptions, PolylineLayerWidget;
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/button.dart';
+import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map_controller.dart';
+import 'package:hikees/components/map/mbtiles_provider.dart';
+import 'package:hikees/components/trails/hkpd_profile.dart';
+import 'package:hikees/models/hk_datum.dart';
 import 'package:hikees/models/preferences.dart';
 import 'package:hikees/providers/preferences.dart';
+import 'package:hikees/themes.dart';
+import 'package:hikees/utils/color.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'polyline_layer.dart';
 
@@ -32,16 +42,18 @@ class HikeeMap extends StatelessWidget {
       this.onMapCreated,
       this.interactiveFlag,
       this.watermarkAlignment = Alignment.bottomLeft,
-      this.contentMargin = const EdgeInsets.all(8)})
+      this.verticalDatum = true,
+      this.contentMargin = const EdgeInsets.all(8),
+      bool offlineTrail = false})
       : super(key: key) {
     _key = key?.toString();
     controller = Get.put(HikeeMapController(), tag: key?.toString());
     if ((path == null || path?.length == 0) &&
         (userPath == null || userPath?.length == 0))
       controller.focusCurrentLocationOnce(positionStream);
+    controller.offlineTrail.value = offlineTrail;
   }
 
-  final _preferencesProvider = Get.find<PreferencesProvider>();
   late final String? _key;
   late final HikeeMapController controller;
   final List<LatLng>? path;
@@ -58,28 +70,10 @@ class HikeeMap extends StatelessWidget {
   final int? interactiveFlag;
   final AlignmentGeometry watermarkAlignment;
   final EdgeInsets contentMargin;
-
-  bool isOutOfBounds(LatLng? center, LatLng? sw, LatLng? ne) {
-    if (sw != null && ne != null) {
-      if (center == null) {
-        return true;
-      } else if (center.latitude < sw.latitude ||
-          center.latitude > ne.latitude) {
-        return true;
-      } else if (center.longitude < sw.longitude ||
-          center.longitude > ne.longitude) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  MapProvider? get mapProvider {
-    return _preferencesProvider.preferences.value?.mapProvider;
-  }
+  final bool verticalDatum;
 
   String get urlTemplate {
-    switch (mapProvider) {
+    switch (controller.mapProvider) {
       case MapProvider.OpenStreetMap:
         return "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
       case null:
@@ -93,7 +87,7 @@ class HikeeMap extends StatelessWidget {
   }
 
   Widget get providerAttribution {
-    switch (mapProvider) {
+    switch (controller.mapProvider) {
       case null:
       case MapProvider.OpenStreetMap:
       case MapProvider.OpenStreetMapCyclOSM:
@@ -101,7 +95,8 @@ class HikeeMap extends StatelessWidget {
             margin: contentMargin,
             child: Text("© OpenStreetMap",
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)));
+                    color: Colors.white.withOpacity(.85),
+                    fontWeight: FontWeight.w600)));
       case MapProvider.LandsDepartment:
         return Container(
             margin: contentMargin,
@@ -137,7 +132,7 @@ class HikeeMap extends StatelessWidget {
     center = bounds.center;
 
     LatLng? finishMarker;
-    if (markers == null && path != null) {
+    if (path != null) {
       if (path!.length > 1) {
         finishMarker = path!.last;
       }
@@ -145,35 +140,68 @@ class HikeeMap extends StatelessWidget {
     if (pathOnly && path != null) {
       if (path!.length > 1) finishMarker = path!.last;
     }
+    LatLng? startMarker;
+    double startMarkerAngle = 0.0;
+    if (path != null && path!.length > 0) {
+      startMarker = path!.first;
+      // get next 5 point and avg
+      if (path!.length > 1) {
+        var prevPt = path!.elementAt(0);
+        var pt = path!.elementAt(1);
+        var startLat = prevPt.latitude * pi / 180;
+        var startLng = prevPt.longitude * pi / 180;
+        var destLat = pt.latitude * pi / 180;
+        var destLng = pt.longitude * pi / 180;
+        var y = sin(destLng - startLng) * cos(destLat);
+        var x = cos(startLat) * sin(destLat) -
+            sin(startLat) * cos(destLat) * cos(destLng - startLng);
+        double theta = atan2(y, x);
+        startMarkerAngle = theta;
+      }
+    }
+    // check if start marker and finish marker are too close
+    if (startMarker != null && finishMarker != null) {
+      final distBetweenStartAndEndInMeters =
+          GeoUtils.calculateDistance(startMarker, finishMarker) * 1000;
+      // difference < 10meters
+      if (distBetweenStartAndEndInMeters < 10) {
+        // try differentiate them to avoid the start marker overlap with the finish marker
+        for (int i = 1; i < 10; ++i) {
+          finishMarker = path?.elementAt(path!.length - 1 - i);
+          startMarker = path?.elementAt(i);
+          final newDist =
+              GeoUtils.calculateDistance(startMarker!, finishMarker!) * 1000;
+          if (newDist > 15) {
+            break;
+          }
+        }
+      }
+    }
     return FlutterMap(
       key: Key(_key ?? '-flutter-map'),
       children: [
         Obx(() => TileLayerWidget(
-            key: Key(mapProvider.toString()),
+            key: Key(controller.mapProvider.toString()),
             options: TileLayerOptions(
+              tms: controller.tms,
               urlTemplate: urlTemplate,
               subdomains: ['a', 'b', 'c'],
-              //errorTileCallback: (_, __) {},
-              //evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
-              //backgroundColor: Colors.transparent,
-              //attributionAlignment: Alignment.bottomLeft,
-              // attributionBuilder: mapProvider == MapProvider.LandsDepartment
-              //     ? null
-              //     : (_) {
-              //         return providerAttribution;
-              //       },
+              errorImage: Image.asset('assets/images/not_available.jpg').image,
+              errorTileCallback: (tile, __) {
+                controller.loadFallbackTile(tile);
+              },
+              tileProvider: controller.offlineTrail.value
+                  ? (controller.offlineTrailProvider ??
+                      NonCachingNetworkTileProvider())
+                  : NonCachingNetworkTileProvider(),
+              backgroundColor: Colors.transparent,
             ))),
-        Obx(() => mapProvider == MapProvider.LandsDepartment
+        Obx(() => controller.mapProvider == MapProvider.LandsDepartment &&
+                controller.offlineTrail.value == false
             ? TileLayerWidget(
                 options: TileLayerOptions(
                     urlTemplate:
                         "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/WGS84/{z}/{x}/{y}.png",
-                    attributionAlignment: Alignment.bottomLeft,
-                    attributionBuilder: (_) {
-                      return providerAttribution;
-                    },
-                    errorTileCallback: (_, __) {},
-                    evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
                     backgroundColor: Colors.transparent),
               )
             : SizedBox()),
@@ -182,31 +210,143 @@ class HikeeMap extends StatelessWidget {
             polylines: [
               if (path != null)
                 Polyline(
-                  gradientColors: [
-                    Color.fromARGB(255, 0, 138, 202)
-                        .withOpacity(userPath != null ? .5 : 1),
-                    Color.fromARGB(255, 149, 65, 197)
-                        .withOpacity(userPath != null ? .5 : 1),
-                  ],
-                  borderColor: Colors.white,
-                  borderStrokeWidth: 4.0,
-                  points: path!,
-                  strokeWidth: 6.0,
-                ),
+                    gradientColors: Themes.gradientColors,
+                    shadowGradientColors: userPath != null
+                        ? [
+                            Color.fromARGB(99, 37, 124, 153),
+                            Color.fromARGB(99, 31, 189, 147),
+                          ]
+                        : [
+                            Color.fromARGB(255, 37, 124, 153),
+                            Color.fromARGB(255, 31, 189, 147),
+                          ],
+                    borderColor: Colors.white,
+                    borderStrokeWidth: 2.0,
+                    points: path!,
+                    strokeWidth: userPath != null ? 8.0 : 4.0,
+                    isDotted: userPath != null ? true : false),
               if (userPath != null)
                 Polyline(
-                  gradientColors: [
-                    Color.fromARGB(255, 0, 138, 202),
-                    Color.fromARGB(255, 149, 65, 197),
+                  gradientColors: Themes.gradientColors,
+                  strokeWidth: 4.0,
+                  shadowGradientColors: [
+                    Color.fromARGB(255, 37, 124, 153),
+                    Color.fromARGB(255, 31, 189, 147),
                   ],
-                  points: userPath!,
-                  strokeWidth: 6.0,
-                  borderStrokeWidth: 4.0,
                   borderColor: Colors.white,
+                  borderStrokeWidth: 2.0,
+                  points: userPath!,
                 ),
             ],
           ),
         ),
+        MarkerLayerWidget(
+            options: MarkerLayerOptions(
+          markers: [
+            if (startMarker != null)
+              Marker(
+                width: 20,
+                height: 20,
+                point: startMarker,
+                builder: (ctx) => Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Themes.gradientColors.first,
+                        boxShadow: [
+                          BoxShadow(
+                              color:
+                                  Themes.gradientColors.first.withOpacity(.75),
+                              blurRadius: 4,
+                              spreadRadius: 2)
+                        ]),
+                    child: Center(
+                      child: Transform.rotate(
+                        angle: pi / 2 + startMarkerAngle,
+                        child: Icon(Icons.chevron_left_rounded,
+                            size: 18, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            if (finishMarker != null)
+              Marker(
+                width: 20,
+                height: 20,
+                point: finishMarker,
+                builder: (ctx) => Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Color.fromARGB(255, 31, 189, 147),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color.fromARGB(255, 31, 189, 147)
+                                  .withOpacity(.75),
+                              blurRadius: 4,
+                              spreadRadius: 2)
+                        ]),
+                    child: Center(
+                      child: Icon(Icons.flag_rounded,
+                          size: 12, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            if (userPath != null && userPath!.length > 0) ...[
+              Marker(
+                width: 20,
+                height: 20,
+                point: userPath!.first,
+                builder: (ctx) => Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Themes.gradientColors.first,
+                        boxShadow: [
+                          BoxShadow(
+                              color:
+                                  Themes.gradientColors.first.withOpacity(.75),
+                              blurRadius: 4,
+                              spreadRadius: 2)
+                        ]),
+                    child: Center(
+                      child: Icon(Icons.directions_walk_rounded,
+                          size: 14, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+              Marker(
+                width: 20,
+                height: 20,
+                point: userPath!.last,
+                builder: (ctx) => Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Themes.gradientColors.first,
+                        boxShadow: [
+                          BoxShadow(
+                              color:
+                                  Themes.gradientColors.last.withOpacity(.75),
+                              blurRadius: 4,
+                              spreadRadius: 2)
+                        ]),
+                    child: Center(
+                      child: Icon(Icons.done, size: 14, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ]
+          ],
+        )),
         if (positionStream != null)
           Obx(
             () => LocationMarkerLayerWidget(
@@ -230,6 +370,50 @@ class HikeeMap extends StatelessWidget {
           ),
       ],
       nonRotatedChildren: [
+        Align(alignment: Alignment.bottomLeft, child: providerAttribution),
+        if (verticalDatum)
+          Obx(() {
+            if (controller.showHeights.value &&
+                controller.heights.value != null) {
+              return Container(
+                margin: contentMargin.copyWith(right: 56 + 8),
+                padding: EdgeInsets.only(top: 12, right: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: HKPDProfile(datums: controller.heights.value!),
+              );
+            }
+            return SizedBox();
+          }),
+        if (verticalDatum && focusingPath != null)
+          Align(
+            alignment: Alignment.topRight,
+            child: Container(
+              margin: contentMargin,
+              child: MutationBuilder<List<HKDatum>>(
+                mutation: () {
+                  if (focusingPath == null) return Future.value([]);
+                  return controller.getHeights(focusingPath);
+                },
+                builder: (mutate, loading) {
+                  return Obx(() => Button(
+                      icon: Icon(
+                        LineAwesomeIcons.mountain,
+                        color: controller.showHeights.value
+                            ? Colors.white
+                            : Theme.of(context).primaryColor,
+                      ),
+                      invert: controller.showHeights.value ? false : true,
+                      loading: loading,
+                      onPressed: () {
+                        mutate();
+                      }));
+                },
+              ),
+            ),
+          ),
         Align(
           alignment: Alignment.bottomRight,
           child: Container(
@@ -257,24 +441,26 @@ class HikeeMap extends StatelessWidget {
                       }
                     },
                   ),
-                Obx(() => mapProvider == MapProvider.LandsDepartment
-                    ? Container(
-                        margin: const EdgeInsets.only(top: 8.0),
-                        child: Button(
-                          icon: Icon(
-                            LineAwesomeIcons.layer_group,
-                            color: controller.imagery.value
-                                ? Colors.white
-                                : Theme.of(context).primaryColor,
-                          ),
-                          invert: controller.imagery.value ? false : true,
-                          onPressed: () {
-                            controller.imagery.value =
-                                !controller.imagery.value;
-                          },
-                        ),
-                      )
-                    : SizedBox()),
+                Obx(() =>
+                    controller.mapProvider == MapProvider.LandsDepartment &&
+                            controller.offlineTrail.value == false
+                        ? Container(
+                            margin: const EdgeInsets.only(top: 8.0),
+                            child: Button(
+                              icon: Icon(
+                                LineAwesomeIcons.layer_group,
+                                color: controller.imagery.value
+                                    ? Colors.white
+                                    : Theme.of(context).primaryColor,
+                              ),
+                              invert: controller.imagery.value ? false : true,
+                              onPressed: () {
+                                controller.imagery.value =
+                                    !controller.imagery.value;
+                              },
+                            ),
+                          )
+                        : SizedBox()),
                 if (showCenterOnLocationUpdateButton) ...[
                   Container(
                     height: 8,
@@ -343,34 +529,6 @@ class HikeeMap extends StatelessWidget {
           ]),
       layers: [
         if (markers != null) DragMarkerPluginOptions(markers: markers!),
-        MarkerLayerOptions(
-          markers: [
-            if (finishMarker != null)
-              Marker(
-                width: 24,
-                height: 24,
-                point: finishMarker,
-                builder: (ctx) => Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 2),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Color.fromARGB(255, 149, 65, 197),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Color.fromARGB(144, 153, 100, 184),
-                              blurRadius: 8,
-                              spreadRadius: 4)
-                        ]),
-                    child: Center(
-                      child: Icon(Icons.flag_rounded,
-                          size: 14, color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
       ],
     );
   }

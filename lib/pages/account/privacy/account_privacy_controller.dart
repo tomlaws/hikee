@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hikees/models/user.dart';
 import 'package:hikees/providers/auth.dart';

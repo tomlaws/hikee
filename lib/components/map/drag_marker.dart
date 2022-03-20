@@ -353,7 +353,7 @@ class DragMarker {
     this.builder,
     this.feedbackBuilder,
     this.hasPopup = false,
-    this.popupColor = Colors.black87,
+    this.popupColor = const Color(0xAF000000),
     this.popupIcon = Icons.message_rounded,
     this.onPopupTap,
     this.width = 30.0,

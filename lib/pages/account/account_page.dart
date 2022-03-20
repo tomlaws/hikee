@@ -71,6 +71,17 @@ class AccountPage extends GetView<AccountController> {
                     ),
                   MenuListTile(
                     onTap: () {
+                      Get.toNamed('/offline-trails');
+                    },
+                    title: "offlineTrails".tr,
+                    icon: Icon(
+                      LineAwesomeIcons.route,
+                      size: 32,
+                      color: Colors.black26,
+                    ),
+                  ),
+                  MenuListTile(
+                    onTap: () {
                       Get.toNamed('/preferences');
                     },
                     title: "preferences".tr,

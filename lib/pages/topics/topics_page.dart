@@ -11,8 +11,6 @@ import 'package:hikees/pages/topics/topic_categories_controller.dart';
 import 'package:hikees/pages/topics/topics_controller.dart';
 
 class TopicsPage extends GetView<TopicsController> {
-  final categoriesController = Get.put(TopicCategoriesController());
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +50,7 @@ class TopicsPage extends GetView<TopicsController> {
                     backgroundColor: Colors.transparent,
                     onPressed: () {
                       Get.toNamed('/topics/create', arguments: {
-                        'categoryId': categoriesController.currentCategory.value
+                        //'categoryId': categoriesController.currentCategory.value
                       });
                     },
                   ),

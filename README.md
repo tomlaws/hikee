@@ -9,7 +9,7 @@ This is our final year project at HKUST.
 3. `flutter build web --web-renderer canvaskit`
 
 # JSON Serialization/Deserialization Setup
-1. Run `flutter pub run build_runner watch --delete-conflicting-outputs --use-polling-watcher`
+1. Run `flutter pub run build_runner build --delete-conflicting-outputs --use-polling-watcher`
 
 # Team
 

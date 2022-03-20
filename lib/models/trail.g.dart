@@ -31,6 +31,7 @@ Trail _$TrailFromJson(Map<String, dynamic> json) {
     bookmark: json['bookmark'] == null
         ? null
         : Bookmark.fromJson(json['bookmark'] as Map<String, dynamic>),
+    offline: json['offline'] as bool?,
   );
 }
 
@@ -52,4 +53,5 @@ Map<String, dynamic> _$TrailToJson(Trail instance) => <String, dynamic>{
       'path': instance.path,
       'bookmark': instance.bookmark,
       'pins': instance.pins,
+      'offline': instance.offline,
     };
