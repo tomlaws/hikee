@@ -199,6 +199,7 @@ class MenuListTile extends StatelessWidget {
                       Expanded(
                         child: Text(
                           title,
+                          maxLines: 1,
                           style: TextStyle(
                             fontSize: 16,
                           ),
@@ -206,10 +207,17 @@ class MenuListTile extends StatelessWidget {
                       ),
                       if (onTap != null)
                         if (trailing != null)
-                          DefaultTextStyle(
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black38),
-                              child: trailing!)
+                          Expanded(
+                            flex: 1,
+                            child: DefaultTextStyle(
+                                textAlign: TextAlign.end,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black38,
+                                ),
+                                child: trailing!),
+                          )
                         else
                           Icon(
                             LineAwesomeIcons.angle_right,

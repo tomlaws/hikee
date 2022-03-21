@@ -96,6 +96,13 @@ class HikeeMap extends StatelessWidget {
             child: Text("© OpenStreetMap",
                 style: TextStyle(
                     color: Colors.white.withOpacity(.85),
+                    shadows: <Shadow>[
+                      Shadow(
+                        offset: Offset(1.0, 1.0),
+                        blurRadius: 5.0,
+                        color: Color.fromARGB(132, 0, 0, 0),
+                      ),
+                    ],
                     fontWeight: FontWeight.w600)));
       case MapProvider.LandsDepartment:
         return Container(
