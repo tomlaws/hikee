@@ -345,11 +345,9 @@ packages:
   flutter_map:
     dependency: "direct main"
     description:
-      path: "."
-      ref: opacity_hairline_fix
-      resolved-ref: dd02ad32a94be6f695bc379d4742e62847a6e623
-      url: "git@github.com:ibrierley/flutter_map.git"
-    source: git
+      name: flutter_map
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.14.0"
   flutter_map_location_marker:
     dependency: "direct main"

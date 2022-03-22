@@ -72,12 +72,6 @@ dev_dependencies:
   build_runner: ^2.0.6
   json_serializable: ^4.1.4
 
-dependency_overrides:
-  flutter_map:
-    git:
-      url: git@github.com:ibrierley/flutter_map.git
-      ref: opacity_hairline_fix
-
 flutter_icons:
   android: true
   ios: true
