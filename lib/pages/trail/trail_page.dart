@@ -633,41 +633,45 @@ class TrailPage extends GetView<TrailController> {
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
                 color: Colors.white, boxShadow: [Themes.bottomBarShadow]),
-            child: Row(
-              children: [
-                Expanded(
-                  child: MutationBuilder(
-                    mutation: () async {
-                      HomeController hc = Get.find<HomeController>();
-                      hc.switchTab(0);
-                      CompassController cc = Get.find<CompassController>();
-                      await cc.activeTrailProvider.select(controller.state!);
-                      Navigator.of(context).popUntil((route) => route
-                          .isFirst); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
-                    },
-                    builder: (mutate, loading) => Button(
-                      onPressed: mutate,
-                      loading: loading,
-                      child: Text('selectNow'.tr),
-                    ),
-                  ),
-                ),
-                if (!controller.offline) ...[
-                  SizedBox(
-                    width: 16,
-                  ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
                   Expanded(
-                    child: Button(
-                      secondary: true,
-                      onPressed: () {
-                        if (controller.state != null)
-                          Get.toNamed('/trails/events/${controller.state!.id}');
+                    child: MutationBuilder(
+                      mutation: () async {
+                        HomeController hc = Get.find<HomeController>();
+                        hc.switchTab(0);
+                        CompassController cc = Get.find<CompassController>();
+                        await cc.activeTrailProvider.select(controller.state!);
+                        Navigator.of(context).popUntil((route) => route
+                            .isFirst); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
                       },
-                      child: Text('findEvents'.tr),
+                      builder: (mutate, loading) => Button(
+                        onPressed: mutate,
+                        loading: loading,
+                        child: Text('selectNow'.tr),
+                      ),
                     ),
                   ),
-                ]
-              ],
+                  if (!controller.offline) ...[
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Expanded(
+                      child: Button(
+                        secondary: true,
+                        onPressed: () {
+                          if (controller.state != null)
+                            Get.toNamed(
+                                '/trails/events/${controller.state!.id}');
+                        },
+                        child: Text('findEvents'.tr),
+                      ),
+                    ),
+                  ]
+                ],
+              ),
             ),
           )
         ]));
