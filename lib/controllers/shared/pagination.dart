@@ -82,6 +82,12 @@ abstract class InternalPaginationController<T extends Paginated<U>, U>
     change(newState as T, status: RxStatus.success());
   }
 
+  removeWhere(bool Function(U) test) {
+    var newState = state;
+    state!..data.removeWhere(test);
+    forceUpdate(newState);
+  }
+
   Future<T> fetch(Map<String, dynamic> queryParams);
 }
 

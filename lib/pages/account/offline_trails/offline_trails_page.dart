@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/trails/trail_tile.dart';
 import 'package:hikees/models/trail.dart';

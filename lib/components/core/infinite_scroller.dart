@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/connection_error.dart';
 import 'package:hikees/controllers/shared/pagination.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class InfiniteScroller<U> extends StatefulWidget {
   const InfiniteScroller(
@@ -25,6 +26,7 @@ class InfiniteScroller<U> extends StatefulWidget {
       this.loadingBuilder,
       this.loadingItemCount = 5,
       this.refreshable = true,
+      this.onDelete,
       this.edgeOffset = 0.0,
       this.sliversBuilder})
       : super(key: key);
@@ -66,6 +68,8 @@ class InfiniteScroller<U> extends StatefulWidget {
   final int loadingItemCount;
 
   final bool refreshable;
+
+  final void Function()? onDelete;
 
   final double edgeOffset;
 
@@ -123,6 +127,9 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
           return widget.overflowBuilder!(
               items[i], itemCount - 1, data?.totalCount ?? 0);
         }
+        if (widget.onDelete != null) {
+          return widget.builder(items[i]);
+        }
         return widget.builder(items[i]);
       });
     },
@@ -150,12 +157,14 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
         padding: widget.padding,
         sliver: SliverList(
             delegate: SliverChildBuilderDelegate((c, i) {
+          Widget item;
           if (widget.separator != null) {
             if (i.isOdd) return widget.separator;
-            return itemBuilder(c, i ~/ 2);
+            item = itemBuilder(c, i ~/ 2);
           } else {
-            return itemBuilder(c, i);
+            item = itemBuilder(c, i);
           }
+          return item;
         },
                 childCount:
                     widget.separator != null ? itemCount * 2 - 1 : itemCount)));

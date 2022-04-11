@@ -38,7 +38,9 @@ class RecordPage extends GetView<RecordController> {
         children: [
           Positioned.fill(
             top: 0.0,
-            bottom: bottomPanelHeight - 18.0,
+            bottom: bottomPanelHeight -
+                18.0 +
+                MediaQuery.of(context).viewPadding.bottom,
             child: controller.obx((state) {
               var decoded = GeoUtils.decodePath(state!.userPath);
               var referencePath = state.referenceTrail != null

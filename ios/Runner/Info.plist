@@ -41,19 +41,20 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Application needs to access your current location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Hikee needs to access your photo library to upload avatar</string>
+	<string>Hikees needs to access your photo library to upload avatar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Hikee needs to access your camera to upload avatar</string>
+	<string>Hikees needs to access your camera to upload avatar</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Hikee needs to access your calendar to add event schedule</string>
+	<string>Hikees needs to access your calendar to add event schedule</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Hikees needs access to your location.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Hikee needs access to location.</string>
+	<string>Hikees needs access to your location.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Hikees needs access to your location.</string>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>fetch</string>
 		<string>location</string>
 	</array>
 	<key>io.flutter.embedded_views_preview</key>

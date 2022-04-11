@@ -29,14 +29,6 @@ class RecordTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Icon(
-              //   LineAwesomeIcons.mountain,
-              //   color: Theme.of(context).primaryColor,
-              //   size: 32,
-              // ),
-              // Container(
-              //   width: 24,
-              // ),
               record == null
                   ? Shimmer(
                       width: 42,
@@ -48,15 +40,33 @@ class RecordTile extends StatelessWidget {
                     ),
               SizedBox(width: 16),
               Expanded(
-                child: record != null
-                    ? Text(
-                        record!.name,
-                        maxLines: 2,
-                      )
-                    : Shimmer(
-                        width: 40,
-                      ),
-              ),
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  record != null
+                      ? Text(
+                          record!.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : Shimmer(
+                          width: 180,
+                        ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  record != null
+                      ? Text(
+                          record!.region?.name ?? '',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12, color: Colors.black45),
+                        )
+                      : Shimmer(
+                          width: 40,
+                        ),
+                ],
+              )),
               SizedBox(width: 16),
               Column(
                   crossAxisAlignment: CrossAxisAlignment.end,

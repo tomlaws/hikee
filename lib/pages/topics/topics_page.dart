@@ -6,8 +6,6 @@ import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/topics/topic_tile.dart';
 import 'package:hikees/models/topic.dart';
 import 'package:hikees/pages/search/search_page.dart';
-import 'package:hikees/pages/topics/topic_categories.dart';
-import 'package:hikees/pages/topics/topic_categories_controller.dart';
 import 'package:hikees/pages/topics/topics_controller.dart';
 
 class TopicsPage extends GetView<TopicsController> {
@@ -43,17 +41,17 @@ class TopicsPage extends GetView<TopicsController> {
             backgroundColor: Colors.white,
             flexibleSpace: HikeeAppBar(
                 elevation: 0,
+                leading: Button(
+                  icon: Icon(Icons.add),
+                  secondary: true,
+                  backgroundColor: Colors.transparent,
+                  onPressed: () {
+                    Get.toNamed('/topics/create', arguments: {
+                      //'categoryId': categoriesController.currentCategory.value
+                    });
+                  },
+                ),
                 actions: [
-                  Button(
-                    icon: Icon(Icons.add),
-                    secondary: true,
-                    backgroundColor: Colors.transparent,
-                    onPressed: () {
-                      Get.toNamed('/topics/create', arguments: {
-                        //'categoryId': categoriesController.currentCategory.value
-                      });
-                    },
-                  ),
                   Button(
                     icon: Icon(Icons.search),
                     secondary: true,

@@ -25,110 +25,137 @@ class AccountPage extends GetView<AccountController> {
                       },
                     )),
               ),
-            Container(
-              margin: EdgeInsets.all(16),
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                  boxShadow: [Themes.lightShadow],
-                  borderRadius: BorderRadius.circular(16.0)),
-              child: Column(
-                children: [
-                  if (authProvider.loggedIn.value)
-                    MenuListTile(
-                      onTap: () {
-                        Get.toNamed('/records');
-                      },
-                      title: "records".tr,
-                      icon: Icon(
-                        LineAwesomeIcons.trophy,
-                        size: 32,
-                        color: Colors.black26,
-                      ),
-                    ),
-                  if (authProvider.loggedIn.value)
-                    MenuListTile(
-                      onTap: () {
-                        Get.toNamed('/bookmarks');
-                      },
-                      title: "bookmarks".tr,
-                      icon: Icon(
-                        LineAwesomeIcons.bookmark,
-                        size: 32,
-                        color: Colors.black26,
-                      ),
-                    ),
-                  if (authProvider.loggedIn.value)
-                    MenuListTile(
-                      onTap: () {
-                        Get.toNamed('/profile');
-                      },
-                      title: "profile".tr,
-                      icon: Icon(
-                        LineAwesomeIcons.user,
-                        size: 32,
-                        color: Colors.black26,
-                      ),
-                    ),
-                  MenuListTile(
-                    onTap: () {
-                      Get.toNamed('/offline-trails');
-                    },
-                    title: "offlineTrails".tr,
-                    icon: Icon(
-                      LineAwesomeIcons.route,
-                      size: 32,
-                      color: Colors.black26,
-                    ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.all(16).copyWith(top: 8),
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [Themes.boxShadow],
+                      borderRadius: BorderRadius.circular(16.0)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (authProvider.loggedIn.value) ...[
+                        MenuListTile(
+                          onTap: () {
+                            Get.toNamed('/profile');
+                          },
+                          title: "profile".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.user,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                        MenuListTile(
+                          onTap: () {
+                            Get.toNamed('/records');
+                          },
+                          title: "records".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.trophy,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                        MenuListTile(
+                          onTap: () {
+                            Get.toNamed('/bookmarks');
+                          },
+                          title: "bookmarks".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.bookmark,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                        MenuListTile(
+                          onTap: () {
+                            Get.toNamed('/privacy');
+                          },
+                          title: "privacyAndSecurity".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.user_secret,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                      ],
+                      if (authProvider.loggedIn.value)
+                        MenuListTile(
+                          onTap: () {
+                            controller.logout();
+                          },
+                          title: "logout".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.door_open,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        )
+                      else
+                        MenuListTile(
+                          onTap: () {
+                            Get.toNamed('/login');
+                          },
+                          title: 'login'.tr,
+                          icon: Icon(
+                            LineAwesomeIcons.door_closed,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                    ],
                   ),
-                  MenuListTile(
-                    onTap: () {
-                      Get.toNamed('/preferences');
-                    },
-                    title: "preferences".tr,
-                    icon: Icon(
-                      LineAwesomeIcons.horizontal_sliders,
-                      size: 32,
-                      color: Colors.black26,
-                    ),
+                ),
+                Container(
+                  margin: EdgeInsets.all(16).copyWith(top: 8),
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                      boxShadow: [Themes.boxShadow],
+                      borderRadius: BorderRadius.circular(16.0)),
+                  child: Column(
+                    children: [
+                      MenuListTile(
+                        onTap: () {
+                          Get.toNamed('/offline-trails');
+                        },
+                        title: "offlineTrails".tr,
+                        icon: Icon(
+                          LineAwesomeIcons.route,
+                          size: 32,
+                          color: Colors.black26,
+                        ),
+                      ),
+                      // MenuListTile(
+                      //   onTap: () {
+                      //     Get.toNamed('/offline-trails');
+                      //   },
+                      //   title: "savedRecords".tr,
+                      //   icon: Icon(
+                      //     LineAwesomeIcons.route,
+                      //     size: 32,
+                      //     color: Colors.black26,
+                      //   ),
+                      // ),
+                      MenuListTile(
+                        onTap: () {
+                          Get.toNamed('/preferences');
+                        },
+                        title: "preferences".tr,
+                        icon: Icon(
+                          LineAwesomeIcons.horizontal_sliders,
+                          size: 32,
+                          color: Colors.black26,
+                        ),
+                      ),
+                    ],
                   ),
-                  if (authProvider.loggedIn.value)
-                    MenuListTile(
-                      onTap: () {
-                        Get.toNamed('/privacy');
-                      },
-                      title: "privacyAndSecurity".tr,
-                      icon: Icon(
-                        LineAwesomeIcons.user_secret,
-                        size: 32,
-                        color: Colors.black26,
-                      ),
-                    ),
-                  if (authProvider.loggedIn.value)
-                    MenuListTile(
-                      onTap: () {
-                        controller.logout();
-                      },
-                      title: "logout".tr,
-                      icon: Icon(
-                        LineAwesomeIcons.door_open,
-                        size: 32,
-                        color: Colors.black26,
-                      ),
-                    )
-                  else
-                    MenuListTile(
-                      onTap: () {
-                        Get.toNamed('/login');
-                      },
-                      title: 'login'.tr,
-                      icon: Icon(
-                        LineAwesomeIcons.door_closed,
-                        size: 32,
-                        color: Colors.black26,
-                      ),
-                    ),
-                ],
-              ),
+                )
+              ],
             )
           ],
         ),
@@ -148,7 +175,10 @@ class AccountPage extends GetView<AccountController> {
                 child: content),
           );
         else
-          return content;
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: content,
+          );
       }),
     );
   }

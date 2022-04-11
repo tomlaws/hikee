@@ -21,8 +21,7 @@ import 'package:hikees/utils/color.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:collection/collection.dart';
 
 import 'polyline_layer.dart';
 
@@ -231,7 +230,10 @@ class HikeeMap extends StatelessWidget {
                     borderStrokeWidth: 2.0,
                     points: path!,
                     strokeWidth: userPath != null ? 8.0 : 4.0,
-                    isDotted: userPath != null ? true : false),
+                    isDotted: userPath != null ? true : false,
+                    onGradientUpdated: (colors) {
+                      controller.gradientColors.value = colors;
+                    }),
               if (userPath != null)
                 Polyline(
                   gradientColors: Themes.gradientColors,
@@ -375,6 +377,16 @@ class HikeeMap extends StatelessWidget {
               ),
             ),
           ),
+        if (markers != null)
+          Stack(
+            children: markers!
+                .mapIndexed((i, e) => Obx(() => DragMarkerWidget(
+                      marker: e,
+                      color: controller.gradientColors.value?.elementAt(
+                          min(i, controller.gradientColors.value!.length - 1)),
+                    )))
+                .toList(),
+          )
       ],
       nonRotatedChildren: [
         Align(alignment: Alignment.bottomLeft, child: providerAttribution),
@@ -491,7 +503,7 @@ class HikeeMap extends StatelessWidget {
               ],
             ),
           ),
-        )
+        ),
       ],
       options: MapOptions(
           interactiveFlags: interactiveFlag ?? InteractiveFlag.all,
@@ -534,9 +546,6 @@ class HikeeMap extends StatelessWidget {
           plugins: [
             DragMarkerPlugin(),
           ]),
-      layers: [
-        if (markers != null) DragMarkerPluginOptions(markers: markers!),
-      ],
     );
   }
 }

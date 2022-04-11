@@ -182,6 +182,12 @@ class MapTilesProvider extends GetConnect {
         .toList();
   }
 
+  Future<void> deleteTrail(int trailId) async {
+    final database = await loadTrailsDb();
+    await database
+        .delete('saved_trails', where: 'id = ?', whereArgs: [trailId]);
+  }
+
   Future<ImageProvider<Object>?> loadTileFromOfflineMap(
       MapProvider mapProvider, int z, int x, int y) async {
     var appDocDir = await getApplicationDocumentsDirectory();

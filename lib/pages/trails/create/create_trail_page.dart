@@ -11,7 +11,6 @@ import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
-import 'package:hikees/themes.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
@@ -167,30 +166,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     path:
                         controller.coordinates.map((c) => c.location).toList(),
                     interactiveFlag: InteractiveFlag.none,
-                    markers: controller.coordinates
-                        .where((c) => ![
-                              controller.coordinates.first,
-                              controller.coordinates.last
-                            ].contains(c))
-                        .map(
-                          (pos) => DragMarker(
-                            draggable: false,
-                            point: pos.location,
-                            width: 7,
-                            height: 7,
-                            hasPopup: pos.message != null,
-                            builder: (_) {
-                              return Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                        width: 1.5, color: Colors.white)),
-                              );
-                            },
-                          ),
-                        )
-                        .toList(),
+                    markers: _dragMarkers,
                   )),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -294,41 +270,43 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 color: Colors.black.withOpacity(.09),
                 offset: Offset(0, -6))
           ]),
-          child: Row(
-            children: [
-              Button(
-                secondary: true,
-                onPressed: () {
-                  controller.step.value = 0;
-                },
-                icon: Icon(Icons.chevron_left, color: Colors.white),
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Expanded(
-                child: MutationBuilder<Trail>(
-                  userOnly: true,
-                  builder: (mutate, loading) => Button(
-                    loading: loading,
-                    onPressed: () {
-                      mutate();
-                    },
-                    child: Text('publish'.tr),
-                  ),
-                  onDone: (Trail? trail) {
-                    if (trail != null) {
-                      Get.back();
-                      Get.toNamed('/trails/${trail.id}');
-                    }
+          child: SafeArea(
+            child: Row(
+              children: [
+                Button(
+                  secondary: true,
+                  onPressed: () {
+                    controller.step.value = 0;
                   },
-                  onError: (err) {},
-                  mutation: () async {
-                    return controller.create();
-                  },
+                  icon: Icon(Icons.chevron_left, color: Colors.white),
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: 16,
+                ),
+                Expanded(
+                  child: MutationBuilder<Trail>(
+                    userOnly: true,
+                    builder: (mutate, loading) => Button(
+                      loading: loading,
+                      onPressed: () {
+                        mutate();
+                      },
+                      child: Text('publish'.tr),
+                    ),
+                    onDone: (Trail? trail) {
+                      if (trail != null) {
+                        Get.back();
+                        Get.toNamed('/trails/${trail.id}');
+                      }
+                    },
+                    onError: (err) {},
+                    mutation: () async {
+                      return controller.create();
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         )
       ],
@@ -336,56 +314,127 @@ class CreateTrailPage extends GetView<CreateTrailController> {
   }
 
   Widget _step0() {
-    return Obx(() {
-      var coordinates = controller.coordinates;
-      return Stack(children: [
-        Positioned.fill(child: _map()),
-        Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: kBottomNavigationBarHeight + 16,
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(26),
-                    topRight: Radius.circular(26)),
+    return Stack(children: [
+      Positioned.fill(child: _map()),
+      Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(26), topRight: Radius.circular(26)),
+            ),
+            child: SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        LineAwesomeIcons.walking,
+                        size: 24,
+                      ),
+                      Container(width: 4),
+                      Text(
+                          "${GeoUtils.formatDistance(GeoUtils.getPathLength(path: controller.coordinates.map((c) => c.location).toList()))}",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                  Button(
+                      child: Text(
+                        'next'.tr,
+                      ),
+                      disabled: controller.coordinates.length < 2,
+                      onPressed: () {
+                        if (controller.coordinates.length >= 2) {
+                          controller.step.value = 1;
+                        }
+                      })
+                ],
               ),
-              child: SafeArea(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          LineAwesomeIcons.walking,
-                          size: 24,
-                        ),
-                        Container(width: 4),
-                        Text(
-                            "${GeoUtils.formatDistance(GeoUtils.getPathLength(path: controller.coordinates.map((c) => c.location).toList()))}",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                    Button(
-                        child: Text(
-                          'next'.tr,
-                        ),
-                        disabled: controller.coordinates.length < 2,
-                        onPressed: () {
-                          if (controller.coordinates.length >= 2) {
-                            controller.step.value = 1;
-                          }
-                        })
-                  ],
+            ),
+          ))
+    ]);
+  }
+
+  List<DragMarker> get _dragMarkers {
+    return controller.coordinates
+        .map(
+          (pos) => DragMarker(
+            point: pos.location,
+            draggable: controller.step.value == 0,
+            width: pos == controller.coordinates.last ||
+                    pos == controller.coordinates.first
+                ? 20 + 8
+                : 16 + 8,
+            height: pos == controller.coordinates.last ||
+                    pos == controller.coordinates.first
+                ? 20 + 8
+                : 16 + 8,
+            hasPopup: pos.message != null,
+            onPopupTap: controller.step.value == 0
+                ? () {
+                    controller.editMessage(pos);
+                  }
+                : null,
+            builder: (_, color) {
+              if (pos == controller.coordinates.first)
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.transparent,
+                  ),
+                  child: Center(),
+                );
+              else if (pos == controller.coordinates.last)
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.transparent,
+                  ),
+                  child: Center(),
+                );
+              return Container(
+                padding: EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(width: 1.25, color: Colors.white)),
                 ),
-              ),
-            ))
-      ]);
-    });
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              );
+            },
+            onTap: controller.step.value == 0
+                ? (LatLng latlng) {
+                    controller.selectedCoordinates.value = pos;
+                    controller.coordinates.refresh();
+                  }
+                : null,
+            onDragUpdate: controller.step.value == 0
+                ? (_, position) {
+                    pos.location.latitude = position.latitude;
+                    pos.location.longitude = position.longitude;
+                    controller.coordinates.refresh();
+                  }
+                : null,
+            onDragEnd: controller.step.value == 0
+                ? (_, position) {
+                    pos.location.latitude = position.latitude;
+                    pos.location.longitude = position.longitude;
+                    controller.coordinates.refresh();
+                  }
+                : null,
+          ),
+        )
+        .toList();
   }
 
   Widget _map() {
@@ -406,66 +455,10 @@ class CreateTrailPage extends GetView<CreateTrailController> {
     return HikeeMap(
       key: Key('create-trail-map'),
       zoom: 10,
-      contentMargin: EdgeInsets.only(bottom: 80, right: 8),
-      markers: controller.coordinates
-          .map(
-            (pos) => DragMarker(
-              point: pos.location,
-              width: pos == controller.coordinates.last ||
-                      pos == controller.coordinates.first
-                  ? 20
-                  : 7,
-              height: pos == controller.coordinates.last ||
-                      pos == controller.coordinates.first
-                  ? 20
-                  : 7,
-              hasPopup: pos.message != null,
-              onPopupTap: () {
-                controller.editMessage(pos);
-              },
-              builder: (_) {
-                if (pos == controller.coordinates.first)
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.transparent,
-                    ),
-                    child: Center(),
-                  );
-                else if (pos == controller.coordinates.last)
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.transparent,
-                    ),
-                    child: Center(),
-                  );
-                return Container(
-                  decoration: BoxDecoration(
-                      color: controller.selectedCoordinates.value == pos
-                          ? Colors.white
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(width: 1.25, color: Colors.white)),
-                );
-              },
-              onTap: (LatLng latlng) {
-                controller.selectedCoordinates.value = pos;
-                controller.coordinates.refresh();
-              },
-              onDragUpdate: (_, position) {
-                pos.location.latitude = position.latitude;
-                pos.location.longitude = position.longitude;
-                controller.coordinates.refresh();
-              },
-              onDragEnd: (_, position) {
-                pos.location.latitude = position.latitude;
-                pos.location.longitude = position.longitude;
-                controller.coordinates.refresh();
-              },
-            ),
-          )
-          .toList(),
+      contentMargin: EdgeInsets.only(
+          bottom: 80 + WidgetsBinding.instance!.window.viewPadding.bottom - 16,
+          right: 8),
+      markers: _dragMarkers,
       path: controller.coordinates.map((c) => c.location).toList(),
       onTap: (LatLng l) {
         controller.addLocation(l);

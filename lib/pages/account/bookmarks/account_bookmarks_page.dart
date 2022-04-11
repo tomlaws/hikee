@@ -21,6 +21,8 @@ class AccountBookmarksPage extends GetView<AccountBookmarksController> {
         separator: SizedBox(
           height: 16,
         ),
+        loadingItemCount: 10,
+        loadingBuilder: TrailTile(trail: null),
         builder: (bookmark) {
           return TrailTile(
             trail: bookmark.trail,

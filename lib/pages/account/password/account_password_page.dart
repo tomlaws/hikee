@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/core/text_input.dart';
@@ -43,15 +44,7 @@ class AccountPasswordPage extends GetView<AccountPasswordController> {
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                BoxShadow(
-                    blurRadius: 16,
-                    spreadRadius: -8,
-                    color: Colors.black.withOpacity(.09),
-                    offset: Offset(0, -6))
-              ]),
+            BottomBar(
               child: Button(
                 minWidth: double.infinity,
                 onPressed: () {},

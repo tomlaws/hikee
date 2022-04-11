@@ -9,6 +9,7 @@ import 'package:hikees/components/trails/trail_review_tile.dart';
 import 'package:hikees/controllers/shared/pagination.dart';
 import 'package:hikees/models/trail_review.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_controller.dart';
+import 'package:hikees/pages/account/offline_trails/offline_trails_controller.dart';
 import 'package:hikees/providers/bookmark.dart';
 import 'package:hikees/providers/map_tiles.dart';
 import 'package:hikees/providers/preferences.dart';
@@ -173,6 +174,18 @@ class TrailController extends GetxController with StateMixin<Trail> {
       state!,
       _preferenceProvider.preferences.value?.mapProvider,
     );
+  }
+
+  Future<void> deleteOfflineTrail() async {
+    DialogUtils.showActionDialog(
+        'Warning', Text('Are you sure you want to delete?'), onOk: () {
+      _mapTilesProvider.deleteTrail(id);
+      OfflineTrailsController offlineTrailsController =
+          Get.find<OfflineTrailsController>();
+      offlineTrailsController.removeWhere((t) => t.id == id);
+      Get.back();
+      return true;
+    });
   }
 
   @override

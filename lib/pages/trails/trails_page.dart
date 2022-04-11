@@ -36,23 +36,23 @@ class TrailsPage extends GetView<TrailsController> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text("trails".tr),
                   ),
+                  leading: Button(
+                      secondary: true,
+                      backgroundColor: Colors.transparent,
+                      icon: Icon(Icons.add_rounded),
+                      onPressed: () {
+                        Get.toNamed('/trails/create');
+                      }),
                   actions: [
-                    Button(
-                        backgroundColor: Colors.transparent,
-                        secondary: true,
-                        icon: Icon(
-                          Icons.grid_view_rounded,
-                        ),
-                        onPressed: () {
-                          Get.toNamed('/trails/categories');
-                        }),
-                    Button(
-                        secondary: true,
-                        backgroundColor: Colors.transparent,
-                        icon: Icon(Icons.add_rounded),
-                        onPressed: () {
-                          Get.toNamed('/trails/create');
-                        }),
+                    // Button(
+                    //     backgroundColor: Colors.transparent,
+                    //     secondary: true,
+                    //     icon: Icon(
+                    //       Icons.grid_view_rounded,
+                    //     ),
+                    //     onPressed: () {
+                    //       Get.toNamed('/trails/categories');
+                    //     }),
                     Button(
                       icon: Icon(Icons.search),
                       secondary: true,

@@ -7,9 +7,8 @@ void main() {
   FlavorConfig(
     name: "DEVELOP",
     variables: {
-      "API_ENDPOINT": "http://192.168.50.248:3000/",
+      "API_ENDPOINT": "http://192.168.50.183:3000/",
     },
   );
-  print('dev');
   runApp(MyApp());
 }

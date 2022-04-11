@@ -1,18 +1,18 @@
 /// from: https://github.com/ibrierley/flutter_map_dragmarker
 /// modified
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/floating_tooltip.dart';
-import 'package:hikees/pages/compass/compass_page.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/plugin_api.dart';
-import 'package:collection/collection.dart';
 
 class DragMarkerPluginOptions extends LayerOptions {
   List<DragMarker> markers;
-  DragMarkerPluginOptions({this.markers = const []});
+  List<Color>? gradientColors;
+
+  DragMarkerPluginOptions({this.markers = const [], this.gradientColors});
 }
 
 class DragMarkerPlugin implements MapPlugin {
@@ -28,17 +28,17 @@ class DragMarkerPlugin implements MapPlugin {
             if (selectedMarker == null && options.markers.length > 0) {
               options.markers.last.selected = true;
             }
-            var i = 0;
-            for (var marker in options.markers) {
-              if (!_boundsContainsMarker(mapState, marker)) continue;
-
+            for (int i = 0; i < options.markers.length; ++i) {
+              if (!_boundsContainsMarker(mapState, options.markers[i]))
+                continue;
+              List<Color>? colors = options.gradientColors;
               dragMarkers.add(DragMarkerWidget(
                 mapState: mapState,
-                marker: marker,
+                marker: options.markers[i],
+                color: colors?[i],
                 stream: stream,
                 options: options,
               ));
-              ++i;
             }
             return Container(
               child: Stack(children: dragMarkers),
@@ -76,6 +76,7 @@ class DragMarkerWidget extends StatefulWidget {
     AnchorPos? anchorPos,
     this.stream,
     this.options,
+    this.color,
   }) : super(
             key:
                 key); //: anchor = Anchor.forPos(anchorPos, marker.width, marker.height);
@@ -85,6 +86,7 @@ class DragMarkerWidget extends StatefulWidget {
   final DragMarker marker;
   final Stream<Null>? stream;
   final LayerOptions? options;
+  final Color? color;
 
   @override
   _DragMarkerWidgetState createState() => _DragMarkerWidgetState();
@@ -104,11 +106,18 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
     super.initState();
   }
 
+  MapState? get _mapState {
+    return widget.mapState ?? MapState.maybeOf(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     DragMarker marker = widget.marker;
     updatePixelPos(widget.marker.point);
-
+    List<Color>? colors;
+    if (widget.options is DragMarkerPluginOptions) {
+      colors = (widget.options as DragMarkerPluginOptions).gradientColors;
+    }
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
       onLongPressStart:
@@ -137,7 +146,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
                     : marker.offset.dy),
             child: (isDragging && (marker.feedbackBuilder != null))
                 ? marker.feedbackBuilder!(context)
-                : marker.builder!(context),
+                : marker.builder!(context, widget.color),
           ),
         if (marker.hasPopup)
           Positioned(
@@ -171,7 +180,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
 
   void updatePixelPos(point) {
     DragMarker marker = widget.marker;
-    MapState? mapState = widget.mapState;
+    MapState? mapState = _mapState;
 
     var pos;
     if (mapState != null) pos = mapState.project(point);
@@ -199,7 +208,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
   void onLongPressMoveUpdate(LongPressMoveUpdateDetails details) {
     bool isDragging = true;
     DragMarker marker = widget.marker;
-    MapState? mapState = widget.mapState;
+    MapState? mapState = _mapState;
 
     var dragPos = _offsetToCrs(details.localPosition);
 
@@ -274,7 +283,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
 
   void adjustMapToMarker(DragMarkerWidget widget, autoOffsetX, autoOffsetY) {
     DragMarker marker = widget.marker;
-    MapState? mapState = widget.mapState;
+    MapState? mapState = _mapState;
 
     var oldMapPos = mapState?.project(mapState.center);
     var newMapLatLng;
@@ -309,7 +318,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
     var renderObject = context.findRenderObject() as RenderBox;
     var width = renderObject.size.width;
     var height = renderObject.size.height;
-    var mapState = widget.mapState;
+    var mapState = _mapState!;
 
     // convert the point to global coordinates
     var localPoint = _offsetToPoint(offset);
@@ -326,7 +335,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
 
 class DragMarker {
   LatLng point;
-  final WidgetBuilder? builder;
+  final Widget Function(BuildContext context, Color? color)? builder;
   final WidgetBuilder? feedbackBuilder;
   final bool hasPopup;
   final Color popupColor;

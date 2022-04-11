@@ -100,30 +100,7 @@ class ActiveTrailProvider extends BaseProvider {
     super.onClose();
   }
 
-  Future<bool> _checkLocationPermission() async {
-    final access = await Permission.location.status;
-    switch (access) {
-      case PermissionStatus.limited:
-      case PermissionStatus.permanentlyDenied:
-      case PermissionStatus.denied:
-      case PermissionStatus.restricted:
-        if (await Permission.locationAlways.request().isGranted) {
-          return true;
-        } else {
-          return false;
-        }
-      case PermissionStatus.granted:
-        return true;
-      default:
-        return false;
-    }
-  }
-
   Future<void> _startLocationTracking() async {
-    if (!await _checkLocationPermission()) {
-      print('Location permission denied');
-      return;
-    }
     Map<String, dynamic> data = {'countInit': 1};
 
     await BackgroundLocator.registerLocationUpdate(

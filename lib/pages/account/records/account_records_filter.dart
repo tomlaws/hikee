@@ -69,6 +69,7 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
           children: [
             Expanded(
               child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,16 +194,12 @@ class _AccountRecordsFilterState extends State<AccountRecordsFilter> {
               ),
             ),
             BottomBar(
-                child: Row(
-              children: [
-                Expanded(
-                    child: Button(
-                        child: Text("apply".tr),
-                        onPressed: () {
-                          apply();
-                        }))
-              ],
-            )),
+                child: Button(
+                    minWidth: double.infinity,
+                    child: Text("apply".tr),
+                    onPressed: () {
+                      apply();
+                    })),
           ],
         ));
   }

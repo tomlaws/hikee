@@ -1,11 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/models/trail.dart';
-import 'package:hikees/pages/trail/trail_binding.dart';
-import 'package:hikees/pages/trail/trail_page.dart';
 import 'package:hikees/themes.dart';
 import 'package:hikees/utils/image.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -56,8 +53,6 @@ class TrailTile extends StatelessWidget {
                   SizedBox(height: 8)
                 else
                   AspectRatio(
-                    //height: 180,
-                    //width: width,
                     aspectRatio: aspectRatio,
                     child: Container(
                       margin: EdgeInsets.all(8),

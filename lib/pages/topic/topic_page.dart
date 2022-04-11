@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
@@ -92,23 +93,19 @@ class TopicPage extends GetView<TopicController> {
                 ),
               ),
             ),
-            Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                    boxShadow: [Themes.bottomBarShadow], color: Colors.white),
+            BottomBar(
                 child: Row(
-                  children: [
-                    Expanded(
-                      child: Button(
-                          onPressed: () {
-                            if (controller.state != null)
-                              Get.toNamed(
-                                  '/topics/${controller.state!.id}/reply');
-                          },
-                          child: Text('reply'.tr)),
-                    )
-                  ],
-                ))
+              children: [
+                Expanded(
+                  child: Button(
+                      onPressed: () {
+                        if (controller.state != null)
+                          Get.toNamed('/topics/${controller.state!.id}/reply');
+                      },
+                      child: Text('reply'.tr)),
+                )
+              ],
+            ))
           ],
         ));
   }

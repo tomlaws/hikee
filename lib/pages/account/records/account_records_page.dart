@@ -48,6 +48,8 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
             height: 16,
           ),
           empty: 'noRecords'.tr,
+          loadingItemCount: 8,
+          loadingBuilder: RecordTile(record: null),
           builder: (record) {
             return RecordTile(record: record);
           }),

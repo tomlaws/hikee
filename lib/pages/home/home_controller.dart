@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uni_links/uni_links.dart';
 
 class HomeController extends GetxController with WidgetsBindingObserver {
@@ -25,6 +26,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         handleAppLink(uri);
       }
     }, onError: (err) {});
+    _checkLocationPermission();
   }
 
   void switchTab(int i) {
@@ -42,6 +44,25 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance?.removeObserver(this);
     _sub.cancel();
     super.onClose();
+  }
+
+  Future<bool> _checkLocationPermission() async {
+    final access = await Permission.location.status;
+    switch (access) {
+      case PermissionStatus.limited:
+      case PermissionStatus.permanentlyDenied:
+      case PermissionStatus.denied:
+      case PermissionStatus.restricted:
+        if (await Permission.locationAlways.request().isGranted) {
+          return true;
+        } else {
+          return false;
+        }
+      case PermissionStatus.granted:
+        return true;
+      default:
+        return false;
+    }
   }
 
   void handleAppLink(Uri link) {

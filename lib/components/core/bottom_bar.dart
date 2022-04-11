@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hikees/themes.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({Key? key, required this.child, this.padding = true})
@@ -10,14 +11,12 @@ class BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: padding ? EdgeInsets.all(16) : null,
-      decoration: BoxDecoration(color: Colors.white, boxShadow: [
-        BoxShadow(
-            blurRadius: 16,
-            spreadRadius: -8,
-            color: Colors.black.withOpacity(.09),
-            offset: Offset(0, -6))
-      ]),
-      child: child,
+      decoration: BoxDecoration(
+          color: Colors.white, boxShadow: [Themes.bottomBarShadow]),
+      child: SafeArea(
+        child: child,
+        top: false,
+      ),
     );
   }
 }

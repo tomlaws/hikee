@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
@@ -39,6 +40,15 @@ class TrailPage extends GetView<TrailController> {
                           state!.name,
                         ),
                     onLoading: Shimmer(width: 220, height: 30)),
+                actions: [
+                  Button(
+                    onPressed: () {
+                      controller.deleteOfflineTrail();
+                    },
+                    icon: Icon(Icons.delete),
+                    invert: true,
+                  )
+                ],
               )
             : null,
         body: Column(children: [
@@ -156,133 +166,147 @@ class TrailPage extends GetView<TrailController> {
                                                             fontSize: 18,
                                                           )),
                                                     SizedBox(height: 8),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Icon(
-                                                                LineAwesomeIcons
-                                                                    .map_marker,
-                                                                size: 12,
-                                                                color: Color(
-                                                                    0xFFAAAAAA)),
-                                                            SizedBox(
-                                                              width: 8,
-                                                            ),
-                                                            controller.obx(
-                                                                (state) => Text(
-                                                                      state!
-                                                                          .region
-                                                                          .name,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Color(0xFFAAAAAA)),
-                                                                    ),
-                                                                onLoading:
-                                                                    Shimmer(
-                                                                  fontSize: 12,
-                                                                  width: 50,
-                                                                )),
-                                                            SizedBox(
-                                                              width: 16,
-                                                            ),
-                                                            Icon(
-                                                                LineAwesomeIcons
-                                                                    .star,
-                                                                size: 12,
-                                                                color: Color(
-                                                                    0xFFAAAAAA)),
-                                                            SizedBox(
-                                                              width: 8,
-                                                            ),
-                                                            controller.obx(
-                                                                (state) => Text(
-                                                                      state!
-                                                                          .rating
-                                                                          .toString(),
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Color(0xFFAAAAAA)),
-                                                                    ),
-                                                                onLoading:
-                                                                    Shimmer(
-                                                                  fontSize: 12,
-                                                                  width: 30,
-                                                                )),
-                                                          ],
-                                                        ),
-                                                        SizedBox(height: 4),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Icon(
-                                                                LineAwesomeIcons
-                                                                    .ruler,
-                                                                size: 12,
-                                                                color: Color(
-                                                                    0xFFAAAAAA)),
-                                                            SizedBox(
-                                                              width: 8,
-                                                            ),
-                                                            controller.obx(
-                                                                (state) => Text(
-                                                                      GeoUtils.formatDistance(
-                                                                          state!.length /
-                                                                              1000),
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Color(0xFFAAAAAA)),
-                                                                    ),
-                                                                onLoading:
-                                                                    Shimmer(
-                                                                  fontSize: 12,
-                                                                  width: 30,
-                                                                )),
-                                                            SizedBox(
-                                                              width: 16,
-                                                            ),
-                                                            Icon(
-                                                                LineAwesomeIcons
-                                                                    .clock,
-                                                                size: 12,
-                                                                color: Color(
-                                                                    0xFFAAAAAA)),
-                                                            SizedBox(
-                                                              width: 8,
-                                                            ),
-                                                            controller.obx(
-                                                                (state) => Text(
-                                                                      TimeUtils.formatMinutes(
-                                                                          state!
-                                                                              .duration),
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Color(0xFFAAAAAA)),
-                                                                    ),
-                                                                onLoading:
-                                                                    Shimmer(
-                                                                  fontSize: 12,
-                                                                  width: 30,
-                                                                )),
-                                                          ],
-                                                        )
-                                                      ],
+                                                    DefaultTextStyle(
+                                                      style: TextStyle(
+                                                          fontSize:
+                                                              controller.offline
+                                                                  ? null
+                                                                  : 12,
+                                                          color: controller
+                                                                  .offline
+                                                              ? Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyText1!
+                                                                  .color
+                                                              : Color(
+                                                                  0xFFAAAAAA)),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Icon(
+                                                                  LineAwesomeIcons
+                                                                      .map_marker,
+                                                                  size: controller
+                                                                          .offline
+                                                                      ? 16
+                                                                      : 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              controller.obx(
+                                                                  (state) =>
+                                                                      Text(
+                                                                        state!
+                                                                            .region
+                                                                            .name,
+                                                                      ),
+                                                                  onLoading:
+                                                                      Shimmer(
+                                                                    fontSize:
+                                                                        12,
+                                                                    width: 50,
+                                                                  )),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Icon(
+                                                                  LineAwesomeIcons
+                                                                      .star,
+                                                                  size: controller
+                                                                          .offline
+                                                                      ? 16
+                                                                      : 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              controller.obx(
+                                                                  (state) =>
+                                                                      Text(
+                                                                        state!
+                                                                            .rating
+                                                                            .toString(),
+                                                                      ),
+                                                                  onLoading:
+                                                                      Shimmer(
+                                                                    fontSize:
+                                                                        12,
+                                                                    width: 30,
+                                                                  )),
+                                                            ],
+                                                          ),
+                                                          SizedBox(height: 4),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Icon(
+                                                                  LineAwesomeIcons
+                                                                      .ruler,
+                                                                  size: controller
+                                                                          .offline
+                                                                      ? 16
+                                                                      : 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              controller.obx(
+                                                                  (state) =>
+                                                                      Text(
+                                                                        GeoUtils.formatDistance(state!.length /
+                                                                            1000),
+                                                                      ),
+                                                                  onLoading:
+                                                                      Shimmer(
+                                                                    fontSize:
+                                                                        12,
+                                                                    width: 30,
+                                                                  )),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Icon(
+                                                                  LineAwesomeIcons
+                                                                      .clock,
+                                                                  size: controller
+                                                                          .offline
+                                                                      ? 16
+                                                                      : 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              controller.obx(
+                                                                  (state) =>
+                                                                      Text(
+                                                                        TimeUtils.formatMinutes(
+                                                                            state!.duration),
+                                                                      ),
+                                                                  onLoading:
+                                                                      Shimmer(
+                                                                    fontSize:
+                                                                        12,
+                                                                    width: 30,
+                                                                  )),
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -391,7 +415,7 @@ class TrailPage extends GetView<TrailController> {
                                         ]),
                                   ),
                                   SizedBox(
-                                    height: 48,
+                                    height: 24,
                                   ),
                                   Padding(
                                     padding:
@@ -525,7 +549,7 @@ class TrailPage extends GetView<TrailController> {
                                                                             .tr,
                                                                         pos.message!);
                                                               },
-                                                              builder: (_) {
+                                                              builder: (_, g) {
                                                                 return Container(
                                                                   decoration:
                                                                       BoxDecoration(
@@ -629,49 +653,42 @@ class TrailPage extends GetView<TrailController> {
                   ),
                 ])),
           ),
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-                color: Colors.white, boxShadow: [Themes.bottomBarShadow]),
-            child: SafeArea(
-              top: false,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: MutationBuilder(
-                      mutation: () async {
-                        HomeController hc = Get.find<HomeController>();
-                        hc.switchTab(0);
-                        CompassController cc = Get.find<CompassController>();
-                        await cc.activeTrailProvider.select(controller.state!);
-                        Navigator.of(context).popUntil((route) => route
-                            .isFirst); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
-                      },
-                      builder: (mutate, loading) => Button(
-                        onPressed: mutate,
-                        loading: loading,
-                        child: Text('selectNow'.tr),
-                      ),
+          BottomBar(
+            child: Row(
+              children: [
+                Expanded(
+                  child: MutationBuilder(
+                    mutation: () async {
+                      HomeController hc = Get.find<HomeController>();
+                      hc.switchTab(0);
+                      CompassController cc = Get.find<CompassController>();
+                      await cc.activeTrailProvider.select(controller.state!);
+                      Navigator.of(context).popUntil((route) => route
+                          .isFirst); // use navigator pop instead of get off here as it push new page instead of reusing the one alive
+                    },
+                    builder: (mutate, loading) => Button(
+                      onPressed: mutate,
+                      loading: loading,
+                      child: Text('selectNow'.tr),
                     ),
                   ),
-                  if (!controller.offline) ...[
-                    SizedBox(
-                      width: 16,
+                ),
+                if (!controller.offline) ...[
+                  SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                    child: Button(
+                      secondary: true,
+                      onPressed: () {
+                        if (controller.state != null)
+                          Get.toNamed('/trails/events/${controller.state!.id}');
+                      },
+                      child: Text('findEvents'.tr),
                     ),
-                    Expanded(
-                      child: Button(
-                        secondary: true,
-                        onPressed: () {
-                          if (controller.state != null)
-                            Get.toNamed(
-                                '/trails/events/${controller.state!.id}');
-                        },
-                        child: Text('findEvents'.tr),
-                      ),
-                    ),
-                  ]
-                ],
-              ),
+                  ),
+                ]
+              ],
             ),
           )
         ]));

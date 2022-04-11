@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -26,6 +27,7 @@ class HikeeMapController extends GetxController {
   final _preferencesProvider = Get.find<PreferencesProvider>();
   final mapTilesProvider = Get.put(MapTilesProvider());
   final offlineTrail = false.obs;
+  final gradientColors = Rxn<List<Color>>();
 
   @override
   void onInit() {

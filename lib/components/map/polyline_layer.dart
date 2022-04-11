@@ -40,22 +40,23 @@ class Polyline {
   final StrokeCap strokeCap;
   final StrokeJoin strokeJoin;
   late LatLngBounds boundingBox;
+  final void Function(List<Color> colors)? onGradientUpdated;
 
-  Polyline({
-    required this.points,
-    this.strokeWidth = 1.0,
-    this.color = const Color(0xFF00FF00),
-    this.borderStrokeWidth = 0.0,
-    this.borderColor = const Color(0xFF000000),
-    this.gradientColors,
-    this.borderGradientColors,
-    this.shadowGradientColors,
-    this.colorsStop,
-    this.isDotted = false,
-    this.arrow = false,
-    this.strokeCap = StrokeCap.round,
-    this.strokeJoin = StrokeJoin.round,
-  });
+  Polyline(
+      {required this.points,
+      this.strokeWidth = 1.0,
+      this.color = const Color(0xFF00FF00),
+      this.borderStrokeWidth = 0.0,
+      this.borderColor = const Color(0xFF000000),
+      this.gradientColors,
+      this.borderGradientColors,
+      this.shadowGradientColors,
+      this.colorsStop,
+      this.isDotted = false,
+      this.arrow = false,
+      this.strokeCap = StrokeCap.round,
+      this.strokeJoin = StrokeJoin.round,
+      this.onGradientUpdated});
 }
 
 class PolylineLayerWidget extends StatelessWidget {
@@ -103,10 +104,23 @@ class PolylineLayer extends StatelessWidget {
             continue;
           }
 
-          _fillOffsets(polylineOpt.offsets, polylineOpt.points);
-
+          _fillOffsets(polylineOpt.offsets, polylineOpt.points,
+              polylineOpt.gradientColors);
+          if (polylineOpt.onGradientUpdated != null &&
+              polylineOpt.offsets.length > 0 &&
+              polylineOpt.gradientColors != null) {
+            List<Color> colors = [];
+            _fillColors(
+                colors, polylineOpt.offsets, polylineOpt.gradientColors!);
+            // //List<Offset> offsets = [];
+            // //_fillOffsets(offsets, polylineOpt.points);
+            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+              polylineOpt.onGradientUpdated!(colors);
+            });
+          }
+          var painter = PolylinePainter(polylineOpt);
           polylines.add(CustomPaint(
-            painter: PolylinePainter(polylineOpt),
+            painter: painter,
             size: size,
             willChange: true,
           ));
@@ -121,7 +135,8 @@ class PolylineLayer extends StatelessWidget {
     );
   }
 
-  void _fillOffsets(final List<Offset> offsets, final List<LatLng> points) {
+  void _fillOffsets(final List<Offset> offsets, final List<LatLng> points,
+      final List<Color>? gradient) {
     for (var i = 0, len = points.length; i < len; ++i) {
       var point = points[i];
 
@@ -129,9 +144,25 @@ class PolylineLayer extends StatelessWidget {
       pos = pos.multiplyBy(map.getZoomScale(map.zoom, map.zoom)) -
           map.getPixelOrigin();
       offsets.add(Offset(pos.x.toDouble(), pos.y.toDouble()));
-      if (i > 0) {
-        offsets.add(Offset(pos.x.toDouble(), pos.y.toDouble()));
-      }
+      //if (i > 0) {
+      // offsets.add(Offset(pos.x.toDouble(), pos.y.toDouble()));
+      //}
+    }
+  }
+
+  void _fillColors(
+      final List<Color> colors, List<Offset> offsets, List<Color> gradient) {
+    double dist = 0.0;
+    if (offsets.length > 1)
+      dist = sqrt(_sqr(offsets.first.dx - offsets.last.dx) +
+          _sqr(offsets.first.dy - offsets.last.dy));
+    for (int i = 0; i < offsets.length; ++i) {
+      Offset projected = _proj(offsets[i], offsets.first, offsets.last);
+      double pdist = sqrt(_sqr(offsets.first.dx - projected.dx) +
+          _sqr(offsets.first.dy - projected.dy));
+      double t = dist == 0 ? 0 : pdist / dist;
+      Color color = _lerpGradient(gradient, [0.0, 1.0], t);
+      colors.add(color);
     }
   }
 }
@@ -345,6 +376,7 @@ class PolylinePainter extends CustomPainter {
     }
   }
 
+  // probably use the farest point from first?
   ui.Gradient _paintGradient() => ui.Gradient.linear(
       polylineOpt.offsets.first,
       polylineOpt.offsets.last,
@@ -391,4 +423,29 @@ double _dist2(Offset v, Offset w) {
 
 double _sqr(double x) {
   return x * x;
+}
+
+Offset _proj(Offset p, Offset start, Offset end) {
+  var l2 = _dist2(start, end);
+  if (l2 == 0) return p;
+  var t = ((p.dx - start.dx) * (end.dx - start.dx) +
+          (p.dy - start.dy) * (end.dy - start.dy)) /
+      l2;
+  t = max(0, min(1, t));
+  return Offset(
+      start.dx + t * (end.dx - start.dx), start.dy + t * (end.dy - start.dy));
+}
+
+Color _lerpGradient(List<Color> colors, List<double> stops, double t) {
+  for (var s = 0; s < stops.length - 1; s++) {
+    final leftStop = stops[s], rightStop = stops[s + 1];
+    final leftColor = colors[s], rightColor = colors[s + 1];
+    if (t <= leftStop) {
+      return leftColor;
+    } else if (t < rightStop) {
+      final sectionT = (t - leftStop) / (rightStop - leftStop);
+      return Color.lerp(leftColor, rightColor, sectionT)!;
+    }
+  }
+  return colors.last;
 }
