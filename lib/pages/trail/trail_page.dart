@@ -529,38 +529,41 @@ class TrailPage extends GetView<TrailController> {
                                                   pathOnly: true,
                                                   offlineTrail:
                                                       controller.offline,
-                                                  markers: state.pins == null
-                                                      ? null
-                                                      : state.pins!
-                                                          .map(
-                                                            (pos) => DragMarker(
-                                                              draggable: false,
-                                                              point:
-                                                                  pos.location,
-                                                              width: 10,
-                                                              height: 10,
-                                                              hasPopup:
-                                                                  pos.message !=
-                                                                      null,
-                                                              onTap: (_) {
-                                                                DialogUtils
-                                                                    .showDialog(
+                                                  markers: (_, __) =>
+                                                      state.pins == null
+                                                          ? null
+                                                          : state.pins!
+                                                              .map(
+                                                                (pos) =>
+                                                                    DragMarker(
+                                                                  draggable:
+                                                                      false,
+                                                                  point: pos
+                                                                      .location,
+                                                                  width: 10,
+                                                                  height: 10,
+                                                                  hasPopup:
+                                                                      pos.message !=
+                                                                          null,
+                                                                  onTap: (_) {
+                                                                    DialogUtils.showDialog(
                                                                         "message"
                                                                             .tr,
                                                                         pos.message!);
-                                                              },
-                                                              builder: (_, g) {
-                                                                return Container(
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                  ),
-                                                                );
-                                                              },
-                                                            ),
-                                                          )
-                                                          .toList(),
+                                                                  },
+                                                                  builder:
+                                                                      (_, g) {
+                                                                    return Container(
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: Colors
+                                                                            .transparent,
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              )
+                                                              .toList(),
                                                 );
                                               },
                                                   onLoading: Shimmer(

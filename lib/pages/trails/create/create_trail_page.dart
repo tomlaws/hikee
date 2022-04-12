@@ -38,15 +38,14 @@ class CreateTrailPage extends GetView<CreateTrailController> {
           controller.selectedCoordinates.value != null) {
         if (controller.selectedCoordinates.value?.message == null)
           actions.add(Button(
-              secondary: true,
+              invert: true,
               backgroundColor: Colors.transparent,
               icon: Icon(Icons.add_comment_rounded),
               onPressed: () {
                 controller.editMessage(controller.selectedCoordinates.value);
               }));
         actions.add(Button(
-            secondary: true,
-            backgroundColor: Colors.transparent,
+            invert: true,
             icon: Icon(Icons.delete_rounded),
             onPressed: () {
               controller.removeLocation();
@@ -351,6 +350,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       disabled: controller.coordinates.length < 2,
                       onPressed: () {
                         if (controller.coordinates.length >= 2) {
+                          controller.selectedCoordinates.value = null;
                           controller.step.value = 1;
                         }
                       })
@@ -361,7 +361,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
     ]);
   }
 
-  List<DragMarker> get _dragMarkers {
+  List<DragMarker> _dragMarkers(
+      Widget startMarkerContent, Widget endMarkerContent) {
     return controller.coordinates
         .map(
           (pos) => DragMarker(
@@ -382,29 +383,23 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                   }
                 : null,
             builder: (_, color) {
-              if (pos == controller.coordinates.first)
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.transparent,
-                  ),
-                  child: Center(),
-                );
-              else if (pos == controller.coordinates.last)
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.transparent,
-                  ),
-                  child: Center(),
-                );
               return Container(
-                padding: EdgeInsets.all(4.0),
+                padding: EdgeInsets.all(
+                    controller.selectedCoordinates.value == pos ? 0.0 : 4.0),
                 child: Container(
                   decoration: BoxDecoration(
                       color: color,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(width: 1.25, color: Colors.white)),
+                      border: Border.all(
+                          width: controller.selectedCoordinates.value == pos
+                              ? 2.5
+                              : 1.25,
+                          color: Colors.white)),
+                  child: pos == controller.coordinates.first
+                      ? startMarkerContent
+                      : pos == controller.coordinates.last
+                          ? endMarkerContent
+                          : null,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.transparent,
@@ -457,8 +452,10 @@ class CreateTrailPage extends GetView<CreateTrailController> {
       zoom: 10,
       contentMargin: EdgeInsets.only(
           bottom: 80 + WidgetsBinding.instance!.window.viewPadding.bottom - 16,
-          right: 8),
+          right: 8,
+          left: 8),
       markers: _dragMarkers,
+      defaultMarkers: false,
       path: controller.coordinates.map((c) => c.location).toList(),
       onTap: (LatLng l) {
         controller.addLocation(l);

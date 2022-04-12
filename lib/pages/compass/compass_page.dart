@@ -789,7 +789,7 @@ class CompassPage extends GetView<CompassController> {
         showCenterOnLocationUpdateButton: true,
         positionStream: controller.currentLocation.stream,
         headingStream: controller.currentHeading.stream,
-        markers: controller.mapMarkers,
+        markers: (_, __) => controller.mapMarkers,
         verticalDatum: false,
         contentMargin: EdgeInsets.only(
             top: 8,

@@ -11,17 +11,15 @@ import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map_controller.dart';
-import 'package:hikees/components/map/mbtiles_provider.dart';
 import 'package:hikees/components/trails/hkpd_profile.dart';
 import 'package:hikees/models/hk_datum.dart';
 import 'package:hikees/models/preferences.dart';
-import 'package:hikees/providers/preferences.dart';
 import 'package:hikees/themes.dart';
-import 'package:hikees/utils/color.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:collection/collection.dart';
+import 'package:tuple/tuple.dart';
 
 import 'polyline_layer.dart';
 
@@ -38,6 +36,7 @@ class HikeeMap extends StatelessWidget {
       this.onTap,
       this.onLongPress,
       this.markers,
+      this.defaultMarkers = true,
       this.onMapCreated,
       this.interactiveFlag,
       this.watermarkAlignment = Alignment.bottomLeft,
@@ -64,7 +63,9 @@ class HikeeMap extends StatelessWidget {
   final Stream<LocationMarkerHeading?>? headingStream;
   final Function(LatLng)? onTap;
   final void Function(LatLng)? onLongPress;
-  final List<DragMarker>? markers;
+  final List<DragMarker>? Function(Widget startMarker, Widget endMarker)?
+      markers;
+  final bool defaultMarkers;
   final void Function(HikeeMapController)? onMapCreated;
   final int? interactiveFlag;
   final AlignmentGeometry watermarkAlignment;
@@ -137,52 +138,36 @@ class HikeeMap extends StatelessWidget {
 
     center = bounds.center;
 
-    LatLng? finishMarker;
-    if (path != null) {
-      if (path!.length > 1) {
-        finishMarker = path!.last;
-      }
-    }
-    if (pathOnly && path != null) {
-      if (path!.length > 1) finishMarker = path!.last;
-    }
-    LatLng? startMarker;
-    double startMarkerAngle = 0.0;
-    if (path != null && path!.length > 0) {
-      startMarker = path!.first;
-      // get next 5 point and avg
-      if (path!.length > 1) {
-        var prevPt = path!.elementAt(0);
-        var pt = path!.elementAt(1);
-        var startLat = prevPt.latitude * pi / 180;
-        var startLng = prevPt.longitude * pi / 180;
-        var destLat = pt.latitude * pi / 180;
-        var destLng = pt.longitude * pi / 180;
-        var y = sin(destLng - startLng) * cos(destLat);
-        var x = cos(startLat) * sin(destLat) -
-            sin(startLat) * cos(destLat) * cos(destLng - startLng);
-        double theta = atan2(y, x);
-        startMarkerAngle = theta;
-      }
-    }
-    // check if start marker and finish marker are too close
-    if (startMarker != null && finishMarker != null) {
-      final distBetweenStartAndEndInMeters =
-          GeoUtils.calculateDistance(startMarker, finishMarker) * 1000;
-      // difference < 10meters
-      if (distBetweenStartAndEndInMeters < 10) {
-        // try differentiate them to avoid the start marker overlap with the finish marker
-        for (int i = 1; i < 10; ++i) {
-          finishMarker = path?.elementAt(path!.length - 1 - i);
-          startMarker = path?.elementAt(i);
-          final newDist =
-              GeoUtils.calculateDistance(startMarker!, finishMarker!) * 1000;
-          if (newDist > 15) {
-            break;
-          }
-        }
-      }
-    }
+    // Update angle and adjust start & end marker if necessary
+    var result1 = _adjustMarkers(path);
+    double startMarkerAngle = result1.item1;
+    LatLng? startMarker = result1.item2;
+    LatLng? endMarker = result1.item3;
+    Widget startMarkerContent = Center(
+      child: Transform.rotate(
+        angle: pi / 2 + startMarkerAngle,
+        child: Icon(Icons.chevron_left_rounded, size: 18, color: Colors.white),
+      ),
+    );
+    Widget endMarkerContent = Center(
+      child: Icon(Icons.flag_rounded, size: 12, color: Colors.white),
+    );
+    var result2 = _adjustMarkers(userPath);
+    double userStartMarkerAngle = result2.item1;
+    LatLng? userStartMarker = result2.item2;
+    LatLng? userEndMarker = result2.item3;
+    Widget userStartMarkerContent = Center(
+      child: Transform.rotate(
+        angle: pi / 2 + userStartMarkerAngle,
+        child: Icon(Icons.chevron_left_rounded, size: 18, color: Colors.white),
+      ),
+    );
+    Widget userEndMarkerContent = Center(
+      child: Icon(Icons.flag_rounded, size: 12, color: Colors.white),
+    );
+
+    List<DragMarker>? draggableMarkers =
+        markers != null ? markers!(startMarkerContent, endMarkerContent) : null;
     return FlutterMap(
       key: Key(_key ?? '-flutter-map'),
       children: [
@@ -249,113 +234,100 @@ class HikeeMap extends StatelessWidget {
             ],
           ),
         ),
-        MarkerLayerWidget(
-            options: MarkerLayerOptions(
-          markers: [
-            if (startMarker != null)
-              Marker(
-                width: 20,
-                height: 20,
-                point: startMarker,
-                builder: (ctx) => Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 1),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Themes.gradientColors.first,
-                        boxShadow: [
-                          BoxShadow(
-                              color:
-                                  Themes.gradientColors.first.withOpacity(.75),
-                              blurRadius: 4,
-                              spreadRadius: 2)
-                        ]),
-                    child: Center(
-                      child: Transform.rotate(
-                        angle: pi / 2 + startMarkerAngle,
-                        child: Icon(Icons.chevron_left_rounded,
-                            size: 18, color: Colors.white),
-                      ),
+        if (defaultMarkers)
+          MarkerLayerWidget(
+              options: MarkerLayerOptions(
+            markers: [
+              if (startMarker != null)
+                Marker(
+                  width: 20,
+                  height: 20,
+                  point: startMarker,
+                  builder: (ctx) => Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                          color: Themes.gradientColors.first,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Themes.gradientColors.first
+                                    .withOpacity(.75),
+                                blurRadius: 4,
+                                spreadRadius: 2)
+                          ]),
+                      child: startMarkerContent,
                     ),
                   ),
                 ),
-              ),
-            if (finishMarker != null)
-              Marker(
-                width: 20,
-                height: 20,
-                point: finishMarker,
-                builder: (ctx) => Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 1),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Color.fromARGB(255, 31, 189, 147),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Color.fromARGB(255, 31, 189, 147)
-                                  .withOpacity(.75),
-                              blurRadius: 4,
-                              spreadRadius: 2)
-                        ]),
-                    child: Center(
-                      child: Icon(Icons.flag_rounded,
-                          size: 12, color: Colors.white),
+              if (endMarker != null)
+                Marker(
+                  width: 20,
+                  height: 20,
+                  point: endMarker,
+                  builder: (ctx) => Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                          color: Color.fromARGB(255, 31, 189, 147),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Color.fromARGB(255, 31, 189, 147)
+                                    .withOpacity(.75),
+                                blurRadius: 4,
+                                spreadRadius: 2)
+                          ]),
+                      child: endMarkerContent,
                     ),
                   ),
                 ),
-              ),
-            if (userPath != null && userPath!.length > 0) ...[
-              Marker(
-                width: 20,
-                height: 20,
-                point: userPath!.first,
-                builder: (ctx) => Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 1),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Themes.gradientColors.first,
-                        boxShadow: [
-                          BoxShadow(
-                              color:
-                                  Themes.gradientColors.first.withOpacity(.75),
-                              blurRadius: 4,
-                              spreadRadius: 2)
-                        ]),
-                    child: Center(
-                      child: Icon(Icons.directions_walk_rounded,
-                          size: 14, color: Colors.white),
+              if (userStartMarker != null)
+                Marker(
+                  width: 20,
+                  height: 20,
+                  point: userStartMarker,
+                  builder: (ctx) => Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                          color: Themes.gradientColors.first,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Themes.gradientColors.first
+                                    .withOpacity(.75),
+                                blurRadius: 4,
+                                spreadRadius: 2)
+                          ]),
+                      child: userStartMarkerContent,
                     ),
                   ),
                 ),
-              ),
-              Marker(
-                width: 20,
-                height: 20,
-                point: userPath!.last,
-                builder: (ctx) => Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 1),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Themes.gradientColors.first,
-                        boxShadow: [
-                          BoxShadow(
-                              color:
-                                  Themes.gradientColors.last.withOpacity(.75),
-                              blurRadius: 4,
-                              spreadRadius: 2)
-                        ]),
-                    child: Center(
-                      child: Icon(Icons.done, size: 14, color: Colors.white),
+              if (userEndMarker != null)
+                Marker(
+                  width: 20,
+                  height: 20,
+                  point: userEndMarker,
+                  builder: (ctx) => Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                          color: Themes.gradientColors.last,
+                          boxShadow: [
+                            BoxShadow(
+                                color:
+                                    Themes.gradientColors.last.withOpacity(.75),
+                                blurRadius: 4,
+                                spreadRadius: 2)
+                          ]),
+                      child: userEndMarkerContent,
                     ),
                   ),
                 ),
-              ),
-            ]
-          ],
-        )),
+            ],
+          )),
         if (positionStream != null)
           Obx(
             () => LocationMarkerLayerWidget(
@@ -377,9 +349,9 @@ class HikeeMap extends StatelessWidget {
               ),
             ),
           ),
-        if (markers != null)
+        if (draggableMarkers != null)
           Stack(
-            children: markers!
+            children: draggableMarkers
                 .mapIndexed((i, e) => Obx(() => DragMarkerWidget(
                       marker: e,
                       color: controller.gradientColors.value?.elementAt(
@@ -547,5 +519,46 @@ class HikeeMap extends StatelessWidget {
             DragMarkerPlugin(),
           ]),
     );
+  }
+
+  Tuple3<double, LatLng?, LatLng?> _adjustMarkers(List<LatLng>? path) {
+    if (path == null) return Tuple3(0, null, null);
+    double theta = 0.0;
+    LatLng? startMarker, endMarker;
+    if (path.length > 0) {
+      startMarker = path.first;
+      endMarker = path.last;
+      // get next 5 point and avg
+      if (path.length > 1) {
+        var prevPt = path.elementAt(0);
+        var pt = path.elementAt(1);
+        var startLat = prevPt.latitude * pi / 180;
+        var startLng = prevPt.longitude * pi / 180;
+        var destLat = pt.latitude * pi / 180;
+        var destLng = pt.longitude * pi / 180;
+        var y = sin(destLng - startLng) * cos(destLat);
+        var x = cos(startLat) * sin(destLat) -
+            sin(startLat) * cos(destLat) * cos(destLng - startLng);
+        theta = atan2(y, x);
+      }
+
+      final distBetweenStartAndEndInMeters =
+          GeoUtils.calculateDistance(startMarker, endMarker) * 1000;
+      // difference < 10meters
+      if (distBetweenStartAndEndInMeters < 10 && path.length > 2) {
+        // try differentiate them to avoid the start marker overlap with the finish marker
+        for (int i = 1; i < 10; ++i) {
+          endMarker = path.elementAt(path.length - 1 - i);
+
+          startMarker = path.elementAt(i);
+          final newDist =
+              GeoUtils.calculateDistance(startMarker, endMarker) * 1000;
+          if (newDist > 15) {
+            break;
+          }
+        }
+      }
+    }
+    return Tuple3(theta, startMarker, endMarker);
   }
 }
