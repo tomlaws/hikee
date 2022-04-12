@@ -32,10 +32,7 @@ class TrailsPage extends GetView<TrailsController> {
                 backgroundColor: Colors.white,
                 flexibleSpace: HikeeAppBar(
                   elevation: 0,
-                  title: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("trails".tr),
-                  ),
+                  title: Text("trails".tr),
                   leading: Button(
                       secondary: true,
                       backgroundColor: Colors.transparent,

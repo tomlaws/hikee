@@ -38,6 +38,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       // ),
       elevation: elevation,
       titleTextStyle: TextStyle(fontSize: 12),
+      centerTitle: true,
       title: title == null
           ? null
           : DefaultTextStyle(
@@ -46,10 +47,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 20),
               child: Padding(
-                padding: EdgeInsets.only(
-                    left:
-                        leading != null || backButton || !titlePadding ? 0 : 8,
-                    right: 8.0),
+                padding: EdgeInsets.zero,
                 child: title,
               ),
             ),
@@ -75,7 +73,7 @@ class HikeeAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions != null
           ? [
               Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.end,
