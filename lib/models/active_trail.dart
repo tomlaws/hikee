@@ -26,8 +26,8 @@ class ActiveTrail {
     return ((e / 1000).floor());
   }
 
-  // in km
-  double get length {
+  // in m
+  int get length {
     return GeoUtils.getPathLength(path: userPath);
   }
 

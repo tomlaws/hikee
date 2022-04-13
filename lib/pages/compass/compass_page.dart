@@ -150,7 +150,7 @@ class CompassPage extends GetView<CompassController> {
                                   var t = controller.activeTrailProvider.tick
                                       .value; // do not remove this line
                                   return Text(
-                                    GeoUtils.formatDistance(
+                                    GeoUtils.formatMetres(
                                         controller.activeTrail.value!.length),
                                     style: TextStyle(
                                         fontSize: 18,
@@ -177,7 +177,7 @@ class CompassPage extends GetView<CompassController> {
                                     var t = controller.activeTrailProvider.tick
                                         .value; // do not remove this line
                                     return Text(
-                                      '${GeoUtils.formatDistance(controller.speed!)}/h',
+                                      '${GeoUtils.formatKm(controller.speed!)}/h',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w600),
@@ -458,7 +458,7 @@ class CompassPage extends GetView<CompassController> {
                                                                   top: 4),
                                                           child: Text(
                                                             '~' +
-                                                                GeoUtils.formatDistance(
+                                                                GeoUtils.formatMetres(
                                                                     facility.calculateDistance(controller
                                                                         .currentLocation
                                                                         .value!
@@ -786,10 +786,11 @@ class CompassPage extends GetView<CompassController> {
         path: activeTrail.trail?.path,
         userPath: controller.userPath,
         pathOnly: true,
+        zoom: 10,
         showCenterOnLocationUpdateButton: true,
         positionStream: controller.currentLocation.stream,
         headingStream: controller.currentHeading.stream,
-        markers: (_, __) => controller.mapMarkers,
+        markers: controller.mapMarkers,
         verticalDatum: false,
         contentMargin: EdgeInsets.only(
             top: 8,
@@ -855,7 +856,7 @@ class CompassPage extends GetView<CompassController> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              '${controller.activeTrailLength.toString()}km',
+                              '${GeoUtils.formatMetres(controller.activeTrailLength)}',
                               style: TextStyle(
                                   fontSize: 11, color: Colors.black54),
                             ),

@@ -102,19 +102,20 @@ class ActiveTrailProvider extends BaseProvider {
 
   Future<void> _startLocationTracking() async {
     Map<String, dynamic> data = {'countInit': 1};
-
+    double distanceFilter = 6.0; // 6meters
     await BackgroundLocator.registerLocationUpdate(
         LocationCallbackHandler.callback,
         initCallback: LocationCallbackHandler.initCallback,
         initDataCallback: data,
         disposeCallback: LocationCallbackHandler.disposeCallback,
         iosSettings: IOSSettings(
-            accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 1),
+            accuracy: LocationAccuracy.NAVIGATION,
+            distanceFilter: distanceFilter),
         autoStop: false,
         androidSettings: AndroidSettings(
             accuracy: LocationAccuracy.NAVIGATION,
             interval: 5,
-            distanceFilter: 1,
+            distanceFilter: distanceFilter,
             client: LocationClient.google,
             androidNotificationSettings: AndroidNotificationSettings(
                 notificationChannelName: 'Location tracking',

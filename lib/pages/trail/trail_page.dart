@@ -6,6 +6,7 @@ import 'package:hikees/components/core/avatar.dart';
 import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/futurer.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/core/text_may_overflow.dart';
@@ -27,9 +28,11 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:tuple/tuple.dart';
 
 class TrailPage extends GetView<TrailController> {
   final _authProvider = Get.find<AuthProvider>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -265,10 +268,23 @@ class TrailPage extends GetView<TrailController> {
                                                                 width: 8,
                                                               ),
                                                               controller.obx(
-                                                                  (state) =>
-                                                                      Text(
-                                                                        GeoUtils.formatDistance(state!.length /
-                                                                            1000),
+                                                                  (_) =>
+                                                                      Futurer(
+                                                                        future:
+                                                                            controller.lengthAndDuration,
+                                                                        placeholder:
+                                                                            Shimmer(
+                                                                          fontSize:
+                                                                              12,
+                                                                          width:
+                                                                              30,
+                                                                        ),
+                                                                        builder:
+                                                                            (Tuple2 data) =>
+                                                                                Text(
+                                                                          GeoUtils.formatMetres(
+                                                                              data.item1),
+                                                                        ),
                                                                       ),
                                                                   onLoading:
                                                                       Shimmer(
@@ -291,18 +307,29 @@ class TrailPage extends GetView<TrailController> {
                                                               SizedBox(
                                                                 width: 8,
                                                               ),
+                                                              //
                                                               controller.obx(
-                                                                  (state) =>
-                                                                      Text(
-                                                                        TimeUtils.formatMinutes(
-                                                                            state!.duration),
-                                                                      ),
-                                                                  onLoading:
-                                                                      Shimmer(
-                                                                    fontSize:
-                                                                        12,
-                                                                    width: 30,
-                                                                  )),
+                                                                (_) => Futurer(
+                                                                    future: controller
+                                                                        .lengthAndDuration,
+                                                                    placeholder:
+                                                                        Shimmer(
+                                                                      fontSize:
+                                                                          12,
+                                                                      width: 30,
+                                                                    ),
+                                                                    builder: (Tuple2
+                                                                            data) =>
+                                                                        Text(
+                                                                          TimeUtils.formatMinutes(
+                                                                              data.item2),
+                                                                        )),
+                                                                onLoading:
+                                                                    Shimmer(
+                                                                  fontSize: 12,
+                                                                  width: 30,
+                                                                ),
+                                                              ),
                                                             ],
                                                           )
                                                         ],
@@ -521,11 +548,10 @@ class TrailPage extends GetView<TrailController> {
                                                       BorderRadius.circular(
                                                           16.0)),
                                               child: controller.obx((state) {
-                                                var path = GeoUtils.decodePath(
-                                                    state!.path);
                                                 return HikeeMap(
-                                                  key: Key(state.id.toString()),
-                                                  path: path,
+                                                  key:
+                                                      Key(state!.id.toString()),
+                                                  path: controller.points.value,
                                                   pathOnly: true,
                                                   offlineTrail:
                                                       controller.offline,

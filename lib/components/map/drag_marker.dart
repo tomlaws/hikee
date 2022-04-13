@@ -32,7 +32,7 @@ class DragMarkerPlugin implements MapPlugin {
               if (!_boundsContainsMarker(mapState, options.markers[i]))
                 continue;
               List<Color>? colors = options.gradientColors;
-              dragMarkers.add(DragMarkerWidget(
+              dragMarkers.add(DragMarkerLayer(
                 mapState: mapState,
                 marker: options.markers[i],
                 color: colors?[i],
@@ -68,8 +68,29 @@ class DragMarkerPlugin implements MapPlugin {
   }
 }
 
-class DragMarkerWidget extends StatefulWidget {
-  DragMarkerWidget({
+class DragMarkerWidget extends StatelessWidget {
+  final DragMarkerPluginOptions? options;
+  final DragMarker marker;
+  final Color? color;
+
+  DragMarkerWidget({Key? key, required this.marker, this.options, this.color})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mapState = MapState.maybeOf(context)!;
+    return DragMarkerLayer(
+      marker: marker,
+      options: options,
+      mapState: mapState,
+      stream: mapState.onMoved,
+      color: color,
+    );
+  }
+}
+
+class DragMarkerLayer extends StatefulWidget {
+  DragMarkerLayer({
     Key? key,
     this.mapState,
     required this.marker,
@@ -89,10 +110,10 @@ class DragMarkerWidget extends StatefulWidget {
   final Color? color;
 
   @override
-  _DragMarkerWidgetState createState() => _DragMarkerWidgetState();
+  _DragMarkerLayerState createState() => _DragMarkerLayerState();
 }
 
-class _DragMarkerWidgetState extends State<DragMarkerWidget> {
+class _DragMarkerLayerState extends State<DragMarkerLayer> {
   CustomPoint pixelPosition = CustomPoint(0.0, 0.0);
   late LatLng dragPosStart;
   late LatLng markerPointStart;
@@ -112,70 +133,72 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    DragMarker marker = widget.marker;
-    updatePixelPos(widget.marker.point);
-    List<Color>? colors;
-    if (widget.options is DragMarkerPluginOptions) {
-      colors = (widget.options as DragMarkerPluginOptions).gradientColors;
-    }
-    return GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
-      onLongPressStart:
-          widget.marker.draggable == false ? null : onLongPressStart,
-      onLongPressMoveUpdate:
-          widget.marker.draggable == false ? null : onLongPressMoveUpdate,
-      onLongPressEnd: widget.marker.draggable == false ? null : onLongPressEnd,
-      onTap: () {
-        if (marker.onTap != null) marker.onTap!(marker.point);
-      },
-      onLongPress: () {
-        if (marker.onLongPress != null) marker.onLongPress!(marker.point);
-      },
-      child: Stack(children: [
-        if (marker.builder != null || marker.feedbackBuilder != null)
-          Positioned(
-            width: marker.width,
-            height: marker.height,
-            left: pixelPosition.x +
-                ((isDragging && (marker.feedbackOffset != null))
-                    ? marker.feedbackOffset.dx
-                    : marker.offset.dx),
-            top: pixelPosition.y +
-                ((isDragging && (marker.feedbackOffset != null))
-                    ? marker.feedbackOffset.dy
-                    : marker.offset.dy),
-            child: (isDragging && (marker.feedbackBuilder != null))
-                ? marker.feedbackBuilder!(context)
-                : marker.builder!(context, widget.color),
-          ),
-        if (marker.hasPopup)
-          Positioned(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: marker.onPopupTap,
-              child: FloatingTooltip(
-                  ignorePointer: false,
-                  compact: true,
-                  color: marker.popupColor,
-                  child: Icon(
-                    marker.popupIcon,
-                    color: Colors.white,
-                    size: 16,
-                  )),
-            ),
-            left: pixelPosition.x +
-                ((isDragging && (marker.feedbackOffset != null))
-                    ? marker.feedbackOffset.dx
-                    : marker.offset.dx) +
-                -6,
-            top: pixelPosition.y +
-                ((isDragging && (marker.feedbackOffset != null))
-                    ? marker.feedbackOffset.dy
-                    : marker.offset.dy) -
-                32,
-          ),
-      ]),
-    );
+    return StreamBuilder(
+        stream: widget.stream,
+        builder: (BuildContext context, _) {
+          DragMarker marker = widget.marker;
+          updatePixelPos(widget.marker.point);
+
+          return GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
+            onLongPressStart:
+                widget.marker.draggable == false ? null : onLongPressStart,
+            onLongPressMoveUpdate:
+                widget.marker.draggable == false ? null : onLongPressMoveUpdate,
+            onLongPressEnd:
+                widget.marker.draggable == false ? null : onLongPressEnd,
+            onTap: () {
+              if (marker.onTap != null) marker.onTap!(marker.point);
+            },
+            onLongPress: () {
+              if (marker.onLongPress != null) marker.onLongPress!(marker.point);
+            },
+            child: Stack(children: [
+              if (marker.builder != null || marker.feedbackBuilder != null)
+                Positioned(
+                  width: marker.width,
+                  height: marker.height,
+                  left: pixelPosition.x +
+                      ((isDragging && (marker.feedbackOffset != null))
+                          ? marker.feedbackOffset.dx
+                          : marker.offset.dx),
+                  top: pixelPosition.y +
+                      ((isDragging && (marker.feedbackOffset != null))
+                          ? marker.feedbackOffset.dy
+                          : marker.offset.dy),
+                  child: (isDragging && (marker.feedbackBuilder != null))
+                      ? marker.feedbackBuilder!(context)
+                      : marker.builder!(context, widget.color),
+                ),
+              if (marker.hasPopup)
+                Positioned(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: marker.onPopupTap,
+                    child: FloatingTooltip(
+                        ignorePointer: false,
+                        compact: true,
+                        color: marker.popupColor,
+                        child: Icon(
+                          marker.popupIcon,
+                          color: Colors.white,
+                          size: 16,
+                        )),
+                  ),
+                  left: pixelPosition.x +
+                      ((isDragging && (marker.feedbackOffset != null))
+                          ? marker.feedbackOffset.dx
+                          : marker.offset.dx) +
+                      -6,
+                  top: pixelPosition.y +
+                      ((isDragging && (marker.feedbackOffset != null))
+                          ? marker.feedbackOffset.dy
+                          : marker.offset.dy) -
+                      32,
+                ),
+            ]),
+          );
+        });
   }
 
   void updatePixelPos(point) {
@@ -281,7 +304,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
 
   /// If dragging near edge of the screen, adjust the map so we keep dragging
 
-  void adjustMapToMarker(DragMarkerWidget widget, autoOffsetX, autoOffsetY) {
+  void adjustMapToMarker(DragMarkerLayer widget, autoOffsetX, autoOffsetY) {
     DragMarker marker = widget.marker;
     MapState? mapState = _mapState;
 
@@ -379,6 +402,7 @@ class DragMarker {
     this.nearEdgeSpeed = 1.0,
     this.draggable = true,
     AnchorPos? anchorPos,
+    Key? key,
   }) {
     anchor = Anchor.forPos(anchorPos, width, height);
   }

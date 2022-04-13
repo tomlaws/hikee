@@ -83,8 +83,8 @@ class CreateTopicPage extends GetView<CreateTopicController> {
                                             fit: BoxFit.cover),
                                       ),
                                       Positioned(
-                                          top: 0,
-                                          right: 0,
+                                          top: -4,
+                                          right: -4,
                                           child: GestureDetector(
                                             onTap: () {
                                               controller.removeImage(image);
@@ -92,21 +92,10 @@ class CreateTopicPage extends GetView<CreateTopicController> {
                                             child: Container(
                                                 padding: EdgeInsets.all(4),
                                                 decoration: BoxDecoration(
-                                                    color: Colors.black87,
+                                                    color: Colors.black,
                                                     borderRadius:
-                                                        BorderRadius.only(
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    8),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    16),
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                                    8),
-                                                            bottomLeft:
-                                                                Radius.circular(
-                                                                    8))),
+                                                        BorderRadius.circular(
+                                                            16)),
                                                 child: Icon(
                                                   Icons.close,
                                                   color: Colors.white,
@@ -122,28 +111,30 @@ class CreateTopicPage extends GetView<CreateTopicController> {
           ),
           Container(
               padding: EdgeInsets.all(16),
-              child: Wrap(
-                spacing: 8.0,
-                children: [
-                  Button(
-                      child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        Icon(Icons.image_rounded),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text('addImage'.tr)
-                      ]),
-                      onPressed: () {
-                        controller.pickImages();
-                      },
-                      backgroundColor: Colors.transparent,
-                      secondary: true),
-                  // Button(
-                  //     icon: Icon(Icons.location_pin),
-                  //     onPressed: () {},
-                  //     backgroundColor: Colors.transparent,
-                  //     secondary: true)
-                ],
+              child: SafeArea(
+                child: Wrap(
+                  spacing: 8.0,
+                  children: [
+                    Button(
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          Icon(Icons.image_rounded),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text('addImage'.tr)
+                        ]),
+                        onPressed: () {
+                          controller.pickImages();
+                        },
+                        backgroundColor: Colors.transparent,
+                        secondary: true),
+                    // Button(
+                    //     icon: Icon(Icons.location_pin),
+                    //     onPressed: () {},
+                    //     backgroundColor: Colors.transparent,
+                    //     secondary: true)
+                  ],
+                ),
               )),
         ],
       ),

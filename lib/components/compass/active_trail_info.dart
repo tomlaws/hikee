@@ -22,11 +22,11 @@ class ActiveTrailInfo extends StatelessWidget {
     return activeTrail.name ?? activeTrail.trail?.name ?? 'unnamed'.tr;
   }
 
-  double get length {
+  int get length {
     if (activeTrail.trail == null) {
       return activeTrail.length;
     }
-    return ((activeTrail.trail?.length ?? 0) / 1000);
+    return activeTrail.trail?.length ?? 0;
   }
 
   int get duration {

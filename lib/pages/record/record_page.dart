@@ -28,7 +28,6 @@ class RecordPage extends GetView<RecordController> {
                 Get.toNamed('/trails/create', arguments: {
                   'path': record.userPath,
                   'name': record.name,
-                  'duration': record.time,
                   'region': record.region
                 });
               })

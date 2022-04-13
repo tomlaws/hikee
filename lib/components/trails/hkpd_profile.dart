@@ -38,7 +38,7 @@ class HKPDProfile extends StatelessWidget {
     datums.asMap().forEach((index, value) {
       // limits number of spot rendered, otherwise the line is not curvy enough
       //if (index % (datums.length / 32).round() == 0) {
-      var dist = 9999.0;
+      int dist = 9999;
       double e = 0;
 
       if (myLocation != null)
@@ -51,14 +51,13 @@ class HKPDProfile extends StatelessWidget {
       // update track length
       if (index > 0) {
         length += GeoUtils.calculateDistance(
-                value.location, datums[index - 1].location) *
-            1000;
+            value.location, datums[index - 1].location);
       }
       var spot = FlSpot(length, e);
 
       if (dist < minDist) {
         currentSpot = spot;
-        minDist = dist;
+        minDist = dist.toDouble();
       }
       return spots.add(spot);
       //}
@@ -138,14 +137,20 @@ class HKPDProfile extends StatelessWidget {
               topTitles: SideTitles(showTitles: false),
               rightTitles: SideTitles(showTitles: false),
               bottomTitles: SideTitles(
-                showTitles: true,
-                getTextStyles: (BuildContext context, double value) =>
-                    TextStyle(
-                  color: Color(0xff67727d),
-                  fontSize: 11,
-                ),
-                interval: xInterval.toDouble(),
-              ),
+                  showTitles: true,
+                  getTextStyles: (BuildContext context, double value) =>
+                      TextStyle(
+                        color: Color(0xff67727d),
+                        fontSize: 11,
+                      ),
+                  checkToShowTitle: (double minValue,
+                      double maxValue,
+                      SideTitles sideTitles,
+                      double appliedInterval,
+                      double value) {
+                    if (value % xInterval == 0) return true;
+                    return false;
+                  }),
               leftTitles: SideTitles(
                   showTitles: true,
                   getTextStyles: (BuildContext context, double value) =>

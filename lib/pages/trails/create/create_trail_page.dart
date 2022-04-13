@@ -5,18 +5,22 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/dropdown.dart';
+import 'package:hikees/components/core/futurer.dart';
+import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
+import 'package:hikees/utils/time.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/pages/trails/create/create_trail_controller.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:tuple/tuple.dart';
 
 class CreateTrailPage extends GetView<CreateTrailController> {
   @override
@@ -103,8 +107,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                                                 fit: BoxFit.cover),
                                           ),
                                           Positioned(
-                                              top: 0,
-                                              right: 0,
+                                              top: -4,
+                                              right: -4,
                                               child: GestureDetector(
                                                 onTap: () {
                                                   controller.removeImage(image);
@@ -114,20 +118,9 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                                                     decoration: BoxDecoration(
                                                         color: Colors.black87,
                                                         borderRadius:
-                                                            BorderRadius.only(
-                                                                topLeft: Radius
-                                                                    .circular(
-                                                                        8),
-                                                                topRight: Radius
-                                                                    .circular(
-                                                                        16),
-                                                                bottomRight:
-                                                                    Radius
-                                                                        .circular(
-                                                                            8),
-                                                                bottomLeft: Radius
-                                                                    .circular(
-                                                                        8))),
+                                                            BorderRadius
+                                                                .circular(
+                                                                    16.0)),
                                                     child: Icon(
                                                       Icons.close,
                                                       color: Colors.white,
@@ -175,50 +168,19 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                   controller: controller.nameController,
                 ),
               ),
-              Row(
-                children: [
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: TextInput(
-                          label: 'duration'.tr,
-                          hintText: 'minutes'.tr,
-                          controller: controller.durationController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                          ],
-                        ),
-                      ),
-                    ],
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Dropdown<Region>(
+                    label: 'region'.tr,
+                    items: Region.allRegions().toList(),
+                    selected: controller.region.value,
+                    itemBuilder: (r) {
+                      return Text(r.name);
+                    },
+                    onChanged: (r) {
+                      controller.region.value = r;
+                    },
                   )),
-                  SizedBox(
-                    width: 16,
-                  ),
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Dropdown<Region>(
-                            label: 'region'.tr,
-                            items: Region.allRegions().toList(),
-                            selected: controller.region.value,
-                            itemBuilder: (r) {
-                              return Text(r.name);
-                            },
-                            onChanged: (r) {
-                              controller.region.value = r;
-                            },
-                          )),
-                    ],
-                  ))
-                ],
-              ),
               Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8),
                 child: Text('difficulty'.tr,
@@ -337,10 +299,34 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                         size: 24,
                       ),
                       Container(width: 4),
-                      Text(
-                          "${GeoUtils.formatDistance(GeoUtils.getPathLength(path: controller.coordinates.map((c) => c.location).toList()))}",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w600)),
+                      Futurer(
+                          future: controller.lengthAndDuration,
+                          placeholder: Shimmer(
+                            fontSize: 18,
+                            width: 56,
+                          ),
+                          builder: (Tuple2 data) => Text(
+                                GeoUtils.formatMetres(data.item1),
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              )),
+                      Container(width: 8),
+                      Icon(
+                        LineAwesomeIcons.clock,
+                        size: 24,
+                      ),
+                      Container(width: 4),
+                      Futurer(
+                          future: controller.lengthAndDuration,
+                          placeholder: Shimmer(
+                            fontSize: 18,
+                            width: 56,
+                          ),
+                          builder: (Tuple2 data) => Text(
+                                TimeUtils.formatMinutes(data.item2),
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              ))
                     ],
                   ),
                   Button(

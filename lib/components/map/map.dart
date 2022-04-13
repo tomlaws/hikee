@@ -165,8 +165,7 @@ class HikeeMap extends StatelessWidget {
     Widget userEndMarkerContent = Center(
       child: Icon(Icons.flag_rounded, size: 12, color: Colors.white),
     );
-
-    List<DragMarker>? draggableMarkers =
+    List<DragMarker>? dragMarkers =
         markers != null ? markers!(startMarkerContent, endMarkerContent) : null;
     return FlutterMap(
       key: Key(_key ?? '-flutter-map'),
@@ -349,16 +348,14 @@ class HikeeMap extends StatelessWidget {
               ),
             ),
           ),
-        if (draggableMarkers != null)
-          Stack(
-            children: draggableMarkers
-                .mapIndexed((i, e) => Obx(() => DragMarkerWidget(
-                      marker: e,
-                      color: controller.gradientColors.value?.elementAt(
-                          min(i, controller.gradientColors.value!.length - 1)),
-                    )))
-                .toList(),
-          )
+        if (dragMarkers != null)
+          ...dragMarkers
+              .mapIndexed((i, e) => Obx(() => DragMarkerWidget(
+                    marker: e,
+                    color: controller.gradientColors.value?.elementAt(
+                        min(i, controller.gradientColors.value!.length - 1)),
+                  )))
+              .toList(),
       ],
       nonRotatedChildren: [
         Align(alignment: Alignment.bottomLeft, child: providerAttribution),
@@ -516,7 +513,7 @@ class HikeeMap extends StatelessWidget {
             }
           },
           plugins: [
-            DragMarkerPlugin(),
+            // DragMarkerPlugin(),
           ]),
     );
   }
@@ -543,16 +540,17 @@ class HikeeMap extends StatelessWidget {
       }
 
       final distBetweenStartAndEndInMeters =
-          GeoUtils.calculateDistance(startMarker, endMarker) * 1000;
+          GeoUtils.calculateDistance(startMarker, endMarker);
       // difference < 10meters
       if (distBetweenStartAndEndInMeters < 10 && path.length > 2) {
         // try differentiate them to avoid the start marker overlap with the finish marker
         for (int i = 1; i < 10; ++i) {
-          endMarker = path.elementAt(path.length - 1 - i);
+          var end = path.length - 1 - i;
+          if (end < i || end < 0) break;
+          endMarker = path.elementAt(end);
 
           startMarker = path.elementAt(i);
-          final newDist =
-              GeoUtils.calculateDistance(startMarker, endMarker) * 1000;
+          final newDist = GeoUtils.calculateDistance(startMarker, endMarker);
           if (newDist > 15) {
             break;
           }

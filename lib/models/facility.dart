@@ -32,7 +32,7 @@ class Facility {
     return name;
   }
 
-  // in km
+  // in m
   calculateDistance(LatLng loc) {
     return GeoUtils.calculateDistance(loc, location);
   }

@@ -18,6 +18,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/providers/trail.dart';
 import 'package:hikees/utils/geo.dart';
+import 'package:tuple/tuple.dart';
 
 class TrailController extends GetxController with StateMixin<Trail> {
   final _trailProvider = Get.put(TrailProvider());
@@ -31,7 +32,8 @@ class TrailController extends GetxController with StateMixin<Trail> {
   PageController carouselController = PageController();
   final carouselPage = 0.0.obs;
   final bookmarked = false.obs;
-  final points = Rxn<List<LatLng>>();
+  final points = Rx<List<LatLng>>([]);
+  Future<Tuple2<int, int>>? lengthAndDuration;
 
   final int takeReviews = 5;
   bool offline = false;
@@ -41,9 +43,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
     super.onInit();
     if (Get.arguments != null && Get.arguments['trail'] != null) {
       offline = true;
-      Trail trail = Get.arguments['trail'];
-      append(() => () => Future.value(trail));
-      id = trail.id;
+      append(() => _loadTrail);
     } else {
       id = int.parse(Get.parameters['trailId'] ?? Get.parameters['id'] ?? '');
       append(() => _loadTrail);
@@ -67,9 +67,16 @@ class TrailController extends GetxController with StateMixin<Trail> {
   }
 
   Future<Trail> _loadTrail() async {
-    var trail = await _trailProvider.getTrail(id);
+    late Trail trail;
+    if (offline) {
+      trail = Get.arguments['trail'];
+    } else {
+      trail = await _trailProvider.getTrail(id);
+    }
+    id = trail.id;
     bookmarked.value = trail.bookmark != null;
     points.value = GeoUtils.decodePath(trail.path);
+    lengthAndDuration = GeoUtils.calculateLengthAndDuration(points.value);
     return trail;
   }
 

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math' show sin, cos, sqrt, asin, pi;
+import 'dart:math' show sin, cos, sqrt, asin, atan2, pi, pow;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -26,36 +26,50 @@ class GeoUtils {
   }
 
   // in km
-  static double calculateDistance(LatLng location1, LatLng location2) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((location2.latitude - location1.latitude) * p) / 2 +
-        c(location1.latitude * p) *
-            c(location2.latitude * p) *
-            (1 - c((location2.longitude - location1.longitude) * p)) /
-            2;
-    return 12742 * asin(sqrt(a));
+  // static double calculateDistance(LatLng location1, LatLng location2) {
+  //   var p = 0.017453292519943295;
+  //   var c = cos;
+  //   var a = 0.5 -
+  //       c((location2.latitude - location1.latitude) * p) / 2 +
+  //       c(location1.latitude * p) *
+  //           c(location2.latitude * p) *
+  //           (1 - c((location2.longitude - location1.longitude) * p)) /
+  //           2;
+  //   return 12742 * asin(sqrt(a));
+  // }
+
+  static int calculateDistance(LatLng location1, LatLng location2) {
+    var R = 6378137; // Earth’s mean radius in meter
+    var dLat = (location2.latitude - location1.latitude) * pi / 180;
+    var dLong = (location2.longitude - location1.longitude) * pi / 180;
+    var a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(location1.latitudeInRad) *
+            cos(location2.latitudeInRad) *
+            sin(dLong / 2) *
+            sin(dLong / 2);
+    var c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    var d = R * c;
+    return d.round();
   }
 
-  static double getPathLength({String? encodedPath, List<LatLng>? path}) {
+  static int getPathLength({String? encodedPath, List<LatLng>? path}) {
     List<LatLng> points = [];
     if (path != null)
       points = path;
     else if (encodedPath != null) points = decodePath(encodedPath);
-    double dist = 0.0;
+    int dist = 0;
     for (int i = 0; i < points.length - 1; i++) {
       dist += calculateDistance(points[i], points[i + 1]);
     }
-    return dist.toPrecision(2);
+    return dist;
   }
 
   static LatLngBounds getPathBounds(List<LatLng> path) {
     return LatLngBounds.fromPoints(path);
   }
 
-  static double minDistanceToPath(LatLng location, List<LatLng> path) {
-    double min = double.infinity;
+  static int minDistanceToPath(LatLng location, List<LatLng> path) {
+    int min = 9999;
     path.forEach((p) {
       var dist = calculateDistance(p, location);
       if (dist < min) {
@@ -66,33 +80,21 @@ class GeoUtils {
   }
 
   static bool isFarWayFromPath(LatLng location, List<LatLng> path) {
-    return minDistanceToPath(location, path) > 0.5; // greater than 500meters
+    return minDistanceToPath(location, path) > 500; // greater than 500meters
   }
 
   static bool isCloseToPoint(LatLng location, LatLng point) {
-    return calculateDistance(location, point) <= 0.10; // smaller than 100meters
+    return calculateDistance(location, point) <= 100; // smaller than 100meters
   }
 
-  static List<LatLng> truncatePathByLocation(
-      List<LatLng> path, LatLng location) {
-    double dist = double.infinity;
-    int index = 0;
-    for (int i = 0; i < path.length; i++) {
-      double d = calculateDistance(path[i], location);
-      if (d < dist) {
-        dist = d;
-        index = i;
-      }
+  static String formatMetres(int m) {
+    if (m / 1000 > 0) {
+      return (m / 1000).toStringAsFixed(2) + 'km';
     }
-    return path.take(index + 1).toList();
+    return m.toString() + 'm';
   }
 
-  static double getWalkedLength(LatLng myLocation, List<LatLng> path) {
-    var walked = truncatePathByLocation(path, myLocation);
-    return double.parse(getPathLength(path: walked).toStringAsFixed(2));
-  }
-
-  static String formatDistance(double km) {
+  static String formatKm(double km) {
     if (km < 0) {
       return (km * 1000).toStringAsFixed(0) + 'm';
     }
@@ -137,26 +139,8 @@ class GeoUtils {
     return LatLng(pointForward[1], pointForward[0]);
   }
 
-  Future<File> _writeToCache(String dataFile) async {
-    final byteData = await rootBundle.load('assets/data/$dataFile');
-    final file = File('${(await getTemporaryDirectory()).path}/$dataFile');
-    await file.writeAsBytes(byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-    return file;
-  }
-
-  // Future<double> _getHKPD(LatLng point) async {
-  //   final byteData = await rootBundle.load('assets/data/hong_kong_terrain.tif');
-  //   GeoRaster image = GeoRaster(byteData.buffer.asUint8List());
-  //   image.read();
-  //   Coordinate c = Coordinate.empty2D();
-  //   var res = GeoUtils.convertToEPSG2326(point);
-  //   image.geoInfo?.worldToPixel(Coordinate(res.item1, res.item2), c);
-  //   double dp = image.getDouble(c.x.toInt(), c.y.toInt());
-  //   return dp;
-  // }
   static GeoRaster? _cache;
-  static Future<List<HKDatum>> getHKDPs(List<LatLng> path) async {
+  static Future<void> _ensureRasterLoaded() async {
     if (_cache == null) {
       ByteData data = await DefaultAssetBundle.of(Get.context!)
           .load('assets/data/hong_kong_terrain.tif');
@@ -164,14 +148,95 @@ class GeoUtils {
       image.read();
       _cache = image;
     }
+  }
 
+  /// Get the height at a specific location
+  /// Return the height in metres above the Hong Kong Principal Datum
+  static int _getHeight(GeoRaster geoRaster, LatLng pt) {
+    Coordinate c = Coordinate.empty2D();
+    var res = GeoUtils.convertToEPSG2326(pt);
+    geoRaster.geoInfo?.worldToPixel(Coordinate(res.item1, res.item2), c);
+    int dp = geoRaster.getInt(c.x.toInt(), c.y.toInt());
+    return dp;
+  }
+
+  static Future<List<HKDatum>> getHKDPs(List<LatLng> path) async {
+    await _ensureRasterLoaded();
     List<HKDatum> result = path.map((pt) {
-      Coordinate c = Coordinate.empty2D();
-      var res = GeoUtils.convertToEPSG2326(pt);
-      _cache!.geoInfo?.worldToPixel(Coordinate(res.item1, res.item2), c);
-      int dp = _cache!.getInt(c.x.toInt(), c.y.toInt());
+      int dp = _getHeight(_cache!, pt);
       return HKDatum(dp, pt);
     }).toList();
     return result;
+  }
+
+  /// Calculate the length in metres and the duration in minutes (using Naismith's rule) for the trail.
+  /// Reference: https://medium.com/amoutdoors/applying-naismiths-rule-to-your-land-navigation-c50b649b2c70
+  static Future<Tuple2<int, int>> calculateLengthAndDuration(
+      List<LatLng> path) async {
+    await _ensureRasterLoaded();
+    if (path.length == 0) return Tuple2(0, 0);
+
+    double length = 0.0; // track's length in metres
+    double mFlat = 0.0;
+    int ascent = 0;
+    var prevPt = path.elementAt(0);
+    for (int i = 1; i < path.length; ++i) {
+      var pt = path.elementAt(i);
+
+      // Calculate distance on earth surface
+      var flatDist = calculateDistance(pt, prevPt);
+      if (flatDist > 10) {
+        // Ensure a point for every 10m
+        pt = offsetCoordinate(prevPt, 10, bearing(prevPt, pt));
+        flatDist = 10;
+        i -= 1;
+      }
+      mFlat += flatDist;
+
+      // Calculate ascent
+      int diff = _getHeight(_cache!, pt) - _getHeight(_cache!, prevPt);
+      if (diff > 0) {
+        // is ascent
+        ascent += diff;
+      }
+
+      // Increment to track's length
+      //length += sqrt(pow(flatDist, 2) + pow(diff, 2));
+      length += flatDist;
+
+      prevPt = pt;
+    }
+    // 1 hour for every 5 km forward plus 1 hour for every 600 m of ascent
+    var duration = (60 * (mFlat / 1000 / 5) + 60 * (ascent / 600)).round();
+    var lengthRounded = length.round();
+    return Tuple2(lengthRounded, duration);
+  }
+
+  /// Find bearing from point A to point B
+  /// Reference: https://stackoverflow.com/questions/8123049/calculate-bearing-between-two-locations-lat-long
+  static double bearing(LatLng from, LatLng to) {
+    double lat1 = from.latitudeInRad;
+    double lng1 = from.longitudeInRad;
+    double lat2 = to.latitudeInRad;
+    double lng2 = to.longitudeInRad;
+    double dLon = (lng2 - lng1);
+    double y = sin(dLon) * cos(lat2);
+    double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    return atan2(y, x);
+  }
+
+  /// Offset coordinate by distance and bearing
+  /// Reference: https://stackoverflow.com/questions/2839533/adding-distance-to-a-gps-coordinate
+  static LatLng offsetCoordinate(
+      LatLng location, int distanceInMetres, double bearingInRadian) {
+    double rad = bearingInRadian;
+    double lat1 = location.latitudeInRad;
+    double lng1 = location.longitudeInRad;
+    double lat = asin(sin(lat1) * cos(distanceInMetres / 6378137) +
+        cos(lat1) * sin(distanceInMetres / 6378137) * cos(rad));
+    double lng = lng1 +
+        atan2(sin(rad) * sin(distanceInMetres / 6378137) * cos(lat1),
+            cos(distanceInMetres / 6378137) - sin(lat1) * sin(lat));
+    return LatLng(lat * 180 / pi, lng * 180 / pi); // to degrees
   }
 }

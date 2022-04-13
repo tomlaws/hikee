@@ -17,7 +17,7 @@ class DistancePostsReader {
     }
     // remove first row
     rows.removeAt(0);
-    double minDist = double.infinity;
+    int minDist = 9999;
     DistancePost? post;
     for (var row in rows) {
       var latlng = LatLng(row[3], row[4]);

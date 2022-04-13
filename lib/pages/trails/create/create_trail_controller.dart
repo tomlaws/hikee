@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -11,18 +12,20 @@ import 'package:hikees/utils/dialog.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:tuple/tuple.dart';
 
 class CreateTrailController extends GetxController {
   final _trailProvider = Get.put<TrailProvider>(TrailProvider());
   var coordinates = RxList<Pin>([]);
   var selectedCoordinates = Rxn<Pin>();
+  Future<Tuple2<int, int>> lengthAndDuration = Future.value(Tuple2(0, 0));
   final step = 0.obs;
   final ImagePicker _picker = ImagePicker();
 
+  late StreamSubscription<List<Pin>>? subscriptionCoordinates;
   var pointMessageTextController = TextInputController(text: '');
   var nameController = TextInputController(text: '');
   var descriptionController = TextInputController(text: '');
-  var durationController = TextInputController(text: '');
   var difficulty = 0;
   var region = Rxn<Region>();
   final images = RxList<Uint8List>();
@@ -36,14 +39,18 @@ class CreateTrailController extends GetxController {
       coordinates.value =
           decoded.map((e) => new Pin(location: e, message: null)).toList();
       nameController.text = Get.arguments['name'].toString();
-      durationController.text = Get.arguments['duration'].toString();
       region.value = Get.arguments['region'];
       step.value = 1;
     }
+    subscriptionCoordinates = coordinates.listen((c) {
+      lengthAndDuration = GeoUtils.calculateLengthAndDuration(
+          c.map((e) => e.location).toList());
+    });
   }
 
   @override
   void onClose() {
+    subscriptionCoordinates?.cancel();
     pointMessageTextController.dispose();
     nameController.dispose();
     descriptionController.dispose();
@@ -132,13 +139,10 @@ class CreateTrailController extends GetxController {
                 path: coordinates.map((c) => c.location).toList()) *
             1000)
         .truncate();
-    int duration = int.parse(durationController.text);
     return await _trailProvider.createTrail(
         name: nameController.text,
         regionId: region.value!.id,
         difficulty: difficulty,
-        duration: duration,
-        length: length,
         description: descriptionController.text,
         path: path,
         pins: pins,

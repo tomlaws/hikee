@@ -116,3 +116,7 @@ Date filter
 Offline mode
 ui when location permission is rejected
 turn on/off weather report, custom weather refresh interval, for battery saving
+
+
+configurable walking speed & climbing
+Calculate time needed using Naismith's Rule

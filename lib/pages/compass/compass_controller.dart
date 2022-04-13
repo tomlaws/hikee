@@ -8,9 +8,11 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geoimage/geoimage.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/dropdown.dart';
+import 'package:hikees/components/core/futurer.dart';
 import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map_controller.dart';
+import 'package:hikees/components/map/tooltip_shape_border.dart';
 import 'package:hikees/models/facility.dart';
 import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/record.dart';
@@ -28,6 +30,7 @@ import 'package:hikees/components/compass/sliding_up_panel.dart';
 import 'package:hikees/models/active_trail.dart';
 import 'package:hikees/models/distance_post.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompassController extends GetxController
@@ -114,11 +117,11 @@ class CompassController extends GetxController
     return activeTrailProvider.activeTrail.value?.estimatedFinishTime;
   }
 
-  double get activeTrailLength {
+  int get activeTrailLength {
     if (activeTrail.value?.trail == null) {
-      return activeTrail.value?.length ?? 0.0;
+      return activeTrail.value?.length ?? 0;
     }
-    return ((activeTrail.value?.trail?.length ?? 0) / 1000);
+    return (activeTrail.value?.trail?.length ?? 0);
   }
 
   int get activeTrailDuration {
@@ -126,7 +129,8 @@ class CompassController extends GetxController
         ((activeTrail.value?.elapsed ?? 0.0) / 60).round();
   }
 
-  List<DragMarker> get mapMarkers {
+  List<DragMarker> mapMarkers(
+      Widget startMarkerContent, Widget endMarkerContent) {
     List<DragMarker> result = [];
     if (activeTrail.value == null) return result;
     if (activeTrail.value!.trail?.pins != null) {
@@ -147,11 +151,21 @@ class CompassController extends GetxController
       (i, e) => DragMarker(
         draggable: false,
         point: e.location,
-        width: 10,
-        height: 10,
-        hasPopup: true,
-        popupColor: e.color,
-        popupIcon: Icons.star,
+        width: 24,
+        height: 24 + 8,
+        builder: (_, color) {
+          return Container(
+            decoration: ShapeDecoration(
+              color: Colors.black.withOpacity(.75),
+              shape: TooltipShapeBorder(),
+            ),
+            child: Icon(
+              Icons.star,
+              size: 16,
+              color: Colors.white,
+            ),
+          );
+        },
         onTap: (_) {
           DialogUtils.showActionDialog(
               e.title,
@@ -160,68 +174,62 @@ class CompassController extends GetxController
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    Obx(() => Futurer(
+                          future: GeoUtils.calculateLengthAndDuration(
+                              [currentLocation.value!.latLng, e.location]),
+                          builder: (Tuple2<int, int> data) => Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'distance'.tr,
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.black54),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'distance'.tr,
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.black54),
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    if (currentLocation.value != null)
+                                      Text(
+                                        '~' + GeoUtils.formatMetres(data.item1),
+                                        style: TextStyle(fontSize: 14),
+                                      )
+                                  ],
+                                ),
                               ),
                               SizedBox(
-                                height: 4,
+                                height: 8,
                               ),
-                              if (currentLocation.value != null)
-                                Obx(() => Text(
-                                      '~' +
-                                          GeoUtils.formatDistance(
-                                              GeoUtils.calculateDistance(
-                                                  currentLocation.value!.latLng,
-                                                  e.location)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'estimatedTime'.tr,
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.black54),
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    Text(
+                                      TimeUtils.formatMinutes(data.item2),
                                       style: TextStyle(fontSize: 14),
-                                    ))
+                                    )
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'estimatedTime'.tr,
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.black54),
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              Obx(() => Text(
-                                    speed == null || speed! == 0
-                                        ? 'N/A'
-                                        : '~' +
-                                            TimeUtils.formatMinutes(
-                                                (GeoUtils.calculateDistance(
-                                                            currentLocation
-                                                                .value!.latLng,
-                                                            e.location) /
-                                                        (speed! / 60))
-                                                    .round()),
-                                    style: TextStyle(fontSize: 14),
-                                  ))
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                          placeholder: SizedBox(),
+                        )),
                     if (e.message != null) ...[
                       SizedBox(
                         height: 8,
@@ -409,7 +417,7 @@ class CompassController extends GetxController
         List<double> altitudes = activeTrail.value!.userHeights
             .map((e) => e.datum.toDouble())
             .toList();
-        double distance = activeTrail.value!.length;
+        int distance = activeTrail.value!.length;
         DateTime date = DateTime.fromMillisecondsSinceEpoch(startTime);
         late int regionId;
         String? recordName;
@@ -435,7 +443,7 @@ class CompassController extends GetxController
             name: recordName!,
             referenceTrailId: trailId,
             regionId: regionId,
-            length: (GeoUtils.getPathLength(path: userPath) * 1000).truncate(),
+            length: GeoUtils.getPathLength(path: userPath),
             userPath: userPath!,
             altitudes: altitudes);
         DialogUtils.showDialog(
@@ -504,7 +512,7 @@ class CompassController extends GetxController
                         children: [
                           Text('distance'.tr),
                           Text(
-                            '${(distance / 1000).toString()}km',
+                            GeoUtils.formatMetres(distance),
                           )
                         ],
                       ),
