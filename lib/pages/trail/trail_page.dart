@@ -75,6 +75,7 @@ class TrailPage extends GetView<TrailController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SafeArea(
+                                    bottom: false,
                                     child: Stack(
                                         alignment: Alignment.center,
                                         clipBehavior: Clip.none,
@@ -442,7 +443,7 @@ class TrailPage extends GetView<TrailController> {
                                         ]),
                                   ),
                                   SizedBox(
-                                    height: 24,
+                                    height: 48,
                                   ),
                                   Padding(
                                     padding:

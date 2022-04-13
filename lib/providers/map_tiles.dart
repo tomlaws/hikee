@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
+import 'package:hikees/models/active_trail.dart';
 import 'package:hikees/models/preferences.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/utils/dialog.dart';
@@ -15,7 +16,6 @@ import 'package:tuple/tuple.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path/path.dart' as Path;
 
-// Port from landez
 class MapTilesProvider extends GetConnect {
   static const DEG_TO_RAD = pi / 180;
   final downloaded = 0.obs;
@@ -49,6 +49,11 @@ class MapTilesProvider extends GetConnect {
           'CREATE TABLE tiles (id INTEGER PRIMARY KEY, zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB, UNIQUE (zoom_level, tile_column, tile_row))');
       await db.execute(
           'CREATE TABLE saved_trail_tiles (id INTEGER PRIMARY KEY, trail_id REFERENCES savedTrails(id), tile_id  REFERENCES tiles(id))');
+    }, onUpgrade: (db, oldVersion, newVersion) async {
+      // if (oldVersion == 1 && newVersion ==2) {
+      //     await db.execute(
+      //     'CREATE TABLE saved_records (id INTEGER PRIMARY KEY, name TEXT, startTime INTEGER, regionId INTEGER)');
+      // }
     });
     return database;
   }
