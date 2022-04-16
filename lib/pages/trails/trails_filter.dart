@@ -13,7 +13,6 @@ import 'package:hikees/pages/trails/regions/others.dart';
 import 'package:hikees/pages/trails/regions/sai_kung.dart';
 import 'package:hikees/pages/trails/regions/west_nt.dart';
 import 'package:hikees/pages/trails/trails_controller.dart';
-import 'package:hikees/utils/geo.dart';
 import 'package:hikees/utils/time.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 

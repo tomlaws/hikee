@@ -640,11 +640,11 @@ class CompassPage extends GetView<CompassController> {
                                                     ),
                                                   )
                                                 : SizedBox(),
-                                            onError: (_) => ConnectionError(),
+                                            onError: (_) => SizedBox(),
                                             onLoading: SizedBox()),
                                       ),
                                       Container(
-                                        margin: EdgeInsets.only(right: 16),
+                                        padding: EdgeInsets.only(right: 16),
                                         child: Compass(
                                           heading: controller.currentHeading,
                                         ),

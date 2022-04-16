@@ -7,6 +7,7 @@ import 'package:hikees/components/trails/trail_tile.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/pages/trails/trails_controller.dart';
 import 'package:hikees/pages/search/search_page.dart';
+import 'package:hikees/pages/trails/trails_filter.dart';
 
 class TrailsPage extends GetView<TrailsController> {
   @override
@@ -58,6 +59,7 @@ class TrailsPage extends GetView<TrailsController> {
                         Get.to(SearchPage<Trail, TrailsController>(
                             tag: 'search-trails',
                             controller: TrailsController(),
+                            filter: TrailsFilter(),
                             builder: (trail) => TrailTile(trail: trail)));
                       },
                     )

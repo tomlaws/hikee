@@ -41,7 +41,7 @@ class TrailsController extends PaginationController<Trail> {
       query['maxDuration'] = maxDuration.toString();
     }
     if (minLength != defaultMinLength) {
-      query['maxDuration'] = maxDuration.toString();
+      query['minLength'] = minLength.toString();
     }
     if (maxLength != defaultMaxLength) {
       query['maxLength'] = maxLength.toString();
@@ -49,6 +49,7 @@ class TrailsController extends PaginationController<Trail> {
     if (!regions.containsAll(defaultRegions)) {
       query['regionIds'] = regions.toList().toString();
     }
+    print(query);
     return _trailProvider.getTrails(query);
   }
 }

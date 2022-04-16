@@ -13,8 +13,7 @@ class SearchPage<U, C extends PaginationController<U>> extends StatefulWidget {
       required this.tag,
       required this.controller,
       required this.builder,
-      this.filter,
-      this.showAll = false})
+      this.filter})
       : super(key: key);
 
   @override
@@ -24,7 +23,6 @@ class SearchPage<U, C extends PaginationController<U>> extends StatefulWidget {
   final C controller;
   final Widget Function(U item) builder;
   final Widget? filter;
-  final bool showAll;
 }
 
 class _SearchPageState<U, C extends PaginationController<U>>

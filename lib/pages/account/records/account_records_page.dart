@@ -32,7 +32,6 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
           icon: Icon(Icons.search_rounded),
           onPressed: () {
             Get.to(SearchPage<Record, AccountRecordsController>(
-                showAll: true,
                 tag: 'search-records',
                 controller: AccountRecordsController(),
                 filter: AccountRecordsFilter(),
