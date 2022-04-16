@@ -433,7 +433,7 @@ class CompassController extends GetxController
         regionId = activeTrail.value!.trail!.regionId;
       }
       // Store to device first
-      _offlineProvider.createOfflineRecord(
+      int offlineRecordId = await _offlineProvider.createOfflineRecord(
           date: date,
           time: elapsed,
           name: recordName!,
@@ -448,85 +448,86 @@ class CompassController extends GetxController
             referenceTrailId: trailId,
             regionId: regionId,
             userPath: userPath!);
-        DialogUtils.showDialog(
-            "congratulations".tr,
-            Column(
-              children: [
-                Text("youveCompletedTheTrail".tr),
-                SizedBox(
-                  height: 8,
-                ),
-                Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Row(
-                    children: [
-                      Icon(
-                        LineAwesomeIcons.award,
-                        size: 48,
-                        color: Colors.amber[700],
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              recordName,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('startTime'.tr),
-                          Text(DateFormat('yyyy-MM-dd HH:mm').format(date))
-                        ],
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('timeUsed'.tr),
-                          Text(TimeUtils.formatSeconds(elapsed))
-                        ],
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('distance'.tr),
-                          Text(
-                            GeoUtils.formatMetres(distance),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ));
+        _offlineProvider.deleteOfflineRecord(offlineRecordId);
       }
+      DialogUtils.showDialog(
+          "congratulations".tr,
+          Column(
+            children: [
+              Text("youveCompletedTheTrail".tr),
+              SizedBox(
+                height: 8,
+              ),
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(16)),
+                child: Row(
+                  children: [
+                    Icon(
+                      LineAwesomeIcons.award,
+                      size: 48,
+                      color: Colors.amber[700],
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            recordName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('startTime'.tr),
+                        Text(DateFormat('yyyy-MM-dd HH:mm').format(date))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('timeUsed'.tr),
+                        Text(TimeUtils.formatSeconds(elapsed))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('distance'.tr),
+                        Text(
+                          GeoUtils.formatMetres(distance),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ));
     } catch (ex) {
       throw ex;
     }

@@ -364,8 +364,10 @@ class HikeeMap extends StatelessWidget {
             if (controller.showHeights.value &&
                 controller.heights.value != null) {
               return Container(
+                constraints: BoxConstraints(maxHeight: 240),
                 margin: contentMargin.copyWith(right: 56 + 8),
-                padding: EdgeInsets.only(top: 12, right: 12),
+                padding:
+                    EdgeInsets.only(top: 16, right: 16, left: 8, bottom: 4),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),

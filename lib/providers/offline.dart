@@ -213,7 +213,7 @@ class OfflineProvider extends GetConnect {
         .toList();
   }
 
-  Future<void> createOfflineRecord({
+  Future<int> createOfflineRecord({
     required DateTime date,
     required int time,
     required String name,
@@ -224,7 +224,7 @@ class OfflineProvider extends GetConnect {
   }) async {
     var encodedPath = GeoUtils.encodePath(userPath);
     final db = await loadTrailsDb();
-    await db.insert('saved_records', {
+    return await db.insert('saved_records', {
       'date': date.millisecondsSinceEpoch,
       'time': time,
       'name': name,
@@ -232,6 +232,11 @@ class OfflineProvider extends GetConnect {
       'user_path': encodedPath,
       'reference_trail_id': referenceTrailId
     });
+  }
+
+  Future<void> deleteOfflineRecord(int recordId) async {
+    final db = await loadTrailsDb();
+    await db.delete('saved_records', where: 'id = ?', whereArgs: [recordId]);
   }
 
   Future<ImageProvider<Object>?> loadTileFromOfflineMap(

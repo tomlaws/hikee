@@ -908,16 +908,23 @@ class CompassPage extends GetView<CompassController> {
                   )
                 else
                   Expanded(
-                    child: Button(
-                        child: Text(controller.activeTrailProvider.recordMode
-                            ? 'finishRecording'.tr
-                            : 'finishTrail'.tr),
-                        disabled: (!controller.activeTrailProvider.recordMode &&
-                                !controller.isCloseToGoal.value) ||
-                            controller.activeTrail.value!.userPath.length == 0,
-                        onPressed: () {
-                          controller.finishTrail();
-                        }),
+                    child: MutationBuilder(mutation: () {
+                      return controller.finishTrail();
+                    }, builder: (mutate, loading) {
+                      return Button(
+                          loading: loading,
+                          child: Text(controller.activeTrailProvider.recordMode
+                              ? 'finishRecording'.tr
+                              : 'finishTrail'.tr),
+                          disabled: (!controller
+                                      .activeTrailProvider.recordMode &&
+                                  !controller.isCloseToGoal.value) ||
+                              controller.activeTrail.value!.userPath.length ==
+                                  0,
+                          onPressed: () {
+                            mutate();
+                          });
+                    }),
                   ),
                 Container(width: 16),
                 Expanded(
