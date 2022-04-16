@@ -6,9 +6,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/map/mbtiles_provider.dart';
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/preferences.dart';
-import 'package:hikees/providers/map_tiles.dart';
+import 'package:hikees/providers/offline.dart';
 import 'package:hikees/providers/preferences.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
@@ -21,11 +21,11 @@ class HikeeMapController extends GetxController {
   Stream<LocationMarkerPosition?>? positionStream;
   late StreamController<double?> centerCurrentLocationStreamController;
   StreamSubscription<LocationMarkerPosition?>? subscription;
-  final heights = Rxn<List<HKDatum>>();
+  final heights = Rxn<List<HeightData>>();
   final showHeights = false.obs;
   final applicationDocumentsDirectory = Rxn<String>();
   final _preferencesProvider = Get.find<PreferencesProvider>();
-  final mapTilesProvider = Get.put(MapTilesProvider());
+  final offlineProvider = Get.find<OfflineProvider>();
   final offlineTrail = false.obs;
   final gradientColors = Rxn<List<Color>>();
 
@@ -75,10 +75,10 @@ class HikeeMapController extends GetxController {
     centerCurrentLocationStreamController.add(17.0);
   }
 
-  Future<List<HKDatum>> getHeights(List<LatLng> path) async {
+  Future<List<HeightData>> getHeightss(List<LatLng> path) async {
     showHeights.value = !showHeights.value;
     if (heights.value == null) {
-      heights.value = await GeoUtils.getHKDPs(path);
+      heights.value = await GeoUtils.getHeights(path);
     }
     if (heights.value == null) return [];
     return heights.value!;
@@ -101,7 +101,7 @@ class HikeeMapController extends GetxController {
     // offline map of the trail
     if (offlineTrail.value) {
       return MBTilesProvider.fromDatabase(
-          mapTilesProvider.loadTrailsDb(), false);
+          offlineProvider.loadTrailsDb(), false);
     }
     return null;
   }
@@ -110,7 +110,7 @@ class HikeeMapController extends GetxController {
     if (offlineTrail.value) return;
     if (offlineMapProvider == null) return;
     var coords = tile.coords;
-    var img = await mapTilesProvider.loadTileFromOfflineMap(offlineMapProvider!,
+    var img = await offlineProvider.loadTileFromOfflineMap(offlineMapProvider!,
         coords.z.toInt(), coords.x.toInt(), coords.y.toInt());
     if (img != null) {
       tile.imageProvider = img;

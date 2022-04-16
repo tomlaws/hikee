@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/region.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
@@ -152,19 +152,19 @@ class GeoUtils {
 
   /// Get the height at a specific location
   /// Return the height in metres above the Hong Kong Principal Datum
-  static int _getHeight(GeoRaster geoRaster, LatLng pt) {
+  static int getHeight(GeoRaster geoRaster, LatLng pt) {
     Coordinate c = Coordinate.empty2D();
     var res = GeoUtils.convertToEPSG2326(pt);
     geoRaster.geoInfo?.worldToPixel(Coordinate(res.item1, res.item2), c);
-    int dp = geoRaster.getInt(c.x.toInt(), c.y.toInt());
-    return dp;
+    int height = geoRaster.getInt(c.x.toInt(), c.y.toInt());
+    return height;
   }
 
-  static Future<List<HKDatum>> getHKDPs(List<LatLng> path) async {
+  static Future<List<HeightData>> getHeights(List<LatLng> path) async {
     await _ensureRasterLoaded();
-    List<HKDatum> result = path.map((pt) {
-      int dp = _getHeight(_cache!, pt);
-      return HKDatum(dp, pt);
+    List<HeightData> result = path.map((pt) {
+      int height = getHeight(_cache!, pt);
+      return HeightData(height, pt);
     }).toList();
     return result;
   }
@@ -194,7 +194,7 @@ class GeoUtils {
       mFlat += flatDist;
 
       // Calculate ascent
-      int diff = _getHeight(_cache!, pt) - _getHeight(_cache!, prevPt);
+      int diff = getHeight(_cache!, pt) - getHeight(_cache!, prevPt);
       if (diff > 0) {
         // is ascent
         ascent += diff;

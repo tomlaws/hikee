@@ -121,6 +121,17 @@ class AccountPage extends GetView<AccountController> {
                     children: [
                       MenuListTile(
                         onTap: () {
+                          Get.toNamed('/saved-records');
+                        },
+                        title: "savedRecords".tr,
+                        icon: Icon(
+                          LineAwesomeIcons.history,
+                          size: 32,
+                          color: Colors.black26,
+                        ),
+                      ),
+                      MenuListTile(
+                        onTap: () {
                           Get.toNamed('/offline-trails');
                         },
                         title: "offlineTrails".tr,
@@ -175,10 +186,14 @@ class AccountPage extends GetView<AccountController> {
                 child: content),
           );
         else
-          return SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: content,
-          );
+          return Column(children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: content,
+              ),
+            ),
+          ]);
       }),
     );
   }

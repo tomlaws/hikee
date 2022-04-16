@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/paginated.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/trail.dart';

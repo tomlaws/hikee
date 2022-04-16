@@ -18,9 +18,6 @@ Record _$RecordFromJson(Map<String, dynamic> json) {
         ? null
         : Trail.fromJson(json['referenceTrail'] as Map<String, dynamic>),
     userPath: json['userPath'] as String,
-    altitudes: (json['altitudes'] as List<dynamic>)
-        .map((e) => (e as num).toDouble())
-        .toList(),
     date: DateTime.parse(json['date'] as String),
   );
 }
@@ -33,5 +30,4 @@ Map<String, dynamic> _$RecordToJson(Record instance) => <String, dynamic>{
       'region': instance.region,
       'referenceTrail': instance.referenceTrail,
       'userPath': instance.userPath,
-      'altitudes': instance.altitudes,
     };

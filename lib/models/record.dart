@@ -7,13 +7,18 @@ part 'record.g.dart';
 @JsonSerializable()
 class Record {
   int id;
+
   DateTime date;
+
   int time;
+
   String name;
+
   Region? region;
+
   Trail? referenceTrail;
+
   String userPath;
-  List<double> altitudes;
 
   Record({
     required this.id,
@@ -22,7 +27,6 @@ class Record {
     required this.name,
     this.referenceTrail,
     required this.userPath,
-    required this.altitudes,
     required this.date,
   });
 

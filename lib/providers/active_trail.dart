@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/models/active_trail.dart';
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/reference_trail.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/providers/shared/base.dart';
@@ -38,7 +38,7 @@ class ActiveTrailProvider extends BaseProvider {
 
   Timer? _timer;
   final tick = 0.obs;
-  final altitudes = RxList<double>();
+  final heights = RxList<double>();
   bool tracking = false;
 
   bool get recordMode {
@@ -143,7 +143,8 @@ class ActiveTrailProvider extends BaseProvider {
 
     if (activeTrail.value?.isStarted == true) {
       LatLng latlng = LatLng(location.latitude, location.longitude);
-      if (activeTrail.value!.userPath.last != latlng) {
+      if (activeTrail.value!.userPath.length > 0 &&
+          activeTrail.value!.userPath.last != latlng) {
         activeTrail.update((t) {
           t?.addPoint(latlng);
         });
@@ -192,9 +193,9 @@ class ActiveTrailProvider extends BaseProvider {
     try {
       var decodedPath = GeoUtils.decodePath(trail.path);
       // get elevations
-      List<HKDatum> heights = [];
+      List<HeightData> heights = [];
       try {
-        heights = await GeoUtils.getHKDPs(decodedPath);
+        heights = await GeoUtils.getHeights(decodedPath);
       } catch (ex) {
         print(ex);
       }

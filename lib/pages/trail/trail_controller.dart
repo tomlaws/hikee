@@ -11,7 +11,7 @@ import 'package:hikees/models/trail_review.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_controller.dart';
 import 'package:hikees/pages/account/offline_trails/offline_trails_controller.dart';
 import 'package:hikees/providers/bookmark.dart';
-import 'package:hikees/providers/map_tiles.dart';
+import 'package:hikees/providers/offline.dart';
 import 'package:hikees/providers/preferences.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:latlong2/latlong.dart';
@@ -23,7 +23,7 @@ import 'package:tuple/tuple.dart';
 class TrailController extends GetxController with StateMixin<Trail> {
   final _trailProvider = Get.put(TrailProvider());
   final _bookmarkProvider = Get.put(BookmarkProvider());
-  final _mapTilesProvider = Get.put(MapTilesProvider());
+  final _OfflineProvider = Get.put(OfflineProvider());
   late GetPaginationController<TrailReview> trailReviewsController;
   late ScrollController scrollController;
 
@@ -176,7 +176,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
   Future<void> downloadTrail() async {
     if (state == null) return;
     var _preferenceProvider = Get.find<PreferencesProvider>();
-    _mapTilesProvider.downloadAndSave(
+    _OfflineProvider.downloadAndSave(
       GeoUtils.getPathBounds(GeoUtils.decodePath(state!.path)),
       state!,
       _preferenceProvider.preferences.value?.mapProvider,
@@ -186,7 +186,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
   Future<void> deleteOfflineTrail() async {
     DialogUtils.showActionDialog(
         'Warning', Text('Are you sure you want to delete?'), onOk: () {
-      _mapTilesProvider.deleteTrail(id);
+      _OfflineProvider.deleteTrail(id);
       OfflineTrailsController offlineTrailsController =
           Get.find<OfflineTrailsController>();
       offlineTrailsController.removeWhere((t) => t.id == id);

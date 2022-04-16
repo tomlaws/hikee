@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-import 'package:geoimage/geoimage.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/dropdown.dart';
 import 'package:hikees/components/core/futurer.dart';
@@ -20,6 +17,7 @@ import 'package:hikees/models/region.dart';
 import 'package:hikees/providers/active_trail.dart';
 import 'package:hikees/providers/auth.dart';
 import 'package:hikees/providers/geodata.dart';
+import 'package:hikees/providers/offline.dart';
 import 'package:hikees/providers/record.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:hikees/utils/geo.dart';
@@ -37,6 +35,7 @@ class CompassController extends GetxController
     with GetSingleTickerProviderStateMixin {
   final _authProvider = Get.find<AuthProvider>();
   final activeTrailProvider = Get.find<ActiveTrailProvider>();
+  final _offlineProvider = Get.find<OfflineProvider>();
   final _geodataProvider = Get.put(GeodataProvider());
   final _recordProvider = Get.put(RecordProvider());
   final panelController = PanelController();
@@ -410,42 +409,45 @@ class CompassController extends GetxController
 
   finishTrail() async {
     try {
-      if (_authProvider.loggedIn.value) {
-        int? trailId;
-        int elapsed = activeTrail.value!.elapsed;
-        int startTime = activeTrail.value!.startTime!;
-        List<double> altitudes = activeTrail.value!.userHeights
-            .map((e) => e.datum.toDouble())
-            .toList();
-        int distance = activeTrail.value!.length;
-        DateTime date = DateTime.fromMillisecondsSinceEpoch(startTime);
-        late int regionId;
-        String? recordName;
-        if (activeTrailProvider.recordMode) {
+      int? trailId;
+      int elapsed = activeTrail.value!.elapsed;
+      int startTime = activeTrail.value!.startTime!;
+      int distance = activeTrail.value!.length;
+      DateTime date =
+          DateTime.fromMillisecondsSinceEpoch(startTime); // local use only
+      late int regionId;
+      String? recordName;
+      if (activeTrailProvider.recordMode) {
+        recordName = activeTrail.value!.name;
+        regionId = activeTrail.value!.regionId =
+            GeoUtils.determineRegion(activeTrail.value!.userPath)!.id;
+        if (recordName == null) {
+          bool result = await customizeRecord();
+          if (!result) return;
           recordName = activeTrail.value!.name;
-          regionId = activeTrail.value!.regionId =
-              GeoUtils.determineRegion(activeTrail.value!.userPath)!.id;
-          if (recordName == null) {
-            bool result = await customizeRecord();
-            if (!result) return;
-            recordName = activeTrail.value!.name;
-            regionId = activeTrail.value!.regionId!;
-          }
-        } else {
-          //upload stats
-          trailId = activeTrail.value!.trail!.id;
-          recordName = activeTrail.value!.trail!.name;
-          regionId = activeTrail.value!.trail!.regionId;
+          regionId = activeTrail.value!.regionId!;
         }
+      } else {
+        trailId = activeTrail.value!.trail!.id;
+        recordName = activeTrail.value!.trail!.name;
+        regionId = activeTrail.value!.trail!.regionId;
+      }
+      // Store to device first
+      _offlineProvider.createOfflineRecord(
+          date: date,
+          time: elapsed,
+          name: recordName!,
+          referenceTrailId: trailId,
+          regionId: regionId,
+          length: GeoUtils.getPathLength(path: userPath),
+          userPath: userPath!);
+      if (_authProvider.loggedIn.value) {
         Record record = await _recordProvider.createRecord(
-            date: date,
             time: elapsed,
-            name: recordName!,
+            name: recordName,
             referenceTrailId: trailId,
             regionId: regionId,
-            length: GeoUtils.getPathLength(path: userPath),
-            userPath: userPath!,
-            altitudes: altitudes);
+            userPath: userPath!);
         DialogUtils.showDialog(
             "congratulations".tr,
             Column(

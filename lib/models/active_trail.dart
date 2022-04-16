@@ -1,4 +1,4 @@
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/reference_trail.dart';
 import 'package:hikees/utils/geo.dart';
@@ -9,13 +9,13 @@ part 'active_trail.g.dart';
 
 @JsonSerializable()
 class ActiveTrail {
-  ReferenceTrail? trail;
   String? name;
   List<LatLng> userPath;
-  List<HKDatum> userHeights;
+  List<HeightData> userHeights;
   List<MapMarker> markers;
   int? startTime;
   int? regionId;
+  ReferenceTrail? trail;
 
   bool get isStarted => startTime != null;
 
@@ -49,23 +49,20 @@ class ActiveTrail {
     }
   }
 
-  //bool _processingPoint = false;
   Future<void> addPoint(LatLng point) async {
-    //while (_processingPoint) {}
-    //_processingPoint = true;
     try {
-      List<HKDatum> heights = await GeoUtils.getHKDPs([point]);
+      List<HeightData> heights = await GeoUtils.getHeights([point]);
       userPath.add(point);
       userHeights.add(heights.first);
-    } catch (ex) {}
-    //_processingPoint = false;
+    } catch (ex) {
+      print(ex);
+    }
   }
 
-  ActiveTrail({this.trail, this.startTime})
+  ActiveTrail({this.trail, this.name, this.regionId, this.startTime})
       : userPath = [],
         userHeights = [],
         markers = [];
-
   factory ActiveTrail.fromJson(Map<String, dynamic> json) =>
       _$ActiveTrailFromJson(json);
   Map<String, dynamic> toJson() => _$ActiveTrailToJson(this);

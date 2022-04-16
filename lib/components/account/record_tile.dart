@@ -8,8 +8,10 @@ import 'package:hikees/utils/geo.dart';
 
 class RecordTile extends StatelessWidget {
   final Record? record;
+  final bool offline;
 
-  const RecordTile({Key? key, this.record}) : super(key: key);
+  const RecordTile({Key? key, this.record, this.offline = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,13 @@ class RecordTile extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16.0),
         onTap: () {
-          if (record != null) Get.toNamed('/records/${record!.id}');
+          if (record != null) {
+            if (!offline)
+              Get.toNamed('/records/${record!.id}');
+            else
+              Get.toNamed('/saved-records/${record!.id}',
+                  arguments: {'record': record});
+          }
         },
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),

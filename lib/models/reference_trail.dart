@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/utils/geo.dart';
@@ -19,7 +19,7 @@ class ReferenceTrail {
   int duration;
   List<Pin>? pins;
   List<LatLng>? path;
-  List<HKDatum> heights;
+  List<HeightData> heights;
   bool offline;
 
   ReferenceTrail(
@@ -45,7 +45,7 @@ class ReferenceTrail {
   }
 
   static ReferenceTrail fromTrail(Trail trail,
-      {required List<HKDatum> heights}) {
+      {required List<HeightData> heights}) {
     return ReferenceTrail(
         id: trail.id,
         regionId: trail.regionId,

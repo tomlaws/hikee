@@ -16,6 +16,8 @@ import 'package:hikees/pages/account/profile/account_profile_binding.dart';
 import 'package:hikees/pages/account/profile/account_profile_page.dart';
 import 'package:hikees/pages/account/records/account_records_binding.dart';
 import 'package:hikees/pages/account/records/account_records_page.dart';
+import 'package:hikees/pages/account/saved_records/saved_records_binding.dart';
+import 'package:hikees/pages/account/saved_records/saved_records_page.dart';
 import 'package:hikees/pages/auth/login_binding.dart';
 import 'package:hikees/pages/auth/login_page.dart';
 import 'package:hikees/pages/auth/register.dart';
@@ -45,7 +47,8 @@ import 'package:hikees/pages/trails/create/create_trail_page.dart';
 import 'package:hikees/providers/preferences.dart';
 import 'package:hikees/themes.dart';
 
-void main() async {
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -219,6 +222,18 @@ class MyApp extends StatelessWidget {
           name: '/offline-trails',
           page: () => OfflineTrailsPage(),
           binding: OfflineTrailsBinding(),
+          middlewares: [],
+        ),
+        GetPage(
+          name: '/saved-records',
+          page: () => SavedRecordsPage(),
+          binding: SavedRecordsBinding(),
+          middlewares: [],
+        ),
+        GetPage(
+          name: '/saved-records/:id',
+          page: () => RecordPage(),
+          binding: RecordBinding(),
           middlewares: [],
         ),
         GetPage(

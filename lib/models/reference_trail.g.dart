@@ -18,7 +18,7 @@ ReferenceTrail _$ReferenceTrailFromJson(Map<String, dynamic> json) {
         ?.map((e) => LatLng.fromJson(e as Map<String, dynamic>))
         .toList(),
     heights: (json['heights'] as List<dynamic>)
-        .map((e) => HKDatum.fromJson(e as Map<String, dynamic>))
+        .map((e) => HeightData.fromJson(e as Map<String, dynamic>))
         .toList(),
     offline: json['offline'] as bool,
     pins: (json['pins'] as List<dynamic>?)

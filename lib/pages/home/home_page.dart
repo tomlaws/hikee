@@ -17,6 +17,7 @@ import 'package:hikees/pages/topics/topics_controller.dart';
 import 'package:hikees/pages/topics/topics_page.dart';
 import 'package:hikees/providers/active_trail.dart';
 import 'package:hikees/providers/auth.dart';
+import 'package:hikees/providers/offline.dart';
 import 'home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -33,6 +34,7 @@ class HomePage extends GetView<HomeController> {
     Get.lazyPut(() => EventsController());
     Get.lazyPut(() => TopicsController());
     Get.lazyPut(() => AccountController());
+    Get.lazyPut(() => OfflineProvider());
     var tabs = [
       KeepAlivePage(child: CompassPage()),
       TrailsPage(),

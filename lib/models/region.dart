@@ -33,6 +33,10 @@ class Region {
     return name_en;
   }
 
+  static Region getRegionById(int id) {
+    return allRegions().firstWhere((r) => r.id == id);
+  }
+
   static Set<Region> allRegions() {
     return {
       Region(

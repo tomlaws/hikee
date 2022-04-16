@@ -11,8 +11,8 @@ import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map_controller.dart';
-import 'package:hikees/components/trails/hkpd_profile.dart';
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/components/trails/height_profile.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/preferences.dart';
 import 'package:hikees/themes.dart';
 import 'package:latlong2/latlong.dart';
@@ -40,7 +40,7 @@ class HikeeMap extends StatelessWidget {
       this.onMapCreated,
       this.interactiveFlag,
       this.watermarkAlignment = Alignment.bottomLeft,
-      this.verticalDatum = true,
+      this.heightData = true,
       this.contentMargin = const EdgeInsets.all(8),
       bool offlineTrail = false})
       : super(key: key) {
@@ -70,7 +70,7 @@ class HikeeMap extends StatelessWidget {
   final int? interactiveFlag;
   final AlignmentGeometry watermarkAlignment;
   final EdgeInsets contentMargin;
-  final bool verticalDatum;
+  final bool heightData;
 
   String get urlTemplate {
     switch (controller.mapProvider) {
@@ -359,7 +359,7 @@ class HikeeMap extends StatelessWidget {
       ],
       nonRotatedChildren: [
         Align(alignment: Alignment.bottomLeft, child: providerAttribution),
-        if (verticalDatum)
+        if (heightData)
           Obx(() {
             if (controller.showHeights.value &&
                 controller.heights.value != null) {
@@ -370,20 +370,20 @@ class HikeeMap extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: HKPDProfile(datums: controller.heights.value!),
+                child: HeightProfile(heights: controller.heights.value!),
               );
             }
             return SizedBox();
           }),
-        if (verticalDatum && focusingPath != null)
+        if (heightData && focusingPath != null)
           Align(
             alignment: Alignment.topRight,
             child: Container(
               margin: contentMargin,
-              child: MutationBuilder<List<HKDatum>>(
+              child: MutationBuilder<List<HeightData>>(
                 mutation: () {
                   if (focusingPath == null) return Future.value([]);
-                  return controller.getHeights(focusingPath);
+                  return controller.getHeightss(focusingPath);
                 },
                 builder: (mutate, loading) {
                   return Obx(() => Button(

@@ -6,33 +6,34 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:hikees/models/active_trail.dart';
+import 'package:hikees/models/offline_record.dart';
 import 'package:hikees/models/preferences.dart';
+import 'package:hikees/models/record.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/utils/dialog.dart';
+import 'package:hikees/utils/geo.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tuple/tuple.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path/path.dart' as Path;
 
-class MapTilesProvider extends GetConnect {
+class OfflineProvider extends GetConnect {
   static const DEG_TO_RAD = pi / 180;
   final downloaded = 0.obs;
-  Future<Database>? _trailsDb;
   Future<Database>? _mapTilesDb;
-  MapProvider? _currentMapTilesProvider;
+  MapProvider? _currentOfflineProvider;
 
-  MapTilesProvider() {}
+  OfflineProvider();
 
   Future<Database> loadMapTilesDb(MapProvider mapProvider) async {
-    if (_currentMapTilesProvider == mapProvider) {
+    if (_currentOfflineProvider == mapProvider) {
       return _mapTilesDb!;
     }
     var appDocDir = await getApplicationDocumentsDirectory();
     File f = File(appDocDir.path + '/${mapProvider.resIdentifier}.mbtiles');
     _mapTilesDb = openDatabase(f.path);
-    _currentMapTilesProvider = mapProvider;
+    _currentOfflineProvider = mapProvider;
     return await _mapTilesDb!;
   }
 
@@ -40,8 +41,7 @@ class MapTilesProvider extends GetConnect {
     var databasesPath = await getDatabasesPath();
     String path = Path.join(databasesPath, 'offline.db');
 
-    //File(await _dbPath()).deleteSync();
-    Database database = await openDatabase(path, version: 1,
+    Database db = await openDatabase(path, version: 2,
         onCreate: (Database db, int version) async {
       await db.execute(
           'CREATE TABLE saved_trails (id INTEGER PRIMARY KEY, trail TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
@@ -50,12 +50,16 @@ class MapTilesProvider extends GetConnect {
       await db.execute(
           'CREATE TABLE saved_trail_tiles (id INTEGER PRIMARY KEY, trail_id REFERENCES savedTrails(id), tile_id  REFERENCES tiles(id))');
     }, onUpgrade: (db, oldVersion, newVersion) async {
-      // if (oldVersion == 1 && newVersion ==2) {
-      //     await db.execute(
-      //     'CREATE TABLE saved_records (id INTEGER PRIMARY KEY, name TEXT, startTime INTEGER, regionId INTEGER)');
-      // }
+      if (oldVersion == 1 && newVersion == 2) {
+        await db.execute(
+            'CREATE TABLE saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+      }
+    }, onDowngrade: (db, oldVersion, newVersion) async {
+      if (oldVersion == 2 && newVersion == 1) {
+        await db.execute('DROP TABLE saved_records');
+      }
     });
-    return database;
+    return db;
   }
 
   Future<void> downloadAndSave(
@@ -191,6 +195,43 @@ class MapTilesProvider extends GetConnect {
     final database = await loadTrailsDb();
     await database
         .delete('saved_trails', where: 'id = ?', whereArgs: [trailId]);
+  }
+
+  Future<List<OfflineRecord>> getOfflineRecords(int offset) async {
+    final database = await loadTrailsDb();
+    List<Map> records = await database.query('saved_records',
+        orderBy: 'created_at DESC', limit: 10, offset: offset);
+    print(records);
+    return records
+        .map((e) => OfflineRecord(
+            id: e['id'],
+            date: DateTime.fromMillisecondsSinceEpoch(e['date']),
+            time: e['time'],
+            regionId: e['region_id'],
+            name: e['name'],
+            userPath: e['user_path']))
+        .toList();
+  }
+
+  Future<void> createOfflineRecord({
+    required DateTime date,
+    required int time,
+    required String name,
+    int? referenceTrailId,
+    required int regionId,
+    required int length,
+    required List<LatLng> userPath,
+  }) async {
+    var encodedPath = GeoUtils.encodePath(userPath);
+    final db = await loadTrailsDb();
+    await db.insert('saved_records', {
+      'date': date.millisecondsSinceEpoch,
+      'time': time,
+      'name': name,
+      'region_id': regionId,
+      'user_path': encodedPath,
+      'reference_trail_id': referenceTrailId
+    });
   }
 
   Future<ImageProvider<Object>?> loadTileFromOfflineMap(

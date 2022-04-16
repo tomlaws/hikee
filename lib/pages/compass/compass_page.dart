@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/connection_error.dart';
 import 'package:hikees/components/core/floating_tooltip.dart';
-import 'package:hikees/components/trails/hkpd_profile.dart';
+import 'package:hikees/components/trails/height_profile.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/providers/auth.dart';
@@ -744,21 +744,19 @@ class CompassPage extends GetView<CompassController> {
                                   Get.toNamed('/', id: 1);
                                 },
                               ),
-                              if (_authProvider.loggedIn.value) ...[
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Button(
-                                  invert: true,
-                                  child: Text('recordTrail'.tr,
-                                      style: TextStyle(
-                                          color: ColorUtils.darken(
-                                              Get.theme.primaryColor, 0.2))),
-                                  onPressed: () {
-                                    controller.record();
-                                  },
-                                )
-                              ]
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Button(
+                                invert: true,
+                                child: Text('recordTrail'.tr,
+                                    style: TextStyle(
+                                        color: ColorUtils.darken(
+                                            Get.theme.primaryColor, 0.2))),
+                                onPressed: () {
+                                  controller.record();
+                                },
+                              )
                             ],
                           ))
                       ],
@@ -791,7 +789,7 @@ class CompassPage extends GetView<CompassController> {
         positionStream: controller.currentLocation.stream,
         headingStream: controller.currentHeading.stream,
         markers: controller.mapMarkers,
-        verticalDatum: false,
+        heightData: false,
         contentMargin: EdgeInsets.only(
             top: 8,
             left: 8,
@@ -851,7 +849,7 @@ class CompassPage extends GetView<CompassController> {
                         )),
                     SizedBox(height: 8),
                     Expanded(
-                        child: HKPDProfile(
+                        child: HeightProfile(
                       header: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -872,7 +870,7 @@ class CompassPage extends GetView<CompassController> {
                                   fontSize: 11, color: Colors.black54),
                             ),
                           ]),
-                      datums: controller.activeTrail.value!.trail?.heights ??
+                      heights: controller.activeTrail.value!.trail?.heights ??
                           controller.activeTrail.value!.userHeights,
                       myLocation: controller.currentLocation.value?.latLng,
                     )),
@@ -914,8 +912,9 @@ class CompassPage extends GetView<CompassController> {
                         child: Text(controller.activeTrailProvider.recordMode
                             ? 'finishRecording'.tr
                             : 'finishTrail'.tr),
-                        disabled: !controller.activeTrailProvider.recordMode &&
-                            !controller.isCloseToGoal.value,
+                        disabled: (!controller.activeTrailProvider.recordMode &&
+                                !controller.isCloseToGoal.value) ||
+                            controller.activeTrail.value!.userPath.length == 0,
                         onPressed: () {
                           controller.finishTrail();
                         }),

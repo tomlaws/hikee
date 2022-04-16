@@ -17,20 +17,21 @@ class RecordPage extends GetView<RecordController> {
       appBar: HikeeAppBar(
         title: Text('record'.tr),
         actions: [
-          Button(
-              icon: Icon(Icons.upload),
-              invert: true,
-              onPressed: () {
-                if (controller.state == null) {
-                  return;
-                }
-                var record = controller.state!;
-                Get.toNamed('/trails/create', arguments: {
-                  'path': record.userPath,
-                  'name': record.name,
-                  'region': record.region
-                });
-              })
+          if (!controller.offline)
+            Button(
+                icon: Icon(Icons.upload),
+                invert: true,
+                onPressed: () {
+                  if (controller.state == null) {
+                    return;
+                  }
+                  var record = controller.state!;
+                  Get.toNamed('/trails/create', arguments: {
+                    'path': record.userPath,
+                    'name': record.name,
+                    'region': record.region
+                  });
+                })
         ],
       ),
       body: Stack(

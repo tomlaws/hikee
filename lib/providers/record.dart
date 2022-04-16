@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:hikees/models/paginated.dart';
 import 'package:hikees/models/record.dart';
-import 'package:hikees/models/trail.dart';
 import 'package:hikees/providers/shared/base.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
@@ -32,31 +31,18 @@ class RecordProvider extends BaseProvider {
     });
   }
 
-  Future<Record> createRecord(
-      {required DateTime date,
-      required int time,
-      required String name,
-      int? referenceTrailId,
-      required int regionId,
-      required int length,
-      required List<LatLng> userPath,
-      required List<double> altitudes}) async {
-    if (altitudes.length > 48) {
-      List<double> minimized = [];
-      altitudes.asMap().forEach((index, value) {
-        if (index % (altitudes.length / 48).ceil() == 0)
-          return minimized.add(value);
-      });
-      altitudes = minimized;
-    }
+  Future<Record> createRecord({
+    required int time,
+    required String name,
+    int? referenceTrailId,
+    required int regionId,
+    required List<LatLng> userPath,
+  }) async {
     var body = {
       'name': name,
-      //'date': date.toString(),
       'time': time,
       'regionId': regionId,
-      'userPath': GeoUtils.encodePath(userPath),
-      'length': length,
-      'altitudes': altitudes
+      'userPath': GeoUtils.encodePath(userPath)
     };
     if (referenceTrailId != null) {
       body['referenceTrailId'] = referenceTrailId;

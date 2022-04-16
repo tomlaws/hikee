@@ -164,6 +164,7 @@ class Messages extends Translations {
           "heightsPending": "Start recording to view heights",
           "edit": "Edit",
           "info": "Info",
+          "savedRecords": "Saved Records",
           "offlineTrails": "Downloaded Trails"
         },
         'zh_CN': {
@@ -322,6 +323,7 @@ class Messages extends Translations {
           "heightsPending": "开始录制以查看高度",
           "edit": "编辑",
           "info": "资讯",
+          "savedRecords": "已储存纪录",
           "offlineTrails": "已下载路线"
         },
         'zh_HK': {
@@ -480,6 +482,7 @@ class Messages extends Translations {
           "heightsPending": "開始錄製以查看高度",
           "edit": "編輯",
           "info": "資訊",
+          "savedRecords": "已儲存紀錄",
           "offlineTrails": "已下載路線"
         },
       };

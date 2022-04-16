@@ -5,23 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/themes.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:hikees/models/hk_datum.dart';
+import 'package:hikees/models/height_data.dart';
 import 'package:hikees/utils/geo.dart';
 
-class HKPDProfile extends StatelessWidget {
-  HKPDProfile({Key? key, required this.datums, this.myLocation, this.header})
-      : super(key: key) {
-    //assert(datums is List<HKDatum> || datums is List<int>);
-  }
+class HeightProfile extends StatelessWidget {
+  HeightProfile({Key? key, required this.heights, this.myLocation, this.header})
+      : super(key: key);
 
-  final List<HKDatum> datums;
+  final List<HeightData> heights;
   final LatLng? myLocation;
   final Widget? header;
   final tooltipColor = Rx<Color>(Color(0xFFFFFFFFF));
 
   @override
   Widget build(BuildContext context) {
-    if (datums.length == 0) {
+    if (heights.length == 0) {
       return Center(
         child: Opacity(opacity: .5, child: Text('heightsPending'.tr)),
       );
@@ -35,15 +33,13 @@ class HKPDProfile extends StatelessWidget {
     FlSpot? currentSpot;
     double minDist = double.infinity;
 
-    datums.asMap().forEach((index, value) {
-      // limits number of spot rendered, otherwise the line is not curvy enough
-      //if (index % (datums.length / 32).round() == 0) {
+    heights.asMap().forEach((index, value) {
       int dist = 9999;
       double e = 0;
 
       if (myLocation != null)
         dist = GeoUtils.calculateDistance(value.location, myLocation!);
-      e = value.datum.toDouble();
+      e = value.height.toDouble();
 
       maxH = max(e, maxH);
       minH = min(e, minH);
@@ -51,7 +47,7 @@ class HKPDProfile extends StatelessWidget {
       // update track length
       if (index > 0) {
         length += GeoUtils.calculateDistance(
-            value.location, datums[index - 1].location);
+            value.location, heights[index - 1].location);
       }
       var spot = FlSpot(length, e);
 
