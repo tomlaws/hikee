@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikees/components/gallery/gallery.dart';
+import 'package:hikees/components/gallery/gallery_binding.dart';
 import 'package:hikees/messages.dart';
 import 'package:hikees/middlewares/auth.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_binding.dart';
@@ -234,6 +236,12 @@ class MyApp extends StatelessWidget {
           name: '/saved-records/:id',
           page: () => RecordPage(),
           binding: RecordBinding(),
+          middlewares: [],
+        ),
+        GetPage(
+          name: '/gallery',
+          page: () => Gallery(),
+          binding: GalleryBinding(),
           middlewares: [],
         ),
         GetPage(

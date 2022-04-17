@@ -29,7 +29,7 @@ class AccountPage extends GetView<AccountController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  margin: EdgeInsets.all(16).copyWith(top: 8),
+                  margin: EdgeInsets.all(16).copyWith(top: 16.0),
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -72,28 +72,28 @@ class AccountPage extends GetView<AccountController> {
                             color: Colors.black26,
                           ),
                         ),
-                        // MenuListTile(
-                        //   onTap: () {
-                        //     Get.toNamed('/my-trails');
-                        //   },
-                        //   title: "trails".tr,
-                        //   icon: Icon(
-                        //     LineAwesomeIcons.route,
-                        //     size: 32,
-                        //     color: Colors.black26,
-                        //   ),
-                        // ),
-                        // MenuListTile(
-                        //   onTap: () {
-                        //     Get.toNamed('/my-topics');
-                        //   },
-                        //   title: "topics".tr,
-                        //   icon: Icon(
-                        //     LineAwesomeIcons.comment_dots,
-                        //     size: 32,
-                        //     color: Colors.black26,
-                        //   ),
-                        // ),
+                        MenuListTile(
+                          onTap: () {
+                            Get.toNamed('/my-trails');
+                          },
+                          title: "trails".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.route,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                        MenuListTile(
+                          onTap: () {
+                            Get.toNamed('/my-topics');
+                          },
+                          title: "topics".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.comment_dots,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
                         MenuListTile(
                           onTap: () {
                             Get.toNamed('/privacy');

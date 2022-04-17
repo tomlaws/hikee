@@ -57,6 +57,9 @@ class OfflineProvider extends GetConnect {
       if (newVersion == 1 && oldVersion == 2) {
         await db.execute('DROP TABLE saved_records');
       }
+    }, onOpen: (db) async {
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
     });
     return db;
   }

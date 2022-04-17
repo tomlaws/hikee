@@ -725,34 +725,7 @@ class TrailPage extends GetView<TrailController> {
   }
 
   _fullscreen(String image) {
-    var widget = Scaffold(
-      appBar: HikeeAppBar(title: Text("gallery".tr)),
-      backgroundColor: Colors.black,
-      body: controller.obx(
-          (state) => (state?.images == null || state?.images.length == 0)
-              ? SizedBox()
-              : Column(children: [
-                  Expanded(
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                          enableInfiniteScroll: false,
-                          viewportFraction: 1,
-                          initialPage: state!.images.indexOf(image),
-                          height: double.infinity),
-                      items: state.images
-                          .map((e) => Container(
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(),
-                              child: PhotoView(
-                                imageProvider: CachedNetworkImageProvider(
-                                    ImageUtils.imageLink(e)),
-                              )))
-                          .toList(),
-                    ),
-                  )
-                ]),
-          onLoading: SizedBox()),
-    );
-    Get.to(widget, transition: Transition.zoom, fullscreenDialog: true);
+    Get.toNamed('/gallery',
+        arguments: {'images': controller.state!.images, 'image': image});
   }
 }

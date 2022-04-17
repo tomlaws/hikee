@@ -10,6 +10,7 @@ import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/core/text_may_overflow.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/components/gallery/gallery.dart';
 import 'package:hikees/models/topic_base.dart';
 import 'package:hikees/models/topic_reply.dart';
 import 'package:hikees/pages/topic/topic_controller.dart';
@@ -198,35 +199,7 @@ class TopicPage extends GetView<TopicController> {
   }
 
   _fullscreen(String image) {
-    var widget = Scaffold(
-      appBar: HikeeAppBar(title: Text("gallery".tr)),
-      backgroundColor: Colors.black,
-      body: controller.obx(
-          (state) => (state?.images == null || state?.images?.length == 0)
-              ? SizedBox()
-              : Column(children: [
-                  Expanded(
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                          enableInfiniteScroll: false,
-                          viewportFraction: 1,
-                          initialPage: state!.images!.indexOf(image),
-                          height: double.infinity),
-                      items: state.images!
-                          .map((e) => Container(
-                                clipBehavior: Clip.antiAlias,
-                                decoration: BoxDecoration(),
-                                child: PhotoView(
-                                  imageProvider: CachedNetworkImageProvider(
-                                      ImageUtils.imageLink(e)),
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  )
-                ]),
-          onLoading: SizedBox()),
-    );
-    Get.to(widget, transition: Transition.zoom, fullscreenDialog: true);
+    Get.toNamed('/gallery',
+        arguments: {'images': controller.state!.images!, 'image': image});
   }
 }
