@@ -22,35 +22,40 @@ class MutationBuilder<T> extends StatefulWidget {
 }
 
 class _MutationBuilderState<T> extends State<MutationBuilder<T>> {
-  bool _loading = false;
+  final ValueNotifier<bool> _loading = ValueNotifier<bool>(false);
   T? result;
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(() async {
-      if (_loading) return;
-      if (widget.userOnly) {
-        var auth = Get.find<AuthProvider>();
-        if (!auth.loggedIn.value) {
-          Get.toNamed('/login');
-          return;
-        }
-      }
-      setState(() {
-        _loading = true;
-      });
-      try {
-        result = await widget.mutation();
-        if (widget.onDone != null) {
-          widget.onDone!(result);
-        }
-      } catch (ex) {
-        print(ex);
-        if (widget.onError != null && ex is ErrorResponse) widget.onError!(ex);
-      }
-      setState(() {
-        _loading = false;
-      });
-    }, _loading);
+    return ValueListenableBuilder<bool>(
+      builder: (BuildContext context, bool loading, Widget? child) {
+        return widget.builder(() async {
+          if (loading) return;
+          if (widget.userOnly) {
+            var auth = Get.find<AuthProvider>();
+            if (!auth.loggedIn.value) {
+              Get.toNamed('/login');
+              return;
+            }
+          }
+          _loading.value = true;
+          WidgetsBinding.instance?.addPostFrameCallback((_) async {
+            try {
+              //await Future.delayed(Duration(seconds: 2));
+              result = await widget.mutation();
+              if (widget.onDone != null) {
+                widget.onDone!(result);
+              }
+            } catch (ex) {
+              print(ex);
+              if (widget.onError != null && ex is ErrorResponse)
+                widget.onError!(ex);
+            }
+            _loading.value = false;
+          });
+        }, loading);
+      },
+      valueListenable: _loading,
+    );
   }
 }

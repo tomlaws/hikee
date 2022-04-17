@@ -174,7 +174,7 @@ class TopicPage extends GetView<TopicController> {
                         ),
                         items: topic.images!
                             .map((e) => InkWell(
-                                  onTap: () => _fullscreen(e),
+                                  onTap: () => _fullscreen(topic.images!, e),
                                   child: Container(
                                     clipBehavior: Clip.antiAlias,
                                     decoration: BoxDecoration(
@@ -198,8 +198,7 @@ class TopicPage extends GetView<TopicController> {
     );
   }
 
-  _fullscreen(String image) {
-    Get.toNamed('/gallery',
-        arguments: {'images': controller.state!.images!, 'image': image});
+  _fullscreen(List<String> images, String image) {
+    Get.toNamed('/gallery', arguments: {'images': images, 'image': image});
   }
 }

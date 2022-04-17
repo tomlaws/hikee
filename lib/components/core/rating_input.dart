@@ -4,7 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 class RatingInput extends FormField<int> {
   RatingInput({
     String? label,
-    String invalidRatingMessage = 'Please rate the trail',
+    String invalidRatingMessage = 'Error',
     InputDecoration decoration = const InputDecoration(),
     FormFieldSetter<int>? onSaved,
     FormFieldValidator<int>? validator,

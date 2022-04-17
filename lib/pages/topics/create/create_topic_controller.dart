@@ -1,21 +1,25 @@
 import 'dart:typed_data';
 
-import 'package:flutter/animation.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/models/topic.dart';
 import 'package:hikees/models/topic_reply.dart';
 import 'package:hikees/pages/topic/topic_controller.dart';
 import 'package:hikees/providers/topic.dart';
+import 'package:hikees/providers/upload.dart';
+import 'package:hikees/utils/dialog.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:collection';
 
 class CreateTopicController extends GetxController {
   final _topicProvider = Get.put(TopicProvider());
+  final _uploadProvider = Get.put(UploadProvider());
   final ImagePicker _picker = ImagePicker();
   final titleController = TextInputController();
   final contentController = TextInputController();
   final images = RxList<Uint8List>();
+  final imageNames = RxList<String>();
   int? topicId;
   int? categoryId;
 
@@ -42,37 +46,45 @@ class CreateTopicController extends GetxController {
         await _picker.pickMultiImage(imageQuality: 80, maxWidth: 1280) ?? [];
     for (var file in files) {
       images.add(await file.readAsBytes());
+      imageNames.add(file.name);
     }
   }
 
   void removeImage(Uint8List image) {
-    images.remove(image);
+    var i = images.indexOf(image);
+    images.removeAt(i);
+    imageNames.removeAt(i);
   }
 
   Future<Topic?> createTopic() async {
     var title = titleController.text;
     var content = contentController.text;
-    Topic topic = await _topicProvider.createTopic(
-        title: title, content: content, images: images, categoryId: categoryId);
-    Get.offAndToNamed('/topics/${topic.id}');
-    return topic;
-    // return Get.showOverlay(
-    //     asyncFunction: () async {
-    //       try {
-    //         var title = titleController.text;
-    //         var content = contentController.text;
-    //         Topic topic = await _topicProvider.createTopic(
-    //             title: title,
-    //             content: content,
-    //             images: images,
-    //             categoryId: categoryId);
-    //         Get.offAndToNamed('/topics/${topic.id}');
-    //         return topic;
-    //       } catch (ex) {
-    //         throw ex;
-    //       }
-    //     },
-    //     loadingWidget: Center(child: CircularProgressIndicator()));
+    if (images.length > 12) {
+      DialogUtils.showDialog('Error', Text('12 images at max'));
+      return null;
+    }
+    return Get.showOverlay(
+        asyncFunction: () async {
+          var futures = <Future<String?>>[];
+          for (int i = 0; i < images.length; i++) {
+            futures.add(_uploadProvider.uploadBytes(images[i], imageNames[i]));
+          }
+          List<String?> uploadedImages = await Future.wait(futures);
+          List<String> nonNullImages =
+              uploadedImages.whereType<String>().toList();
+          try {
+            Topic topic = await _topicProvider.createTopic(
+                title: title,
+                content: content,
+                images: nonNullImages,
+                categoryId: categoryId);
+            Get.offAndToNamed('/topics/${topic.id}');
+            return topic;
+          } catch (ex) {
+            throw ex;
+          }
+        },
+        loadingWidget: Center(child: CircularProgressIndicator()));
   }
 
   Future<TopicReply?> createReply() async {

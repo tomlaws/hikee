@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/providers/auth.dart';
+import 'package:hikees/providers/upload.dart';
+import 'package:hikees/providers/user.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AccountController extends GetxController {
@@ -9,6 +11,8 @@ class AccountController extends GetxController {
   var page = 0.0.obs;
   File? avatar;
   final _authProvider = Get.put(AuthProvider());
+  final _uploadProvider = Get.put(UploadProvider());
+  final _userProvider = Get.put(UserProvider());
 
   @override
   void onInit() {
@@ -32,7 +36,10 @@ class AccountController extends GetxController {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image == null) return;
-    //_uploadIcon(File(image.path));
+    String? file = await _uploadProvider.upload(image);
+    if (file == null) return;
+    await _userProvider.changeIcon(file);
+    this.refreshAccount();
   }
 
   void logout() {

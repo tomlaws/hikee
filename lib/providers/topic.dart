@@ -51,27 +51,13 @@ class TopicProvider extends BaseProvider {
   Future<Topic> createTopic(
       {required String title,
       required String content,
-      required List<Uint8List> images,
+      required List<String> images,
       int? categoryId}) async {
-    var params = {
-      'title': title,
-      'content': content,
-      'images': images
-          .asMap()
-          .map((i, e) => MapEntry(
-              i,
-              MultipartFile(
-                e,
-                filename: '${i.toString()}.jpeg',
-              )))
-          .values
-          .toList()
-    };
+    var params = {'title': title, 'content': content, 'images': images};
     if (categoryId != null) {
       params['categoryId'] = categoryId;
     }
-    final form = FormData(params);
-    var res = await post('topics', form);
+    var res = await post('topics', params);
     Topic newTopic = Topic.fromJson(res.body);
     return newTopic;
   }
@@ -80,21 +66,8 @@ class TopicProvider extends BaseProvider {
       {required int topicId,
       required String content,
       required List<Uint8List> images}) async {
-    var params = {
-      'content': content,
-      'images': images
-          .asMap()
-          .map((i, e) => MapEntry(
-              i,
-              MultipartFile(
-                e,
-                filename: '${i.toString()}.jpeg',
-              )))
-          .values
-          .toList()
-    };
-    final form = FormData(params);
-    var res = await post('topics/$topicId/replies', form);
+    var params = {'content': content, 'images': images};
+    var res = await post('topics/$topicId/replies', params);
     TopicReply newReply = TopicReply.fromJson(res.body);
     return newReply;
   }

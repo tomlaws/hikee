@@ -63,7 +63,7 @@ class TrailProvider extends BaseProvider {
     required String description,
     required String path,
     required List<Pin> pins,
-    required List<Uint8List> images,
+    required List<String> images,
   }) async {
     var params = {
       'name_en': name,
@@ -74,19 +74,9 @@ class TrailProvider extends BaseProvider {
       'regionId': regionId,
       'path': path,
       'pins': jsonEncode(pins),
-      'images': images
-          .asMap()
-          .map((i, e) => MapEntry(
-              i,
-              MultipartFile(
-                e,
-                filename: '${i.toString()}.jpeg',
-              )))
-          .values
-          .toList(),
+      'images': images,
     };
-    final form = FormData(params);
-    var res = await post('trails', form);
+    var res = await post('trails', params);
     Trail newTopic = Trail.fromJson(res.body);
     return newTopic;
   }

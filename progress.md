@@ -113,12 +113,13 @@ Off-trail notification
 Edit trail
 Emergency update
 Date filter
-Offline mode
-ui when location permission is rejected
+
+
 turn on/off weather report, custom weather refresh interval, for battery saving
 
+1. configurable walking speed & climbing
+    Calculate time needed using Naismith's Rule
 
-configurable walking speed & climbing
-Calculate time needed using Naismith's Rule
-edit created trails
-allow adding picture
+2. edit created trails
+allow adding picture for record
+upload

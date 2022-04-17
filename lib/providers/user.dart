@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
+import 'package:get/get.dart';
 import 'package:hikees/models/bookmark.dart';
 import 'package:hikees/models/event.dart';
 import 'package:hikees/models/paginated.dart';
 import 'package:hikees/models/user.dart';
 import 'package:hikees/providers/shared/base.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UserProvider extends BaseProvider {
   Future<User> getUser(int userId) async {
@@ -29,6 +33,12 @@ class UserProvider extends BaseProvider {
     if (nickname != null) payload['nickname'] = nickname;
     if (isPrivate != null) payload['isPrivate'] = isPrivate;
     return await patch('users', payload).then((value) {
+      return User.fromJson(value.body);
+    });
+  }
+
+  Future<User> changeIcon(String file) async {
+    return await patch('users/icon', {'icon': file}).then((value) {
       return User.fromJson(value.body);
     });
   }

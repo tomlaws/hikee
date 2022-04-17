@@ -8,6 +8,7 @@ import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/providers/trail.dart';
+import 'package:hikees/providers/upload.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +17,7 @@ import 'package:tuple/tuple.dart';
 
 class CreateTrailController extends GetxController {
   final _trailProvider = Get.put<TrailProvider>(TrailProvider());
+  final _uploadProvider = Get.put(UploadProvider());
   var coordinates = RxList<Pin>([]);
   var selectedCoordinates = Rxn<Pin>();
   Future<Tuple2<int, int>> lengthAndDuration = Future.value(Tuple2(0, 0));
@@ -29,6 +31,7 @@ class CreateTrailController extends GetxController {
   var difficulty = 0;
   var region = Rxn<Region>();
   final images = RxList<Uint8List>();
+  final imageNames = RxList<String>();
   var publishing = false.obs;
 
   @override
@@ -125,20 +128,27 @@ class CreateTrailController extends GetxController {
         await _picker.pickMultiImage(imageQuality: 80, maxWidth: 1280) ?? [];
     for (var file in files) {
       images.add(await file.readAsBytes());
+      imageNames.add(file.name);
     }
   }
 
   void removeImage(Uint8List image) {
-    images.remove(image);
+    var i = images.indexOf(image);
+    images.removeAt(i);
+    imageNames.removeAt(i);
   }
 
   Future<Trail> create() async {
     var path = GeoUtils.encodePath(coordinates.map((e) => e.location).toList());
     var pins = coordinates.where((c) => c.message != null).toList();
-    var length = (GeoUtils.getPathLength(
-                path: coordinates.map((c) => c.location).toList()) *
-            1000)
-        .truncate();
+
+    var futures = <Future<String?>>[];
+    for (int i = 0; i < images.length; i++) {
+      futures.add(_uploadProvider.uploadBytes(images[i], imageNames[i]));
+    }
+    List<String?> uploadedImages = await Future.wait(futures);
+    List<String> nonNullImages = uploadedImages.whereType<String>().toList();
+
     return await _trailProvider.createTrail(
         name: nameController.text,
         regionId: region.value!.id,
@@ -146,6 +156,6 @@ class CreateTrailController extends GetxController {
         description: descriptionController.text,
         path: path,
         pins: pins,
-        images: images);
+        images: nonNullImages);
   }
 }

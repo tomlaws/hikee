@@ -24,6 +24,7 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:tuple/tuple.dart';
 
 class CreateTrailPage extends GetView<CreateTrailController> {
+  final formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -63,7 +64,6 @@ class CreateTrailPage extends GetView<CreateTrailController> {
   }
 
   Widget _step1() {
-    final formkey = GlobalKey<FormState>();
     return Form(
       key: formkey,
       child: Column(
@@ -195,7 +195,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       validator: (v) {
                         if (v == null) {
                           return 'fieldCannotBeEmpty'
-                              .trParams({'field': 'recordName'.tr});
+                              .trParams({'field': 'region'.tr});
                         }
                         return null;
                       },
@@ -206,10 +206,12 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: RatingInput(
-                    label: 'Difficulty',
+                    label: 'difficulty'.tr,
                     onSaved: (v) {
                       controller.difficulty = v!;
                     },
+                    invalidRatingMessage: 'fieldCannotBeEmpty'
+                        .trParams({'field': 'difficulty'.tr}),
                   ),
                 ),
                 Padding(
