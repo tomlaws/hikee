@@ -49,7 +49,6 @@ class TrailsController extends PaginationController<Trail> {
     if (!regions.containsAll(defaultRegions)) {
       query['regionIds'] = regions.toList().toString();
     }
-    print(query);
     return _trailProvider.getTrails(query);
   }
 }

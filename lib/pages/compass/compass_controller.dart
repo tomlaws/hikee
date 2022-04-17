@@ -367,14 +367,15 @@ class CompassController extends GetxController
                   },
                   validator: (v) {
                     if (v == null || v.length == 0) {
-                      return 'recordName'.tr + ' ' + 'cannotBeEmpty'.tr;
+                      return 'fieldCannotBeEmpty'
+                          .trParams({'field': 'recordName'.tr});
                     }
                     return null;
                   },
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
-                  child: Dropdown<Region>(
+                  child: DropdownField<Region>(
                     label: 'region'.tr,
                     items: regions,
                     selected: regions
@@ -382,8 +383,15 @@ class CompassController extends GetxController
                     itemBuilder: (r) {
                       return Text(r.name);
                     },
-                    onChanged: (r) {
-                      regionId = r.id;
+                    onSaved: (v) {
+                      regionId = v!.id;
+                    },
+                    validator: (v) {
+                      if (v == null) {
+                        return 'fieldCannotBeEmpty'
+                            .trParams({'field': 'region'.tr});
+                      }
+                      return null;
                     },
                   ),
                 )

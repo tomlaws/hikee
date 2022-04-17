@@ -2,6 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/utils/dialog.dart';
 
+class DropdownField<T> extends FormField<T> {
+  DropdownField({
+    Key? key,
+    String? label,
+    required Widget Function(T) itemBuilder,
+    required List<T> items,
+    T? selected,
+    FormFieldSetter<T>? onSaved,
+    FormFieldValidator<T>? validator,
+  }) : super(
+            key: key,
+            onSaved: onSaved,
+            validator: validator,
+            builder: (FormFieldState<T> state) {
+              return Dropdown<T>(
+                label: label,
+                items: items,
+                itemBuilder: itemBuilder,
+                selected: selected,
+                formFieldState: state,
+              );
+            });
+}
+
 class Dropdown<T> extends StatefulWidget {
   const Dropdown(
       {Key? key,
@@ -9,7 +33,7 @@ class Dropdown<T> extends StatefulWidget {
       required this.items,
       required this.itemBuilder,
       required this.selected,
-      required this.onChanged})
+      this.formFieldState})
       : super(key: key);
 
   @override
@@ -18,7 +42,7 @@ class Dropdown<T> extends StatefulWidget {
   final Widget Function(T) itemBuilder;
   final List<T> items;
   final T? selected;
-  final Function(T) onChanged;
+  final FormFieldState<T>? formFieldState;
 }
 
 class _DropdownState<T> extends State<Dropdown<T>> {
@@ -31,6 +55,11 @@ class _DropdownState<T> extends State<Dropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final InputDecoration? effectiveDecoration = widget.formFieldState != null
+        ? InputDecoration.collapsed(hintText: 'select...'.tr).applyDefaults(
+            Theme.of(widget.formFieldState!.context).inputDecorationTheme,
+          )
+        : null;
     return GestureDetector(
         onTap: () {
           DialogUtils.showDialog(
@@ -43,7 +72,9 @@ class _DropdownState<T> extends State<Dropdown<T>> {
                             radius: 16,
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
-                              widget.onChanged(e);
+                              if (widget.formFieldState != null) {
+                                widget.formFieldState!.didChange(e);
+                              }
                               _selected.value = e;
                               Get.back();
                             },
@@ -68,20 +99,31 @@ class _DropdownState<T> extends State<Dropdown<T>> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black54)),
             ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            height: 42,
-            decoration: BoxDecoration(
-                color: Color(0xFFF2F2F2),
-                borderRadius: BorderRadius.all(Radius.circular(12))),
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child: Obx(
-                  () => _selected.value != null
-                      ? widget.itemBuilder(_selected.value!)
-                      : Text("select...".tr,
-                          style: TextStyle(color: Color(0xFFC5C5C5))),
-                )),
+          InputDecorator(
+            decoration: effectiveDecoration != null
+                ? effectiveDecoration.copyWith(
+                    errorText: widget.formFieldState!.errorText,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    filled: true,
+                    fillColor: Color(0xFFF2F2F2),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    isDense: true)
+                : const InputDecoration(),
+            child: Container(
+              height: 44,
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Obx(
+                    () => _selected.value != null
+                        ? widget.itemBuilder(_selected.value!)
+                        : Text("select...".tr,
+                            style: TextStyle(
+                                fontSize: 16, color: Color(0xFFC5C5C5))),
+                  )),
+            ),
           ),
         ]));
   }

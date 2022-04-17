@@ -36,31 +36,28 @@ class RatingInput extends FormField<int> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black54)),
                       ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: InputDecorator(
-                        decoration: effectiveDecoration.copyWith(
-                            errorText: state.errorText,
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                            isDense: true),
-                        child: RatingBar.builder(
-                          itemSize: 24,
-                          glow: false,
-                          initialRating: 0.0,
-                          allowHalfRating: false,
-                          itemCount: 5,
-                          unratedColor: Colors.grey,
-                          itemPadding: EdgeInsets.only(right: 4.0),
-                          itemBuilder: (context, _) => Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          updateOnDrag: true,
-                          onRatingUpdate: (double value) {
-                            state.didChange(value.toInt());
-                          },
+                    InputDecorator(
+                      decoration: effectiveDecoration.copyWith(
+                          errorText: state.errorText,
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                          isDense: true),
+                      child: RatingBar.builder(
+                        itemSize: 24,
+                        glow: false,
+                        initialRating: 0.0,
+                        allowHalfRating: false,
+                        itemCount: 5,
+                        unratedColor: Colors.grey,
+                        itemPadding: EdgeInsets.only(right: 4.0),
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
                         ),
+                        updateOnDrag: true,
+                        onRatingUpdate: (double value) {
+                          state.didChange(value.toInt());
+                        },
                       ),
                     ),
                   ]);

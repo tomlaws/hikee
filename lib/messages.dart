@@ -114,7 +114,7 @@ class Messages extends Translations {
           "featured": "Featured",
           "createTrail": "Create Trail",
           "uploadImage": "Upload Image",
-          "trailName": "Trail Name",
+          "trailName": "Trail name",
           "minutes": "Minutes",
           "difficulty": "Difficulty",
           "publish": "Publish",

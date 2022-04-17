@@ -6,6 +6,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/dropdown.dart';
 import 'package:hikees/components/core/futurer.dart';
+import 'package:hikees/components/core/rating_input.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/components/map/drag_marker.dart';
@@ -62,215 +63,226 @@ class CreateTrailPage extends GetView<CreateTrailController> {
   }
 
   Widget _step1() {
-    return Column(
-      children: [
-        Expanded(
-            child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                  height: 240,
-                  decoration: BoxDecoration(
-                      color: Color(0xfff5f5f5),
-                      borderRadius: BorderRadius.circular(24)),
-                  child: controller.images.length == 0
-                      ? Button(
-                          child: Text('uploadImage'.tr),
-                          onPressed: () {
-                            controller.pickImages();
-                          },
-                          backgroundColor: Colors.transparent,
-                          secondary: true)
-                      : SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          padding:
-                              EdgeInsets.only(top: 16, left: 16, right: 16),
-                          child: Wrap(
-                            spacing: 16,
-                            children: [
-                              ...controller.images
-                                  .map((image) => Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          Container(
-                                            width: 240,
-                                            height: 240 - 16 * 2,
-                                            clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(16)),
-                                            child: Image.memory(image,
-                                                fit: BoxFit.cover),
-                                          ),
-                                          Positioned(
-                                              top: -4,
-                                              right: -4,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  controller.removeImage(image);
-                                                },
-                                                child: Container(
-                                                    padding: EdgeInsets.all(4),
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.black87,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                    16.0)),
-                                                    child: Icon(
-                                                      Icons.close,
-                                                      color: Colors.white,
-                                                      size: 18,
-                                                    )),
-                                              )),
-                                        ],
-                                      ))
-                                  .toList(),
-                              Container(
-                                width: 240,
-                                height: 240 - 16 * 2,
-                                clipBehavior: Clip.antiAlias,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16)),
-                                child: Button(
-                                    child: Text('uploadImage'.tr),
-                                    onPressed: () {
-                                      controller.pickImages();
-                                    },
-                                    backgroundColor: Colors.transparent,
-                                    secondary: true),
-                              ),
-                            ],
-                          ))),
-              Container(
-                  height: 240,
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                  clipBehavior: Clip.antiAlias,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(24)),
-                  child: HikeeMap(
-                    key: Key('create-trail-map-2'),
-                    pathOnly: true,
-                    path:
-                        controller.coordinates.map((c) => c.location).toList(),
-                    interactiveFlag: InteractiveFlag.none,
-                    markers: _dragMarkers,
-                  )),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: TextInput(
-                  label: 'trailName'.tr,
-                  hintText: 'trailName'.tr,
-                  controller: controller.nameController,
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Dropdown<Region>(
-                    label: 'region'.tr,
-                    items: Region.allRegions().toList(),
-                    selected: controller.region.value,
-                    itemBuilder: (r) {
-                      return Text(r.name);
-                    },
-                    onChanged: (r) {
-                      controller.region.value = r;
-                    },
-                  )),
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8),
-                child: Text('difficulty'.tr,
-                    style: TextStyle(
-                        color: Colors.black54, fontWeight: FontWeight.bold)),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: RatingBar.builder(
-                  glow: false,
-                  initialRating: 0,
-                  itemSize: 20,
-                  minRating: 1,
-                  direction: Axis.horizontal,
-                  itemCount: 5,
-                  itemPadding: EdgeInsets.only(right: 8.0),
-                  itemBuilder: (context, _) => Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                  onRatingUpdate: (difficulty) {
-                    controller.difficulty = difficulty.truncate();
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: SizedBox(
-                  height: 160,
-                  child: TextInput(
-                      label: 'description'.tr,
-                      expand: true,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      hintText: 'description'.tr,
-                      controller: controller.descriptionController),
-                ),
-              ),
-            ],
-          ),
-        )),
-        Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(color: Colors.white, boxShadow: [
-            BoxShadow(
-                blurRadius: 16,
-                spreadRadius: -8,
-                color: Colors.black.withOpacity(.09),
-                offset: Offset(0, -6))
-          ]),
-          child: SafeArea(
-            child: Row(
+    final formkey = GlobalKey<FormState>();
+    return Form(
+      key: formkey,
+      child: Column(
+        children: [
+          Expanded(
+              child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Button(
-                  secondary: true,
-                  onPressed: () {
-                    controller.step.value = 0;
-                  },
-                  icon: Icon(Icons.chevron_left, color: Colors.white),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: MutationBuilder<Trail>(
-                    userOnly: true,
-                    builder: (mutate, loading) => Button(
-                      loading: loading,
-                      onPressed: () {
-                        mutate();
-                      },
-                      child: Text('publish'.tr),
-                    ),
-                    onDone: (Trail? trail) {
-                      if (trail != null) {
-                        Get.back();
-                        Get.toNamed('/trails/${trail.id}');
+                Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    height: 240,
+                    decoration: BoxDecoration(
+                        color: Color(0xfff5f5f5),
+                        borderRadius: BorderRadius.circular(24)),
+                    child: controller.images.length == 0
+                        ? Button(
+                            child: Text('uploadImage'.tr),
+                            onPressed: () {
+                              controller.pickImages();
+                            },
+                            backgroundColor: Colors.transparent,
+                            secondary: true)
+                        : SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            padding:
+                                EdgeInsets.only(top: 16, left: 16, right: 16),
+                            child: Wrap(
+                              spacing: 16,
+                              children: [
+                                ...controller.images
+                                    .map((image) => Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              width: 240,
+                                              height: 240 - 16 * 2,
+                                              clipBehavior: Clip.antiAlias,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16)),
+                                              child: Image.memory(image,
+                                                  fit: BoxFit.cover),
+                                            ),
+                                            Positioned(
+                                                top: -4,
+                                                right: -4,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    controller
+                                                        .removeImage(image);
+                                                  },
+                                                  child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(4),
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.black87,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      16.0)),
+                                                      child: Icon(
+                                                        Icons.close,
+                                                        color: Colors.white,
+                                                        size: 18,
+                                                      )),
+                                                )),
+                                          ],
+                                        ))
+                                    .toList(),
+                                Container(
+                                  width: 240,
+                                  height: 240 - 16 * 2,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16)),
+                                  child: Button(
+                                      child: Text('uploadImage'.tr),
+                                      onPressed: () {
+                                        controller.pickImages();
+                                      },
+                                      backgroundColor: Colors.transparent,
+                                      secondary: true),
+                                ),
+                              ],
+                            ))),
+                Container(
+                    height: 240,
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    clipBehavior: Clip.antiAlias,
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(24)),
+                    child: HikeeMap(
+                      key: Key('create-trail-map-2'),
+                      pathOnly: true,
+                      path: controller.coordinates
+                          .map((c) => c.location)
+                          .toList(),
+                      interactiveFlag: InteractiveFlag.none,
+                      markers: _dragMarkers,
+                    )),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: TextInput(
+                    label: 'trailName'.tr,
+                    hintText: 'trailName'.tr,
+                    controller: controller.nameController,
+                    validator: (v) {
+                      if (v == null || v.length == 0) {
+                        return 'fieldCannotBeEmpty'
+                            .trParams({'field': 'recordName'.tr});
                       }
+                      return null;
                     },
-                    onError: (err) {},
-                    mutation: () async {
-                      return controller.create();
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: DropdownField<Region>(
+                      label: 'region'.tr,
+                      items: Region.allRegions().toList(),
+                      selected: controller.region.value,
+                      itemBuilder: (r) {
+                        return Text(r.name);
+                      },
+                      validator: (v) {
+                        if (v == null) {
+                          return 'fieldCannotBeEmpty'
+                              .trParams({'field': 'recordName'.tr});
+                        }
+                        return null;
+                      },
+                      onSaved: (r) {
+                        controller.region.value = r;
+                      },
+                    )),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: RatingInput(
+                    label: 'Difficulty',
+                    onSaved: (v) {
+                      controller.difficulty = v!;
                     },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: SizedBox(
+                    height: 160,
+                    child: TextInput(
+                        label: 'description'.tr,
+                        expand: true,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        hintText: 'description'.tr,
+                        controller: controller.descriptionController),
                   ),
                 ),
               ],
             ),
-          ),
-        )
-      ],
+          )),
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(
+                  blurRadius: 16,
+                  spreadRadius: -8,
+                  color: Colors.black.withOpacity(.09),
+                  offset: Offset(0, -6))
+            ]),
+            child: SafeArea(
+              child: Row(
+                children: [
+                  Button(
+                    secondary: true,
+                    onPressed: () {
+                      controller.step.value = 0;
+                    },
+                    icon: Icon(Icons.chevron_left, color: Colors.white),
+                  ),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                    child: MutationBuilder<Trail>(
+                      userOnly: true,
+                      builder: (mutate, loading) => Button(
+                        loading: loading,
+                        onPressed: () {
+                          if (formkey.currentState?.validate() == true) {
+                            formkey.currentState?.save();
+                            mutate();
+                          } else {
+                            throw new Error();
+                          }
+                        },
+                        child: Text('publish'.tr),
+                      ),
+                      onDone: (Trail? trail) {
+                        if (trail != null) {
+                          Get.back();
+                          Get.toNamed('/trails/${trail.id}');
+                        }
+                      },
+                      onError: (err) {},
+                      mutation: () async {
+                        return controller.create();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 

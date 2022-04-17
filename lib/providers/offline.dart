@@ -40,7 +40,6 @@ class OfflineProvider extends GetConnect {
   Future<Database> loadTrailsDb() async {
     var databasesPath = await getDatabasesPath();
     String path = Path.join(databasesPath, 'offline.db');
-
     Database db = await openDatabase(path, version: 2,
         onCreate: (Database db, int version) async {
       await db.execute(
@@ -55,7 +54,7 @@ class OfflineProvider extends GetConnect {
             'CREATE TABLE saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
       }
     }, onDowngrade: (db, oldVersion, newVersion) async {
-      if (oldVersion == 2 && newVersion == 1) {
+      if (newVersion == 1 && oldVersion == 2) {
         await db.execute('DROP TABLE saved_records');
       }
     });
@@ -137,7 +136,6 @@ class OfflineProvider extends GetConnect {
             .replaceFirst('{z}', wtms.item1.toString())
             .replaceFirst('{x}', wtms.item2.toString())
             .replaceFirst('{y}', wtms.item3.toString());
-        print(url);
         var response = await dio.request(url,
             cancelToken: cancelToken,
             options: Options(responseType: ResponseType.bytes));
@@ -145,9 +143,7 @@ class OfflineProvider extends GetConnect {
         List<Map> res = await txn.query('tiles',
             where: 'zoom_level = ? AND tile_column = ? AND tile_row = ?',
             whereArgs: [wtms.item1, wtms.item2, wtms.item3]);
-        //Upsert
-        print(
-            'zoom ${wtms.item1} column ${wtms.item2} row ${wtms.item3} data length ${response.data.length}');
+
         if (res.length == 0) {
           final tileId = await txn.insert('tiles', {
             'zoom_level': wtms.item1,
@@ -201,7 +197,6 @@ class OfflineProvider extends GetConnect {
     final database = await loadTrailsDb();
     List<Map> records = await database.query('saved_records',
         orderBy: 'created_at DESC', limit: 10, offset: offset);
-    print(records);
     return records
         .map((e) => OfflineRecord(
             id: e['id'],

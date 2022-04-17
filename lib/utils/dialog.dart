@@ -9,7 +9,7 @@ class DialogUtils {
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
         contentPadding: EdgeInsets.symmetric(horizontal: 8),
-        barrierDismissible: false,
+        //barrierDismissible: false,
         content: Column(
           children: [
             Padding(
@@ -49,7 +49,7 @@ class DialogUtils {
         title: title,
         titlePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
         contentPadding: EdgeInsets.symmetric(horizontal: 8),
-        barrierDismissible: false,
+        //barrierDismissible: false,
         content: Column(
           children: [
             Padding(
