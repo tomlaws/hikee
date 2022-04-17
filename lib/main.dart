@@ -20,6 +20,10 @@ import 'package:hikees/pages/account/records/account_records_binding.dart';
 import 'package:hikees/pages/account/records/account_records_page.dart';
 import 'package:hikees/pages/account/saved_records/saved_records_binding.dart';
 import 'package:hikees/pages/account/saved_records/saved_records_page.dart';
+import 'package:hikees/pages/account/topics/account_topics_binding.dart';
+import 'package:hikees/pages/account/topics/account_topics_page.dart';
+import 'package:hikees/pages/account/trails/account_trails_binding.dart';
+import 'package:hikees/pages/account/trails/account_trails_page.dart';
 import 'package:hikees/pages/auth/login_binding.dart';
 import 'package:hikees/pages/auth/login_page.dart';
 import 'package:hikees/pages/auth/register.dart';
@@ -218,6 +222,18 @@ class MyApp extends StatelessWidget {
           name: '/bookmarks',
           page: () => AccountBookmarksPage(),
           binding: AccountBookmarksBinding(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: '/my-trails',
+          page: () => AccountTrailsPage(),
+          binding: AccountTrailsBinding(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: '/my-topics',
+          page: () => AccountTopicsPage(),
+          binding: AccountTopicsBinding(),
           middlewares: [AuthMiddleware()],
         ),
         GetPage(

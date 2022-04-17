@@ -22,4 +22,10 @@ class AccountBookmarksController extends PaginationController<Bookmark> {
     state!.data.removeWhere((element) => element.trailId == trailId);
     change(state, status: RxStatus.success());
   }
+
+  prepend(Bookmark bookmark) {
+    if (state == null) return;
+    state!.data.insert(0, bookmark);
+    change(state, status: RxStatus.success());
+  }
 }

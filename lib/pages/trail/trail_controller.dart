@@ -23,7 +23,7 @@ import 'package:tuple/tuple.dart';
 class TrailController extends GetxController with StateMixin<Trail> {
   final _trailProvider = Get.put(TrailProvider());
   final _bookmarkProvider = Get.put(BookmarkProvider());
-  final _OfflineProvider = Get.put(OfflineProvider());
+  final _offlineProvider = Get.put(OfflineProvider());
   late GetPaginationController<TrailReview> trailReviewsController;
   late ScrollController scrollController;
 
@@ -102,6 +102,9 @@ class TrailController extends GetxController with StateMixin<Trail> {
       var bm = await _bookmarkProvider.createBookmark(id);
       state!.bookmark = bm;
       change(state, status: RxStatus.success());
+
+      var abc = Get.find<AccountBookmarksController>();
+      abc.prepend(bm);
     } else {
       _bookmarkProvider.removeBookmark(id);
       state!.bookmark = null;
@@ -176,7 +179,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
   Future<void> downloadTrail() async {
     if (state == null) return;
     var _preferenceProvider = Get.find<PreferencesProvider>();
-    _OfflineProvider.downloadAndSave(
+    _offlineProvider.downloadAndSave(
       GeoUtils.getPathBounds(GeoUtils.decodePath(state!.path)),
       state!,
       _preferenceProvider.preferences.value?.mapProvider,
@@ -186,7 +189,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
   Future<void> deleteOfflineTrail() async {
     DialogUtils.showActionDialog(
         'Warning', Text('Are you sure you want to delete?'), onOk: () {
-      _OfflineProvider.deleteTrail(id);
+      _offlineProvider.deleteTrail(id);
       OfflineTrailsController offlineTrailsController =
           Get.find<OfflineTrailsController>();
       offlineTrailsController.removeWhere((t) => t.id == id);
