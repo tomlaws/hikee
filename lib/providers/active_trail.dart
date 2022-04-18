@@ -15,15 +15,14 @@ import 'package:hikees/models/active_trail.dart';
 import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/reference_trail.dart';
 import 'package:hikees/models/trail.dart';
+import 'package:hikees/providers/offline.dart';
 import 'package:hikees/providers/shared/base.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:hikees/utils/location_callback_handler.dart';
 import 'package:hikees/utils/location_service_repository.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vector_math/vector_math.dart' as vmath;
-import 'package:collection/collection.dart';
 
 // Core Provider
 class ActiveTrailProvider extends BaseProvider {
@@ -43,7 +42,7 @@ class ActiveTrailProvider extends BaseProvider {
 
   bool get recordMode {
     if (activeTrail.value == null) return false;
-    return activeTrail.value!.trail == null;
+    return activeTrail.value!.referenceTrailId == null;
   }
 
   @override
@@ -51,7 +50,7 @@ class ActiveTrailProvider extends BaseProvider {
     super.onInit();
     _load();
     activeTrail.listen((_) {
-      _save();
+      _update();
       if (activeTrail.value == null || !activeTrail.value!.isStarted) {
         if (_timer != null) {
           tick.value = 0;
@@ -152,11 +151,12 @@ class ActiveTrailProvider extends BaseProvider {
 
       updateNotification();
     }
-    if (activeTrail.value?.trail?.path != null) {
+    if (activeTrail.value?.originalPath != null) {
       isCloseToStart.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!.latLng, activeTrail.value!.trail!.path!.first);
+          currentLocation.value!.latLng,
+          activeTrail.value!.originalPath!.first);
       isCloseToGoal.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!.latLng, activeTrail.value!.trail!.path!.last);
+          currentLocation.value!.latLng, activeTrail.value!.originalPath!.last);
     }
   }
 
@@ -176,36 +176,42 @@ class ActiveTrailProvider extends BaseProvider {
 
   Future<void> _load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('activeTrail')) return;
-    String serialized = prefs.getString('activeTrail')!;
-    dynamic decoded = jsonDecode(serialized);
-    if (decoded == null) return;
-    activeTrail.value = ActiveTrail.fromJson(decoded);
+    if (prefs.containsKey('activeTrail')) {
+      activeTrail.value =
+          ActiveTrail.fromJson(jsonDecode(prefs.getString('activeTrail')!));
+    }
   }
 
-  Future<void> _save() async {
-    String serialized = jsonEncode(activeTrail);
+  Future<void> _update() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('activeTrail', serialized);
+    if (activeTrail.value == null) {
+      prefs.remove('activeTrail');
+    } else {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('activeTrail', jsonEncode(activeTrail.value!.toJson()));
+    }
   }
 
   Future<void> select(Trail trail) async {
     try {
       var decodedPath = GeoUtils.decodePath(trail.path);
       // get elevations
-      List<HeightData> heights = [];
-      try {
-        heights = await GeoUtils.getHeights(decodedPath);
-      } catch (ex) {
-        print(ex);
-      }
+      // List<HeightData> heights = [];
+      // try {
+      //   heights = await GeoUtils.getHeights(decodedPath);
+      // } catch (ex) {
+      //   print(ex);
+      // }
       activeTrail.value = ActiveTrail(
-          trail: ReferenceTrail.fromTrail(trail, heights: heights),
-          startTime: null);
+          name: trail.name,
+          regionId: trail.regionId,
+          referenceTrailId: trail.id,
+          originalPath: GeoUtils.decodePath(trail.path));
+
       isCloseToStart.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!.latLng, activeTrail.value!.trail!.path![0]);
+          currentLocation.value!.latLng, activeTrail.value!.originalPath![0]);
       isCloseToGoal.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!.latLng, activeTrail.value!.trail!.path!.last);
+          currentLocation.value!.latLng, activeTrail.value!.originalPath!.last);
       updateNotification();
     } catch (ex) {
       print(ex);
@@ -224,6 +230,7 @@ class ActiveTrailProvider extends BaseProvider {
           t?.addPoint(currentLocation.value!.latLng);
         });
       }
+
       updateNotification();
     } catch (ex) {
       print(ex);
@@ -231,7 +238,8 @@ class ActiveTrailProvider extends BaseProvider {
   }
 
   record() async {
-    activeTrail.value = ActiveTrail(startTime: null);
+    final _offlineProvider = Get.find<OfflineProvider>();
+    activeTrail.value = ActiveTrail();
     updateNotification();
   }
 

@@ -197,7 +197,7 @@ class MyApp extends StatelessWidget {
           middlewares: [AuthMiddleware()],
         ),
         GetPage(
-          name: '/profiles/:id',
+          name: '/profiles/:userId',
           page: () => ProfilePage(),
           binding: ProfileBinding(),
         ),

@@ -170,32 +170,32 @@ class _DragMarkerLayerState extends State<DragMarkerLayer> {
                       ? marker.feedbackBuilder!(context)
                       : marker.builder!(context, widget.color),
                 ),
-              if (marker.hasPopup)
-                Positioned(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: marker.onPopupTap,
-                    child: FloatingTooltip(
-                        ignorePointer: false,
-                        compact: true,
-                        color: marker.popupColor,
-                        child: Icon(
-                          marker.popupIcon,
-                          color: Colors.white,
-                          size: 16,
-                        )),
-                  ),
-                  left: pixelPosition.x +
-                      ((isDragging && (marker.feedbackOffset != null))
-                          ? marker.feedbackOffset.dx
-                          : marker.offset.dx) +
-                      -6,
-                  top: pixelPosition.y +
-                      ((isDragging && (marker.feedbackOffset != null))
-                          ? marker.feedbackOffset.dy
-                          : marker.offset.dy) -
-                      32,
-                ),
+              // if (marker.hasPopup)
+              //   Positioned(
+              //     child: GestureDetector(
+              //       behavior: HitTestBehavior.translucent,
+              //       onTap: marker.onPopupTap,
+              //       child: FloatingTooltip(
+              //           ignorePointer: false,
+              //           compact: true,
+              //           color: marker.popupColor,
+              //           child: Icon(
+              //             marker.popupIcon,
+              //             color: Colors.white,
+              //             size: 16,
+              //           )),
+              //     ),
+              //     left: pixelPosition.x +
+              //         ((isDragging && (marker.feedbackOffset != null))
+              //             ? marker.feedbackOffset.dx
+              //             : marker.offset.dx) +
+              //         -6,
+              //     top: pixelPosition.y +
+              //         ((isDragging && (marker.feedbackOffset != null))
+              //             ? marker.feedbackOffset.dy
+              //             : marker.offset.dy) -
+              //         32,
+              //   ),
             ]),
           );
         });
@@ -360,7 +360,6 @@ class DragMarker {
   LatLng point;
   final Widget Function(BuildContext context, Color? color)? builder;
   final WidgetBuilder? feedbackBuilder;
-  final bool hasPopup;
   final Color popupColor;
   final IconData popupIcon;
   final Function()? onPopupTap;
@@ -384,7 +383,6 @@ class DragMarker {
     required this.point,
     this.builder,
     this.feedbackBuilder,
-    this.hasPopup = false,
     this.popupColor = const Color(0xAF000000),
     this.popupIcon = Icons.message_rounded,
     this.onPopupTap,

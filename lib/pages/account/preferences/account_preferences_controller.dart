@@ -73,7 +73,7 @@ class AccountPreferencesController extends GetxController {
     total.value = 0;
     recv.value = 0;
     CancelToken cancelToken = CancelToken();
-    DialogUtils.showDialog(
+    DialogUtils.showSimpleDialog(
         "downloading".tr,
         Obx(() => total.value != 0
             ? Column(children: [

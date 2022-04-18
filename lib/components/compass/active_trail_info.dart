@@ -14,23 +14,19 @@ class ActiveTrailInfo extends StatelessWidget {
       : super(key: key);
 
   bool get named {
-    if (activeTrail.trail != null) return true;
     return activeTrail.name != null;
   }
 
   String get name {
-    return activeTrail.name ?? activeTrail.trail?.name ?? 'unnamed'.tr;
+    return activeTrail.name ?? 'unnamed'.tr;
   }
 
   int get length {
-    if (activeTrail.trail == null) {
-      return activeTrail.length;
-    }
-    return activeTrail.trail?.length ?? 0;
+    return activeTrail.originalLength ?? activeTrail.length;
   }
 
   int get duration {
-    return activeTrail.trail?.duration ?? (activeTrail.elapsed / 60).round();
+    return activeTrail.originalDuration ?? (activeTrail.elapsed / 60).round();
   }
 
   @override

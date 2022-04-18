@@ -9,11 +9,15 @@ class Preferences {
   Language language;
   MapProvider mapProvider;
   MapProvider? offlineMapProvider;
+  int flatSpeedInKm;
+  int climbSpeedInM;
 
   Preferences(
       {required this.language,
       required this.mapProvider,
-      this.offlineMapProvider});
+      this.offlineMapProvider,
+      required this.flatSpeedInKm,
+      required this.climbSpeedInM});
 
   Locale get locale {
     switch (language) {
@@ -32,7 +36,9 @@ class Preferences {
     return Preferences(
         language: Language.DEFAULT,
         mapProvider: MapProvider.OpenStreetMap,
-        offlineMapProvider: null);
+        offlineMapProvider: null,
+        flatSpeedInKm: 5,
+        climbSpeedInM: 600);
   }
 
   factory Preferences.fromJson(Map<String, dynamic> json) =>

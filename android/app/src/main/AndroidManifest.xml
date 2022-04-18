@@ -17,12 +17,6 @@
             android:exported="true"
             android:foregroundServiceType = "location"
             android:stopWithTask="true"/>
-
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
-         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyB1wPKIhijH59heI4MQ8-tRfKCJKnsc_TA"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

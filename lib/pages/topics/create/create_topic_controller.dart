@@ -60,7 +60,7 @@ class CreateTopicController extends GetxController {
     var title = titleController.text;
     var content = contentController.text;
     if (images.length > 12) {
-      DialogUtils.showDialog('Error', Text('12 images at max'));
+      DialogUtils.showSimpleDialog('Error', Text('12 images at max'));
       return null;
     }
     return Get.showOverlay(

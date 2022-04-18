@@ -18,8 +18,8 @@ final int defaultMaxLength = 20 * 1000;
 
 class TrailsController extends PaginationController<Trail> {
   final _trailProvider = Get.put(TrailProvider());
-  final popularTrailsController = Get.find<PopularTrailsController>();
-  final featuredTrailsController = Get.find<FeaturedTrailController>();
+  final popularTrailsController = Get.put(PopularTrailsController());
+  final featuredTrailsController = Get.put(FeaturedTrailController());
 
   Set<int> regions = {...defaultRegions};
   int minDuration = defaultMinDuration;
@@ -48,6 +48,10 @@ class TrailsController extends PaginationController<Trail> {
     }
     if (!regions.containsAll(defaultRegions)) {
       query['regionIds'] = regions.toList().toString();
+    }
+    int? userId = int.tryParse(Get.parameters['userId'] ?? '');
+    if (userId != null) {
+      query['creatorId'] = userId.toString();
     }
     return _trailProvider.getTrails(query);
   }

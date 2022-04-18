@@ -376,7 +376,6 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     pos == controller.coordinates.first
                 ? 20 + 8
                 : 16 + 8,
-            hasPopup: pos.message != null,
             onPopupTap: controller.step.value == 0
                 ? () {
                     controller.editMessage(pos);

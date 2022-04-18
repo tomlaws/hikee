@@ -82,7 +82,8 @@ class RecordTile extends StatelessWidget {
                   children: [
                     record != null
                         ? Text(
-                            '${(GeoUtils.getPathLength(encodedPath: record!.userPath))}km',
+                            GeoUtils.formatMetres(GeoUtils.getPathLength(
+                                encodedPath: record!.userPath)),
                             style: TextStyle(color: Colors.black45),
                             maxLines: 1)
                         : Shimmer(

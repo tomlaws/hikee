@@ -7,8 +7,8 @@ import 'package:get/get.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/region.dart';
+import 'package:hikees/providers/preferences.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:proj4dart/proj4dart.dart' as proj4;
 import 'package:tuple/tuple.dart';
 import 'package:hikees/models/georaster.dart';
@@ -24,19 +24,6 @@ class GeoUtils {
     var result = decodePolyline(encoded, accuracyExponent: 5);
     return result.map((e) => LatLng(e[0].toDouble(), e[1].toDouble())).toList();
   }
-
-  // in km
-  // static double calculateDistance(LatLng location1, LatLng location2) {
-  //   var p = 0.017453292519943295;
-  //   var c = cos;
-  //   var a = 0.5 -
-  //       c((location2.latitude - location1.latitude) * p) / 2 +
-  //       c(location1.latitude * p) *
-  //           c(location2.latitude * p) *
-  //           (1 - c((location2.longitude - location1.longitude) * p)) /
-  //           2;
-  //   return 12742 * asin(sqrt(a));
-  // }
 
   static int calculateDistance(LatLng location1, LatLng location2) {
     var R = 6378137; // Earth’s mean radius in meter
@@ -88,7 +75,7 @@ class GeoUtils {
   }
 
   static String formatMetres(int m) {
-    if (m / 1000 > 0) {
+    if ((m / 1000.0).floor() > 0) {
       return (m / 1000).toStringAsFixed(2) + 'km';
     }
     return m.toString() + 'm';
@@ -98,7 +85,7 @@ class GeoUtils {
     if (km < 0) {
       return (km * 1000).toStringAsFixed(0) + 'm';
     }
-    return km.toStringAsFixed(2) + 'km';
+    return km.toStringAsFixed(2).replaceFirst('.00', '') + 'km';
   }
 
   static Region? determineRegion(List<LatLng> path) {
@@ -207,7 +194,11 @@ class GeoUtils {
       prevPt = pt;
     }
     // 1 hour for every 5 km forward plus 1 hour for every 600 m of ascent
-    var duration = (60 * (mFlat / 1000 / 5) + 60 * (ascent / 600)).round();
+    var p = Get.find<PreferencesProvider>();
+    int flatSpeed = p.preferences.value!.flatSpeedInKm;
+    double climbSpeed = p.preferences.value!.climbSpeedInM.toDouble();
+    var duration =
+        (60 * (mFlat / 1000 / flatSpeed) + 60 * (ascent / climbSpeed)).round();
     var lengthRounded = length.round();
     return Tuple2(lengthRounded, duration);
   }

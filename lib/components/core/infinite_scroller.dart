@@ -28,7 +28,8 @@ class InfiniteScroller<U> extends StatefulWidget {
       this.refreshable = true,
       this.onDelete,
       this.edgeOffset = 0.0,
-      this.sliversBuilder})
+      this.sliversBuilder,
+      this.pure = false})
       : super(key: key);
 
   final List<Widget>? headers;
@@ -73,7 +74,10 @@ class InfiniteScroller<U> extends StatefulWidget {
 
   final double edgeOffset;
 
-  final List<Widget> Function(Widget list)? sliversBuilder;
+  final List<Widget> Function(Widget list, BuildContext context)?
+      sliversBuilder;
+
+  final bool pure;
 
   @override
   _InfiniteScrollerState<U> createState() => _InfiniteScrollerState<U>();
@@ -153,6 +157,19 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
   }
 
   Widget _list(int itemCount, Widget Function(BuildContext, int) itemBuilder) {
+    if (widget.pure) {
+      if (widget.separator != null)
+        return ListView.separated(
+            padding: widget.padding,
+            itemBuilder: itemBuilder,
+            separatorBuilder: (_, __) => widget.separator!,
+            itemCount: itemCount);
+      else
+        return ListView.builder(
+            padding: widget.padding,
+            itemBuilder: itemBuilder,
+            itemCount: itemCount);
+    }
     Widget list = SliverPadding(
         padding: widget.padding,
         sliver: SliverList(
@@ -219,7 +236,7 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
           if (widget.sliversBuilder == null)
             list
           else
-            ...widget.sliversBuilder!(list),
+            ...widget.sliversBuilder!(list, context),
           footer
         ]);
     if (widget.refreshable && widget.take == null) {

@@ -183,7 +183,7 @@ class EventPage extends GetView<EventController> {
                           backgroundColor: joined ? Colors.red : null,
                           onPressed: () {
                             if (event.isExpired) {
-                              DialogUtils.showDialog(
+                              DialogUtils.showSimpleDialog(
                                   'error'.tr, 'thisEventHasExpired'.tr);
                               return;
                             }

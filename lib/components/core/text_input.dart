@@ -21,29 +21,31 @@ class TextInput extends StatefulWidget {
   final Function? onTap;
   final bool autoFocus;
   final List<TextInputFormatter>? inputFormatters;
+  final Widget? suffix;
 
-  const TextInput(
-      {Key? key,
-      this.initialValue,
-      this.hintText,
-      this.textEditingController,
-      this.controller,
-      this.maxLines = 1,
-      this.keyboardType,
-      this.obscureText = false,
-      this.textInputAction,
-      this.validator,
-      this.onSubmitted,
-      this.onSaved,
-      this.icon,
-      this.expand = false,
-      this.radius = 12,
-      this.transparent = false,
-      this.label,
-      this.onTap,
-      this.autoFocus = false,
-      this.inputFormatters})
-      : super(key: key);
+  const TextInput({
+    Key? key,
+    this.initialValue,
+    this.hintText,
+    this.textEditingController,
+    this.controller,
+    this.maxLines = 1,
+    this.keyboardType,
+    this.obscureText = false,
+    this.textInputAction,
+    this.validator,
+    this.onSubmitted,
+    this.onSaved,
+    this.icon,
+    this.expand = false,
+    this.radius = 12,
+    this.transparent = false,
+    this.label,
+    this.onTap,
+    this.autoFocus = false,
+    this.inputFormatters,
+    this.suffix
+  }) : super(key: key);
 
   @override
   _TextInputState createState() => _TextInputState();

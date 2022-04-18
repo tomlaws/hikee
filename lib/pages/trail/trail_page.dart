@@ -569,11 +569,8 @@ class TrailPage extends GetView<TrailController> {
                                                                       .location,
                                                                   width: 10,
                                                                   height: 10,
-                                                                  hasPopup:
-                                                                      pos.message !=
-                                                                          null,
                                                                   onTap: (_) {
-                                                                    DialogUtils.showDialog(
+                                                                    DialogUtils.showSimpleDialog(
                                                                         "message"
                                                                             .tr,
                                                                         pos.message!);

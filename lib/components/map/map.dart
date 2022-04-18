@@ -416,7 +416,7 @@ class HikeeMap extends StatelessWidget {
                     (focusingPath != null && focusingPath.length > 0))
                   Button(
                     icon: Icon(
-                      LineAwesomeIcons.expand,
+                      LineAwesomeIcons.route,
                       color: Theme.of(context).primaryColor,
                     ),
                     invert: true,

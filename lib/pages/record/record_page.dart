@@ -177,7 +177,10 @@ class RecordPage extends GetView<RecordController> {
                                 ),
                                 controller.obx(
                                     (state) => Text(
-                                          '${(GeoUtils.getPathLength(encodedPath: state!.userPath)).toString()}km',
+                                          GeoUtils.formatMetres(
+                                              GeoUtils.getPathLength(
+                                                  encodedPath:
+                                                      state!.userPath)),
                                           style: TextStyle(),
                                         ),
                                     onLoading: Shimmer()),

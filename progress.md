@@ -120,6 +120,6 @@ turn on/off weather report, custom weather refresh interval, for battery saving
 1. configurable walking speed & climbing
     Calculate time needed using Naismith's Rule
 
-2. edit created trails
-allow adding picture for record
-upload
+2. see user's created resources like trails and topics
+
+3. support offline saving (no login is required) filter as well

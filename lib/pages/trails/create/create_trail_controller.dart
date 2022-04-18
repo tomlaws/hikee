@@ -73,7 +73,7 @@ class CreateTrailController extends GetxController {
 
   void editMessage(Pin? pin) async {
     if (pin == null) {
-      DialogUtils.showDialog("Error", "Please select a point");
+      DialogUtils.showSimpleDialog("Error", "Please select a point");
       return;
     }
     final formkey = GlobalKey<FormState>();

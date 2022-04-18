@@ -1,6 +1,5 @@
 import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/map_marker.dart';
-import 'package:hikees/models/reference_trail.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -15,10 +14,18 @@ class ActiveTrail {
   List<MapMarker> markers;
   int? startTime;
   int? regionId;
-  ReferenceTrail? trail;
+
+  int? referenceTrailId;
+  int? originalLength;
+  int? originalDuration;
+  List<LatLng>? originalPath;
+  List<HeightData>? originalHeights;
+
+  bool offline;
 
   bool get isStarted => startTime != null;
 
+  // in sec
   int get elapsed {
     if (startTime == null) return 0;
     int e = DateTime.now().millisecondsSinceEpoch -
@@ -26,26 +33,29 @@ class ActiveTrail {
     return ((e / 1000).floor());
   }
 
-  // in m
+  // in meters
   int get length {
     return GeoUtils.getPathLength(path: userPath);
   }
 
-  double get speed {
-    if (elapsed == 0) return 0.0;
-    var kmps = (length / elapsed);
-    var s = kmps * 3600;
-    return s;
+  // meters/second
+  int get speed {
+    if (elapsed == 0) return 0;
+    var mps = (length / elapsed).floor();
+    var mph = mps * 3600;
+    return mph;
   }
 
+  // in second
   int get estimatedFinishTime {
-    if (trail == null) return 0;
-    var kmps = (length / elapsed);
-    if (elapsed == 0.0 || kmps == 0.0 || kmps.isInfinite || kmps.isNaN)
-      return trail!.duration * 60;
+    if (originalLength == null || originalDuration == null) return 0;
+    if (elapsed == 0.0) return originalDuration! * 60;
+    var mps = (length / elapsed).floor();
+    if (mps == 0.0 || mps.isInfinite || mps.isNaN)
+      return originalDuration! * 60;
     else {
-      var remamingLength = trail!.length - length;
-      return (remamingLength * 0.001 / kmps).round(); // in secs
+      var remamingLength = originalLength! - length;
+      return (remamingLength / mps).round(); // in secs
     }
   }
 
@@ -59,10 +69,28 @@ class ActiveTrail {
     }
   }
 
-  ActiveTrail({this.trail, this.name, this.regionId, this.startTime})
-      : userPath = [],
+  ActiveTrail(
+      {this.name,
+      this.regionId,
+      this.startTime,
+      List<LatLng>? userPath,
+      this.referenceTrailId,
+      this.originalPath,
+      this.offline = false})
+      : userPath = userPath ?? [],
         userHeights = [],
-        markers = [];
+        markers = [] {
+    GeoUtils.getHeights(this.userPath)
+        .then((value) => this.userHeights = value);
+    if (this.originalPath != null) {
+      GeoUtils.getHeights(originalPath!)
+          .then((value) => this.originalHeights = value);
+      GeoUtils.calculateLengthAndDuration(originalPath!).then((value) {
+        this.originalLength = value.item1;
+        this.originalDuration = value.item2;
+      });
+    }
+  }
   factory ActiveTrail.fromJson(Map<String, dynamic> json) =>
       _$ActiveTrailFromJson(json);
   Map<String, dynamic> toJson() => _$ActiveTrailToJson(this);

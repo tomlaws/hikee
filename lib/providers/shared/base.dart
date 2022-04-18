@@ -20,6 +20,7 @@ class BaseProvider extends GetConnect {
     super.onInit();
     httpClient.baseUrl = getUrl();
     httpClient.addRequestModifier<void>((request) async {
+      request.headers['connection'] = 'keep-alive';
       if (kIsWeb) {
         request.headers.remove('user-agent');
         request.headers.remove('content-length');

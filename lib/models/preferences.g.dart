@@ -12,6 +12,8 @@ Preferences _$PreferencesFromJson(Map<String, dynamic> json) {
     mapProvider: _$enumDecode(_$MapProviderEnumMap, json['mapProvider']),
     offlineMapProvider:
         _$enumDecodeNullable(_$MapProviderEnumMap, json['offlineMapProvider']),
+    flatSpeedInKm: json['flatSpeedInKm'] as int,
+    climbSpeedInM: json['climbSpeedInM'] as int,
   );
 }
 
@@ -20,6 +22,8 @@ Map<String, dynamic> _$PreferencesToJson(Preferences instance) =>
       'language': _$LanguageEnumMap[instance.language],
       'mapProvider': _$MapProviderEnumMap[instance.mapProvider],
       'offlineMapProvider': _$MapProviderEnumMap[instance.offlineMapProvider],
+      'flatSpeedInKm': instance.flatSpeedInKm,
+      'climbSpeedInM': instance.climbSpeedInM,
     };
 
 K _$enumDecode<K, V>(

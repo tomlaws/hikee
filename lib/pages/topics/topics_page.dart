@@ -31,7 +31,7 @@ class TopicsPage extends GetView<TopicsController> {
         padding:
             EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0, top: 8.0),
         loadingItemCount: 12,
-        sliversBuilder: (list) => [
+        sliversBuilder: (list, _) => [
           SliverAppBar(
             expandedHeight: 60.0,
             collapsedHeight: 60.0,

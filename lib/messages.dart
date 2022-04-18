@@ -67,6 +67,7 @@ class Messages extends Translations {
           "recordTrail": "Record Trail",
           "startRecording": "Start Recording",
           "startNow": "Start Now",
+          "finishTrail": "Finish Trail",
           "finishRecording": "Finish Recording",
           "quitRecording": "Quit Recording",
           "quitTrail": "Quit Trail",
@@ -145,6 +146,7 @@ class Messages extends Translations {
           "fieldCannotBeEmpty": "@field cannot be empty",
           "fieldTooLong": '@field is too long',
           "fieldTooShort": '@field is too short',
+          "fieldMustWithinRange": '@field must between @min and @max',
           "afcd": "Agriculture, Fisheries and Conservation Department",
           "updateNickname": "Update Nickname",
           "nickname": "Nickname",
@@ -165,7 +167,10 @@ class Messages extends Translations {
           "edit": "Edit",
           "info": "Info",
           "savedRecords": "Saved Records",
-          "offlineTrails": "Downloaded Trails"
+          "offlineTrails": "Downloaded Trails",
+          "speed": "Speed",
+          "flatSpeed": "Flat Speed",
+          "climbSpeed": "Climb Speed"
         },
         'zh_CN': {
           "bookmarks": "书籤",
@@ -229,6 +234,7 @@ class Messages extends Translations {
           "recordTrail": "录制路线",
           "startRecording": "开始录制",
           "startNow": "现在开始",
+          "finishTrail": "完成路线",
           "finishRecording": "完成录制",
           "quitRecording": "退出录制",
           "quitTrail": "退出路线",
@@ -304,6 +310,7 @@ class Messages extends Translations {
           "fieldCannotBeEmpty": "@field不能为空",
           "fieldTooLong": "@field长度超出上限",
           "fieldTooShort": "@field长度太短",
+          "fieldMustWithinRange": '@field必须介乎于@min和@max之间',
           "afcd": "渔农自然护理署",
           "updateNickname": "更改暱称",
           "nickname": "暱称",
@@ -324,7 +331,10 @@ class Messages extends Translations {
           "edit": "编辑",
           "info": "资讯",
           "savedRecords": "已储存纪录",
-          "offlineTrails": "已下载路线"
+          "offlineTrails": "已下载路线",
+          "speed": "速度",
+          "flatSpeed": "平地速度",
+          "climbSpeed": "爬升速度"
         },
         'zh_HK': {
           "bookmarks": "書籤",
@@ -388,6 +398,7 @@ class Messages extends Translations {
           "recordTrail": "錄製路線",
           "startRecording": "開始錄製",
           "startNow": "現在開始",
+          "finishTrail": "完成路線",
           "finishRecording": "完成錄製",
           "quitRecording": "退出錄製",
           "quitTrail": "退出路線",
@@ -463,6 +474,7 @@ class Messages extends Translations {
           "fieldCannotBeEmpty": "@field不能為空",
           "fieldTooLong": "@field長度超出上限",
           "fieldTooShort": "@field長度太短",
+          "fieldMustWithinRange": '@field必須介乎於@min和@max之間',
           "afcd": "漁農自然護理署",
           "updateNickname": "更改暱稱",
           "nickname": "暱稱",
@@ -483,7 +495,10 @@ class Messages extends Translations {
           "edit": "編輯",
           "info": "資訊",
           "savedRecords": "已儲存紀錄",
-          "offlineTrails": "已下載路線"
+          "offlineTrails": "已下載路線",
+          "speed": "速度",
+          "flatSpeed": "平地速度",
+          "climbSpeed": "爬升速度"
         },
       };
 }

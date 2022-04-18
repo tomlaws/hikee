@@ -27,7 +27,7 @@ class EventsPage extends GetView<EventsController> {
         builder: (e) {
           return EventTile(event: e);
         },
-        sliversBuilder: (list) => [
+        sliversBuilder: (list, _) => [
           SliverAppBar(
             expandedHeight: 60.0,
             collapsedHeight: 60.0,

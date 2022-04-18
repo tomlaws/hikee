@@ -15,6 +15,7 @@ class DropdownField<T> extends FormField<T> {
             key: key,
             onSaved: onSaved,
             validator: validator,
+            initialValue: selected,
             builder: (FormFieldState<T> state) {
               return Dropdown<T>(
                 label: label,
@@ -62,7 +63,7 @@ class _DropdownState<T> extends State<Dropdown<T>> {
         : null;
     return GestureDetector(
         onTap: () {
-          DialogUtils.showDialog(
+          DialogUtils.showSimpleDialog(
               widget.label ?? 'select...'.tr,
               Column(
                 children: widget.items

@@ -1,14 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hikees/controllers/shared/pagination.dart';
 import 'package:hikees/models/paginated.dart';
 import 'package:hikees/models/record.dart';
 import 'package:hikees/models/user.dart';
+import 'package:hikees/pages/topics/topics_controller.dart';
 import 'package:hikees/pages/trails/trails_controller.dart';
 import 'package:hikees/providers/record.dart';
 import 'package:hikees/providers/user.dart';
 
 class ProfileController extends PaginationController<Record> {
+  ScrollController scrollController = ScrollController();
   final _recordProvider = Get.put(RecordProvider());
+  final trailsController = Get.find<TrailsController>(tag: 'profile-trails');
+  final topicsController = Get.find<TopicsController>(tag: 'profile-topics');
   final userProvider = Get.put(UserProvider());
   late int userId;
   final user = Rxn<User>(null);
@@ -22,10 +27,16 @@ class ProfileController extends PaginationController<Record> {
   @override
   void onInit() {
     super.onInit();
-    userId = int.parse(Get.parameters['id']!);
+    userId = int.parse(Get.parameters['userId']!);
     userProvider.getUser(userId).then((user) {
       this.user.value = user;
     });
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 
   @override

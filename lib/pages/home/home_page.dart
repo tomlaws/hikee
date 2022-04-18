@@ -22,6 +22,7 @@ import 'home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
   final _authProvider = Get.find<AuthProvider>();
+  final _offlineProvider = Get.lazyPut(() => OfflineProvider());
   final _activeTrailProvider = Get.put(ActiveTrailProvider());
 
   @override
@@ -34,7 +35,6 @@ class HomePage extends GetView<HomeController> {
     Get.lazyPut(() => EventsController());
     Get.lazyPut(() => TopicsController());
     Get.lazyPut(() => AccountController());
-    Get.lazyPut(() => OfflineProvider());
     var tabs = [
       KeepAlivePage(child: CompassPage()),
       TrailsPage(),
@@ -52,6 +52,7 @@ class HomePage extends GetView<HomeController> {
         },
         itemBuilder: (context, index) => tabs[index]);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         //extendBodyBehindAppBar: true,
         body: Obx(() {
           // ensures rebuild everything if login state changed

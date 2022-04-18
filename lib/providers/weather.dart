@@ -9,12 +9,14 @@ class WeatherProvider extends GetConnect {
         'dataType': 'rhrread',
         'lang': langMapping[Get.locale?.countryCode] ?? 'en'
       };
-      print(query);
       var res = (await get(
               'https://data.weather.gov.hk/weatherAPI/opendata/weather.php',
-              query: query))
+              query: query,
+              headers: {'connection': 'keep-alive'}))
           .body;
-      print(res);
+      if (res == null) {
+        throw Error();
+      }
       List<dynamic> temp = res['temperature']['data'];
       double celsius =
           temp.fold<double>(0.0, (prev, element) => prev + element['value']) /

@@ -25,8 +25,8 @@ class AccountProfileController extends GetxController {
     super.onClose();
   }
 
+  final formkey = GlobalKey<FormState>();
   Future<void> updateNickname() async {
-    final formkey = GlobalKey<FormState>();
     var nickname = '';
     await DialogUtils.showActionDialog(
         'updateNickname'.tr,

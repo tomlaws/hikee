@@ -6,6 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
+import 'package:hikees/models/active_trail.dart';
+import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/offline_record.dart';
 import 'package:hikees/models/preferences.dart';
 import 'package:hikees/models/record.dart';
@@ -13,6 +15,7 @@ import 'package:hikees/models/trail.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tuple/tuple.dart';
 import 'package:latlong2/latlong.dart';
@@ -39,28 +42,30 @@ class OfflineProvider extends GetConnect {
 
   Future<Database> loadTrailsDb() async {
     var databasesPath = await getDatabasesPath();
-    String path = Path.join(databasesPath, 'offline.db');
-    Database db = await openDatabase(path, version: 2,
-        onCreate: (Database db, int version) async {
-      await db.execute(
-          'CREATE TABLE saved_trails (id INTEGER PRIMARY KEY, trail TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-      await db.execute(
-          'CREATE TABLE tiles (id INTEGER PRIMARY KEY, zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB, UNIQUE (zoom_level, tile_column, tile_row))');
-      await db.execute(
-          'CREATE TABLE saved_trail_tiles (id INTEGER PRIMARY KEY, trail_id REFERENCES savedTrails(id), tile_id  REFERENCES tiles(id))');
-    }, onUpgrade: (db, oldVersion, newVersion) async {
-      if (oldVersion == 1 && newVersion == 2) {
-        await db.execute(
-            'CREATE TABLE saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-      }
-    }, onDowngrade: (db, oldVersion, newVersion) async {
-      if (newVersion == 1 && oldVersion == 2) {
-        await db.execute('DROP TABLE saved_records');
-      }
-    }, onOpen: (db) async {
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-    });
+    String path = Path.join(databasesPath, 'offline_data.db');
+    //File(path).deleteSync();
+    Database db = await openDatabase(path,
+        version: 1,
+        onUpgrade: (db, oldVersion, newVersion) async {
+          if (newVersion > 0) {
+            await db.execute(
+                'CREATE TABLE saved_trails (id INTEGER PRIMARY KEY, trail TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+            await db.execute(
+                'CREATE TABLE tiles (id INTEGER PRIMARY KEY, zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB, UNIQUE (zoom_level, tile_column, tile_row))');
+            await db.execute(
+                'CREATE TABLE saved_trail_tiles (id INTEGER PRIMARY KEY, trail_id REFERENCES savedTrails(id), tile_id REFERENCES tiles(id))');
+            await db.execute(
+                'CREATE TABLE saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, original_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+            await db.execute(
+                'CREATE TABLE markers (id INTEGER PRIMARY KEY, record_id REFERENCES saved_records(id) ON DELETE CASCADE, latitude REAL NOT NULL, longitude REAL NOT NULL, color INTEGER, title TEXT NOT NULL, message TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+          }
+        },
+        onDowngrade: (db, oldVersion, newVersion) async {},
+        onOpen: (db) async {
+          await db.execute('PRAGMA foreign_keys = ON');
+          //await db.execute(
+          //    'CREATE TABLE IF NOT EXISTS saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+        });
     return db;
   }
 
@@ -119,7 +124,7 @@ class OfflineProvider extends GetConnect {
     if (wtmsList.length == 0) return;
     downloaded.value = 0;
     CancelToken cancelToken = CancelToken();
-    DialogUtils.showDialog(
+    DialogUtils.showSimpleDialog(
         "downloading".tr,
         Obx(() => Column(children: [
               Text((((downloaded / wtmsList.length) * 100).toInt()).toString() +
@@ -200,6 +205,14 @@ class OfflineProvider extends GetConnect {
     final database = await loadTrailsDb();
     List<Map> records = await database.query('saved_records',
         orderBy: 'created_at DESC', limit: 10, offset: offset);
+    List<Map> markers =
+        await database.query('markers', orderBy: 'created_at DESC');
+    List<MapMarker> mapMarkers = markers
+        .map((e) => MapMarker(
+            location: LatLng(e['latitude'] as double, e['longitude'] as double),
+            title: e['title'] as String,
+            color: Color(e['color'] as int)))
+        .toList();
     return records
         .map((e) => OfflineRecord(
             id: e['id'],
@@ -207,7 +220,8 @@ class OfflineProvider extends GetConnect {
             time: e['time'],
             regionId: e['region_id'],
             name: e['name'],
-            userPath: e['user_path']))
+            userPath: e['user_path'],
+            markers: mapMarkers))
         .toList();
   }
 
@@ -217,7 +231,6 @@ class OfflineProvider extends GetConnect {
     required String name,
     int? referenceTrailId,
     required int regionId,
-    required int length,
     required List<LatLng> userPath,
   }) async {
     var encodedPath = GeoUtils.encodePath(userPath);

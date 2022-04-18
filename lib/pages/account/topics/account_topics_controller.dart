@@ -16,7 +16,7 @@ class AccountTopicsController extends PaginationController<Topic> {
 
   @override
   Future<Paginated<Topic>> fetch(Map<String, dynamic> query) {
-    query['creatorId'] = _authProvider.me.value?.id.toString();
+    query['userId'] = _authProvider.me.value?.id.toString();
     return _topicProvider.getTopics(query);
   }
 }
