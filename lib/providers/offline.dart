@@ -53,7 +53,7 @@ class OfflineProvider extends GetConnect {
             await db.execute(
                 'CREATE TABLE tiles (id INTEGER PRIMARY KEY, zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB, UNIQUE (zoom_level, tile_column, tile_row))');
             await db.execute(
-                'CREATE TABLE saved_trail_tiles (id INTEGER PRIMARY KEY, trail_id REFERENCES savedTrails(id), tile_id REFERENCES tiles(id))');
+                'CREATE TABLE saved_trail_tiles (id INTEGER PRIMARY KEY, trail_id REFERENCES saved_trails(id) ON DELETE CASCADE, tile_id REFERENCES tiles(id))');
             await db.execute(
                 'CREATE TABLE saved_records (id INTEGER PRIMARY KEY, name TEXT, date INTEGER, time INTEGER, region_id INTEGER, user_path TEXT, original_path TEXT, reference_trail_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
             await db.execute(

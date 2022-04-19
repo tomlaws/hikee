@@ -188,7 +188,9 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     child: DropdownField<Region>(
                       label: 'region'.tr,
                       items: Region.allRegions().toList(),
-                      selected: controller.region.value,
+                      selected: GeoUtils.determineRegion(controller.coordinates
+                          .map((c) => c.location)
+                          .toList()),
                       itemBuilder: (r) {
                         return Text(r.name);
                       },
@@ -450,7 +452,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
       key: Key('create-trail-map'),
       zoom: 10,
       contentMargin: EdgeInsets.only(
-          bottom: 80 + WidgetsBinding.instance!.window.viewPadding.bottom - 16,
+          bottom: 88 + WidgetsBinding.instance!.window.viewPadding.bottom,
           right: 8,
           left: 8),
       markers: _dragMarkers,

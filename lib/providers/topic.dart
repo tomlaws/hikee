@@ -65,7 +65,7 @@ class TopicProvider extends BaseProvider {
   createTopicReply(
       {required int topicId,
       required String content,
-      required List<Uint8List> images}) async {
+      required List<String> images}) async {
     var params = {'content': content, 'images': images};
     var res = await post('topics/$topicId/replies', params);
     TopicReply newReply = TopicReply.fromJson(res.body);

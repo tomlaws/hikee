@@ -21,7 +21,6 @@ class DropdownField<T> extends FormField<T> {
                 label: label,
                 items: items,
                 itemBuilder: itemBuilder,
-                selected: selected,
                 formFieldState: state,
               );
             });
@@ -33,7 +32,6 @@ class Dropdown<T> extends StatefulWidget {
       this.label,
       required this.items,
       required this.itemBuilder,
-      required this.selected,
       this.formFieldState})
       : super(key: key);
 
@@ -42,16 +40,13 @@ class Dropdown<T> extends StatefulWidget {
   final String? label;
   final Widget Function(T) itemBuilder;
   final List<T> items;
-  final T? selected;
   final FormFieldState<T>? formFieldState;
 }
 
 class _DropdownState<T> extends State<Dropdown<T>> {
-  var _selected = Rxn<T>();
   @override
   void initState() {
     super.initState();
-    _selected.value = widget.selected;
   }
 
   @override
@@ -76,7 +71,6 @@ class _DropdownState<T> extends State<Dropdown<T>> {
                               if (widget.formFieldState != null) {
                                 widget.formFieldState!.didChange(e);
                               }
-                              _selected.value = e;
                               Get.back();
                             },
                             child: Container(
@@ -116,14 +110,13 @@ class _DropdownState<T> extends State<Dropdown<T>> {
             child: Container(
               height: 44,
               child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Obx(
-                    () => _selected.value != null
-                        ? widget.itemBuilder(_selected.value!)
-                        : Text("select...".tr,
-                            style: TextStyle(
-                                fontSize: 16, color: Color(0xFFC5C5C5))),
-                  )),
+                alignment: Alignment.centerLeft,
+                child: widget.formFieldState?.value != null
+                    ? widget.itemBuilder(widget.formFieldState!.value!)
+                    : Text("select...".tr,
+                        style:
+                            TextStyle(fontSize: 16, color: Color(0xFFC5C5C5))),
+              ),
             ),
           ),
         ]));

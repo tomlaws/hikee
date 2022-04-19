@@ -890,20 +890,41 @@ class CompassPage extends GetView<CompassController> {
                             SizedBox(
                               height: 16,
                             ),
-                            MutationBuilder(mutation: () {
-                              return controller.discoverNearbyFacilities();
-                            }, builder: (mutate, loading) {
-                              return Button(
-                                onPressed: () {
-                                  mutate();
-                                },
-                                loading: loading,
-                                child: Text(
-                                    controller.nearbyFacilities.value == null
-                                        ? 'discoverFacilities'.tr
-                                        : 'refresh'.tr),
-                              );
-                            }),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                MutationBuilder(mutation: () {
+                                  return controller.discoverNearbyFacilities();
+                                }, builder: (mutate, loading) {
+                                  return Button(
+                                    onPressed: () {
+                                      mutate();
+                                    },
+                                    loading: loading,
+                                    child: Text(
+                                        controller.nearbyFacilities.value ==
+                                                null
+                                            ? 'discoverFacilities'.tr
+                                            : 'refresh'.tr),
+                                  );
+                                }),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                MutationBuilder(mutation: () {
+                                  return controller.emergency();
+                                }, builder: (mutate, loading) {
+                                  return Button(
+                                    backgroundColor: Colors.red,
+                                    onPressed: () {
+                                      mutate();
+                                    },
+                                    loading: loading,
+                                    child: Text('emergency'.tr),
+                                  );
+                                }),
+                              ],
+                            )
                           ],
                         )))
             ]);
@@ -944,96 +965,5 @@ class CompassPage extends GetView<CompassController> {
         );
       },
     );
-  }
-
-  void _showNearestDistancePostDialog() {
-    var location =
-        controller.currentLocation.value ?? LatLng(22.3872078, 114.3777223);
-
-    //location = const LatLng(22.3872078, 114.3777223);
-    //   DialogUtils.show(
-    //       Get.context,
-    //       FutureBuilder<DistancePost?>(
-    //           future: DistancePostsReader.findClosestDistancePost(location),
-    //           builder: (_, snapshot) {
-    //             var nearestDistancePost = snapshot.data;
-    //             if (snapshot.connectionState != ConnectionState.done) {
-    //               return Padding(
-    //                 padding: const EdgeInsets.all(16.0),
-    //                 child: Center(
-    //                   child: CircularProgressIndicator(),
-    //                 ),
-    //               );
-    //             }
-    //             if (nearestDistancePost == null) {
-    //               return Center(
-    //                 child: Text('Distance post not found'),
-    //               );
-    //             }
-    //             var distInKm = GeoUtils.calculateDistance(
-    //                 nearestDistancePost.location, location);
-    //             return Column(
-    //               children: [
-    //                 Text(
-    //                   'The nearest distance post is',
-    //                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    //                 ),
-    //                 Opacity(
-    //                   opacity: .75,
-    //                   child: Text(
-    //                     'You\'re ${distInKm.toStringAsFixed(2)} km away from this distance post.',
-    //                   ),
-    //                 ),
-    //                 Opacity(
-    //                   opacity: .75,
-    //                   child: Text(
-    //                     'This may help the rescue team to locate you',
-    //                   ),
-    //                 ),
-    //                 Container(
-    //                   height: 16,
-    //                 ),
-    //                 Container(
-    //                   padding: EdgeInsets.all(16),
-    //                   decoration: BoxDecoration(
-    //                       color: Colors.black12,
-    //                       borderRadius: BorderRadius.circular(8.0)),
-    //                   child: Column(
-    //                     children: [
-    //                       Text(nearestDistancePost.trail_name_en),
-    //                       Text(nearestDistancePost.trail_name_zh),
-    //                       Text(nearestDistancePost.no,
-    //                           style: TextStyle(
-    //                               fontSize: 24, fontWeight: FontWeight.bold))
-    //                     ],
-    //                   ),
-    //                 ),
-    //                 Container(
-    //                   height: 16,
-    //                 ),
-    //                 Button(
-    //                     child: Text('SHOW IN MAP'),
-    //                     onPressed: () {
-    //                       controller.showDistancePost(nearestDistancePost);
-    //                       //Trailmaster.of(context).pop();
-    //                     }),
-    //               ],
-    //             );
-    //           }),
-    //       buttons: (context) => [
-    //             Button(
-    //                 child: Text('DIAL 999 NOW'),
-    //                 backgroundColor: Colors.red,
-    //                 onPressed: () {
-    //                   launch("tel://999");
-    //                   //Trailmaster.of(context).pop();
-    //                 }),
-    //             Button(
-    //                 child: Text('CANCEL'),
-    //                 backgroundColor: Colors.black38,
-    //                 onPressed: () {
-    //                   //Trailmaster.of(context).pop();
-    //                 })
-    //           ]);
   }
 }

@@ -25,7 +25,9 @@ class WeatherProvider extends GetConnect {
           icon: List<int>.from(res['icon']),
           temperature: celsius.round(),
           warningMessage: res['warningMessage'] is String
-              ? []
+              ? res['warningMessage'].length > 0
+                  ? [res['warningMessage']]
+                  : []
               : List<String>.from(res['warningMessage']));
     } catch (ex) {
       print(ex);

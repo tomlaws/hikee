@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
+import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/dropdown.dart';
 import 'package:hikees/components/core/futurer.dart';
 import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map_controller.dart';
 import 'package:hikees/components/map/tooltip_shape_border.dart';
+import 'package:hikees/data/distance_posts/reader.dart';
 import 'package:hikees/models/facility.dart';
 import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/record.dart';
@@ -52,7 +54,6 @@ class CompassController extends GetxController
   final double panelHeaderHeight = 60;
   final lockPosition = false.obs;
   final nearbyFacilities = Rxn<List<Facility>>();
-  final nearestDistancePost = Rxn<DistancePost>();
   final markers = Rx<List<DragMarker>>([]);
 
   // tooltip
@@ -141,7 +142,7 @@ class CompassController extends GetxController
         builder: (_, color) {
           return Container(
             decoration: ShapeDecoration(
-              color: Colors.black.withOpacity(.75),
+              color: e.color,
               shape: TooltipShapeBorder(),
             ),
             child: Icon(
@@ -329,7 +330,9 @@ class CompassController extends GetxController
   Future<void> showDistancePost(DistancePost dp) async {
     try {
       lockPosition.value = false;
-      nearestDistancePost.value = dp;
+      addMarker(
+          location: dp.location, title: dp.trail_name_en, color: Colors.red);
+      mapController?.mapController?.move(dp.location, 17);
     } catch (e) {
       print(e);
     }
@@ -542,5 +545,85 @@ class CompassController extends GetxController
     }
     nearbyFacilities.value = await _geodataProvider
         .getNearbyFacilities(currentLocation.value!.latLng);
+  }
+
+  Future<void> emergency() async {
+    LatLng? location = currentLocation.value?.latLng;
+
+    DialogUtils.showActionDialog(
+        "emergency".tr,
+        FutureBuilder<DistancePost?>(
+          future: location == null
+              ? Future.value(null)
+              : DistancePostsReader.findClosestDistancePost(location),
+          builder: (_, snapshot) {
+            var nearestDistancePost = snapshot.data;
+            if (snapshot.connectionState != ConnectionState.done) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            int dist = 999;
+            if (location != null && nearestDistancePost != null) {
+              dist = GeoUtils.calculateDistance(
+                  nearestDistancePost.location, location);
+
+              if (dist > 1500) {
+                nearestDistancePost = null;
+              }
+            }
+            return Column(
+              children: [
+                if (nearestDistancePost != null) ...[
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(8.0)),
+                    child: Column(
+                      children: [
+                        Text(nearestDistancePost.trail_name_en),
+                        Text(nearestDistancePost.trail_name_zh),
+                        Text(nearestDistancePost.no,
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Button(
+                            child: Text('Show in map'),
+                            onPressed: () {
+                              showDistancePost(nearestDistancePost!);
+                              Get.back();
+                            }),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 16,
+                  ),
+                  Opacity(
+                    opacity: .75,
+                    child: Text(
+                      'You\'re ${GeoUtils.formatMetres(dist)} away from this distance post.',
+                    ),
+                  ),
+                  Opacity(
+                    opacity: .75,
+                    child: Text(
+                      'This may help the rescue team to locate you',
+                    ),
+                  ),
+                ]
+              ],
+            );
+          },
+        ),
+        okText: 'Dial 999', onOk: () {
+      launch("tel://999");
+    }, critical: true);
   }
 }

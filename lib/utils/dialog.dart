@@ -43,7 +43,8 @@ class DialogUtils {
       Function? onCancel,
       String? okText,
       String? cancelText,
-      bool mutate = true}) async {
+      bool mutate = true,
+      bool critical = false}) async {
     final _loading = false.obs;
     return await showDialog(
         context: Get.context!,
@@ -76,6 +77,7 @@ class DialogUtils {
                 ),
                 Button(
                   loading: _loading.value,
+                  backgroundColor: critical ? Colors.red : null,
                   onPressed: () async {
                     if (onOk != null) {
                       try {
