@@ -35,7 +35,7 @@ class TrailProvider extends BaseProvider {
   // }
 
   Future<Paginated<Trail>> getPopularTrails() async {
-    var query = {'sort': 'viewedAt', 'order': 'DESC'};
+    var query = {'sort': 'popularity', 'order': 'DESC'};
     return await get('trails', query: query).then((value) {
       return Paginated<Trail>.fromJson(
           value.body, (o) => Trail.fromJson(o as Map<String, dynamic>));
