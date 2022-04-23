@@ -21,8 +21,9 @@ class Avatar extends StatelessWidget {
       height: height,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(height / 2.0),
-          color: Colors.white),
+        borderRadius: BorderRadius.circular(height),
+        color: Colors.white,
+      ),
       child: user == null
           ? Shimmer(width: height, height: height)
           : user is Future<User>

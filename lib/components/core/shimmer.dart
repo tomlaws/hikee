@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hikees/utils/color.dart';
 import 'package:shimmer/shimmer.dart' as S;
 

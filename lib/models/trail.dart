@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:hikees/models/bookmark.dart';
+import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/user.dart';
 import 'package:hikees/utils/lang.dart';
@@ -26,7 +27,7 @@ class Trail {
   final int length; //meters
   final String path;
   Bookmark? bookmark;
-  final List<Pin>? pins;
+  final List<MapMarker>? markers;
   bool? offline;
 
   Trail(
@@ -45,7 +46,7 @@ class Trail {
       required this.duration,
       required this.length,
       required this.path,
-      this.pins,
+      this.markers,
       this.bookmark,
       this.offline = false});
 

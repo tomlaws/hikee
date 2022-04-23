@@ -26,13 +26,6 @@ class LoginController extends GetxController {
     return _authProvider.login(email, password);
   }
 
-  void onError(ErrorResponse error) {
-    emailController.error = error.getFieldError('email');
-    passwordController.error = error.getFieldError('password');
-    if (error.statusCode == 401)
-      passwordController.error = 'Incorrect password';
-  }
-
   void onDone(token) {
     if (token != null) {
       Get.back();

@@ -1,8 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' hide TextInput;
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/dropdown.dart';
 import 'package:hikees/components/core/futurer.dart';
@@ -12,8 +10,10 @@ import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/components/map/tooltip_shape_border.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
+import 'package:hikees/utils/dialog.dart';
 import 'package:hikees/utils/time.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hikees/components/core/button.dart';
@@ -42,13 +42,16 @@ class CreateTrailPage extends GetView<CreateTrailController> {
       List<Widget> actions = [];
       if (controller.step.value == 0 &&
           controller.selectedCoordinates.value != null) {
-        if (controller.selectedCoordinates.value?.message == null)
+        if (controller.markers.firstWhereOrNull((e) =>
+                e.locationInLatLng == controller.selectedCoordinates.value) ==
+            null)
           actions.add(Button(
               invert: true,
               backgroundColor: Colors.transparent,
               icon: Icon(Icons.add_comment_rounded),
               onPressed: () {
-                controller.editMessage(controller.selectedCoordinates.value);
+                controller
+                    .promptAddMarker(controller.selectedCoordinates.value!);
               }));
         actions.add(Button(
             invert: true,
@@ -162,9 +165,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     child: HikeeMap(
                       key: Key('create-trail-map-2'),
                       pathOnly: true,
-                      path: controller.coordinates
-                          .map((c) => c.location)
-                          .toList(),
+                      path: controller.coordinates,
                       interactiveFlag: InteractiveFlag.none,
                       markers: _dragMarkers,
                     )),
@@ -188,9 +189,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     child: DropdownField<Region>(
                       label: 'region'.tr,
                       items: Region.allRegions().toList(),
-                      selected: GeoUtils.determineRegion(controller.coordinates
-                          .map((c) => c.location)
-                          .toList()),
+                      selected:
+                          GeoUtils.determineRegion(controller.coordinates),
                       itemBuilder: (r) {
                         return Text(r.name);
                       },
@@ -275,7 +275,6 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                           Get.toNamed('/trails/${trail.id}');
                         }
                       },
-                      onError: (err) {},
                       mutation: () async {
                         return controller.create();
                       },
@@ -365,10 +364,10 @@ class CreateTrailPage extends GetView<CreateTrailController> {
 
   List<DragMarker> _dragMarkers(
       Widget startMarkerContent, Widget endMarkerContent) {
-    return controller.coordinates
+    List<DragMarker> markers = controller.coordinates
         .map(
           (pos) => DragMarker(
-            point: pos.location,
+            point: pos,
             draggable: controller.step.value == 0,
             width: pos == controller.coordinates.last ||
                     pos == controller.coordinates.first
@@ -378,11 +377,6 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     pos == controller.coordinates.first
                 ? 20 + 8
                 : 16 + 8,
-            onPopupTap: controller.step.value == 0
-                ? () {
-                    controller.editMessage(pos);
-                  }
-                : null,
             builder: (_, color) {
               return Container(
                 padding: EdgeInsets.all(
@@ -416,51 +410,98 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                 : null,
             onDragUpdate: controller.step.value == 0
                 ? (_, position) {
-                    pos.location.latitude = position.latitude;
-                    pos.location.longitude = position.longitude;
+                    pos.latitude = position.latitude;
+                    pos.longitude = position.longitude;
                     controller.coordinates.refresh();
                   }
                 : null,
             onDragEnd: controller.step.value == 0
                 ? (_, position) {
-                    pos.location.latitude = position.latitude;
-                    pos.location.longitude = position.longitude;
+                    pos.latitude = position.latitude;
+                    pos.longitude = position.longitude;
                     controller.coordinates.refresh();
                   }
                 : null,
           ),
         )
         .toList();
+    List<DragMarker> customMarkers = controller.markers
+        .map((e) => DragMarker(
+              draggable: false,
+              point: e.locationInLatLng,
+              width: 24,
+              height: 24 + 8,
+              anchorPos: AnchorPos.align(AnchorAlign.top),
+              builder: (_, color) {
+                return Container(
+                  decoration: ShapeDecoration(
+                    color: e.color,
+                    shape: TooltipShapeBorder(),
+                  ),
+                  child: Icon(
+                    Icons.star,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                );
+              },
+              onTap: (_) {
+                DialogUtils.showActionDialog(
+                    e.title,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (e.message != null) ...[
+                            Text(
+                              'message'.tr,
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.black54),
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              e.message!,
+                              maxLines: 10,
+                            )
+                          ]
+                        ],
+                      ),
+                    ),
+                    mutate: false,
+                    cancelText: 'remove'.tr, onCancel: () {
+                  controller.markers.remove(e);
+                  Get.back();
+                });
+              },
+            ))
+        .toList();
+    return [...markers, ...customMarkers];
   }
 
   Widget _map() {
-    double startMarkerAngle = 0.0;
-    if (controller.coordinates.length > 1) {
-      var prevPt = controller.coordinates.elementAt(0);
-      var pt = controller.coordinates.elementAt(1);
-      var startLat = prevPt.location.latitude * pi / 180;
-      var startLng = prevPt.location.longitude * pi / 180;
-      var destLat = pt.location.latitude * pi / 180;
-      var destLng = pt.location.longitude * pi / 180;
-      var y = sin(destLng - startLng) * cos(destLat);
-      var x = cos(startLat) * sin(destLat) -
-          sin(startLat) * cos(destLat) * cos(destLng - startLng);
-      double theta = atan2(y, x);
-      startMarkerAngle = theta;
-    }
-    return HikeeMap(
-      key: Key('create-trail-map'),
-      zoom: 10,
-      contentMargin: EdgeInsets.only(
-          bottom: 88 + WidgetsBinding.instance!.window.viewPadding.bottom,
-          right: 8,
-          left: 8),
-      markers: _dragMarkers,
-      defaultMarkers: false,
-      path: controller.coordinates.map((c) => c.location).toList(),
-      onTap: (LatLng l) {
-        controller.addLocation(l);
-      },
-    );
+    return Obx(() {
+      // do not remove this line
+      var m = controller.markers.length;
+      return HikeeMap(
+        key: Key('create-trail-map'),
+        zoom: 10,
+        contentMargin: EdgeInsets.only(
+            bottom: 88 + WidgetsBinding.instance!.window.viewPadding.bottom,
+            right: 8,
+            left: 8),
+        markers: _dragMarkers,
+        defaultMarkers: false,
+        path: controller.coordinates,
+        onTap: (LatLng l) {
+          if (hkBounds.contains(l)) controller.addLocation(l);
+        },
+        onLongPress: (location) {
+          controller.promptAddMarker(location);
+        },
+      );
+    });
   }
 }

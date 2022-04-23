@@ -44,8 +44,6 @@ import 'package:hikees/pages/trail/trail_binding.dart';
 import 'package:hikees/pages/trail/trail_events/trail_events_binding.dart';
 import 'package:hikees/pages/trail/trail_events/trail_events_page.dart';
 import 'package:hikees/pages/trail/trail_page.dart';
-import 'package:hikees/pages/trails/categories/trail_categories_binding.dart';
-import 'package:hikees/pages/trails/categories/trail_categories_page.dart';
 import 'package:hikees/pages/trails/category/trail_category_binding.dart';
 import 'package:hikees/pages/trails/category/trail_category_page.dart';
 import 'package:hikees/pages/trails/create/create_trail_binding.dart';
@@ -56,60 +54,6 @@ import 'package:hikees/themes.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
-}
-
-// Remove glow effect for scroll views from flutter framework
-class CustomOverscrollIndicator extends ScrollBehavior {
-  @override
-  Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
-  }
-
-  @override
-  Widget buildScrollbar(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    // var opacity = [1.0, 1.0];
-    // var wrapped = StatefulBuilder(builder: (_, setState) {
-    //   return NotificationListener<ScrollNotification>(
-    //     onNotification: (scrollNotification) {
-    //       var v = scrollNotification.metrics.viewportDimension;
-    //       // apply fading edge only to small view
-    //       if (v > MediaQuery.of(context).size.height / 2) {
-    //         return true;
-    //       }
-    //       var b = scrollNotification.metrics.extentBefore;
-    //       var a = scrollNotification.metrics.extentAfter;
-    //       setState(() {
-    //         opacity = [
-    //           1 - (b * 20).clamp(0, 100) / 100,
-    //           1 - (a * 20).clamp(0, 100) / 100
-    //         ];
-    //       });
-    //       return false;
-    //     },
-    //     child: ShaderMask(
-    //       shaderCallback: (Rect bounds) {
-    //         return LinearGradient(
-    //           begin: Alignment.topCenter,
-    //           end: Alignment.bottomCenter,
-    //           stops: [0.0, 0.2, 0.8, 1.0],
-    //           colors: <Color>[
-    //             Colors.white
-    //                 .withOpacity(opacity[0]), //opacity: 0=fade, 1 = sharpedge
-    //             Colors.white,
-    //             Colors.white,
-    //             Colors.white.withOpacity(opacity[1])
-    //           ],
-    //         ).createShader(bounds);
-    //       },
-    //       child: child,
-    //       blendMode: BlendMode.dstIn,
-    //     ),
-    //   );
-    // });
-    return super.buildScrollbar(context, child, details);
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -127,8 +71,7 @@ class MyApp extends StatelessWidget {
       fallbackLocale: Locale('en', 'US'),
       builder: (_, widget) {
         if (widget == null) return Container();
-        return ScrollConfiguration(
-            behavior: CustomOverscrollIndicator(), child: widget);
+        return widget;
       },
       getPages: [
         GetPage(
@@ -141,11 +84,11 @@ class MyApp extends StatelessWidget {
             page: () => CreateTrailPage(),
             binding: CreateTrailBinding(),
             middlewares: [AuthMiddleware()]),
-        GetPage(
-          name: '/trails/categories',
-          page: () => TrailCategoriesPage(),
-          binding: TrailCategoriesBinding(),
-        ),
+        // GetPage(
+        //   name: '/trails/categories',
+        //   page: () => TrailCategoriesPage(),
+        //   binding: TrailCategoriesBinding(),
+        // ),
         GetPage(
           name: '/trails/categories/:id',
           page: () => TrailCategoryPage(),

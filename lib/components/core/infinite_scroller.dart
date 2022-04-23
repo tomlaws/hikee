@@ -117,6 +117,21 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
 
   @override
   Widget build(BuildContext context) {
+    var onLoading = Center(
+      child: widget.loadingBuilder != null
+          ? _list(
+              min(widget.loadingItemCount,
+                  widget.take ?? widget.loadingItemCount), (_, i) {
+              if (widget.take != null &&
+                  i == widget.take! - 1 &&
+                  widget.overflowBuilder != null) {
+                return widget.overflowBuilder!(
+                    null, widget.take! - 1, widget.loadingItemCount);
+              }
+              return widget.loadingBuilder!;
+            })
+          : CircularProgressIndicator(),
+    );
     return controller.obx((state) {
       var data = state;
       var items = data?.data ?? [];
@@ -137,22 +152,8 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
         return widget.builder(items[i]);
       });
     },
-        onLoading: Center(
-          child: widget.loadingBuilder != null
-              ? _list(
-                  min(widget.loadingItemCount,
-                      widget.take ?? widget.loadingItemCount), (_, i) {
-                  if (widget.take != null &&
-                      i == widget.take! - 1 &&
-                      widget.overflowBuilder != null) {
-                    return widget.overflowBuilder!(
-                        null, widget.take! - 1, widget.loadingItemCount);
-                  }
-                  return widget.loadingBuilder!;
-                })
-              : CircularProgressIndicator(),
-        ),
-        onError: (error) => ConnectionError(),
+        onLoading: onLoading,
+        onError: (error) => onLoading,
         onEmpty: SizedBox());
   }
 

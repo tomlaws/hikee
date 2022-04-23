@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/avatar.dart';
 import 'package:hikees/components/core/bottom_bar.dart';
@@ -13,6 +14,7 @@ import 'package:hikees/components/core/text_may_overflow.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/components/map/tooltip_shape_border.dart';
 import 'package:hikees/components/trails/trail_review_tile.dart';
 import 'package:hikees/models/trail_review.dart';
 import 'package:hikees/pages/compass/compass_controller.dart';
@@ -226,6 +228,34 @@ class TrailPage extends GetView<TrailController> {
                                                               Icon(
                                                                   LineAwesomeIcons
                                                                       .star,
+                                                                  size: controller
+                                                                          .offline
+                                                                      ? 16
+                                                                      : 12,
+                                                                  color: Color(
+                                                                      0xFFAAAAAA)),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              controller.obx(
+                                                                  (state) =>
+                                                                      Text(
+                                                                        state!
+                                                                            .difficulty
+                                                                            .toString(),
+                                                                      ),
+                                                                  onLoading:
+                                                                      Shimmer(
+                                                                    fontSize:
+                                                                        12,
+                                                                    width: 30,
+                                                                  )),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Icon(
+                                                                  LineAwesomeIcons
+                                                                      .heart,
                                                                   size: controller
                                                                           .offline
                                                                       ? 16
@@ -556,38 +586,52 @@ class TrailPage extends GetView<TrailController> {
                                                   pathOnly: true,
                                                   offlineTrail:
                                                       controller.offline,
-                                                  markers: (_, __) =>
-                                                      state.pins == null
-                                                          ? null
-                                                          : state.pins!
-                                                              .map(
-                                                                (pos) =>
-                                                                    DragMarker(
-                                                                  draggable:
-                                                                      false,
-                                                                  point: pos
-                                                                      .location,
-                                                                  width: 10,
-                                                                  height: 10,
-                                                                  onTap: (_) {
-                                                                    DialogUtils.showSimpleDialog(
-                                                                        "message"
+                                                  markers: (_, __) => state
+                                                              .markers ==
+                                                          null
+                                                      ? null
+                                                      : state.markers!
+                                                          .map(
+                                                            (marker) =>
+                                                                DragMarker(
+                                                              draggable: false,
+                                                              point: marker
+                                                                  .locationInLatLng,
+                                                              width: 24,
+                                                              height: 24 + 8,
+                                                              anchorPos:
+                                                                  AnchorPos.align(
+                                                                      AnchorAlign
+                                                                          .top),
+                                                              onTap: (_) {
+                                                                DialogUtils
+                                                                    .showSimpleDialog(
+                                                                        marker
+                                                                            .title
                                                                             .tr,
-                                                                        pos.message!);
-                                                                  },
-                                                                  builder:
-                                                                      (_, g) {
-                                                                    return Container(
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        color: Colors
-                                                                            .transparent,
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              )
-                                                              .toList(),
+                                                                        marker
+                                                                            .message!);
+                                                              },
+                                                              builder: (_, g) {
+                                                                return Container(
+                                                                  decoration:
+                                                                      ShapeDecoration(
+                                                                    color: Colors
+                                                                        .indigo,
+                                                                    shape:
+                                                                        TooltipShapeBorder(),
+                                                                  ),
+                                                                  child: Icon(
+                                                                    Icons.star,
+                                                                    size: 16,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          )
+                                                          .toList(),
                                                 );
                                               },
                                                   onLoading: Shimmer(

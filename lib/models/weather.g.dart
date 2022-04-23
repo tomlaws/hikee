@@ -6,15 +6,13 @@ part of 'weather.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Weather _$WeatherFromJson(Map<String, dynamic> json) {
-  return Weather(
-    icon: (json['icon'] as List<dynamic>).map((e) => e as int).toList(),
-    warningMessage: (json['warningMessage'] as List<dynamic>)
-        .map((e) => e as String)
-        .toList(),
-    temperature: json['temperature'] as int,
-  );
-}
+Weather _$WeatherFromJson(Map<String, dynamic> json) => Weather(
+      icon: (json['icon'] as List<dynamic>).map((e) => e as int).toList(),
+      warningMessage: (json['warningMessage'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      temperature: json['temperature'] as int,
+    );
 
 Map<String, dynamic> _$WeatherToJson(Weather instance) => <String, dynamic>{
       'icon': instance.icon,

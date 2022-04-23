@@ -13,17 +13,18 @@ class ColorUtils {
   }
 }
 
-class ColorConverter implements JsonConverter<Color, String> {
+class ColorConverter implements JsonConverter<Color?, String?> {
   const ColorConverter();
 
   @override
-  Color fromJson(String colorValue) {
+  Color? fromJson(String? colorValue) {
+    if (colorValue == null) return null;
     Color color = Color(int.parse(colorValue)).withOpacity(1);
     return color;
   }
 
   @override
-  String toJson(Color color) {
-    return color.value.toString();
+  String? toJson(Color? color) {
+    return color?.value.toString();
   }
 }

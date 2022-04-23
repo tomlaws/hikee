@@ -55,8 +55,12 @@ class RegisterPage extends GetView<RegisterController> {
                   width: 200,
                   child: MutationBuilder<Token?>(
                     mutation: controller.register,
-                    onError: controller.onError,
                     onDone: controller.onDone,
+                    errorMapping: {
+                      'email': controller.emailController,
+                      'password': controller.passwordController,
+                      'confirmPassword': controller.confirmPasswordController
+                    },
                     builder: (mutate, loading) {
                       return Button(
                           child: Text('register'.tr),

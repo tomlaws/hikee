@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/button.dart';
@@ -136,9 +137,10 @@ class CompassController extends GetxController
     result.addAll(activeTrail.value!.markers.mapIndexed(
       (i, e) => DragMarker(
         draggable: false,
-        point: e.location,
+        point: e.locationInLatLng,
         width: 24,
         height: 24 + 8,
+        anchorPos: AnchorPos.align(AnchorAlign.top),
         builder: (_, color) {
           return Container(
             decoration: ShapeDecoration(
@@ -162,8 +164,10 @@ class CompassController extends GetxController
                   children: [
                     if (currentLocation.value != null)
                       Obx(() => Futurer(
-                            future: GeoUtils.calculateLengthAndDuration(
-                                [currentLocation.value!.latLng, e.location]),
+                            future: GeoUtils.calculateLengthAndDuration([
+                              currentLocation.value!.latLng,
+                              e.locationInLatLng
+                            ]),
                             builder: (Tuple2<int, int> data) => Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -263,7 +267,10 @@ class CompassController extends GetxController
     }
     activeTrail.update((t) {
       t?.markers.add(MapMarker(
-          location: location, title: title, message: message, color: color));
+          locationInLatLng: location,
+          title: title,
+          message: message,
+          color: color));
     });
   }
 
@@ -318,7 +325,7 @@ class CompassController extends GetxController
             color: Colors.indigo);
         return true;
       } else {
-        return null;
+        throw new Error();
       }
     });
   }
@@ -394,7 +401,7 @@ class CompassController extends GetxController
         formkey.currentState?.save();
         return true;
       } else {
-        return null;
+        throw new Error();
       }
     });
     if (result != null) {

@@ -52,7 +52,10 @@ class LoginPage extends GetView<LoginController> {
                       return controller.signIn();
                     },
                     onDone: controller.onDone,
-                    onError: controller.onError,
+                    errorMapping: {
+                      'email': controller.emailController,
+                      'password': controller.passwordController
+                    },
                     builder: (mutate, loading) {
                       return Button(
                           child: Text('login'.tr),

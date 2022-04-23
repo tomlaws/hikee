@@ -209,7 +209,8 @@ class OfflineProvider extends GetConnect {
         await database.query('markers', orderBy: 'created_at DESC');
     List<MapMarker> mapMarkers = markers
         .map((e) => MapMarker(
-            location: LatLng(e['latitude'] as double, e['longitude'] as double),
+            locationInLatLng:
+                LatLng(e['latitude'] as double, e['longitude'] as double),
             title: e['title'] as String,
             color: Color(e['color'] as int)))
         .toList();

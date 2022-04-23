@@ -33,9 +33,9 @@ class Themes {
       splashColor: Colors.transparent,
       highlightColor: Color(0x0F000000),
       iconTheme: IconThemeData(color: Color(0xFF454157)),
-      textTheme: ThemeData(fontFamily: 'Gilroy')
-          .textTheme
-          .apply(bodyColor: Color(0xFF454157))
+      textTheme: ThemeData(
+        fontFamily: 'Gilroy',
+      ).textTheme.apply(bodyColor: Color(0xFF454157))
       // textTheme: GoogleFonts.nunitoTextTheme(
       //   ThemeData.light().textTheme.apply(bodyColor: Color(0xFF3a3a50)),
       // ),

@@ -4,10 +4,7 @@ import 'package:hikees/controllers/shared/pagination.dart';
 import 'package:hikees/models/paginated.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
-import 'package:hikees/pages/trails/popular_trails_controller.dart';
 import 'package:hikees/providers/trail.dart';
-
-import 'featured_trail_controller.dart';
 
 // default
 final Set<int> defaultRegions = Region.allRegions().map((e) => e.id).toSet();
@@ -18,8 +15,6 @@ final int defaultMaxLength = 20 * 1000;
 
 class TrailsController extends PaginationController<Trail> {
   final _trailProvider = Get.put(TrailProvider());
-  final popularTrailsController = Get.put(PopularTrailsController());
-  final featuredTrailsController = Get.put(FeaturedTrailController());
 
   Set<int> regions = {...defaultRegions};
   int minDuration = defaultMinDuration;

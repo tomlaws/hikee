@@ -13,6 +13,7 @@ class SearchPage<U, C extends PaginationController<U>> extends StatefulWidget {
       required this.tag,
       required this.controller,
       required this.builder,
+      this.loadingWidget,
       this.filter})
       : super(key: key);
 
@@ -22,6 +23,7 @@ class SearchPage<U, C extends PaginationController<U>> extends StatefulWidget {
   final String tag;
   final C controller;
   final Widget Function(U item) builder;
+  final Widget? loadingWidget;
   final Widget? filter;
 }
 
@@ -106,6 +108,8 @@ class _SearchPageState<U, C extends PaginationController<U>>
                     separator: SizedBox(
                       height: 16,
                     ),
+                    loadingItemCount: 10,
+                    loadingBuilder: widget.loadingWidget,
                     builder: (item) {
                       return widget.builder(item);
                     },

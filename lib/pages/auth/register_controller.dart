@@ -32,11 +32,6 @@ class RegisterController extends GetxController {
     return _authProvider.register(email, password);
   }
 
-  void onError(ErrorResponse error) {
-    emailController.error = error.getFieldError('email');
-    passwordController.error = error.getFieldError('password');
-  }
-
   void onDone(token) {
     if (token != null) {
       Get.back();

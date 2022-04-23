@@ -34,7 +34,7 @@ class Protected extends StatelessWidget {
             SizedBox(
               width: 200,
               child: Button(
-                  child: Text('LOGIN'),
+                  child: Text('loing'.tr),
                   onPressed: () {
                     Get.toNamed('/login');
                   }),

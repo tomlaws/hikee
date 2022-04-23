@@ -157,7 +157,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
         await _submitReview(rating: _rating, content: _content);
         return true;
       } else {
-        return null;
+        throw new Error();
       }
     });
     return result;

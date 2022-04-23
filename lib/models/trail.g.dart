@@ -6,34 +6,33 @@ part of 'trail.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Trail _$TrailFromJson(Map<String, dynamic> json) {
-  return Trail(
-    id: json['id'] as int,
-    creator: json['creator'] == null
-        ? null
-        : User.fromJson(json['creator'] as Map<String, dynamic>),
-    name_zh: json['name_zh'] as String,
-    name_en: json['name_en'] as String,
-    regionId: json['regionId'] as int,
-    region: Region.fromJson(json['region'] as Map<String, dynamic>),
-    description_zh: json['description_zh'] as String,
-    description_en: json['description_en'] as String,
-    image: json['image'] as String,
-    images: (json['images'] as List<dynamic>).map((e) => e as String).toList(),
-    difficulty: json['difficulty'] as int,
-    rating: json['rating'] as int,
-    duration: json['duration'] as int,
-    length: json['length'] as int,
-    path: json['path'] as String,
-    pins: (json['pins'] as List<dynamic>?)
-        ?.map((e) => Pin.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    bookmark: json['bookmark'] == null
-        ? null
-        : Bookmark.fromJson(json['bookmark'] as Map<String, dynamic>),
-    offline: json['offline'] as bool?,
-  );
-}
+Trail _$TrailFromJson(Map<String, dynamic> json) => Trail(
+      id: json['id'] as int,
+      creator: json['creator'] == null
+          ? null
+          : User.fromJson(json['creator'] as Map<String, dynamic>),
+      name_zh: json['name_zh'] as String,
+      name_en: json['name_en'] as String,
+      regionId: json['regionId'] as int,
+      region: Region.fromJson(json['region'] as Map<String, dynamic>),
+      description_zh: json['description_zh'] as String,
+      description_en: json['description_en'] as String,
+      image: json['image'] as String,
+      images:
+          (json['images'] as List<dynamic>).map((e) => e as String).toList(),
+      difficulty: json['difficulty'] as int,
+      rating: json['rating'] as int,
+      duration: json['duration'] as int,
+      length: json['length'] as int,
+      path: json['path'] as String,
+      markers: (json['markers'] as List<dynamic>?)
+          ?.map((e) => MapMarker.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      bookmark: json['bookmark'] == null
+          ? null
+          : Bookmark.fromJson(json['bookmark'] as Map<String, dynamic>),
+      offline: json['offline'] as bool? ?? false,
+    );
 
 Map<String, dynamic> _$TrailToJson(Trail instance) => <String, dynamic>{
       'id': instance.id,
@@ -52,6 +51,6 @@ Map<String, dynamic> _$TrailToJson(Trail instance) => <String, dynamic>{
       'length': instance.length,
       'path': instance.path,
       'bookmark': instance.bookmark,
-      'pins': instance.pins,
+      'markers': instance.markers,
       'offline': instance.offline,
     };

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class RatingInput extends FormField<int> {
   RatingInput({
@@ -50,8 +51,10 @@ class RatingInput extends FormField<int> {
                         itemCount: 5,
                         unratedColor: Colors.grey,
                         itemPadding: EdgeInsets.only(right: 4.0),
-                        itemBuilder: (context, _) => Icon(
-                          Icons.star,
+                        itemBuilder: (context, i) => Icon(
+                          state.value != null && state.value! > i
+                              ? LineAwesomeIcons.heart_1
+                              : LineAwesomeIcons.heart,
                           color: Colors.amber,
                         ),
                         updateOnDrag: true,

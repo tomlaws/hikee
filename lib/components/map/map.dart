@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart'
     hide Polyline, PolylineLayer, PolylineLayerOptions, PolylineLayerWidget;
@@ -22,6 +20,11 @@ import 'package:collection/collection.dart';
 import 'package:tuple/tuple.dart';
 
 import 'polyline_layer.dart';
+
+final LatLngBounds hkBounds = LatLngBounds(
+  LatLng(22.56998, 114.45588),
+  LatLng(22.152586, 113.826099),
+);
 
 class HikeeMap extends StatelessWidget {
   HikeeMap(
@@ -121,10 +124,7 @@ class HikeeMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var center = LatLng(22.302711, 114.177216);
-    final LatLngBounds hkBounds = LatLngBounds(
-      LatLng(22.56998, 114.45588),
-      LatLng(22.152586, 113.826099),
-    );
+
     var bounds = hkBounds;
 
     List<LatLng>? focusingPath;
@@ -233,7 +233,7 @@ class HikeeMap extends StatelessWidget {
             ],
           ),
         ),
-        if (defaultMarkers)
+        if (defaultMarkers && positionStream == null)
           MarkerLayerWidget(
               options: MarkerLayerOptions(
             markers: [

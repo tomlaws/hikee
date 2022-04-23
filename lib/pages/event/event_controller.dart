@@ -11,7 +11,7 @@ class EventController extends GetxController with StateMixin<Event> {
   void onInit() {
     super.onInit();
     id = Get.arguments['trailId'] ?? Get.arguments['id'];
-    append(() => () => _eventProvider.getEvent(id));
+    append(() => _loadEvent);
   }
 
   void setJoined(bool joined) {
@@ -24,5 +24,14 @@ class EventController extends GetxController with StateMixin<Event> {
       final accountEventsController = Get.find<AccountEventsController>();
       accountEventsController.refetch();
     } catch (ex) {}
+  }
+
+  Future<Event> _loadEvent() async {
+    return _eventProvider.getEvent(id);
+  }
+
+  void refreshEvent() {
+    change(null, status: RxStatus.loading());
+    append(() => _loadEvent);
   }
 }
