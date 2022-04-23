@@ -55,7 +55,7 @@ class RatingInput extends FormField<int> {
                           state.value != null && state.value! > i
                               ? LineAwesomeIcons.heart_1
                               : LineAwesomeIcons.heart,
-                          color: Colors.amber,
+                          color: Colors.pink.shade200,
                         ),
                         updateOnDrag: true,
                         onRatingUpdate: (double value) {

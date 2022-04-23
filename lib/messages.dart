@@ -104,6 +104,7 @@ class Messages extends Translations {
           "showMore": "Show more",
           "showLess": "Show less",
           "message": "Message",
+          "content": "Content",
           "reviews": "Reviews",
           "noReviews": "No reviews",
           "selectNow": "Select Now",
@@ -171,7 +172,8 @@ class Messages extends Translations {
           "offlineTrails": "Downloaded Trails",
           "speed": "Speed",
           "flatSpeed": "Flat Speed",
-          "climbSpeed": "Climb Speed"
+          "climbSpeed": "Climb Speed",
+          "areYouSureYouWantToDelete": "Are you sure you want to delete?"
         },
         'zh_CN': {
           "bookmarks": "书籤",
@@ -270,6 +272,7 @@ class Messages extends Translations {
           "showMore": "展示更多",
           "showLess": "显示较少",
           "message": "讯息",
+          "content": "內容",
           "reviews": "评论",
           "noReviews": "没有评论",
           "selectNow": "立即选择",
@@ -336,7 +339,8 @@ class Messages extends Translations {
           "offlineTrails": "已下载路线",
           "speed": "速度",
           "flatSpeed": "平地速度",
-          "climbSpeed": "爬升速度"
+          "climbSpeed": "爬升速度",
+          "areYouSureYouWantToDelete": "确定要删除吗？"
         },
         'zh_HK': {
           "bookmarks": "書籤",
@@ -435,6 +439,7 @@ class Messages extends Translations {
           "showMore": "展示更多",
           "showLess": "顯示較少",
           "message": "訊息",
+          "content": "內容",
           "reviews": "評論",
           "noReviews": "沒有評論",
           "selectNow": "立即選擇",
@@ -501,7 +506,8 @@ class Messages extends Translations {
           "offlineTrails": "已下載路線",
           "speed": "速度",
           "flatSpeed": "平地速度",
-          "climbSpeed": "爬升速度"
+          "climbSpeed": "爬升速度",
+          "areYouSureYouWantToDelete": "確定要刪除嗎？"
         },
       };
 }

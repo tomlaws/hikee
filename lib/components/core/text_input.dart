@@ -164,7 +164,7 @@ class _TextInputState extends State<TextInput>
                         children: [
                           Container(height: 6),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text(widget.controller!.error!,
                                 style: TextStyle(color: Colors.red)),
                           )

@@ -32,6 +32,13 @@ class RecordPage extends GetView<RecordController> {
                     'region': record.region
                   });
                 })
+          else
+            Button(
+                icon: Icon(Icons.delete),
+                invert: true,
+                onPressed: () {
+                  controller.delete();
+                })
         ],
       ),
       body: Stack(

@@ -10,7 +10,6 @@ import 'package:hikees/providers/topic.dart';
 import 'package:hikees/providers/upload.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:collection';
 
 class CreateTopicController extends GetxController {
   final _topicProvider = Get.put(TopicProvider());
@@ -63,28 +62,19 @@ class CreateTopicController extends GetxController {
       DialogUtils.showSimpleDialog('Error', Text('12 images at max'));
       return null;
     }
-    return Get.showOverlay(
-        asyncFunction: () async {
-          var futures = <Future<String?>>[];
-          for (int i = 0; i < images.length; i++) {
-            futures.add(_uploadProvider.uploadBytes(images[i], imageNames[i]));
-          }
-          List<String?> uploadedImages = await Future.wait(futures);
-          List<String> nonNullImages =
-              uploadedImages.whereType<String>().toList();
-          try {
-            Topic topic = await _topicProvider.createTopic(
-                title: title,
-                content: content,
-                images: nonNullImages,
-                categoryId: categoryId);
-            Get.offAndToNamed('/topics/${topic.id}');
-            return topic;
-          } catch (ex) {
-            throw ex;
-          }
-        },
-        loadingWidget: Center(child: CircularProgressIndicator()));
+    var futures = <Future<String?>>[];
+    for (int i = 0; i < images.length; i++) {
+      futures.add(_uploadProvider.uploadBytes(images[i], imageNames[i]));
+    }
+    List<String?> uploadedImages = await Future.wait(futures);
+    List<String> nonNullImages = uploadedImages.whereType<String>().toList();
+    Topic topic = await _topicProvider.createTopic(
+        title: title,
+        content: content,
+        images: nonNullImages,
+        categoryId: categoryId);
+    Get.offAndToNamed('/topics/${topic.id}');
+    return topic;
   }
 
   Future<TopicReply?> createReply() async {

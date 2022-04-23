@@ -188,7 +188,8 @@ class TrailController extends GetxController with StateMixin<Trail> {
 
   Future<void> deleteOfflineTrail() async {
     DialogUtils.showActionDialog(
-        'Warning', Text('Are you sure you want to delete?'), onOk: () {
+        'warning'.tr, Center(child: Text('areYouSureYouWantToDelete'.tr)),
+        critical: true, okText: 'yes'.tr, onOk: () {
       _offlineProvider.deleteTrail(id);
       OfflineTrailsController offlineTrailsController =
           Get.find<OfflineTrailsController>();

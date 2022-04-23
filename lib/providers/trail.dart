@@ -71,7 +71,6 @@ class TrailProvider extends BaseProvider {
     required List<MapMarker> markers,
     required List<String> images,
   }) async {
-    print(jsonEncode(markers));
     var params = {
       'name_en': name,
       'name_zh': name,
