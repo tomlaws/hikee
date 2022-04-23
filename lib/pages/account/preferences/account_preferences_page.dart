@@ -127,7 +127,7 @@ class AccountPreferencesPage extends GetView<AccountPreferencesController> {
                         children: [
                           TextInput(
                             initialValue: flatSpeed.toString(),
-                            label: 'flatSpeed'.tr + ' (km)',
+                            label: 'flatSpeed'.tr + ' (km/h)',
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
@@ -155,7 +155,7 @@ class AccountPreferencesPage extends GetView<AccountPreferencesController> {
                           ),
                           TextInput(
                             initialValue: climbSpeed.toString(),
-                            label: 'climbSpeed'.tr + ' (m)',
+                            label: 'climbSpeed'.tr + ' (m/h)',
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
