@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:hikees/models/trail.dart';
 import 'package:hikees/models/trail_category.dart';
 import 'package:hikees/providers/trail.dart';
 

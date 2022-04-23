@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:get/get.dart';
+import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/paginated.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/trail.dart';
@@ -10,8 +8,10 @@ import 'package:hikees/models/trail_review.dart';
 import 'package:hikees/providers/shared/base.dart';
 
 class TrailProvider extends BaseProvider {
-  Future<Trail> getTrail(int id) async =>
-      await get('trails/$id').then((value) => Trail.fromJson(value.body));
+  Future<Trail> getTrail(int id) async => await get('trails/$id').then((value) {
+        print(value.body);
+        return Trail.fromJson(value.body);
+      });
 
   Future<Paginated<Trail>> getTrails(Map<String, dynamic>? query) async {
     return await get('trails', query: query).then((value) {
@@ -35,7 +35,7 @@ class TrailProvider extends BaseProvider {
   // }
 
   Future<Paginated<Trail>> getPopularTrails() async {
-    var query = {'sort': 'rating', 'order': 'DESC'};
+    var query = {'sort': 'popularity', 'order': 'DESC'};
     return await get('trails', query: query).then((value) {
       return Paginated<Trail>.fromJson(
           value.body, (o) => Trail.fromJson(o as Map<String, dynamic>));
@@ -48,12 +48,18 @@ class TrailProvider extends BaseProvider {
     });
   }
 
-  Future<List<TrailCategory>> getTrailCategories() async {
-    return await get('trails/categories').then((value) {
-      return (value.body as List)
-          .map((e) => TrailCategory.fromJson(e))
-          .toList();
+  Future<List<Trail>> getNearbyTrails(double latitude, double longitude) async {
+    var query = {
+      'latitude': latitude.toString(),
+      'longitude': longitude.toString()
+    };
+    return await get('trails/nearby', query: query).then((value) {
+      return (value.body as List).map((e) => Trail.fromJson(e)).toList();
     });
+  }
+
+  Future<List<TrailCategory>> getTrailCategories() async {
+    return TrailCategory.allCategories();
   }
 
   Future<Trail> createTrail({
@@ -62,7 +68,7 @@ class TrailProvider extends BaseProvider {
     required int difficulty,
     required String description,
     required String path,
-    required List<Pin> pins,
+    required List<MapMarker> markers,
     required List<String> images,
   }) async {
     var params = {
@@ -73,7 +79,7 @@ class TrailProvider extends BaseProvider {
       'difficulty': difficulty,
       'regionId': regionId,
       'path': path,
-      'pins': jsonEncode(pins),
+      'markers': markers,
       'images': images,
     };
     var res = await post('trails', params);

@@ -35,7 +35,7 @@ class Preferences {
   static Preferences defaultPreferences() {
     return Preferences(
         language: Language.DEFAULT,
-        mapProvider: MapProvider.OpenStreetMap,
+        mapProvider: MapProvider.LandsDepartment,
         offlineMapProvider: null,
         flatSpeedInKm: 5,
         climbSpeedInM: 600);

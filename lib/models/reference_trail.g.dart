@@ -6,26 +6,25 @@ part of 'reference_trail.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ReferenceTrail _$ReferenceTrailFromJson(Map<String, dynamic> json) {
-  return ReferenceTrail(
-    id: json['id'] as int,
-    regionId: json['regionId'] as int,
-    name_en: json['name_en'] as String,
-    name_zh: json['name_zh'] as String,
-    length: json['length'] as int,
-    duration: json['duration'] as int,
-    path: (json['path'] as List<dynamic>?)
-        ?.map((e) => LatLng.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    heights: (json['heights'] as List<dynamic>)
-        .map((e) => HeightData.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    offline: json['offline'] as bool,
-    pins: (json['pins'] as List<dynamic>?)
-        ?.map((e) => Pin.fromJson(e as Map<String, dynamic>))
-        .toList(),
-  );
-}
+ReferenceTrail _$ReferenceTrailFromJson(Map<String, dynamic> json) =>
+    ReferenceTrail(
+      id: json['id'] as int,
+      regionId: json['regionId'] as int,
+      name_en: json['name_en'] as String,
+      name_zh: json['name_zh'] as String,
+      length: json['length'] as int,
+      duration: json['duration'] as int,
+      path: (json['path'] as List<dynamic>?)
+          ?.map((e) => LatLng.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      heights: (json['heights'] as List<dynamic>)
+          .map((e) => HeightData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      offline: json['offline'] as bool? ?? false,
+      markers: (json['markers'] as List<dynamic>?)
+          ?.map((e) => MapMarker.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
 Map<String, dynamic> _$ReferenceTrailToJson(ReferenceTrail instance) =>
     <String, dynamic>{
@@ -35,7 +34,7 @@ Map<String, dynamic> _$ReferenceTrailToJson(ReferenceTrail instance) =>
       'name_en': instance.name_en,
       'length': instance.length,
       'duration': instance.duration,
-      'pins': instance.pins,
+      'markers': instance.markers,
       'path': instance.path,
       'heights': instance.heights,
       'offline': instance.offline,

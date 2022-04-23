@@ -6,12 +6,10 @@ part of 'temperature.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Temperature _$TemperatureFromJson(Map<String, dynamic> json) {
-  return Temperature(
-    place: json['place'] as String,
-    value: (json['value'] as num).toDouble(),
-  );
-}
+Temperature _$TemperatureFromJson(Map<String, dynamic> json) => Temperature(
+      place: json['place'] as String,
+      value: (json['value'] as num).toDouble(),
+    );
 
 Map<String, dynamic> _$TemperatureToJson(Temperature instance) =>
     <String, dynamic>{

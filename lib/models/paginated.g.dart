@@ -9,14 +9,13 @@ part of 'paginated.dart';
 Paginated<T> _$PaginatedFromJson<T>(
   Map<String, dynamic> json,
   T Function(Object? json) fromJsonT,
-) {
-  return Paginated<T>(
-    data: (json['data'] as List<dynamic>).map(fromJsonT).toList(),
-    hasMore: json['hasMore'] as bool,
-    cursor: json['cursor'] as String?,
-    totalCount: json['totalCount'] as int,
-  );
-}
+) =>
+    Paginated<T>(
+      data: (json['data'] as List<dynamic>).map(fromJsonT).toList(),
+      hasMore: json['hasMore'] as bool,
+      cursor: json['cursor'] as String?,
+      totalCount: json['totalCount'] as int,
+    );
 
 Map<String, dynamic> _$PaginatedToJson<T>(
   Paginated<T> instance,

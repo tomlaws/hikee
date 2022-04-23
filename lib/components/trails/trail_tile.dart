@@ -48,6 +48,7 @@ class TrailTile extends StatelessWidget {
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (offline)
                   SizedBox(height: 8)
@@ -69,49 +70,65 @@ class TrailTile extends StatelessWidget {
                             ),
                     ),
                   ),
-                Padding(
-                  padding:
-                      EdgeInsets.only(top: 4, left: 16, right: 16, bottom: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      trail == null
-                          ? Shimmer(fontSize: 16)
-                          : Text(trail!.name,
-                              maxLines: 1,
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 4),
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 4,
-                        children: [
-                          Icon(LineAwesomeIcons.map_marker,
-                              color: Colors.black54, size: 12),
-                          trail == null
-                              ? Shimmer(fontSize: 12, width: 88)
-                              : Text(
-                                  trail!.region.name,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                      color: Colors.black54, fontSize: 12),
-                                ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Icon(LineAwesomeIcons.star,
-                              color: Colors.black54, size: 12),
-                          trail == null
-                              ? Shimmer(fontSize: 12, width: 24)
-                              : Text(
-                                  trail!.rating.toString(),
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                      color: Colors.black54, fontSize: 12),
-                                ),
-                        ],
-                      )
-                    ],
+                Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        top: 4, left: 16, right: 16, bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        trail == null
+                            ? Shimmer(fontSize: 16)
+                            : Text(trail!.name,
+                                maxLines: 1,
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 8),
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 4,
+                          children: [
+                            Icon(LineAwesomeIcons.map_marker,
+                                color: Colors.black54, size: 12),
+                            trail == null
+                                ? Shimmer(fontSize: 12, width: 64)
+                                : Text(
+                                    trail!.region.name,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        color: Colors.black54, fontSize: 12),
+                                  ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Icon(LineAwesomeIcons.star,
+                                color: Colors.black54, size: 12),
+                            trail == null
+                                ? Shimmer(fontSize: 12, width: 16)
+                                : Text(
+                                    trail!.difficulty.toString(),
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        color: Colors.black54, fontSize: 12),
+                                  ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Icon(LineAwesomeIcons.heart,
+                                color: Colors.black54, size: 12),
+                            trail == null
+                                ? Shimmer(fontSize: 12, width: 16)
+                                : Text(
+                                    trail!.rating.toString(),
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        color: Colors.black54, fontSize: 12),
+                                  ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 )
               ],

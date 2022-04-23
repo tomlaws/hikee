@@ -45,6 +45,9 @@ class ProfilePage extends GetView<ProfileController> {
                             unselectedLabelColor: Colors.grey,
                             indicatorColor: Get.theme.primaryColor,
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            onTap: (i) {
+                              controller.pageController.jumpToPage(i);
+                            },
                             tabs: [
                               Tab(
                                 icon: Icon(LineAwesomeIcons.trophy),
@@ -71,49 +74,53 @@ class ProfilePage extends GetView<ProfileController> {
                   body: Builder(builder: (BuildContext context) {
                     final innerScrollController =
                         PrimaryScrollController.of(context);
-                    return TabBarView(children: [
-                      Obx(() => controller.user.value?.isPrivate != false
-                          ? Center(child: Text('trailRecordsAreHidden'.tr))
-                          : InfiniteScroller<Record>(
-                              controller: controller,
-                              scrollController: innerScrollController,
-                              separator: SizedBox(
-                                height: 16,
-                              ),
-                              pure: true,
-                              empty: 'noRecords'.tr,
-                              loadingItemCount: 5,
-                              loadingBuilder: RecordTile(record: null),
-                              builder: (record) {
-                                return RecordTile(record: record);
-                              })),
-                      InfiniteScroller<Trail>(
-                          controller: controller.trailsController,
-                          scrollController: innerScrollController,
-                          separator: SizedBox(
-                            height: 16,
-                          ),
-                          pure: true,
-                          empty: 'noData'.tr,
-                          loadingItemCount: 5,
-                          loadingBuilder: TrailTile(trail: null),
-                          builder: (trail) {
-                            return TrailTile(trail: trail);
-                          }),
-                      InfiniteScroller<Topic>(
-                          controller: controller.topicsController,
-                          scrollController: innerScrollController,
-                          separator: SizedBox(
-                            height: 16,
-                          ),
-                          pure: true,
-                          empty: 'noData'.tr,
-                          loadingItemCount: 5,
-                          loadingBuilder: TopicTile(topic: null),
-                          builder: (topic) {
-                            return TopicTile(topic: topic);
-                          }),
-                    ]);
+                    return PageView.builder(
+                        controller: controller.pageController,
+                        itemBuilder: (_, i) => [
+                              Obx(() => controller.user.value?.isPrivate !=
+                                      false
+                                  ? Center(
+                                      child: Text('trailRecordsAreHidden'.tr))
+                                  : InfiniteScroller<Record>(
+                                      controller: controller,
+                                      scrollController: innerScrollController,
+                                      separator: SizedBox(
+                                        height: 16,
+                                      ),
+                                      pure: true,
+                                      empty: 'noRecords'.tr,
+                                      loadingItemCount: 5,
+                                      loadingBuilder: RecordTile(record: null),
+                                      builder: (record) {
+                                        return RecordTile(record: record);
+                                      })),
+                              InfiniteScroller<Trail>(
+                                  controller: controller.trailsController,
+                                  scrollController: innerScrollController,
+                                  separator: SizedBox(
+                                    height: 16,
+                                  ),
+                                  pure: true,
+                                  empty: 'noData'.tr,
+                                  loadingItemCount: 5,
+                                  loadingBuilder: TrailTile(trail: null),
+                                  builder: (trail) {
+                                    return TrailTile(trail: trail);
+                                  }),
+                              InfiniteScroller<Topic>(
+                                  controller: controller.topicsController,
+                                  scrollController: innerScrollController,
+                                  separator: SizedBox(
+                                    height: 16,
+                                  ),
+                                  pure: true,
+                                  empty: 'noData'.tr,
+                                  loadingItemCount: 5,
+                                  loadingBuilder: TopicTile(topic: null),
+                                  builder: (topic) {
+                                    return TopicTile(topic: topic);
+                                  }),
+                            ][i]);
                   }),
                 ),
               )

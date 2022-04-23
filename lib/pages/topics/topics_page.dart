@@ -60,6 +60,7 @@ class TopicsPage extends GetView<TopicsController> {
                       Get.to(SearchPage<Topic, TopicsController>(
                           tag: 'search-topics',
                           controller: TopicsController(),
+                          loadingWidget: TopicTile(topic: null),
                           builder: (topic) => TopicTile(topic: topic)));
                     },
                   )

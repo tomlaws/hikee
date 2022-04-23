@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:hikees/models/height_data.dart';
+import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/utils/geo.dart';
@@ -17,7 +18,7 @@ class ReferenceTrail {
   String name_en;
   int length;
   int duration;
-  List<Pin>? pins;
+  List<MapMarker>? markers;
   List<LatLng>? path;
   List<HeightData> heights;
   bool offline;
@@ -32,7 +33,7 @@ class ReferenceTrail {
       required this.path,
       required this.heights,
       this.offline = false,
-      this.pins});
+      this.markers});
 
   get name {
     if (Get.locale?.languageCode.toLowerCase() == 'zh') {
@@ -53,7 +54,7 @@ class ReferenceTrail {
         name_zh: trail.name_zh,
         length: trail.length,
         duration: trail.duration,
-        pins: trail.pins,
+        markers: trail.markers,
         path: GeoUtils.decodePath(trail.path),
         offline: trail.offline ?? false,
         heights: heights);

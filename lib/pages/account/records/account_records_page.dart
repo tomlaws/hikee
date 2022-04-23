@@ -35,6 +35,7 @@ class AccountRecordsPage extends GetView<AccountRecordsController> {
                 tag: 'search-records',
                 controller: AccountRecordsController(),
                 filter: AccountRecordsFilter(),
+                loadingWidget: RecordTile(record: null),
                 builder: (record) => RecordTile(record: record)));
           },
           backgroundColor: Colors.transparent,

@@ -51,7 +51,7 @@ class _TrailsFilterState extends State<TrailsFilter> {
 
     return Scaffold(
         appBar: HikeeAppBar(
-          title: Text('Filter'),
+          title: Text('filter'.tr),
         ),
         body: Column(
           children: [
@@ -61,7 +61,7 @@ class _TrailsFilterState extends State<TrailsFilter> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Regions',
+                    Text('region'.tr,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Padding(
@@ -92,7 +92,7 @@ class _TrailsFilterState extends State<TrailsFilter> {
                     SizedBox(
                       height: 16,
                     ),
-                    Text('Duration',
+                    Text('duration'.tr,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Obx(() => Row(
@@ -136,7 +136,7 @@ class _TrailsFilterState extends State<TrailsFilter> {
                             ),
                           ],
                         )),
-                    Text('Length',
+                    Text('length'.tr,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Obx(() => Row(

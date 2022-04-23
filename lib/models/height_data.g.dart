@@ -6,12 +6,10 @@ part of 'height_data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-HeightData _$HeightDataFromJson(Map<String, dynamic> json) {
-  return HeightData(
-    json['height'] as int,
-    LatLng.fromJson(json['location'] as Map<String, dynamic>),
-  );
-}
+HeightData _$HeightDataFromJson(Map<String, dynamic> json) => HeightData(
+      json['height'] as int,
+      LatLng.fromJson(json['location'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$HeightDataToJson(HeightData instance) =>
     <String, dynamic>{

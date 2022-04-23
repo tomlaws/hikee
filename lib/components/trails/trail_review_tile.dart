@@ -3,6 +3,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hikees/components/core/avatar.dart';
 import 'package:hikees/models/trail_review.dart';
 import 'package:hikees/themes.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class TrailReviewTile extends StatelessWidget {
   const TrailReviewTile(
@@ -53,9 +54,11 @@ class TrailReviewTile extends StatelessWidget {
                           itemCount: 5,
                           unratedColor: Colors.grey,
                           itemPadding: EdgeInsets.only(right: 4.0),
-                          itemBuilder: (context, _) => Icon(
-                            Icons.star,
-                            color: Colors.amber,
+                          itemBuilder: (context, i) => Icon(
+                            trailReview.rating > i
+                                ? LineAwesomeIcons.heart_1
+                                : LineAwesomeIcons.heart,
+                            color: Colors.pink.shade200,
                           ),
                           ignoreGestures: true,
                           onRatingUpdate: (double value) {},

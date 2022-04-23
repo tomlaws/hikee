@@ -45,6 +45,7 @@ class EventsPage extends GetView<EventsController> {
                       Get.to(SearchPage<Event, EventsController>(
                           tag: 'search-events',
                           controller: EventsController(),
+                          loadingWidget: EventTile(event: null),
                           builder: (event) => EventTile(event: event)));
                     },
                   )

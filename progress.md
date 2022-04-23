@@ -117,9 +117,23 @@ Date filter
 
 turn on/off weather report, custom weather refresh interval, for battery saving
 
-1. configurable walking speed & climbing
+
+
+1. Account page & profile page update
+    - Users can view their created resources like trails and topics
+    - Also can check others' trails and topics on the profile page
+
+2. region detection & strengthen validation
+    - region detection
+        - region will be selected automatically when creating trail
+        - algorithm
+            - check all the points within a path
+            - find out distance between each point and each region and sum up
+            - calculate average distance
+            - region with min average distance is selected
+        - might be wrong but still can manully change it
+    - validation
+        - error will be shown up for empty fields/invalid value
+
+3. configurable walking speed & climbing
     Calculate time needed using Naismith's Rule
-
-2. see user's created resources like trails and topics
-
-3. support offline saving (no login is required) filter as well

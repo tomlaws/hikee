@@ -5,6 +5,7 @@ import 'package:hikees/components/core/avatar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/calendar_date.dart';
 import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/futurer.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/trails/trail_tile.dart';
@@ -13,8 +14,10 @@ import 'package:hikees/models/event_participation.dart';
 import 'package:hikees/pages/event/event_controller.dart';
 import 'package:hikees/pages/event/event_participation_controller.dart';
 import 'package:hikees/utils/dialog.dart';
+import 'package:hikees/utils/geo.dart';
 import 'package:hikees/utils/time.dart';
 import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 
 class EventPage extends GetView<EventController> {
   @override
@@ -28,9 +31,13 @@ class EventPage extends GetView<EventController> {
           title: controller.obx((state) => Text(state?.name ?? ''),
               onLoading: Shimmer(width: 220, height: 30)),
         ),
-        body: controller.obx((event) {
-          return Column(children: [
-            Expanded(
+        body: Column(children: [
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                controller.refreshEvent();
+                _eventParticipationController.refetch();
+              },
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(8),
                 child: Column(
@@ -38,13 +45,18 @@ class EventPage extends GetView<EventController> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TrailTile(
-                        trail: event!.trail,
-                        onTap: () {
-                          Get.toNamed('/trails/${event.trail.id}',
-                              arguments: {'hideButtons': true});
-                        },
-                      ),
+                      child: controller.obx(
+                          (state) => TrailTile(
+                                trail: state?.trail,
+                                onTap: () {
+                                  if (state != null)
+                                    Get.toNamed('/trails/${state.trail.id}',
+                                        arguments: {'hideButtons': true});
+                                },
+                              ),
+                          onLoading: TrailTile(
+                            trail: null,
+                          )),
                     ),
                     Padding(
                       padding:
@@ -64,28 +76,52 @@ class EventPage extends GetView<EventController> {
                               children: [
                                 Row(
                                   children: [
-                                    CalendarDate(date: event.date, size: 48),
+                                    controller.obx(
+                                        (state) => CalendarDate(
+                                            date: state!.date, size: 48),
+                                        onLoading: Shimmer(
+                                          width: 48,
+                                          height: 48,
+                                        )),
                                     SizedBox(width: 16),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                            DateFormat('hh:mm a')
-                                                .format(event.date),
-                                            style: TextStyle(
+                                        controller.obx(
+                                            (state) => Text(
+                                                DateFormat('hh : mm a')
+                                                    .format(state!.date),
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                )),
+                                            onLoading: Shimmer(
                                               fontSize: 16,
+                                              width: 80,
                                             )),
                                         SizedBox(
                                           height: 4,
                                         ),
-                                        Opacity(
-                                          opacity: .75,
-                                          child: Text(
-                                            TimeUtils.formatMinutes(
-                                                event.trail.duration),
-                                          ),
-                                        )
+                                        controller.obx(
+                                            (state) => Futurer(
+                                                  future: GeoUtils
+                                                      .calculateLengthAndDuration(
+                                                          GeoUtils.decodePath(
+                                                              state!
+                                                                  .trail.path)),
+                                                  builder: (Tuple2 data) =>
+                                                      Text(
+                                                    TimeUtils.formatMinutes(
+                                                        data.item2),
+                                                    style: TextStyle(
+                                                        color: Colors.black38),
+                                                  ),
+                                                  placeholder:
+                                                      Shimmer(width: 20),
+                                                ),
+                                            onLoading: Shimmer(
+                                              width: 56,
+                                            )),
                                       ],
                                     ),
                                   ],
@@ -94,6 +130,7 @@ class EventPage extends GetView<EventController> {
                                   secondary: true,
                                   backgroundColor: Color(0xFFf5f5f5),
                                   onPressed: () {
+                                    if (controller.state == null) return;
                                     var startDate = controller.state!.date;
                                     var endDate = startDate.add(Duration(
                                         minutes:
@@ -123,12 +160,11 @@ class EventPage extends GetView<EventController> {
                               )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 24.0),
-                            child: SizedBox(
-                                height: 32,
-                                child: _participantList(
-                                    _eventParticipationController,
-                                    true,
-                                    context)),
+                            child: _participantList(
+                                _eventParticipationController,
+                                true,
+                                36,
+                                context),
                           ),
                           Text('description'.tr,
                               style: TextStyle(
@@ -137,7 +173,9 @@ class EventPage extends GetView<EventController> {
                               )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 24.0),
-                            child: Text(event.description),
+                            child: controller.obx(
+                                (state) => Text(state!.description),
+                                onLoading: Shimmer()),
                           ),
                         ],
                       ),
@@ -146,107 +184,108 @@ class EventPage extends GetView<EventController> {
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                BoxShadow(
-                    blurRadius: 16,
-                    spreadRadius: -8,
-                    color: Colors.black.withOpacity(.09),
-                    offset: Offset(0, -6))
-              ]),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: MutationBuilder(
-                      userOnly: true,
-                      mutation: () {
-                        bool joined = event.joined ?? false;
-                        if (joined) {
-                          return _eventParticipationController.quitEvent();
-                        }
-                        return _eventParticipationController.joinEvent();
-                      },
-                      onDone: (e) {
-                        bool joined = event.joined!;
-                        if (joined) {
-                          controller.setJoined(false);
-                        } else {
-                          controller.setJoined(true);
-                        }
-                      },
-                      builder: (mutate, loading) {
-                        bool joined = event.joined ?? false;
-                        return Button(
-                          loading: loading,
-                          disabled: event.isExpired,
-                          backgroundColor: joined ? Colors.red : null,
-                          onPressed: () {
-                            if (event.isExpired) {
-                              DialogUtils.showSimpleDialog(
-                                  'error'.tr, 'thisEventHasExpired'.tr);
-                              return;
-                            }
-                            mutate();
-                          },
-                          safeArea: true,
-                          child: Text(event.isExpired
-                              ? 'expired'.tr
-                              : joined
-                                  ? 'quit'.tr
-                                  : 'join'.tr),
-                        );
-                      },
-                    ),
+          ),
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(
+                  blurRadius: 16,
+                  spreadRadius: -8,
+                  color: Colors.black.withOpacity(.09),
+                  offset: Offset(0, -6))
+            ]),
+            child: Row(
+              children: [
+                Expanded(
+                  child: MutationBuilder(
+                    userOnly: true,
+                    mutation: () {
+                      bool joined = controller.state!.joined ?? false;
+                      if (joined) {
+                        return _eventParticipationController.quitEvent();
+                      }
+                      return _eventParticipationController.joinEvent();
+                    },
+                    onDone: (e) {
+                      bool joined = controller.state!.joined!;
+                      if (joined) {
+                        controller.setJoined(false);
+                      } else {
+                        controller.setJoined(true);
+                      }
+                    },
+                    builder: (mutate, loading) {
+                      bool joined = controller.state?.joined ?? false;
+                      return Button(
+                        loading: loading,
+                        disabled: controller.state?.isExpired != false,
+                        backgroundColor: joined ? Colors.red : null,
+                        onPressed: () {
+                          if (controller.state!.isExpired) {
+                            DialogUtils.showSimpleDialog(
+                                'error'.tr, 'thisEventHasExpired'.tr);
+                            return;
+                          }
+                          mutate();
+                        },
+                        safeArea: true,
+                        child: Text(controller.state?.isExpired != false
+                            ? 'expired'.tr
+                            : joined
+                                ? 'quit'.tr
+                                : 'join'.tr),
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ]);
-        },
-            onLoading: Center(
-              child: CircularProgressIndicator(),
-            )));
+          ),
+        ]));
   }
 
-  Widget _participantList(controller, bool summary, BuildContext context) {
+  Widget _participantList(
+      controller, bool summary, double avatarHeight, BuildContext context) {
     int? take;
     double spacing = 8;
-    double avatarHeight = 32;
     if (summary) {
       var horizontalPadding = 16;
       take = ((MediaQuery.of(context).size.width - horizontalPadding * 2) /
               (avatarHeight + spacing))
           .floor();
     }
-    return InfiniteScroller<EventParticipation>(
-      controller: controller,
-      take: take,
-      empty: 'noParticipants'.tr,
-      padding: EdgeInsets.zero,
-      separator: SizedBox(width: spacing),
-      horizontal: summary,
-      builder: (participation) {
-        return Avatar(user: participation.participant);
-      },
-      //loadingBuilder: Avatar(user: null),
-      //loadingItemCount: 5,
-      overflowBuilder: (participation, displayCount, totalCount) {
-        return Stack(children: [
-          Avatar(user: participation?.participant),
-          Positioned.fill(
-              child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(.35),
-                      borderRadius: BorderRadius.circular(avatarHeight / 2)),
-                  child: Text(
-                      '+' + (totalCount - displayCount).clamp(0, 99).toString(),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.normal)))),
-        ]);
-      },
+    return Container(
+      height: avatarHeight,
+      child: InfiniteScroller<EventParticipation>(
+        controller: controller,
+        take: take,
+        empty: 'noParticipants'.tr,
+        padding: EdgeInsets.zero,
+        separator: SizedBox(width: spacing),
+        horizontal: summary,
+        builder: (participation) {
+          return Avatar(user: participation.participant);
+        },
+        loadingBuilder: Avatar(user: null),
+        loadingItemCount: 5,
+        overflowBuilder: (participation, displayCount, totalCount) {
+          return Stack(children: [
+            Avatar(user: participation?.participant),
+            Positioned.fill(
+                child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(.35),
+                        borderRadius: BorderRadius.circular(avatarHeight / 2)),
+                    child: Text(
+                        '+' +
+                            (totalCount - displayCount).clamp(0, 99).toString(),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal)))),
+          ]);
+        },
+      ),
     );
   }
 }

@@ -360,7 +360,7 @@ class DragMarker {
   LatLng point;
   final Widget Function(BuildContext context, Color? color)? builder;
   final WidgetBuilder? feedbackBuilder;
-  final Color popupColor;
+  final Color color;
   final IconData popupIcon;
   final Function()? onPopupTap;
   final double width;
@@ -383,7 +383,7 @@ class DragMarker {
     required this.point,
     this.builder,
     this.feedbackBuilder,
-    this.popupColor = const Color(0xAF000000),
+    this.color = Colors.indigo,
     this.popupIcon = Icons.message_rounded,
     this.onPopupTap,
     this.width = 30.0,

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
@@ -18,6 +17,7 @@ import 'package:hikees/pages/trail/trail_events/trail_events_controller.dart';
 import 'package:intl/intl.dart';
 
 class CreateEventPage extends GetView<CreateEventController> {
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final trailController =
@@ -31,43 +31,60 @@ class CreateEventPage extends GetView<CreateEventController> {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    trailController.obx(
-                        (state) => TrailTile(
-                              trail: state!,
-                              onTap: () {},
-                            ),
-                        onLoading: Shimmer(
-                          height: 100,
-                        )),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    TextInput(
-                      controller: controller.nameController,
-                      label: 'eventName'.tr,
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    TextInput(
-                      controller: controller.descriptionController,
-                      label: 'description'.tr,
-                      maxLines: 5,
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    TextInput(
-                      controller: controller.dateController,
-                      label: 'date'.tr,
-                      onTap: () {
-                        _showDatePicker(context);
-                      },
-                    )
-                  ],
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      trailController.obx(
+                          (state) => TrailTile(
+                                trail: state!,
+                                onTap: () {},
+                              ),
+                          onLoading: Shimmer(
+                            height: 100,
+                          )),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      TextInput(
+                        controller: controller.nameController,
+                        label: 'eventName'.tr,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return 'fieldCannotBeEmpty'
+                                .trParams({'field': 'eventName'.tr});
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      TextInput(
+                        controller: controller.descriptionController,
+                        label: 'description'.tr,
+                        maxLines: 5,
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      TextInput(
+                        controller: controller.dateController,
+                        label: 'date'.tr,
+                        onTap: () {
+                          _showDatePicker(context);
+                        },
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return 'fieldCannotBeEmpty'
+                                .trParams({'field': 'date'.tr});
+                          }
+                          return null;
+                        },
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -75,7 +92,10 @@ class CreateEventPage extends GetView<CreateEventController> {
               child: MutationBuilder<Event>(
                   userOnly: true,
                   mutation: () {
-                    return controller.createEvent();
+                    if (_formKey.currentState?.validate() == true)
+                      return controller.createEvent();
+                    else
+                      throw Error();
                   },
                   onDone: (evt) {
                     if (evt != null) {
@@ -91,6 +111,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                   },
                   builder: (mutate, loading) {
                     return Button(
+                      loading: loading,
                       minWidth: double.infinity,
                       onPressed: () {
                         mutate();

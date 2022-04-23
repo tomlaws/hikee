@@ -6,17 +6,15 @@ part of 'trail_review.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TrailReview _$TrailReviewFromJson(Map<String, dynamic> json) {
-  return TrailReview(
-    id: json['id'] as int,
-    reviewerId: json['reviewerId'] as int,
-    trailId: json['trailId'] as int,
-    reviewer: User.fromJson(json['reviewer'] as Map<String, dynamic>),
-    content: json['content'] as String,
-    rating: json['rating'] as int,
-    createdAt: DateTime.parse(json['createdAt'] as String),
-  );
-}
+TrailReview _$TrailReviewFromJson(Map<String, dynamic> json) => TrailReview(
+      id: json['id'] as int,
+      reviewerId: json['reviewerId'] as int,
+      trailId: json['trailId'] as int,
+      reviewer: User.fromJson(json['reviewer'] as Map<String, dynamic>),
+      content: json['content'] as String,
+      rating: json['rating'] as int,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
 
 Map<String, dynamic> _$TrailReviewToJson(TrailReview instance) =>
     <String, dynamic>{

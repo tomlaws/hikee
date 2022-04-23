@@ -17,6 +17,7 @@ class ProfileController extends PaginationController<Record> {
   final userProvider = Get.put(UserProvider());
   late int userId;
   final user = Rxn<User>(null);
+  final PageController pageController = PageController();
 
   Set<int> regions = {...defaultRegions};
   int minDuration = defaultMinDuration;
@@ -35,6 +36,7 @@ class ProfileController extends PaginationController<Record> {
 
   @override
   void onClose() {
+    pageController.dispose();
     scrollController.dispose();
     super.onClose();
   }

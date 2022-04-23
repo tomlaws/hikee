@@ -10,7 +10,6 @@ import 'package:hikees/providers/topic.dart';
 import 'package:hikees/providers/upload.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:collection';
 
 class CreateTopicController extends GetxController {
   final _topicProvider = Get.put(TopicProvider());
@@ -63,6 +62,27 @@ class CreateTopicController extends GetxController {
       DialogUtils.showSimpleDialog('Error', Text('12 images at max'));
       return null;
     }
+    var futures = <Future<String?>>[];
+    for (int i = 0; i < images.length; i++) {
+      futures.add(_uploadProvider.uploadBytes(images[i], imageNames[i]));
+    }
+    List<String?> uploadedImages = await Future.wait(futures);
+    List<String> nonNullImages = uploadedImages.whereType<String>().toList();
+    Topic topic = await _topicProvider.createTopic(
+        title: title,
+        content: content,
+        images: nonNullImages,
+        categoryId: categoryId);
+    Get.offAndToNamed('/topics/${topic.id}');
+    return topic;
+  }
+
+  Future<TopicReply?> createReply() async {
+    if (images.length > 12) {
+      DialogUtils.showSimpleDialog('Error', Text('12 images at max'));
+      return null;
+    }
+    var content = contentController.text;
     return Get.showOverlay(
         asyncFunction: () async {
           var futures = <Future<String?>>[];
@@ -73,38 +93,27 @@ class CreateTopicController extends GetxController {
           List<String> nonNullImages =
               uploadedImages.whereType<String>().toList();
           try {
-            Topic topic = await _topicProvider.createTopic(
-                title: title,
-                content: content,
-                images: nonNullImages,
-                categoryId: categoryId);
-            Get.offAndToNamed('/topics/${topic.id}');
-            return topic;
+            TopicReply reply = await _topicProvider.createTopicReply(
+                content: content, images: nonNullImages, topicId: topicId!);
+            var topicController = Get.find<TopicController>();
+            var repliesState = topicController.topicReplyController.state;
+            if (repliesState?.hasMore == false) {
+              repliesState?..data.add(reply);
+              topicController.topicReplyController.forceUpdate(repliesState);
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                topicController.scrollController.animateTo(
+                  topicController.scrollController.position.maxScrollExtent,
+                  curve: Curves.easeOut,
+                  duration: const Duration(milliseconds: 500),
+                );
+              });
+            }
+            Get.back();
+            return reply;
           } catch (ex) {
             throw ex;
           }
         },
         loadingWidget: Center(child: CircularProgressIndicator()));
-  }
-
-  Future<TopicReply?> createReply() async {
-    var content = contentController.text;
-    TopicReply reply = await _topicProvider.createTopicReply(
-        content: content, images: images, topicId: topicId!);
-    var topicController = Get.find<TopicController>();
-    var repliesState = topicController.topicReplyController.state;
-    if (repliesState?.hasMore == false) {
-      repliesState?..data.add(reply);
-      topicController.topicReplyController.forceUpdate(repliesState);
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        topicController.scrollController.animateTo(
-          topicController.scrollController.position.maxScrollExtent,
-          curve: Curves.easeOut,
-          duration: const Duration(milliseconds: 500),
-        );
-      });
-    }
-    Get.back();
-    return reply;
   }
 }

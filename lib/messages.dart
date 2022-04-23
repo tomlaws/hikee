@@ -104,6 +104,7 @@ class Messages extends Translations {
           "showMore": "Show more",
           "showLess": "Show less",
           "message": "Message",
+          "content": "Content",
           "reviews": "Reviews",
           "noReviews": "No reviews",
           "selectNow": "Select Now",
@@ -112,6 +113,7 @@ class Messages extends Translations {
               "There's no event for this trail currently",
           "createEvent": "Create Event",
           "popular": "Popular",
+          "nearby": "Nearby",
           "featured": "Featured",
           "createTrail": "Create Trail",
           "uploadImage": "Upload Image",
@@ -170,7 +172,8 @@ class Messages extends Translations {
           "offlineTrails": "Downloaded Trails",
           "speed": "Speed",
           "flatSpeed": "Flat Speed",
-          "climbSpeed": "Climb Speed"
+          "climbSpeed": "Climb Speed",
+          "areYouSureYouWantToDelete": "Are you sure you want to delete?"
         },
         'zh_CN': {
           "bookmarks": "书籤",
@@ -269,6 +272,7 @@ class Messages extends Translations {
           "showMore": "展示更多",
           "showLess": "显示较少",
           "message": "讯息",
+          "content": "內容",
           "reviews": "评论",
           "noReviews": "没有评论",
           "selectNow": "立即选择",
@@ -276,6 +280,7 @@ class Messages extends Translations {
           "theresNoEventForThisTrailCurrently": "这条路线目前没有活动",
           "createEvent": "创建活动",
           "popular": "受欢迎的",
+          "nearby": "邻近的",
           "featured": "精选",
           "createTrail": "建立路线",
           "uploadImage": "上传图片",
@@ -334,7 +339,8 @@ class Messages extends Translations {
           "offlineTrails": "已下载路线",
           "speed": "速度",
           "flatSpeed": "平地速度",
-          "climbSpeed": "爬升速度"
+          "climbSpeed": "爬升速度",
+          "areYouSureYouWantToDelete": "确定要删除吗？"
         },
         'zh_HK': {
           "bookmarks": "書籤",
@@ -433,6 +439,7 @@ class Messages extends Translations {
           "showMore": "展示更多",
           "showLess": "顯示較少",
           "message": "訊息",
+          "content": "內容",
           "reviews": "評論",
           "noReviews": "沒有評論",
           "selectNow": "立即選擇",
@@ -440,6 +447,7 @@ class Messages extends Translations {
           "theresNoEventForThisTrailCurrently": "這條路線目前沒有活動",
           "createEvent": "創建活動",
           "popular": "受歡迎的",
+          "nearby": "鄰近的",
           "featured": "精選",
           "createTrail": "建立路線",
           "uploadImage": "上傳圖片",
@@ -498,7 +506,8 @@ class Messages extends Translations {
           "offlineTrails": "已下載路線",
           "speed": "速度",
           "flatSpeed": "平地速度",
-          "climbSpeed": "爬升速度"
+          "climbSpeed": "爬升速度",
+          "areYouSureYouWantToDelete": "確定要刪除嗎？"
         },
       };
 }

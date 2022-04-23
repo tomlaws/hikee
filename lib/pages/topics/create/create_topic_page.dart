@@ -22,6 +22,10 @@ class CreateTopicPage extends GetView<CreateTopicController> {
                   return await controller.createReply();
                 return await controller.createTopic();
               },
+              errorMapping: {
+                'title': controller.titleController,
+                'content': controller.contentController
+              },
               builder: (mutate, loading) {
                 return Button(
                   icon: Icon(Icons.send),
