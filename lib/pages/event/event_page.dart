@@ -209,6 +209,7 @@ class EventPage extends GetView<EventController> {
             builder: (mutate, loading) {
               bool joined = controller.state?.joined ?? false;
               return Button(
+                minWidth: double.infinity,
                 loading: loading,
                 disabled: controller.state?.isExpired != false,
                 backgroundColor: joined ? Colors.red : null,
@@ -254,11 +255,17 @@ class EventPage extends GetView<EventController> {
         builder: (participation) {
           return Avatar(user: participation.participant);
         },
-        loadingBuilder: Avatar(user: null),
+        loadingBuilder: Avatar(
+          user: null,
+          height: avatarHeight,
+        ),
         loadingItemCount: 5,
         overflowBuilder: (participation, displayCount, totalCount) {
           return Stack(children: [
-            Avatar(user: participation?.participant),
+            Avatar(
+              user: participation?.participant,
+              height: avatarHeight,
+            ),
             Positioned.fill(
                 child: Container(
                     alignment: Alignment.center,
