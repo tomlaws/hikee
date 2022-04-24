@@ -97,7 +97,7 @@ class ActiveTrailProvider extends BaseProvider {
 
   Future<void> _startLocationTracking() async {
     Map<String, dynamic> data = {'countInit': 1};
-    double distanceFilter = 0.0; // 6meters
+    double distanceFilter = 6.0; // 6meters
     await BackgroundLocator.registerLocationUpdate(
         LocationCallbackHandler.callback,
         initCallback: LocationCallbackHandler.initCallback,
