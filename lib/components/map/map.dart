@@ -369,20 +369,26 @@ class HikeeMap extends StatelessWidget {
         if (showCompass)
           Align(
             alignment: Alignment.topRight,
-            child: Builder(builder: (context) {
-              final mapState = MapState.maybeOf(context)!;
-              var rot = mapState.rotationRad;
-              return StreamBuilder(
-                  stream: mapState.onMoved,
-                  builder: (_, __) {
-                    return SafeArea(
-                        child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      child: Transform.rotate(angle: rot, child: Compass()),
-                    ));
-                  });
-            }),
+            child: SafeArea(
+              child: GestureDetector(
+                onTap: () {
+                  controller.mapController?.rotate(0);
+                },
+                child: Builder(builder: (context) {
+                  final mapState = MapState.maybeOf(context)!;
+                  var rot = mapState.rotationRad;
+                  return StreamBuilder(
+                      stream: mapState.onMoved,
+                      builder: (_, __) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Transform.rotate(angle: rot, child: Compass()),
+                        );
+                      });
+                }),
+              ),
+            ),
           ),
         Align(alignment: Alignment.bottomLeft, child: providerAttribution),
         if (heightData)
