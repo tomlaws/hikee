@@ -138,7 +138,7 @@ class _DragMarkerLayerState extends State<DragMarkerLayer> {
         builder: (BuildContext context, _) {
           DragMarker marker = widget.marker;
           updatePixelPos(widget.marker.point);
-
+          var rot = _mapState?.rotationRad ?? 0;
           return GestureDetector(
             behavior: HitTestBehavior.deferToChild,
             onLongPressStart:
@@ -166,9 +166,15 @@ class _DragMarkerLayerState extends State<DragMarkerLayer> {
                       ((isDragging && (marker.feedbackOffset != null))
                           ? marker.feedbackOffset.dy
                           : marker.offset.dy),
-                  child: (isDragging && (marker.feedbackBuilder != null))
-                      ? marker.feedbackBuilder!(context)
-                      : marker.builder!(context, widget.color),
+                  child: Transform.rotate(
+                      angle: rot * -1,
+                      //origin: ui.Offset(marker.width / 2, marker.height / 2),
+                      alignment: marker.anchor.top != marker.height / 2
+                          ? Alignment.bottomCenter
+                          : Alignment.center,
+                      child: (isDragging && (marker.feedbackBuilder != null))
+                          ? marker.feedbackBuilder!(context)
+                          : marker.builder!(context, widget.color)),
                 ),
               // if (marker.hasPopup)
               //   Positioned(

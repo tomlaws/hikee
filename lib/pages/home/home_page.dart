@@ -49,6 +49,9 @@ class HomePage extends GetView<HomeController> {
         onPageChanged: (i) {
           if (i == 0)
             SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+          else
+            SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+          ;
         },
         itemBuilder: (context, index) => tabs[index]);
     return Scaffold(

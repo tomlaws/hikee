@@ -34,7 +34,6 @@ class CompassPage extends GetView<CompassController> {
   final _authProvider = Get.find<AuthProvider>();
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return Container(
       color: Theme.of(context).primaryColor,
       child: Stack(children: [
