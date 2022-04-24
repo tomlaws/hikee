@@ -290,10 +290,10 @@ class CompassController extends GetxController
                 onSaved: (v) => title = v ?? '',
                 validator: (v) {
                   if (v == null || v.length == 0) {
-                    return 'fieldCannotBeEmpty'.trParams({'field': 'title'.tr});
+                    return 'fieldCannotBeEmpty'.trArgs(['title'.tr]);
                   }
                   if (v.length > 50) {
-                    return 'fieldTooLong'.trParams({'field': 'title'.tr});
+                    return 'fieldTooLong'.trArgs(['title'.tr]);
                   }
                   return null;
                 },
@@ -308,7 +308,7 @@ class CompassController extends GetxController
                 maxLines: 5,
                 validator: (v) {
                   if (v != null && v.length > 500) {
-                    return 'fieldTooLong'.trParams({'field': 'message'.tr});
+                    return 'fieldTooLong'.trArgs(['message'.tr]);
                   }
                   return null;
                 },
@@ -367,8 +367,7 @@ class CompassController extends GetxController
                   },
                   validator: (v) {
                     if (v == null || v.length == 0) {
-                      return 'fieldCannotBeEmpty'
-                          .trParams({'field': 'recordName'.tr});
+                      return 'fieldCannotBeEmpty'.trArgs(['recordName'.tr]);
                     }
                     return null;
                   },
@@ -388,8 +387,7 @@ class CompassController extends GetxController
                     },
                     validator: (v) {
                       if (v == null) {
-                        return 'fieldCannotBeEmpty'
-                            .trParams({'field': 'region'.tr});
+                        return 'fieldCannotBeEmpty'.trArgs(['region'.tr]);
                       }
                       return null;
                     },
@@ -601,7 +599,7 @@ class CompassController extends GetxController
                           height: 6,
                         ),
                         Button(
-                            child: Text('Show in map'),
+                            child: Text('showInMap'.tr),
                             onPressed: () {
                               showDistancePost(nearestDistancePost!);
                               Get.back();
@@ -614,14 +612,13 @@ class CompassController extends GetxController
                   ),
                   Opacity(
                     opacity: .75,
-                    child: Text(
-                      'You\'re ${GeoUtils.formatMetres(dist)} away from this distance post.',
-                    ),
+                    child: Text('youAreAwayFromThisDistancePost'
+                        .trArgs([GeoUtils.formatMetres(dist)])),
                   ),
                   Opacity(
                     opacity: .75,
                     child: Text(
-                      'This may help the rescue team to locate you',
+                      'thisMayHelpTheRescueTeamToLocateYou'.tr,
                     ),
                   ),
                 ]
@@ -629,8 +626,8 @@ class CompassController extends GetxController
             );
           },
         ),
-        okText: 'Dial 999', onOk: () {
-      launch("tel://999");
+        okText: 'dial'.tr + '999', onOk: () {
+      launchUrl(Uri.parse("tel://999"));
     }, critical: true);
   }
 }

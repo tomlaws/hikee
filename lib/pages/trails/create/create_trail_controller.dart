@@ -81,10 +81,10 @@ class CreateTrailController extends GetxController {
                 onSaved: (v) => title = v ?? '',
                 validator: (v) {
                   if (v == null || v.length == 0) {
-                    return 'fieldCannotBeEmpty'.trParams({'field': 'title'.tr});
+                    return 'fieldCannotBeEmpty'.trArgs(['title'.tr]);
                   }
                   if (v.length > 50) {
-                    return 'fieldTooLong'.trParams({'field': 'title'.tr});
+                    return 'fieldTooLong'.trArgs(['title'.tr]);
                   }
                   return null;
                 },
@@ -99,7 +99,7 @@ class CreateTrailController extends GetxController {
                 maxLines: 5,
                 validator: (v) {
                   if (v != null && v.length > 500) {
-                    return 'fieldTooLong'.trParams({'field': 'message'.tr});
+                    return 'fieldTooLong'.trArgs(['message'.tr]);
                   }
                   return null;
                 },

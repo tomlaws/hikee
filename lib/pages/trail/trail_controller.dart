@@ -143,8 +143,7 @@ class TrailController extends GetxController with StateMixin<Trail> {
                 },
                 validator: (v) {
                   if (v == null || v.length == 0) {
-                    return "fieldCannotBeEmpty"
-                        .trParams({'field': 'review'.tr});
+                    return "fieldCannotBeEmpty".trArgs(['review'.tr]);
                   }
                   return null;
                 },

@@ -53,7 +53,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                         validator: (v) {
                           if (v == null || v.isEmpty) {
                             return 'fieldCannotBeEmpty'
-                                .trParams({'field': 'eventName'.tr});
+                                .trArgs(['eventName'.tr]);
                           }
                           return null;
                         },
@@ -77,8 +77,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                         },
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return 'fieldCannotBeEmpty'
-                                .trParams({'field': 'date'.tr});
+                            return 'fieldCannotBeEmpty'.trArgs(['date'.tr]);
                           }
                           return null;
                         },

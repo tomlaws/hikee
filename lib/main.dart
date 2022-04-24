@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/gallery/gallery.dart';
 import 'package:hikees/components/gallery/gallery_binding.dart';
@@ -53,6 +55,12 @@ import 'package:hikees/themes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // FlavorConfig(
+  //   name: "DEVELOP",
+  //   variables: {
+  //     "API_ENDPOINT": "http://127.0.0.1:3000/",
+  //   },
+  // );
   runApp(MyApp());
 }
 
@@ -61,6 +69,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hikee',

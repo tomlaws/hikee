@@ -177,8 +177,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     controller: controller.nameController,
                     validator: (v) {
                       if (v == null || v.length == 0) {
-                        return 'fieldCannotBeEmpty'
-                            .trParams({'field': 'recordName'.tr});
+                        return 'fieldCannotBeEmpty'.trArgs(['recordName'.tr]);
                       }
                       return null;
                     },
@@ -196,8 +195,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       },
                       validator: (v) {
                         if (v == null) {
-                          return 'fieldCannotBeEmpty'
-                              .trParams({'field': 'region'.tr});
+                          return 'fieldCannotBeEmpty'.trArgs(['region'.tr]);
                         }
                         return null;
                       },
@@ -212,8 +210,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     onSaved: (v) {
                       controller.difficulty = v!;
                     },
-                    invalidRatingMessage: 'fieldCannotBeEmpty'
-                        .trParams({'field': 'difficulty'.tr}),
+                    invalidRatingMessage:
+                        'fieldCannotBeEmpty'.trArgs(['difficulty'.tr]),
                   ),
                 ),
                 Padding(
