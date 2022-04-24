@@ -28,7 +28,6 @@ import 'package:hikees/utils/image.dart';
 import 'package:hikees/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:readmore/readmore.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tuple/tuple.dart';
 
