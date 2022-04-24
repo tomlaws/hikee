@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
-import 'package:hikees/components/connection_error.dart';
+
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:hikees/components/core/floating_tooltip.dart';
 import 'package:hikees/components/trails/height_profile.dart';
 import 'package:hikees/components/map/map.dart';
@@ -372,148 +374,7 @@ class CompassPage extends GetView<CompassController> {
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        DefaultTextStyle(
-                          style: TextStyle(color: Colors.white),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: controller.activeTrail.value == null
-                                  ? null
-                                  : LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      stops: [0, 1],
-                                      colors: [
-                                        Colors.black.withOpacity(.7),
-                                        Colors.black.withOpacity(0),
-                                      ],
-                                    ),
-                            ),
-                            clipBehavior: Clip.hardEdge,
-                            child: SafeArea(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 16),
-                                        height: controller.panelHeaderHeight,
-                                        alignment: Alignment.centerLeft,
-                                        child: _weatherController.obx(
-                                            (weather) => weather != null
-                                                ? GestureDetector(
-                                                    onTap: () {
-                                                      launch(
-                                                          'https://www.hko.gov.hk/en/index.html');
-                                                    },
-                                                    child: Row(
-                                                      children: [
-                                                        ...weather.icon
-                                                            .map((no) =>
-                                                                CachedNetworkImage(
-                                                                  imageUrl:
-                                                                      'https://www.hko.gov.hk/images/HKOWxIconOutline/pic$no.png',
-                                                                  width: 30,
-                                                                  height: 30,
-                                                                ))
-                                                            .toList(),
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: 8),
-                                                          child: Text(
-                                                              '${weather.temperature}°C',
-                                                              style: TextStyle(
-                                                                  fontSize: 24,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold)),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  )
-                                                : SizedBox(),
-                                            onError: (_) => SizedBox(),
-                                            onLoading: SizedBox()),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.only(right: 16),
-                                        child: Compass(
-                                          heading: controller.currentHeading,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  _weatherController.obx((weather) {
-                                    if (weather != null &&
-                                        weather.warningMessage.length > 0) {
-                                      return Container(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            DialogUtils.showSimpleDialog(
-                                                'warning'.tr,
-                                                Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 8.0),
-                                                      child: Text(
-                                                        weather.warningMessage
-                                                            .join('\n'),
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.black),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ));
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(
-                                                bottom: 8.0,
-                                                left: 8.0,
-                                                right: 8.0),
-                                            padding: EdgeInsets.all(8.0),
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.amber),
-                                                color: Colors.amber
-                                                    .withOpacity(.58),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        16.0)),
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  weather.warningMessage
-                                                      .join('\n'),
-                                                  style: TextStyle(
-                                                      color: Colors.black),
-                                                  maxLines: 1,
-                                                  textAlign: TextAlign.center,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    return SizedBox();
-                                  },
-                                      onError: (_) => SizedBox(),
-                                      onLoading: SizedBox()),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        if (!hasActiveTrail) _header,
                         if (!hasActiveTrail)
                           Expanded(
                               child: Row(
@@ -570,6 +431,7 @@ class CompassPage extends GetView<CompassController> {
         onLongPress: (location) {
           controller.promptAddMarker(location);
         },
+        showCompass: true,
         offlineTrail: activeTrail.offline,
         path: activeTrail.originalPath,
         userPath: controller.userPath,
@@ -577,7 +439,11 @@ class CompassPage extends GetView<CompassController> {
         zoom: 10,
         showCenterOnLocationUpdateButton: true,
         positionStream: controller.currentLocation.stream,
-        headingStream: controller.currentHeading.stream,
+        headingStream: FlutterCompass.events?.map((event) {
+          if (event.heading == null || event.accuracy == null) return null;
+          return LocationMarkerHeading(
+              accuracy: 1.0, heading: event.heading! * pi / 180.0);
+        }),
         markers: controller.mapMarkers,
         heightData: false,
         contentMargin: EdgeInsets.only(
@@ -585,8 +451,124 @@ class CompassPage extends GetView<CompassController> {
             left: 8,
             right: 8,
             bottom: controller.collapsedPanelHeight + 8),
+        header: _header,
       );
     });
+  }
+
+  Widget get _header {
+    return DefaultTextStyle(
+      style: TextStyle(color: Colors.white),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: controller.activeTrail.value == null
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0, 1],
+                  colors: [
+                    Colors.black.withOpacity(.7),
+                    Colors.black.withOpacity(0),
+                  ],
+                ),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    height: controller.panelHeaderHeight,
+                    alignment: Alignment.centerLeft,
+                    child: _weatherController.obx(
+                        (weather) => weather != null
+                            ? GestureDetector(
+                                onTap: () {
+                                  launch(
+                                      'https://www.hko.gov.hk/en/index.html');
+                                },
+                                child: Row(
+                                  children: [
+                                    ...weather.icon
+                                        .map((no) => CachedNetworkImage(
+                                              imageUrl:
+                                                  'https://www.hko.gov.hk/images/HKOWxIconOutline/pic$no.png',
+                                              width: 30,
+                                              height: 30,
+                                            ))
+                                        .toList(),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 8),
+                                      child: Text('${weather.temperature}°C',
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold)),
+                                    )
+                                  ],
+                                ),
+                              )
+                            : SizedBox(),
+                        onError: (_) => SizedBox(),
+                        onLoading: SizedBox()),
+                  ),
+                ],
+              ),
+              _weatherController.obx((weather) {
+                if (weather != null && weather.warningMessage.length > 0) {
+                  return Container(
+                    child: GestureDetector(
+                      onTap: () {
+                        DialogUtils.showSimpleDialog(
+                            'warning'.tr,
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Text(
+                                    weather.warningMessage.join('\n'),
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ],
+                            ));
+                      },
+                      child: Container(
+                        margin:
+                            EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                        padding: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.amber),
+                            color: Colors.amber.withOpacity(.58),
+                            borderRadius: BorderRadius.circular(16.0)),
+                        child: Column(
+                          children: [
+                            Text(
+                              weather.warningMessage.join('\n'),
+                              style: TextStyle(color: Colors.black),
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return SizedBox();
+              }, onError: (_) => SizedBox(), onLoading: SizedBox()),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   List<Widget> _pageIndicators(int total, double currentPage) {
@@ -779,7 +761,7 @@ class CompassPage extends GetView<CompassController> {
                         );
                       }),
                       MutationBuilder(mutation: () {
-                        return controller.discoverNearbyFacilities();
+                        return controller.emergency();
                       }, builder: (mutate, loading) {
                         return Button(
                           height: 44,

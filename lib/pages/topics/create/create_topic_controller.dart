@@ -83,37 +83,29 @@ class CreateTopicController extends GetxController {
       return null;
     }
     var content = contentController.text;
-    return Get.showOverlay(
-        asyncFunction: () async {
-          var futures = <Future<String?>>[];
-          for (int i = 0; i < images.length; i++) {
-            futures.add(_uploadProvider.uploadBytes(images[i], imageNames[i]));
-          }
-          List<String?> uploadedImages = await Future.wait(futures);
-          List<String> nonNullImages =
-              uploadedImages.whereType<String>().toList();
-          try {
-            TopicReply reply = await _topicProvider.createTopicReply(
-                content: content, images: nonNullImages, topicId: topicId!);
-            var topicController = Get.find<TopicController>();
-            var repliesState = topicController.topicReplyController.state;
-            if (repliesState?.hasMore == false) {
-              repliesState?..data.add(reply);
-              topicController.topicReplyController.forceUpdate(repliesState);
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                topicController.scrollController.animateTo(
-                  topicController.scrollController.position.maxScrollExtent,
-                  curve: Curves.easeOut,
-                  duration: const Duration(milliseconds: 500),
-                );
-              });
-            }
-            Get.back();
-            return reply;
-          } catch (ex) {
-            throw ex;
-          }
-        },
-        loadingWidget: Center(child: CircularProgressIndicator()));
+    var futures = <Future<String?>>[];
+    for (int i = 0; i < images.length; i++) {
+      futures.add(_uploadProvider.uploadBytes(images[i], imageNames[i]));
+    }
+    List<String?> uploadedImages = await Future.wait(futures);
+    List<String> nonNullImages = uploadedImages.whereType<String>().toList();
+
+    TopicReply reply = await _topicProvider.createTopicReply(
+        content: content, images: nonNullImages, topicId: topicId!);
+    var topicController = Get.find<TopicController>();
+    var repliesState = topicController.topicReplyController.state;
+    if (repliesState?.hasMore == false) {
+      repliesState?..data.add(reply);
+      topicController.topicReplyController.forceUpdate(repliesState);
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        topicController.scrollController.animateTo(
+          topicController.scrollController.position.maxScrollExtent,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 500),
+        );
+      });
+    }
+    Get.back();
+    return reply;
   }
 }

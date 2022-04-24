@@ -127,7 +127,7 @@ class AccountPreferencesPage extends GetView<AccountPreferencesController> {
                         children: [
                           TextInput(
                             initialValue: flatSpeed.toString(),
-                            label: 'flatSpeed'.tr + ' (km)',
+                            label: 'flatSpeed'.tr + ' (km/h)',
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
@@ -135,11 +135,8 @@ class AccountPreferencesPage extends GetView<AccountPreferencesController> {
                             validator: (v) {
                               int speed = int.tryParse(v ?? '0') ?? 0;
                               if (speed <= 0 || speed > 20) {
-                                return 'fieldMustWithinRange'.trParams({
-                                  'field': 'flatSpeed'.tr,
-                                  'min': '1',
-                                  'max': '20'
-                                });
+                                return 'fieldMustWithinRange'
+                                    .trArgs(['flatSpeed'.tr, '1', '20']);
                               }
                               return null;
                             },
@@ -155,7 +152,7 @@ class AccountPreferencesPage extends GetView<AccountPreferencesController> {
                           ),
                           TextInput(
                             initialValue: climbSpeed.toString(),
-                            label: 'climbSpeed'.tr + ' (m)',
+                            label: 'climbSpeed'.tr + ' (m/h)',
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
@@ -163,11 +160,8 @@ class AccountPreferencesPage extends GetView<AccountPreferencesController> {
                             validator: (v) {
                               int speed = int.tryParse(v ?? '0') ?? 0;
                               if (speed <= 100 || speed > 2000) {
-                                return 'fieldMustWithinRange'.trParams({
-                                  'field': 'climbSpeed'.tr,
-                                  'min': '100',
-                                  'max': '2000'
-                                });
+                                return 'fieldMustWithinRange'
+                                    .trArgs(['climbSpeed'.tr, '100', '2000']);
                               }
                               return null;
                             },

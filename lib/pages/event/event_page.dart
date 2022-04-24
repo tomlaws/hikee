@@ -2,6 +2,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/calendar_date.dart';
 import 'package:hikees/components/core/app_bar.dart';
@@ -78,7 +79,8 @@ class EventPage extends GetView<EventController> {
                                   children: [
                                     controller.obx(
                                         (state) => CalendarDate(
-                                            date: state!.date, size: 48),
+                                            date: state!.date.toLocal(),
+                                            size: 48),
                                         onLoading: Shimmer(
                                           width: 48,
                                           height: 48,
@@ -90,8 +92,8 @@ class EventPage extends GetView<EventController> {
                                       children: [
                                         controller.obx(
                                             (state) => Text(
-                                                DateFormat('hh : mm a')
-                                                    .format(state!.date),
+                                                DateFormat('hh : mm a').format(
+                                                    state!.date.toLocal()),
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                 )),
@@ -131,7 +133,8 @@ class EventPage extends GetView<EventController> {
                                   backgroundColor: Color(0xFFf5f5f5),
                                   onPressed: () {
                                     if (controller.state == null) return;
-                                    var startDate = controller.state!.date;
+                                    var startDate =
+                                        controller.state!.date.toLocal();
                                     var endDate = startDate.add(Duration(
                                         minutes:
                                             controller.state!.trail.duration));
@@ -185,62 +188,48 @@ class EventPage extends GetView<EventController> {
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                  blurRadius: 16,
-                  spreadRadius: -8,
-                  color: Colors.black.withOpacity(.09),
-                  offset: Offset(0, -6))
-            ]),
-            child: Row(
-              children: [
-                Expanded(
-                  child: MutationBuilder(
-                    userOnly: true,
-                    mutation: () {
-                      bool joined = controller.state!.joined ?? false;
-                      if (joined) {
-                        return _eventParticipationController.quitEvent();
-                      }
-                      return _eventParticipationController.joinEvent();
-                    },
-                    onDone: (e) {
-                      bool joined = controller.state!.joined!;
-                      if (joined) {
-                        controller.setJoined(false);
-                      } else {
-                        controller.setJoined(true);
-                      }
-                    },
-                    builder: (mutate, loading) {
-                      bool joined = controller.state?.joined ?? false;
-                      return Button(
-                        loading: loading,
-                        disabled: controller.state?.isExpired != false,
-                        backgroundColor: joined ? Colors.red : null,
-                        onPressed: () {
-                          if (controller.state!.isExpired) {
-                            DialogUtils.showSimpleDialog(
-                                'error'.tr, 'thisEventHasExpired'.tr);
-                            return;
-                          }
-                          mutate();
-                        },
-                        safeArea: true,
-                        child: Text(controller.state?.isExpired != false
-                            ? 'expired'.tr
-                            : joined
-                                ? 'quit'.tr
-                                : 'join'.tr),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+          BottomBar(
+              child: MutationBuilder(
+            userOnly: true,
+            mutation: () {
+              bool joined = controller.state!.joined ?? false;
+              if (joined) {
+                return _eventParticipationController.quitEvent();
+              }
+              return _eventParticipationController.joinEvent();
+            },
+            onDone: (e) {
+              bool joined = controller.state!.joined!;
+              if (joined) {
+                controller.setJoined(false);
+              } else {
+                controller.setJoined(true);
+              }
+            },
+            builder: (mutate, loading) {
+              bool joined = controller.state?.joined ?? false;
+              return Button(
+                minWidth: double.infinity,
+                loading: loading,
+                disabled: controller.state?.isExpired != false,
+                backgroundColor: joined ? Colors.red : null,
+                onPressed: () {
+                  if (controller.state!.isExpired) {
+                    DialogUtils.showSimpleDialog(
+                        'error'.tr, 'thisEventHasExpired'.tr);
+                    return;
+                  }
+                  mutate();
+                },
+                safeArea: true,
+                child: Text(controller.state?.isExpired != false
+                    ? 'expired'.tr
+                    : joined
+                        ? 'quit'.tr
+                        : 'join'.tr),
+              );
+            },
+          )),
         ]));
   }
 
@@ -266,11 +255,17 @@ class EventPage extends GetView<EventController> {
         builder: (participation) {
           return Avatar(user: participation.participant);
         },
-        loadingBuilder: Avatar(user: null),
+        loadingBuilder: Avatar(
+          user: null,
+          height: avatarHeight,
+        ),
         loadingItemCount: 5,
         overflowBuilder: (participation, displayCount, totalCount) {
           return Stack(children: [
-            Avatar(user: participation?.participant),
+            Avatar(
+              user: participation?.participant,
+              height: avatarHeight,
+            ),
             Positioned.fill(
                 child: Container(
                     alignment: Alignment.center,

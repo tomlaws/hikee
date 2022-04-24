@@ -28,6 +28,7 @@ class AccountProfileController extends GetxController {
   final formkey = GlobalKey<FormState>();
   Future<void> updateNickname() async {
     var nickname = '';
+    String? nicknameError;
     await DialogUtils.showActionDialog(
         'updateNickname'.tr,
         Form(
@@ -40,23 +41,29 @@ class AccountProfileController extends GetxController {
                 onSaved: (v) => nickname = v ?? '',
                 validator: (v) {
                   if (v == null || v.length == 0) {
-                    return 'fieldCannotBeEmpty'
-                        .trParams({'field': 'nickname'.tr});
+                    return 'fieldCannotBeEmpty'.trArgs(['nickname'.tr]);
                   }
-                  if (v.length > 16) {
-                    return 'fieldTooLong'.trParams({'field': 'nickname'.tr});
-                  }
-                  if (v.length < 4) {
-                    return 'fieldTooShort'.trParams({'field': 'nickname'.tr});
-                  }
-                  return null;
+                  return nicknameError;
                 },
               ),
             ],
           ),
-        ), onOk: () async {
+        ),
+        errorMapping: {
+          'nickname': (msg) {
+            nicknameError = msg;
+            formkey.currentState?.validate();
+          }
+        }, onOk: () async {
+      nicknameError = null;
       if (formkey.currentState?.validate() == true) {
         formkey.currentState?.save();
+
+        final auth = Get.find<AuthProvider>();
+        if (nickname.toLowerCase() == auth.me.value?.nickname.toLowerCase()) {
+          return true;
+        }
+        print(nickname);
         final result = await userProvider.update(nickname: nickname);
         return true;
       } else {

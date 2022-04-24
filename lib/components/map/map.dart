@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart'
     hide Polyline, PolylineLayer, PolylineLayerOptions, PolylineLayerWidget;
+import 'package:flutter_map/plugin_api.dart'
+    hide Polyline, PolylineLayer, PolylineLayerOptions, PolylineLayerWidget;
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
+import 'package:hikees/components/compass/compass.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/map/drag_marker.dart';
@@ -45,7 +48,9 @@ class HikeeMap extends StatelessWidget {
       this.watermarkAlignment = Alignment.bottomLeft,
       this.heightData = true,
       this.contentMargin = const EdgeInsets.all(8),
-      bool offlineTrail = false})
+      this.header,
+      bool offlineTrail = false,
+      this.showCompass = false})
       : super(key: key) {
     _key = key?.toString();
     controller = Get.put(HikeeMapController(), tag: key?.toString());
@@ -74,6 +79,8 @@ class HikeeMap extends StatelessWidget {
   final AlignmentGeometry watermarkAlignment;
   final EdgeInsets contentMargin;
   final bool heightData;
+  final Widget? header;
+  final bool showCompass;
 
   String get urlTemplate {
     switch (controller.mapProvider) {
@@ -358,6 +365,31 @@ class HikeeMap extends StatelessWidget {
               .toList(),
       ],
       nonRotatedChildren: [
+        if (header != null) header!,
+        if (showCompass)
+          Align(
+            alignment: Alignment.topRight,
+            child: SafeArea(
+              child: GestureDetector(
+                onTap: () {
+                  controller.mapController?.rotate(0);
+                },
+                child: Builder(builder: (context) {
+                  final mapState = MapState.maybeOf(context)!;
+                  var rot = mapState.rotationRad;
+                  return StreamBuilder(
+                      stream: mapState.onMoved,
+                      builder: (_, __) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Transform.rotate(angle: rot, child: Compass()),
+                        );
+                      });
+                }),
+              ),
+            ),
+          ),
         Align(alignment: Alignment.bottomLeft, child: providerAttribution),
         if (heightData)
           Obx(() {

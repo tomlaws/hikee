@@ -9,6 +9,7 @@ class RatingInput extends FormField<int> {
     InputDecoration decoration = const InputDecoration(),
     FormFieldSetter<int>? onSaved,
     FormFieldValidator<int>? validator,
+    bool difficulty = false,
     int initialValue = 0,
   }) : super(
             onSaved: onSaved,
@@ -53,9 +54,14 @@ class RatingInput extends FormField<int> {
                         itemPadding: EdgeInsets.only(right: 4.0),
                         itemBuilder: (context, i) => Icon(
                           state.value != null && state.value! > i
-                              ? LineAwesomeIcons.heart_1
-                              : LineAwesomeIcons.heart,
-                          color: Colors.pink.shade200,
+                              ? (difficulty
+                                  ? LineAwesomeIcons.star_1
+                                  : LineAwesomeIcons.heart_1)
+                              : (difficulty
+                                  ? LineAwesomeIcons.star
+                                  : LineAwesomeIcons.heart),
+                          color:
+                              difficulty ? Colors.amber : Colors.pink.shade200,
                         ),
                         updateOnDrag: true,
                         onRatingUpdate: (double value) {

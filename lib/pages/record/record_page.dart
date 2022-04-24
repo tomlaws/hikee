@@ -117,7 +117,7 @@ class RecordPage extends GetView<RecordController> {
                                 controller.obx(
                                     (state) => Text(
                                           DateFormat('yyyy-MM-dd')
-                                              .format(state!.date),
+                                              .format(state!.date.toLocal()),
                                           style: TextStyle(),
                                         ),
                                     onLoading: Shimmer()),
@@ -138,7 +138,7 @@ class RecordPage extends GetView<RecordController> {
                                 controller.obx(
                                     (state) => Text(
                                           DateFormat('HH:mm:ss')
-                                              .format(state!.date),
+                                              .format(state!.date.toLocal()),
                                           style: TextStyle(),
                                         ),
                                     onLoading: Shimmer()),

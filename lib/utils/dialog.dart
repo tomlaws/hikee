@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
+import 'package:hikees/components/core/text_input.dart';
 
 class DialogUtils {
   static Future<dynamic> showSimpleDialog(String title, dynamic content,
@@ -45,6 +46,7 @@ class DialogUtils {
       String? okText,
       String? cancelText,
       bool mutate = true,
+      Map<String, dynamic>? errorMapping,
       bool critical = false}) async {
     return await showDialog(
         context: Get.context!,
@@ -75,23 +77,27 @@ class DialogUtils {
                   child:
                       Text(cancelText ?? (mutate ? 'cancel'.tr : 'dismiss'.tr)),
                 ),
-                MutationBuilder(mutation: () async {
-                  if (onOk != null) return await onOk();
-                  return null;
-                }, onDone: (result) {
-                  if (result != null) {
-                    Get.back(result: result);
-                  } else {
-                    Get.back();
-                  }
-                }, builder: (_mutate, loading) {
-                  return Button(
-                    loading: loading,
-                    backgroundColor: critical ? Colors.red : null,
-                    onPressed: _mutate,
-                    child: Text(okText ?? (mutate ? 'submit'.tr : 'ok'.tr)),
-                  );
-                })
+                MutationBuilder(
+                    mutation: () async {
+                      if (onOk != null) return await onOk();
+                      return null;
+                    },
+                    onDone: (result) {
+                      if (result != null) {
+                        Get.back(result: result);
+                      } else {
+                        Get.back();
+                      }
+                    },
+                    errorMapping: errorMapping,
+                    builder: (_mutate, loading) {
+                      return Button(
+                        loading: loading,
+                        backgroundColor: critical ? Colors.red : null,
+                        onPressed: _mutate,
+                        child: Text(okText ?? (mutate ? 'submit'.tr : 'ok'.tr)),
+                      );
+                    })
               ],
               content: content,
             ));

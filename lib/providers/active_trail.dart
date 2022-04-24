@@ -12,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/models/active_trail.dart';
-import 'package:hikees/models/height_data.dart';
-import 'package:hikees/models/reference_trail.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/providers/offline.dart';
 import 'package:hikees/providers/shared/base.dart';
@@ -22,7 +20,6 @@ import 'package:hikees/utils/location_callback_handler.dart';
 import 'package:hikees/utils/location_service_repository.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vector_math/vector_math.dart' as vmath;
 
 // Core Provider
 class ActiveTrailProvider extends BaseProvider {
@@ -31,7 +28,6 @@ class ActiveTrailProvider extends BaseProvider {
   final activeTrail = Rxn<ActiveTrail>(null);
   // GPS dependent
   final currentLocation = Rxn<LocationMarkerPosition>();
-  final currentHeading = Rxn<LocationMarkerHeading>();
   final isCloseToStart = false.obs;
   final isCloseToGoal = false.obs;
 
@@ -137,9 +133,6 @@ class ActiveTrailProvider extends BaseProvider {
         latitude: location.latitude,
         longitude: location.longitude,
         accuracy: location.accuracy);
-    currentHeading.value = LocationMarkerHeading(
-        heading: vmath.radians(location.heading), accuracy: 1.0);
-
     if (activeTrail.value?.isStarted == true) {
       LatLng latlng = LatLng(location.latitude, location.longitude);
       if (activeTrail.value!.userPath.length > 0 &&

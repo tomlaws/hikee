@@ -15,9 +15,6 @@ class NearbyTrailsController extends GetxController
 
   Future<List<Trail>?> _load() async {
     Position pos = await _determinePosition();
-    print(pos.latitude);
-
-    print(pos.longitude);
     return _trailProvider.getNearbyTrails(pos.latitude, pos.longitude);
   }
 

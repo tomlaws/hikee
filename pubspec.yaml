@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+5
+version: 1.0.0+8
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -68,6 +68,7 @@ dependencies:
   dio: ^4.0.4
   sqflite: ^2.0.2
   geolocator: ^8.2.0
+  flutter_compass: ^0.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -78,6 +79,10 @@ dependency_overrides:
   photo_view:
     git:
       url: https://github.com/bluefireteam/photo_view
+      ref: master
+  flutter_compass:
+    git:
+      url: https://github.com/hemanthrajv/flutter_compass
       ref: master
 flutter_icons:
   android: true

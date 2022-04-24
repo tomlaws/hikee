@@ -17,7 +17,7 @@ class MutationBuilder<T> extends StatefulWidget {
   final Future<T?> Function() mutation;
   final void Function(T?)? onDone;
   //final void Function(ErrorResponse)? onError;
-  final Map<String, TextInputController>? errorMapping;
+  final Map<String, dynamic>? errorMapping;
   final Widget Function(void Function() mutate, bool) builder;
   @override
   _MutationBuilderState<T> createState() => _MutationBuilderState<T>();
@@ -67,9 +67,18 @@ class _MutationBuilderState<T> extends State<MutationBuilder<T>> {
     widget.errorMapping?.forEach((key, value) {
       String? error = response.getFieldError(key);
       if (error == null) {
-        value.error = null;
+        if (value is TextInputController) value.error = null;
+        if (value is Function(String?)) value(null);
       } else {
-        value.error = "$error".trParams({'field': '$key'.tr});
+        List<String> splited = error.split('.');
+        if (splited.length == 0) return;
+        String errorName = splited.elementAt(0);
+        List<String> args = splited.getRange(1, splited.length).toList();
+        args.insert(0, '$key'.tr);
+
+        if (value is TextInputController)
+          value.error = "$errorName".trArgs(args);
+        if (value is Function(String?)) value("$errorName".trArgs(args));
       }
     });
   }

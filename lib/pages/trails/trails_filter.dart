@@ -185,7 +185,7 @@ class _TrailsFilterState extends State<TrailsFilter> {
               children: [
                 Expanded(
                     child: Button(
-                        child: Text("Apply"),
+                        child: Text("apply".tr),
                         onPressed: () {
                           apply();
                         }))
