@@ -78,7 +78,8 @@ class EventPage extends GetView<EventController> {
                                   children: [
                                     controller.obx(
                                         (state) => CalendarDate(
-                                            date: state!.date, size: 48),
+                                            date: state!.date.toLocal(),
+                                            size: 48),
                                         onLoading: Shimmer(
                                           width: 48,
                                           height: 48,
@@ -90,8 +91,8 @@ class EventPage extends GetView<EventController> {
                                       children: [
                                         controller.obx(
                                             (state) => Text(
-                                                DateFormat('hh : mm a')
-                                                    .format(state!.date),
+                                                DateFormat('hh : mm a').format(
+                                                    state!.date.toLocal()),
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                 )),
@@ -131,7 +132,8 @@ class EventPage extends GetView<EventController> {
                                   backgroundColor: Color(0xFFf5f5f5),
                                   onPressed: () {
                                     if (controller.state == null) return;
-                                    var startDate = controller.state!.date;
+                                    var startDate =
+                                        controller.state!.date.toLocal();
                                     var endDate = startDate.add(Duration(
                                         minutes:
                                             controller.state!.trail.duration));

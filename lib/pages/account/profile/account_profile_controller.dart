@@ -55,8 +55,15 @@ class AccountProfileController extends GetxController {
             formkey.currentState?.validate();
           }
         }, onOk: () async {
+      nicknameError = null;
       if (formkey.currentState?.validate() == true) {
         formkey.currentState?.save();
+
+        final auth = Get.find<AuthProvider>();
+        if (nickname.toLowerCase() == auth.me.value?.nickname.toLowerCase()) {
+          return true;
+        }
+        print(nickname);
         final result = await userProvider.update(nickname: nickname);
         return true;
       } else {

@@ -210,6 +210,7 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                     onSaved: (v) {
                       controller.difficulty = v!;
                     },
+                    difficulty: true,
                     invalidRatingMessage:
                         'fieldCannotBeEmpty'.trArgs(['difficulty'.tr]),
                   ),

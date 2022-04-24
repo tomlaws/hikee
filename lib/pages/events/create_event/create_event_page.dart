@@ -149,7 +149,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                     onPressed: () {
                       controller.dateController.text =
                           DateFormat('yyyy-MM-dd HH:mm')
-                              .format(controller.dateTime.value);
+                              .format(controller.dateTime.value.toLocal());
                       Navigator.of(ctx).pop();
                     },
                   )

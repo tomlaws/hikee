@@ -97,10 +97,6 @@ class CompassController extends GetxController
     return activeTrailProvider.activeTrail;
   }
 
-  Rxn<LocationMarkerHeading> get currentHeading {
-    return activeTrailProvider.currentHeading;
-  }
-
   Rxn<LocationMarkerPosition> get currentLocation {
     return activeTrailProvider.currentLocation;
   }
@@ -626,7 +622,7 @@ class CompassController extends GetxController
             );
           },
         ),
-        okText: 'dial'.tr + '999', onOk: () {
+        okText: 'dial'.tr + ' 999', onOk: () {
       launchUrl(Uri.parse("tel://999"));
     }, critical: true);
   }

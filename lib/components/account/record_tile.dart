@@ -43,7 +43,7 @@ class RecordTile extends StatelessWidget {
                       height: 42,
                     )
                   : CalendarDate(
-                      date: record!.date,
+                      date: record!.date.toLocal(),
                       size: 42,
                     ),
               SizedBox(width: 16),

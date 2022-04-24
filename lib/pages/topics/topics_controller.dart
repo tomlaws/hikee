@@ -15,7 +15,6 @@ class TopicsController extends PaginationController<Topic> {
     if (categoryId != null) {
       query['categoryId'] = categoryId.toString();
     }
-    print(Get.parameters);
     int? userId = int.tryParse(Get.parameters['userId'] ?? '');
     if (userId != null) {
       query['userId'] = userId.toString();

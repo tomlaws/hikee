@@ -1,57 +1,30 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-import 'package:get/get.dart';
 
 class Compass extends StatefulWidget {
-  const Compass({Key? key, required this.heading}) : super(key: key);
+  const Compass({Key? key}) : super(key: key);
 
   @override
   _CompassState createState() => _CompassState();
-
-  final Rxn<LocationMarkerHeading> heading;
 }
 
-class _CompassState extends State<Compass> with SingleTickerProviderStateMixin {
-  late Animation<double> _animation;
-  late Tween<double> _tween;
-  late AnimationController _animationController;
-  double? lastValue;
-
+class _CompassState extends State<Compass> {
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(duration: Duration(seconds: 1), vsync: this);
-    _tween = Tween(begin: 0.0, end: 0.0);
-    _animation = _tween.animate(_animationController)
-      ..addListener(() {
-        setState(() {});
-      });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
-      style: TextStyle(color: Colors.black26, fontSize: 12),
-      child: Obx(() {
-        if (widget.heading.value == null) return SizedBox();
-
-        if (lastValue != widget.heading.value!.heading) {
-          lastValue = widget.heading.value!.heading;
-          WidgetsBinding.instance?.addPostFrameCallback((_) {
-            _tween.begin = _tween.end;
-            _animationController.reset();
-            _tween.end = -widget.heading.value!.heading;
-            _animationController.forward();
-          });
-        }
-        return Stack(
+        style: TextStyle(color: Colors.black26, fontSize: 12),
+        child: Stack(
           alignment: Alignment.center,
           children: [
             Padding(
@@ -64,22 +37,20 @@ class _CompassState extends State<Compass> with SingleTickerProviderStateMixin {
                     color: Colors.black.withOpacity(.1)),
               ),
             ),
-            Transform.rotate(
-                angle: _animation.value,
-                child: ClipPath(
-                  clipper: PointerClipper(),
-                  child: Container(
-                    width: 10,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: [0.5, 0.5],
-                          colors: [Colors.red.shade400, Colors.white]),
-                    ),
-                  ),
-                )),
+            ClipPath(
+              clipper: PointerClipper(),
+              child: Container(
+                width: 10,
+                height: 24,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [0.5, 0.5],
+                      colors: [Colors.red.shade400, Colors.white]),
+                ),
+              ),
+            ),
             Positioned(
                 child: Container(
               width: 10,
@@ -90,9 +61,7 @@ class _CompassState extends State<Compass> with SingleTickerProviderStateMixin {
                   border: Border.all(color: Colors.red.shade400, width: 2.0)),
             )),
           ],
-        );
-      }),
-    );
+        ));
   }
 }
 

@@ -55,12 +55,12 @@ import 'package:hikees/themes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // FlavorConfig(
-  //   name: "DEVELOP",
-  //   variables: {
-  //     "API_ENDPOINT": "http://127.0.0.1:3000/",
-  //   },
-  // );
+  FlavorConfig(
+    name: "DEVELOP",
+    variables: {
+      "API_ENDPOINT": "http://192.168.50.183:3000/",
+    },
+  );
   runApp(MyApp());
 }
 

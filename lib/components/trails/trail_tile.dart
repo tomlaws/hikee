@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hikees/components/core/custom_ink_well.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/themes.dart';
@@ -37,7 +36,7 @@ class TrailTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(radius),
           color: Colors.white,
           clipBehavior: Clip.antiAlias,
-          child: CustomInkWell(
+          child: InkWell(
             onTap: () {
               if (onTap != null) {
                 onTap!();
