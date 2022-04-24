@@ -26,6 +26,10 @@ class TrailEventsPage extends GetView<TrailEventsController> {
                 empty: Center(
                   child: Text('theresNoEventForThisTrailCurrently'.tr),
                 ),
+                loadingItemCount: 6,
+                loadingBuilder: EventTile(
+                  event: null,
+                ),
                 builder: (event) {
                   return EventTile(
                     event: event,

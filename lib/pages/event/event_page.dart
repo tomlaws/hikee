@@ -2,6 +2,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/avatar.dart';
+import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/calendar_date.dart';
 import 'package:hikees/components/core/app_bar.dart';
@@ -187,62 +188,47 @@ class EventPage extends GetView<EventController> {
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                  blurRadius: 16,
-                  spreadRadius: -8,
-                  color: Colors.black.withOpacity(.09),
-                  offset: Offset(0, -6))
-            ]),
-            child: Row(
-              children: [
-                Expanded(
-                  child: MutationBuilder(
-                    userOnly: true,
-                    mutation: () {
-                      bool joined = controller.state!.joined ?? false;
-                      if (joined) {
-                        return _eventParticipationController.quitEvent();
-                      }
-                      return _eventParticipationController.joinEvent();
-                    },
-                    onDone: (e) {
-                      bool joined = controller.state!.joined!;
-                      if (joined) {
-                        controller.setJoined(false);
-                      } else {
-                        controller.setJoined(true);
-                      }
-                    },
-                    builder: (mutate, loading) {
-                      bool joined = controller.state?.joined ?? false;
-                      return Button(
-                        loading: loading,
-                        disabled: controller.state?.isExpired != false,
-                        backgroundColor: joined ? Colors.red : null,
-                        onPressed: () {
-                          if (controller.state!.isExpired) {
-                            DialogUtils.showSimpleDialog(
-                                'error'.tr, 'thisEventHasExpired'.tr);
-                            return;
-                          }
-                          mutate();
-                        },
-                        safeArea: true,
-                        child: Text(controller.state?.isExpired != false
-                            ? 'expired'.tr
-                            : joined
-                                ? 'quit'.tr
-                                : 'join'.tr),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+          BottomBar(
+              child: MutationBuilder(
+            userOnly: true,
+            mutation: () {
+              bool joined = controller.state!.joined ?? false;
+              if (joined) {
+                return _eventParticipationController.quitEvent();
+              }
+              return _eventParticipationController.joinEvent();
+            },
+            onDone: (e) {
+              bool joined = controller.state!.joined!;
+              if (joined) {
+                controller.setJoined(false);
+              } else {
+                controller.setJoined(true);
+              }
+            },
+            builder: (mutate, loading) {
+              bool joined = controller.state?.joined ?? false;
+              return Button(
+                loading: loading,
+                disabled: controller.state?.isExpired != false,
+                backgroundColor: joined ? Colors.red : null,
+                onPressed: () {
+                  if (controller.state!.isExpired) {
+                    DialogUtils.showSimpleDialog(
+                        'error'.tr, 'thisEventHasExpired'.tr);
+                    return;
+                  }
+                  mutate();
+                },
+                safeArea: true,
+                child: Text(controller.state?.isExpired != false
+                    ? 'expired'.tr
+                    : joined
+                        ? 'quit'.tr
+                        : 'join'.tr),
+              );
+            },
+          )),
         ]));
   }
 
