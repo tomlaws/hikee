@@ -209,26 +209,31 @@ class EventPage extends GetView<EventController> {
             },
             builder: (mutate, loading) {
               bool joined = controller.state?.joined ?? false;
-              return Button(
-                minWidth: double.infinity,
-                loading: loading,
-                disabled: controller.state?.isExpired != false,
-                backgroundColor: joined ? Colors.red : null,
-                onPressed: () {
-                  if (controller.state!.isExpired) {
-                    DialogUtils.showSimpleDialog(
-                        'error'.tr, 'thisEventHasExpired'.tr);
-                    return;
-                  }
-                  mutate();
-                },
-                safeArea: true,
-                child: Text(controller.state?.isExpired != false
-                    ? 'expired'.tr
-                    : joined
-                        ? 'quit'.tr
-                        : 'join'.tr),
-              );
+              return controller.hobx(
+                  (event) => Button(
+                        minWidth: double.infinity,
+                        loading: loading,
+                        disabled: controller.state?.isExpired != false,
+                        backgroundColor: joined ? Colors.red : null,
+                        onPressed: () {
+                          if (controller.state!.isExpired) {
+                            DialogUtils.showSimpleDialog(
+                                'error'.tr, 'thisEventHasExpired'.tr);
+                            return;
+                          }
+                          mutate();
+                        },
+                        safeArea: true,
+                        child: Text(controller.state?.isExpired != false
+                            ? 'expired'.tr
+                            : joined
+                                ? 'quit'.tr
+                                : 'join'.tr),
+                      ),
+                  onLoading: Shimmer(
+                    width: double.infinity,
+                    height: 48,
+                  ));
             },
           )),
         ]));

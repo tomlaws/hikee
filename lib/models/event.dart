@@ -28,7 +28,7 @@ class Event {
       required this.createdAt});
 
   bool get isExpired {
-    return DateTime.now().compareTo(date) > 0;
+    return DateTime.now().compareTo(date.toLocal()) > 0;
   }
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
