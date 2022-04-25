@@ -13,6 +13,7 @@ class AccountController extends GetxController {
   final _authProvider = Get.put(AuthProvider());
   final _uploadProvider = Get.put(UploadProvider());
   final _userProvider = Get.put(UserProvider());
+  var uploadingIcon = false.obs;
 
   @override
   void onInit() {
@@ -38,8 +39,14 @@ class AccountController extends GetxController {
     if (image == null) return;
     String? file = await _uploadProvider.upload(image);
     if (file == null) return;
-    await _userProvider.changeIcon(file);
-    this.refreshAccount();
+    try {
+      uploadingIcon.value = true;
+      await _userProvider.changeIcon(file);
+      uploadingIcon.value = false;
+      this.refreshAccount();
+    } catch (ex) {
+      uploadingIcon.value = false;
+    }
   }
 
   void logout() {

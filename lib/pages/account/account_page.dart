@@ -19,6 +19,7 @@ class AccountPage extends GetView<AccountController> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Obx(() => AccountHeader(
+                      updatingIcon: controller.uploadingIcon.value,
                       user: controller.user.value,
                       onAvatarTap: () {
                         controller.promptUploadIcon();

@@ -7,9 +7,10 @@ import 'package:hikees/themes.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class AccountHeader extends GetView {
-  const AccountHeader({this.user, this.onAvatarTap});
+  const AccountHeader({this.user, this.onAvatarTap, this.updatingIcon = false});
   final User? user;
   final void Function()? onAvatarTap;
+  final bool updatingIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class AccountHeader extends GetView {
         Column(mainAxisSize: MainAxisSize.min, children: [
           Column(mainAxisSize: MainAxisSize.min, children: [
             Avatar(
-              user: user,
+              user: updatingIcon ? null : user,
               height: 128,
               onTap: onAvatarTap,
             )
