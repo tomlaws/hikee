@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/pages/record/record_controller.dart';
 import 'package:hikees/utils/geo.dart';
@@ -48,7 +49,7 @@ class RecordPage extends GetView<RecordController> {
             bottom: bottomPanelHeight -
                 18.0 +
                 MediaQuery.of(context).viewPadding.bottom,
-            child: controller.obx((state) {
+            child: controller.hobx((state) {
               var decoded = GeoUtils.decodePath(state!.userPath);
               var referencePath = state.referenceTrail != null
                   ? GeoUtils.decodePath(state.referenceTrail!.path)
@@ -89,7 +90,7 @@ class RecordPage extends GetView<RecordController> {
                       SizedBox(
                         height: 8,
                       ),
-                      controller.obx(
+                      controller.hobx(
                           (state) => Text(
                                 state!.name,
                                 style: TextStyle(),
@@ -114,7 +115,7 @@ class RecordPage extends GetView<RecordController> {
                                 SizedBox(
                                   height: 8,
                                 ),
-                                controller.obx(
+                                controller.hobx(
                                     (state) => Text(
                                           DateFormat('yyyy-MM-dd')
                                               .format(state!.date.toLocal()),
@@ -135,7 +136,7 @@ class RecordPage extends GetView<RecordController> {
                                 SizedBox(
                                   height: 8,
                                 ),
-                                controller.obx(
+                                controller.hobx(
                                     (state) => Text(
                                           DateFormat('HH:mm:ss')
                                               .format(state!.date.toLocal()),
@@ -156,7 +157,7 @@ class RecordPage extends GetView<RecordController> {
                                 SizedBox(
                                   height: 8,
                                 ),
-                                controller.obx(
+                                controller.hobx(
                                     (state) =>
                                         Text(state!.region?.name ?? 'N/A'),
                                     onLoading: Shimmer()),
@@ -182,7 +183,7 @@ class RecordPage extends GetView<RecordController> {
                                 SizedBox(
                                   height: 8,
                                 ),
-                                controller.obx(
+                                controller.hobx(
                                     (state) => Text(
                                           GeoUtils.formatMetres(
                                               GeoUtils.getPathLength(
@@ -205,7 +206,7 @@ class RecordPage extends GetView<RecordController> {
                                 SizedBox(
                                   height: 8,
                                 ),
-                                controller.obx(
+                                controller.hobx(
                                     (state) => Text(
                                           TimeUtils.formatSeconds(state!.time),
                                           style: TextStyle(),
@@ -217,7 +218,7 @@ class RecordPage extends GetView<RecordController> {
                           Expanded(child: SizedBox())
                         ],
                       ),
-                      // controller.obx((state) {
+                      // controller.hobx((state) {
                       //   if (state!.altitudes.length == 0) return SizedBox();
                       //   return Builder(builder: (context) {
                       //     return Container(

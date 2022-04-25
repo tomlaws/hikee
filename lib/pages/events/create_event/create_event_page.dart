@@ -6,6 +6,7 @@ import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/core/text_input.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/components/trails/trail_tile.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/models/event.dart';
@@ -36,7 +37,7 @@ class CreateEventPage extends GetView<CreateEventController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      trailController.obx(
+                      trailController.hobx(
                           (state) => TrailTile(
                                 trail: state!,
                                 onTap: () {},

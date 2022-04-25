@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/connection_error.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/controllers/shared/pagination.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -132,7 +133,7 @@ class _InfiniteScrollerState<U> extends State<InfiniteScroller<U>> {
             })
           : CircularProgressIndicator(),
     );
-    return controller.obx((state) {
+    return controller.hobx((state) {
       var data = state;
       var items = data?.data ?? [];
       var itemCount = items.length;

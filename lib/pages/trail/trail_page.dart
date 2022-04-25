@@ -11,6 +11,7 @@ import 'package:hikees/components/core/futurer.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/core/text_may_overflow.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/shimmer.dart';
@@ -39,7 +40,7 @@ class TrailPage extends GetView<TrailController> {
     return Scaffold(
         appBar: controller.offline
             ? HikeeAppBar(
-                title: controller.obx(
+                title: controller.hobx(
                     (state) => TextMayOverflow(
                           state!.name,
                         ),
@@ -84,7 +85,7 @@ class TrailPage extends GetView<TrailController> {
                                           if (!controller.offline)
                                             SizedBox(
                                               height: 280,
-                                              child: controller.obx((state) {
+                                              child: controller.hobx((state) {
                                                 List<Widget> images = (state!
                                                                 .images
                                                                 .length ==
@@ -159,7 +160,7 @@ class TrailPage extends GetView<TrailController> {
                                                                 FontWeight.bold,
                                                           ))
                                                     else
-                                                      controller.obx(
+                                                      controller.hobx(
                                                           (state) => TextMayOverflow(
                                                               state!.name,
                                                               style: TextStyle(
@@ -208,7 +209,7 @@ class TrailPage extends GetView<TrailController> {
                                                               SizedBox(
                                                                 width: 8,
                                                               ),
-                                                              controller.obx(
+                                                              controller.hobx(
                                                                   (state) =>
                                                                       Text(
                                                                         state!
@@ -236,7 +237,7 @@ class TrailPage extends GetView<TrailController> {
                                                               SizedBox(
                                                                 width: 8,
                                                               ),
-                                                              controller.obx(
+                                                              controller.hobx(
                                                                   (state) =>
                                                                       Text(
                                                                         state!
@@ -264,7 +265,7 @@ class TrailPage extends GetView<TrailController> {
                                                               SizedBox(
                                                                 width: 8,
                                                               ),
-                                                              controller.obx(
+                                                              controller.hobx(
                                                                   (state) =>
                                                                       Text(
                                                                         state!
@@ -297,7 +298,7 @@ class TrailPage extends GetView<TrailController> {
                                                               SizedBox(
                                                                 width: 8,
                                                               ),
-                                                              controller.obx(
+                                                              controller.hobx(
                                                                   (_) =>
                                                                       Futurer(
                                                                         future:
@@ -338,7 +339,7 @@ class TrailPage extends GetView<TrailController> {
                                                                 width: 8,
                                                               ),
                                                               //
-                                                              controller.obx(
+                                                              controller.hobx(
                                                                 (_) => Futurer(
                                                                     future: controller
                                                                         .lengthAndDuration,
@@ -415,7 +416,7 @@ class TrailPage extends GetView<TrailController> {
                                                     Obx(() =>
                                                         _authProvider
                                                                 .loggedIn.value
-                                                            ? controller.obx(
+                                                            ? controller.hobx(
                                                                 (state) {
                                                                 var bookmarked =
                                                                     state!.bookmark !=
@@ -490,7 +491,7 @@ class TrailPage extends GetView<TrailController> {
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
                                                   ))),
-                                          controller.obx(
+                                          controller.hobx(
                                               (state) => state?.creator != null
                                                   ? GestureDetector(
                                                       behavior: HitTestBehavior
@@ -532,7 +533,7 @@ class TrailPage extends GetView<TrailController> {
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
                                                   ))),
-                                          controller.obx(
+                                          controller.hobx(
                                               (state) => ReadMoreText(
                                                     state!.description,
                                                     trimLines: 3,
@@ -577,7 +578,7 @@ class TrailPage extends GetView<TrailController> {
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           16.0)),
-                                              child: controller.obx((state) {
+                                              child: controller.hobx((state) {
                                                 return HikeeMap(
                                                   key:
                                                       Key(state!.id.toString()),

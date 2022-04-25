@@ -9,6 +9,7 @@ import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/core/futurer.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/components/trails/trail_tile.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/models/event_participation.dart';
@@ -29,7 +30,7 @@ class EventPage extends GetView<EventController> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: HikeeAppBar(
-          title: controller.obx((state) => Text(state?.name ?? ''),
+          title: controller.hobx((state) => Text(state?.name ?? ''),
               onLoading: Shimmer(width: 220, height: 30)),
         ),
         body: Column(children: [
@@ -46,7 +47,7 @@ class EventPage extends GetView<EventController> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: controller.obx(
+                      child: controller.hobx(
                           (state) => TrailTile(
                                 trail: state?.trail,
                                 onTap: () {
@@ -77,7 +78,7 @@ class EventPage extends GetView<EventController> {
                               children: [
                                 Row(
                                   children: [
-                                    controller.obx(
+                                    controller.hobx(
                                         (state) => CalendarDate(
                                             date: state!.date.toLocal(),
                                             size: 48),
@@ -90,7 +91,7 @@ class EventPage extends GetView<EventController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        controller.obx(
+                                        controller.hobx(
                                             (state) => Text(
                                                 DateFormat('hh : mm a').format(
                                                     state!.date.toLocal()),
@@ -104,7 +105,7 @@ class EventPage extends GetView<EventController> {
                                         SizedBox(
                                           height: 4,
                                         ),
-                                        controller.obx(
+                                        controller.hobx(
                                             (state) => Futurer(
                                                   future: GeoUtils
                                                       .calculateLengthAndDuration(
@@ -176,7 +177,7 @@ class EventPage extends GetView<EventController> {
                               )),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 24.0),
-                            child: controller.obx(
+                            child: controller.hobx(
                                 (state) => Text(state!.description),
                                 onLoading: Shimmer()),
                           ),

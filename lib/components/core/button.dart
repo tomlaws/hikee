@@ -15,6 +15,7 @@ class Button extends StatefulWidget {
   final double minWidth;
   final double height;
   final bool shadow;
+  final Color? shadowColor;
   final EdgeInsets? padding;
   final bool safeArea;
 
@@ -33,6 +34,7 @@ class Button extends StatefulWidget {
       this.height = 48,
       this.safeArea = false,
       this.shadow = true,
+      this.shadowColor,
       this.padding})
       : super(key: key);
 
@@ -78,7 +80,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: widget.shadow && buttonColor != Colors.transparent
-              ? [Themes.buttonShadow(buttonColor)]
+              ? [Themes.buttonShadow(widget.shadowColor ?? buttonColor)]
               : null),
       child: Material(
         borderRadius: BorderRadius.circular(widget.radius),

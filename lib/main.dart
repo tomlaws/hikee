@@ -96,11 +96,6 @@ class MyApp extends StatelessWidget {
             page: () => CreateTrailPage(),
             binding: CreateTrailBinding(),
             middlewares: [AuthMiddleware()]),
-        // GetPage(
-        //   name: '/trails/categories',
-        //   page: () => TrailCategoriesPage(),
-        //   binding: TrailCategoriesBinding(),
-        // ),
         GetPage(
           name: '/trails/categories/:id',
           page: () => TrailCategoryPage(),

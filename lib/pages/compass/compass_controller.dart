@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
@@ -79,7 +80,6 @@ class CompassController extends GetxController
 
   @override
   void onClose() {
-    _timer?.cancel();
     panelPageController.dispose();
     tooltipController.dispose();
     super.onClose();

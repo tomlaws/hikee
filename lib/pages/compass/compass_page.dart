@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:hikees/components/core/floating_tooltip.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/components/trails/height_profile.dart';
 import 'package:hikees/components/map/map.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
@@ -15,7 +15,6 @@ import 'package:hikees/themes.dart';
 import 'package:hikees/utils/color.dart';
 import 'package:latlong2/latlong.dart' hide Path;
 import 'package:hikees/components/core/button.dart';
-import 'package:hikees/components/compass/compass.dart';
 import 'package:hikees/components/core/keep_alive.dart';
 import 'package:hikees/components/compass/mountain_deco.dart';
 import 'package:hikees/components/compass/active_trail_info.dart';
@@ -485,7 +484,7 @@ class CompassPage extends GetView<CompassController> {
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     height: controller.panelHeaderHeight,
                     alignment: Alignment.centerLeft,
-                    child: _weatherController.obx(
+                    child: _weatherController.hobx(
                         (weather) => weather != null
                             ? GestureDetector(
                                 onTap: () {
@@ -518,7 +517,7 @@ class CompassPage extends GetView<CompassController> {
                   ),
                 ],
               ),
-              _weatherController.obx((weather) {
+              _weatherController.hobx((weather) {
                 if (weather != null && weather.warningMessage.length > 0) {
                   return Container(
                     child: GestureDetector(

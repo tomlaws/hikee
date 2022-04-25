@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/trails/trail_category_tile.dart';
@@ -96,7 +97,7 @@ class TrailsPage extends GetView<TrailsController> {
                     ),
                     SizedBox(
                       height: 160,
-                      child: _trailCategoriesController.obx(
+                      child: _trailCategoriesController.hobx(
                           (state) => ListView.separated(
                                 clipBehavior: Clip.none,
                                 padding: EdgeInsets.all(16),
@@ -138,7 +139,7 @@ class TrailsPage extends GetView<TrailsController> {
                       height: Get.locale?.languageCode.toLowerCase() == 'en'
                           ? 233
                           : 241.5,
-                      child: _popularTrailsController.obx(
+                      child: _popularTrailsController.hobx(
                           (state) => ListView.separated(
                               clipBehavior: Clip.none,
                               padding: EdgeInsets.all(16),
@@ -176,7 +177,7 @@ class TrailsPage extends GetView<TrailsController> {
                       height: Get.locale?.languageCode.toLowerCase() == 'en'
                           ? 233
                           : 241.5,
-                      child: _nearbyTrailsController.obx(
+                      child: _nearbyTrailsController.hobx(
                           (state) => ListView.separated(
                               clipBehavior: Clip.none,
                               padding: EdgeInsets.all(16),
@@ -210,7 +211,7 @@ class TrailsPage extends GetView<TrailsController> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: _featuredTrailsController.obx(
+                      child: _featuredTrailsController.hobx(
                           (state) =>
                               TrailTile(trail: state!, aspectRatio: 4 / 3),
                           onLoading:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hikees/components/core/shimmer.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/pages/topics/topic_categories_controller.dart';
 
 class TopicCategories extends GetView<TopicCategoriesController> {
@@ -13,7 +14,7 @@ class TopicCategories extends GetView<TopicCategoriesController> {
           titlePadding: EdgeInsets.symmetric(vertical: 16),
           title: 'Categories',
           titleStyle: TextStyle(fontWeight: FontWeight.bold),
-          content: controller.obx(
+          content: controller.hobx(
               (state) => SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   //shrinkWrap: true,
@@ -74,7 +75,7 @@ class TopicCategories extends GetView<TopicCategoriesController> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            controller.obx(
+            controller.hobx(
                 (state) => Obx(
                       () => Text(
                           controller.currentCategory.value == null

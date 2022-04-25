@@ -427,6 +427,9 @@ class HikeeMap extends StatelessWidget {
                             ? Colors.white
                             : Theme.of(context).primaryColor,
                       ),
+                      shadowColor: controller.centerOnLocationUpdate.value
+                          ? Theme.of(context).primaryColor
+                          : Colors.black12,
                       invert: controller.showHeights.value ? false : true,
                       loading: loading,
                       onPressed: () {
@@ -463,26 +466,29 @@ class HikeeMap extends StatelessWidget {
                       }
                     },
                   ),
-                Obx(() =>
-                    controller.mapProvider == MapProvider.LandsDepartment &&
-                            controller.offlineTrail.value == false
-                        ? Container(
-                            margin: const EdgeInsets.only(top: 8.0),
-                            child: Button(
-                              icon: Icon(
-                                LineAwesomeIcons.layer_group,
-                                color: controller.imagery.value
-                                    ? Colors.white
-                                    : Theme.of(context).primaryColor,
-                              ),
-                              invert: controller.imagery.value ? false : true,
-                              onPressed: () {
-                                controller.imagery.value =
-                                    !controller.imagery.value;
-                              },
-                            ),
-                          )
-                        : SizedBox()),
+                Obx(() => controller.mapProvider ==
+                            MapProvider.LandsDepartment &&
+                        controller.offlineTrail.value == false
+                    ? Container(
+                        margin: const EdgeInsets.only(top: 8.0),
+                        child: Button(
+                          icon: Icon(
+                            LineAwesomeIcons.layer_group,
+                            color: controller.imagery.value
+                                ? Colors.white
+                                : Theme.of(context).primaryColor,
+                          ),
+                          shadowColor: controller.centerOnLocationUpdate.value
+                              ? Theme.of(context).primaryColor
+                              : Colors.black12,
+                          invert: controller.imagery.value ? false : true,
+                          onPressed: () {
+                            controller.imagery.value =
+                                !controller.imagery.value;
+                          },
+                        ),
+                      )
+                    : SizedBox()),
                 if (showCenterOnLocationUpdateButton) ...[
                   Container(
                     height: 8,
@@ -494,6 +500,9 @@ class HikeeMap extends StatelessWidget {
                               ? Colors.white
                               : Theme.of(context).primaryColor,
                         ),
+                        shadowColor: controller.centerOnLocationUpdate.value
+                            ? Theme.of(context).primaryColor
+                            : Colors.black12,
                         invert: controller.centerOnLocationUpdate.value
                             ? false
                             : true,

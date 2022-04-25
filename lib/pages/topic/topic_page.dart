@@ -10,7 +10,7 @@ import 'package:hikees/components/core/infinite_scroller.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/core/text_may_overflow.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
-import 'package:hikees/components/gallery/gallery.dart';
+import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/models/topic_base.dart';
 import 'package:hikees/models/topic_reply.dart';
 import 'package:hikees/pages/topic/topic_controller.dart';
@@ -18,17 +18,16 @@ import 'package:hikees/themes.dart';
 import 'package:hikees/utils/image.dart';
 import 'package:hikees/utils/time.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:photo_view/photo_view.dart';
 
 class TopicPage extends GetView<TopicController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: HikeeAppBar(
-          title: controller.obx((state) => TextMayOverflow(state!.title),
+          title: controller.hobx((state) => TextMayOverflow(state!.title),
               onLoading: Shimmer()),
           actions: [
-            controller.obx(
+            controller.hobx(
                 (state) => MutationBuilder(
                     userOnly: true,
                     mutation: () {
@@ -81,7 +80,7 @@ class TopicPage extends GetView<TopicController> {
                     Padding(
                         padding: const EdgeInsets.only(
                             top: 16.0, left: 16.0, right: 16.0),
-                        child: controller.obx((state) => _topic(state),
+                        child: controller.hobx((state) => _topic(state),
                             onLoading: _topic(null)))
                   ],
                   loadingItemCount: 10,
