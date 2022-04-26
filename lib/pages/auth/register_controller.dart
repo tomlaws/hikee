@@ -25,7 +25,7 @@ class RegisterController extends GetxController {
     confirmPasswordController.clearError();
 
     if (passwordController.text != confirmPasswordController.text) {
-      throw confirmPasswordController.error = 'Password does not match';
+      throw confirmPasswordController.error = 'passwordsDoNotMatch'.tr;
     }
     var email = emailController.text;
     var password = passwordController.text;
