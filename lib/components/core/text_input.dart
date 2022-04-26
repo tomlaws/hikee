@@ -162,11 +162,12 @@ class _TextInputState extends State<TextInput>
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(height: 6),
+                          Container(height: 8),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text(widget.controller!.error!,
-                                style: TextStyle(color: Colors.red)),
+                                style: TextStyle(
+                                    color: Colors.red.shade700, fontSize: 12)),
                           )
                         ],
                       );

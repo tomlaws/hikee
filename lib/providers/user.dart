@@ -37,6 +37,10 @@ class UserProvider extends BaseProvider {
     });
   }
 
+  Future<void> updatePassword(String password) async {
+    await patch('users/password', {'password': password});
+  }
+
   Future<User> changeIcon(String file) async {
     return await patch('users/icon', {'icon': file}).then((value) {
       return User.fromJson(value.body);
