@@ -290,8 +290,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       ),
                       onDone: (Trail? trail) {
                         if (trail != null) {
-                          //Get.back();
-                          //Get.toNamed('/trails/${trail.id}');
+                          Get.back();
+                          Get.toNamed('/trails/${trail.id}');
                         }
                       },
                       mutation: () async {
