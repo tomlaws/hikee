@@ -46,9 +46,7 @@ class TopicsPage extends GetView<TopicsController> {
                   secondary: true,
                   backgroundColor: Colors.transparent,
                   onPressed: () {
-                    Get.toNamed('/topics/create', arguments: {
-                      //'categoryId': categoriesController.currentCategory.value
-                    });
+                    Get.toNamed('/topics/create');
                   },
                 ),
                 actions: [
@@ -65,10 +63,7 @@ class TopicsPage extends GetView<TopicsController> {
                     },
                   )
                 ],
-                title: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('topics'.tr),
-                )),
+                title: Text('topics'.tr)),
           ),
           list
         ],

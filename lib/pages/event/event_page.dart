@@ -41,6 +41,8 @@ class EventPage extends GetView<EventController> {
                 _eventParticipationController.refetch();
               },
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
                 padding: EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

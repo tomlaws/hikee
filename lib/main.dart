@@ -112,6 +112,12 @@ class MyApp extends StatelessWidget {
           binding: TrailBinding(),
         ),
         GetPage(
+          name: '/events/create',
+          page: () => CreateEventPage(),
+          binding: CreateEventBinding(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
           name: '/events/create/:trailId',
           page: () => CreateEventPage(),
           binding: CreateEventBinding(),

@@ -108,6 +108,7 @@ class Messages extends Translations {
           "reviews": "Reviews",
           "noReviews": "No reviews",
           "selectNow": "Select Now",
+          "selectTrail": "Select trail",
           "findEvents": "Find Events",
           "theresNoEventForThisTrailCurrently":
               "There's no event for this trail currently",
@@ -286,6 +287,7 @@ class Messages extends Translations {
           "reviews": "评论",
           "noReviews": "没有评论",
           "selectNow": "立即选择",
+          "selectTrail": "选择路线",
           "findEvents": "查找活动",
           "theresNoEventForThisTrailCurrently": "这条路线目前没有活动",
           "createEvent": "创建活动",
@@ -461,6 +463,7 @@ class Messages extends Translations {
           "reviews": "評論",
           "noReviews": "沒有評論",
           "selectNow": "立即選擇",
+          "selectTrail": "選擇路線",
           "findEvents": "查找活動",
           "theresNoEventForThisTrailCurrently": "這條路線目前沒有活動",
           "createEvent": "創建活動",

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
 import 'package:hikees/components/core/infinite_scroller.dart';
-import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/components/events/event_tile.dart';
 import 'package:hikees/models/event.dart';
 import 'package:hikees/pages/events/events_controller.dart';
@@ -34,8 +33,16 @@ class EventsPage extends GetView<EventsController> {
             pinned: true,
             elevation: 2,
             shadowColor: Colors.black45,
+            backgroundColor: Colors.black,
             flexibleSpace: HikeeAppBar(
                 elevation: 0,
+                leading: Button(
+                    secondary: true,
+                    backgroundColor: Colors.transparent,
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      Get.toNamed('/events/create');
+                    }),
                 actions: [
                   Button(
                     icon: Icon(Icons.search),
@@ -50,10 +57,7 @@ class EventsPage extends GetView<EventsController> {
                     },
                   )
                 ],
-                title: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('events'.tr),
-                )),
+                title: Text('events'.tr)),
           ),
           list
         ],

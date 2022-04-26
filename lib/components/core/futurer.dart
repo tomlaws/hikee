@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Futurer<T> extends StatelessWidget {
-  const Futurer(
+  Futurer(
       {Key? key, this.future, required this.placeholder, required this.builder})
       : super(key: key);
   final Future<T>? future;

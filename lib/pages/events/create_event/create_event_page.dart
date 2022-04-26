@@ -4,12 +4,15 @@ import 'package:get/get.dart';
 import 'package:hikees/components/core/bottom_bar.dart';
 import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/app_bar.dart';
+import 'package:hikees/components/core/custom_form_field.dart';
+import 'package:hikees/components/core/futurer.dart';
 import 'package:hikees/components/core/shimmer.dart';
 import 'package:hikees/components/core/text_input.dart';
 import 'package:hikees/components/hikees_notifier.dart';
 import 'package:hikees/components/trails/trail_tile.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/models/event.dart';
+import 'package:hikees/models/trail.dart';
 import 'package:hikees/pages/event/event_binding.dart';
 import 'package:hikees/pages/event/event_page.dart';
 import 'package:hikees/pages/events/create_event/create_event_controller.dart';
@@ -21,8 +24,6 @@ class CreateEventPage extends GetView<CreateEventController> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    final trailController =
-        Get.put(TrailController(), tag: 'create-event-${controller.trailId}');
     return Scaffold(
         appBar: HikeeAppBar(
           title: Text('createEvent'.tr),
@@ -37,14 +38,32 @@ class CreateEventPage extends GetView<CreateEventController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      trailController.hobx(
-                          (state) => TrailTile(
-                                trail: state!,
-                                onTap: () {},
-                              ),
-                          onLoading: Shimmer(
-                            height: 100,
-                          )),
+                      Obx(
+                        () => controller.trailId.value == null
+                            ? CustomFormField(builder: (change) {
+                                return Button(
+                                  onPressed: () {
+                                    controller.pickTrail();
+                                  },
+                                  backgroundColor: Color(0xfff5f5f5),
+                                  invert: true,
+                                  height: 240,
+                                  child: Text('selectTrail'.tr),
+                                );
+                              })
+                            : Futurer<Trail>(
+                                future: controller.trailProvider
+                                    .getTrail(controller.trailId.value!),
+                                placeholder: TrailTile(trail: null),
+                                builder: (state) => TrailTile(
+                                      trail: state,
+                                      onTap: () {
+                                        if (controller.canChangeTrail) {
+                                          controller.pickTrail();
+                                        }
+                                      },
+                                    )),
+                      ),
                       SizedBox(
                         height: 16,
                       ),

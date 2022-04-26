@@ -54,15 +54,6 @@ class TrailsPage extends GetView<TrailsController> {
                         Get.toNamed('/trails/create');
                       }),
                   actions: [
-                    // Button(
-                    //     backgroundColor: Colors.transparent,
-                    //     secondary: true,
-                    //     icon: Icon(
-                    //       Icons.grid_view_rounded,
-                    //     ),
-                    //     onPressed: () {
-                    //       Get.toNamed('/trails/categories');
-                    //     }),
                     Button(
                       icon: Icon(Icons.search),
                       secondary: true,
