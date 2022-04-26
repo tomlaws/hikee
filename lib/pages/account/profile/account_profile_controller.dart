@@ -72,4 +72,15 @@ class AccountProfileController extends GetxController {
     });
     _authProvider.refreshMe();
   }
+
+  Future<void> deleteAccount() async {
+    await DialogUtils.showActionDialog(
+        'warning'.tr, Center(child: Text('areYouSureYouWantToDelete'.tr)),
+        critical: true, okText: 'yes'.tr, onOk: () async {
+      await userProvider.deleteAccount();
+      _authProvider.logout();
+      Get.back();
+      return true;
+    });
+  }
 }

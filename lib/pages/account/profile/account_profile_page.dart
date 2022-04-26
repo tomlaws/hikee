@@ -26,6 +26,12 @@ class AccountProfilePage extends GetView<AccountProfileController> {
               },
               title: "updateNickname".tr,
             ),
+            MenuListTile(
+              onTap: () {
+                controller.deleteAccount();
+              },
+              title: "deleteAccount".tr,
+            ),
           ],
         ),
       )),

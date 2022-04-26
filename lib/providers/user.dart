@@ -42,4 +42,10 @@ class UserProvider extends BaseProvider {
       return User.fromJson(value.body);
     });
   }
+
+  Future<bool> deleteAccount() async {
+    return await delete('users').then((value) {
+      return true;
+    });
+  }
 }
