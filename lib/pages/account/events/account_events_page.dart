@@ -9,24 +9,48 @@ import 'package:hikees/pages/account/events/account_events_controller.dart';
 class AccountEventsPage extends GetView<AccountEventsController> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: HikeeAppBar(
-        title: Text('events'.tr),
-      ),
-      body: InfiniteScroller<Event>(
-        controller: controller,
-        empty: Center(
-          child: Text('noParticipatedEvents'.tr),
-        ),
-        separator: SizedBox(
-          height: 16,
-        ),
-        builder: (event) {
-          return EventTile(
-            event: event,
-          );
-        },
-      ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+          appBar: HikeeAppBar(
+            title: Text('events'.tr),
+          ),
+          body: NestedScrollView(
+            headerSliverBuilder: (_, __) => [
+              SliverToBoxAdapter(
+                child: TabBar(
+                    labelColor: Get.theme.primaryColor,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: Get.theme.primaryColor,
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    onTap: (i) {
+                      controller.switchTab(i);
+                    },
+                    tabs: [
+                      Tab(
+                        text: 'participating'.tr,
+                      ),
+                      Tab(
+                        text: 'organizing'.tr,
+                      ),
+                    ]),
+              )
+            ],
+            body: InfiniteScroller<Event>(
+              controller: controller,
+              empty: Center(
+                child: Text('noParticipatedEvents'.tr),
+              ),
+              separator: SizedBox(
+                height: 16,
+              ),
+              builder: (event) {
+                return EventTile(
+                  event: event,
+                );
+              },
+            ),
+          )),
     );
   }
 }

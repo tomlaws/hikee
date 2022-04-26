@@ -8,6 +8,8 @@ import 'package:hikees/messages.dart';
 import 'package:hikees/middlewares/auth.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_binding.dart';
 import 'package:hikees/pages/account/bookmarks/account_bookmarks_page.dart';
+import 'package:hikees/pages/account/events/account_events_binding.dart';
+import 'package:hikees/pages/account/events/account_events_page.dart';
 import 'package:hikees/pages/account/offline_trails/offline_trails_binding.dart';
 import 'package:hikees/pages/account/offline_trails/offline_trails_page.dart';
 import 'package:hikees/pages/account/password/account_password_binding.dart';
@@ -190,6 +192,12 @@ class MyApp extends StatelessWidget {
           name: '/my-topics',
           page: () => AccountTopicsPage(),
           binding: AccountTopicsBinding(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: '/my-events',
+          page: () => AccountEventsPage(),
+          binding: AccountEventsBinding(),
           middlewares: [AuthMiddleware()],
         ),
         GetPage(

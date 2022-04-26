@@ -40,15 +40,22 @@ class CreateEventPage extends GetView<CreateEventController> {
                     children: [
                       Obx(
                         () => controller.trailId.value == null
-                            ? CustomFormField(builder: (change) {
-                                return Button(
-                                  onPressed: () {
-                                    controller.pickTrail();
-                                  },
-                                  backgroundColor: Color(0xfff5f5f5),
-                                  invert: true,
+                            ? CustomFormField(validator: (v) {
+                                if (v == null) {
+                                  return 'fieldCannotBeEmpty'
+                                      .trArgs(['trail'.tr]);
+                                }
+                                return null;
+                              }, builder: (change) {
+                                return SizedBox(
                                   height: 240,
-                                  child: Text('selectTrail'.tr),
+                                  child: Center(
+                                      child: Button(
+                                    onPressed: () {
+                                      controller.pickTrail();
+                                    },
+                                    child: Text('selectTrail'.tr),
+                                  )),
                                 );
                               })
                             : Futurer<Trail>(

@@ -23,7 +23,8 @@ class CustomFormField<T> extends FormField<T> {
                   children: [
                     if (label != null)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0, left: 8),
+                        padding: const EdgeInsets.only(
+                            bottom: 8.0, left: 8, right: 8),
                         child: Text(label,
                             style: TextStyle(
                                 fontSize: 14,
@@ -33,7 +34,12 @@ class CustomFormField<T> extends FormField<T> {
                     InputDecorator(
                       decoration: effectiveDecoration.copyWith(
                           errorText: state.errorText,
-                          border: InputBorder.none,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          filled: true,
+                          fillColor: Color(0xFFF2F2F2),
                           contentPadding: EdgeInsets.symmetric(horizontal: 8),
                           isDense: true),
                       child: builder(state.didChange),

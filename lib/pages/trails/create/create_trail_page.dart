@@ -13,6 +13,7 @@ import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/map/tooltip_shape_border.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
+import 'package:hikees/models/trail_category.dart';
 import 'package:hikees/utils/dialog.dart';
 import 'package:hikees/utils/time.dart';
 import 'package:latlong2/latlong.dart';
@@ -204,6 +205,25 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       },
                     )),
                 Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: MultiDropdownField<TrailCategory>(
+                      label: 'categories'.tr,
+                      items: TrailCategory.all,
+                      selected: controller.categories,
+                      itemBuilder: (r, selected) {
+                        return Text(r.name,
+                            style: TextStyle(
+                                fontWeight: selected ? FontWeight.bold : null));
+                      },
+                      validator: (v) {
+                        if (v == null || v.length == 0) {
+                          return 'fieldCannotBeEmpty'.trArgs(['categories'.tr]);
+                        }
+                        return null;
+                      },
+                      onSaved: (r) {},
+                    )),
+                Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: RatingInput(
                     label: 'difficulty'.tr,
@@ -270,8 +290,8 @@ class CreateTrailPage extends GetView<CreateTrailController> {
                       ),
                       onDone: (Trail? trail) {
                         if (trail != null) {
-                          Get.back();
-                          Get.toNamed('/trails/${trail.id}');
+                          //Get.back();
+                          //Get.toNamed('/trails/${trail.id}');
                         }
                       },
                       mutation: () async {

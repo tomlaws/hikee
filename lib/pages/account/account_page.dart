@@ -86,6 +86,17 @@ class AccountPage extends GetView<AccountController> {
                         ),
                         MenuListTile(
                           onTap: () {
+                            Get.toNamed('/my-events');
+                          },
+                          title: "events".tr,
+                          icon: Icon(
+                            LineAwesomeIcons.globe,
+                            size: 32,
+                            color: Colors.black26,
+                          ),
+                        ),
+                        MenuListTile(
+                          onTap: () {
                             Get.toNamed('/my-topics');
                           },
                           title: "topics".tr,

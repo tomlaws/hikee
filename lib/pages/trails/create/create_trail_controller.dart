@@ -8,6 +8,7 @@ import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/models/pin.dart';
 import 'package:hikees/models/region.dart';
 import 'package:hikees/models/trail.dart';
+import 'package:hikees/models/trail_category.dart';
 import 'package:hikees/providers/trail.dart';
 import 'package:hikees/providers/upload.dart';
 import 'package:hikees/utils/dialog.dart';
@@ -31,6 +32,7 @@ class CreateTrailController extends GetxController {
   var nameController = TextInputController(text: '');
   var descriptionController = TextInputController(text: '');
   var difficulty = 0;
+  var categories = RxList<TrailCategory>([]);
   var region = Rxn<Region>();
   final images = RxList<Uint8List>();
   final imageNames = RxList<String>();
@@ -154,10 +156,10 @@ class CreateTrailController extends GetxController {
     }
     List<String?> uploadedImages = await Future.wait(futures);
     List<String> nonNullImages = uploadedImages.whereType<String>().toList();
-
     return await _trailProvider.createTrail(
         name: nameController.text,
         regionId: region.value!.id,
+        categories: categories,
         difficulty: difficulty,
         description: descriptionController.text,
         path: path,

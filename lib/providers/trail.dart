@@ -57,12 +57,13 @@ class TrailProvider extends BaseProvider {
   }
 
   Future<List<TrailCategory>> getTrailCategories() async {
-    return TrailCategory.allCategories();
+    return TrailCategory.all;
   }
 
   Future<Trail> createTrail({
     required String name,
     required int regionId,
+    required List<TrailCategory> categories,
     required int difficulty,
     required String description,
     required String path,
@@ -74,6 +75,7 @@ class TrailProvider extends BaseProvider {
       'name_zh': name,
       'description_en': description,
       'description_zh': description,
+      'categories': categories.map((e) => e.id).toList(),
       'difficulty': difficulty,
       'regionId': regionId,
       'path': path,
