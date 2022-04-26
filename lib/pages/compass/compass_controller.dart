@@ -435,8 +435,9 @@ class CompassController extends GetxController
           referenceTrailId: trailId,
           regionId: regionId,
           userPath: userPath!);
+      Record? record;
       if (_authProvider.loggedIn.value) {
-        Record record = await _recordProvider.createRecord(
+        record = await _recordProvider.createRecord(
             time: elapsed,
             name: recordName,
             referenceTrailId: trailId,
@@ -487,9 +488,11 @@ class CompassController extends GetxController
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text('startTime'.tr),
-                        Text(DateFormat('yyyy-MM-dd HH:mm').format(date))
+                        Text(DateFormat('yyyy-MM-dd HH:mm')
+                            .format(record?.date.toLocal() ?? date))
                       ],
                     ),
                     SizedBox(
@@ -497,6 +500,7 @@ class CompassController extends GetxController
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text('timeUsed'.tr),
                         Text(TimeUtils.formatSeconds(elapsed))
@@ -507,6 +511,7 @@ class CompassController extends GetxController
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text('distance'.tr),
                         Text(
