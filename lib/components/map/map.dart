@@ -240,7 +240,7 @@ class HikeeMap extends StatelessWidget {
             ],
           ),
         ),
-        if (defaultMarkers && positionStream == null)
+        if (defaultMarkers)
           MarkerLayerWidget(
               options: MarkerLayerOptions(
             markers: [
