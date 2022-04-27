@@ -127,9 +127,7 @@ class TrailsPage extends GetView<TrailsController> {
                       ),
                     ),
                     SizedBox(
-                      height: Get.locale?.languageCode.toLowerCase() == 'en'
-                          ? 233
-                          : 241.5,
+                      height: 240,
                       child: _popularTrailsController.hobx(
                           (state) => ListView.separated(
                               clipBehavior: Clip.none,
@@ -138,7 +136,7 @@ class TrailsPage extends GetView<TrailsController> {
                               separatorBuilder: (_, __) => SizedBox(width: 16),
                               itemCount: state?.length ?? 0,
                               itemBuilder: (_, i) =>
-                                  TrailTile(trail: state?[i], width: 248)),
+                                  TrailTile(trail: state?[i], width: 272)),
                           onLoading: ListView.separated(
                             clipBehavior: Clip.none,
                             padding: EdgeInsets.all(16),
@@ -146,7 +144,7 @@ class TrailsPage extends GetView<TrailsController> {
                             separatorBuilder: (_, __) => SizedBox(width: 16),
                             itemCount: 6,
                             itemBuilder: (_, i) =>
-                                TrailTile(trail: null, width: 248),
+                                TrailTile(trail: null, width: 272),
                           ),
                           onEmpty: Center(
                             child: Text('not found'),
@@ -165,9 +163,7 @@ class TrailsPage extends GetView<TrailsController> {
                       ),
                     ),
                     SizedBox(
-                      height: Get.locale?.languageCode.toLowerCase() == 'en'
-                          ? 233
-                          : 241.5,
+                      height: 240,
                       child: _nearbyTrailsController.hobx(
                           (state) => ListView.separated(
                               clipBehavior: Clip.none,
