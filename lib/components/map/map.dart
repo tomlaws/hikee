@@ -12,6 +12,7 @@ import 'package:hikees/components/core/button.dart';
 import 'package:hikees/components/core/mutation_builder.dart';
 import 'package:hikees/components/map/drag_marker.dart';
 import 'package:hikees/components/map/map_controller.dart';
+import 'package:hikees/components/map/map_ruler.dart';
 import 'package:hikees/components/trails/height_profile.dart';
 import 'package:hikees/models/height_data.dart';
 import 'package:hikees/models/preferences.dart';
@@ -50,7 +51,8 @@ class HikeeMap extends StatelessWidget {
       this.contentMargin = const EdgeInsets.all(8),
       this.header,
       bool offlineTrail = false,
-      this.showCompass = false})
+      this.showCompass = false,
+      this.showRuler = false})
       : super(key: key) {
     _key = key?.toString();
     controller = Get.put(HikeeMapController(), tag: key?.toString());
@@ -81,6 +83,7 @@ class HikeeMap extends StatelessWidget {
   final bool heightData;
   final Widget? header;
   final bool showCompass;
+  final bool showRuler;
 
   String get urlTemplate {
     switch (controller.mapProvider) {
@@ -390,7 +393,17 @@ class HikeeMap extends StatelessWidget {
               ),
             ),
           ),
-        Align(alignment: Alignment.bottomLeft, child: providerAttribution),
+        Align(
+            alignment: Alignment.bottomLeft,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                providerAttribution,
+                if (showRuler)
+                  Container(margin: contentMargin, child: MapRulerWidget())
+              ],
+            )),
         if (heightData)
           Obx(() {
             if (controller.showHeights.value &&

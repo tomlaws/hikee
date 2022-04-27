@@ -430,6 +430,7 @@ class CompassPage extends GetView<CompassController> {
           controller.promptAddMarker(location);
         },
         showCompass: true,
+        showRuler: true,
         offlineTrail: activeTrail.offline,
         path: activeTrail.originalPath,
         userPath: controller.userPath,

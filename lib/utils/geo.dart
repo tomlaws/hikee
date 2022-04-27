@@ -76,7 +76,7 @@ class GeoUtils {
 
   static String formatMetres(int m) {
     if ((m / 1000.0).floor() > 0) {
-      return (m / 1000).toStringAsFixed(2) + 'km';
+      return (m / 1000).toStringAsFixed(2).replaceFirst('.00', '') + 'km';
     }
     return m.toString() + 'm';
   }
