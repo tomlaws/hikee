@@ -139,9 +139,10 @@ class ActiveTrailProvider extends BaseProvider {
       LatLng latlng = LatLng(location.latitude, location.longitude);
 
       // Check whether to update live
+      bool shouldUpdateLiveLocation = false;
       var dist =
           GeoUtils.calculateDistance(activeTrail.value!.userPath.last, latlng);
-      if (dist > 10) this.updateLive();
+      if (dist > 10) shouldUpdateLiveLocation = true;
 
       if (activeTrail.value!.userPath.length > 0 &&
           activeTrail.value!.userPath.last != latlng) {
@@ -149,7 +150,8 @@ class ActiveTrailProvider extends BaseProvider {
           t?.addPoint(latlng);
         });
       }
-
+      if (shouldUpdateLiveLocation)
+        this.updateLive([...activeTrail.value!.userPath, latlng]);
       updateNotification();
     }
     if (activeTrail.value?.originalPath != null) {
@@ -262,12 +264,12 @@ class ActiveTrailProvider extends BaseProvider {
     return live;
   }
 
-  Future<bool> updateLive() async {
+  Future<bool> updateLive(List<LatLng> path) async {
     var liveId = activeTrail.value?.live?.id;
     var liveSecret = activeTrail.value?.live?.secret;
     if (liveId == null || liveSecret == null) return false;
     var params = {
-      'path': GeoUtils.encodePath(activeTrail.value!.userPath),
+      'path': GeoUtils.encodePath(path),
       'secret': liveSecret,
     };
     var res = await patch('live/$liveId', params);
