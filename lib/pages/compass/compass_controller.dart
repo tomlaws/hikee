@@ -612,24 +612,26 @@ class CompassController extends GetxController
                   Container(
                     height: 16,
                   ),
-                  Opacity(
-                    opacity: .75,
-                    child: Text('youAreAwayFromThisDistancePost'
-                        .trArgs([GeoUtils.formatMetres(dist)])),
-                  ),
-                  Opacity(
-                    opacity: .75,
-                    child: Text(
-                      'thisMayHelpTheRescueTeamToLocateYou'.tr,
+                  SizedBox(
+                    width: 300,
+                    child: Opacity(
+                      opacity: .75,
+                      child: Text(
+                        'youAreAwayFromThisDistancePost'
+                                .trArgs([GeoUtils.formatMetres(dist)]) +
+                            " " +
+                            'thisMayHelpTheRescueTeamToLocateYou'.tr,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
+                  )
                 ]
               ],
             );
           },
         ),
-        okText: 'dial'.tr + ' 999', onOk: () {
-      launchUrl(Uri.parse("tel://999"));
+        okText: 'dial'.tr + ' 112', onOk: () {
+      launchUrl(Uri.parse("tel://112"));
     }, critical: true);
   }
 
@@ -652,7 +654,8 @@ class CompassController extends GetxController
               ),
             ],
           ),
-          mutate: true, onOk: () async {
+          mutate: true,
+          okText: 'ok'.tr, onOk: () async {
         await activeTrailProvider.createLive(hours: hours);
       });
     }

@@ -186,7 +186,7 @@ class Messages extends Translations {
           "dial": "Dial",
           "showInMap": "Show in map",
           "thisMayHelpTheRescueTeamToLocateYou":
-              "This may help the rescue team to locate you",
+              "This may help the rescue team to locate you.",
           "youAreAwayFromThisDistancePost":
               "You\'re %s away away from this distance post.",
           "shareLiveLocation": "Share Live Location",
