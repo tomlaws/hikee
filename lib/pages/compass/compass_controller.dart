@@ -698,7 +698,8 @@ class CompassController extends GetxController
             ],
           ),
           critical: true,
-          okText: 'stopSharing'.tr, onOk: () async {
+          okText: 'stopSharing'.tr,
+          cancelText: 'dismiss'.tr, onOk: () async {
         await DialogUtils.showActionDialog(
             'warning'.tr, Text('stopSharingWarning'.tr), critical: true,
             onOk: () {

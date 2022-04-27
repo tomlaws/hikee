@@ -139,7 +139,7 @@ class ActiveTrailProvider extends BaseProvider {
       LatLng latlng = LatLng(location.latitude, location.longitude);
 
       // Check whether to update live
-      bool shouldUpdateLiveLocation = false;
+      bool shouldUpdateLiveLocation = activeTrail.value!.userPath.length == 0;
       var dist =
           GeoUtils.calculateDistance(activeTrail.value!.userPath.last, latlng);
       if (dist > 10) shouldUpdateLiveLocation = true;
@@ -232,6 +232,7 @@ class ActiveTrailProvider extends BaseProvider {
         activeTrail.update((t) {
           t?.addPoint(currentLocation.value!.latLng);
         });
+        this.updateLive([currentLocation.value!.latLng]);
       }
 
       updateNotification();
