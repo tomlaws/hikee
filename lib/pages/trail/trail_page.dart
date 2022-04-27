@@ -466,7 +466,7 @@ class TrailPage extends GetView<TrailController> {
                                                               controller.state;
                                                           if (t != null)
                                                             Share.share(
-                                                                '${t.name}\nhttps://hikees.com/trails/${t.id}');
+                                                                '${t.name}\nhttps://www.hikees.com/trails/${t.id}');
                                                         })
                                                 ],
                                               )),

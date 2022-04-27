@@ -29,7 +29,10 @@ ActiveTrail _$ActiveTrailFromJson(Map<String, dynamic> json) => ActiveTrail(
       ..originalDuration = json['originalDuration'] as int?
       ..originalHeights = (json['originalHeights'] as List<dynamic>?)
           ?.map((e) => HeightData.fromJson(e as Map<String, dynamic>))
-          .toList();
+          .toList()
+      ..live = json['live'] == null
+          ? null
+          : Live.fromJson(json['live'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ActiveTrailToJson(ActiveTrail instance) =>
     <String, dynamic>{
@@ -44,5 +47,6 @@ Map<String, dynamic> _$ActiveTrailToJson(ActiveTrail instance) =>
       'originalDuration': instance.originalDuration,
       'originalPath': instance.originalPath,
       'originalHeights': instance.originalHeights,
+      'live': instance.live,
       'offline': instance.offline,
     };

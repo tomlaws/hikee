@@ -22,6 +22,7 @@ class TextInput extends StatefulWidget {
   final bool autoFocus;
   final List<TextInputFormatter>? inputFormatters;
   final Widget? suffix;
+  final bool readOnly;
 
   const TextInput(
       {Key? key,
@@ -44,7 +45,8 @@ class TextInput extends StatefulWidget {
       this.onTap,
       this.autoFocus = false,
       this.inputFormatters,
-      this.suffix})
+      this.suffix,
+      this.readOnly = false})
       : super(key: key);
 
   @override
@@ -104,6 +106,7 @@ class _TextInputState extends State<TextInput>
               Expanded(
                 flex: widget.expand ? 1 : 0,
                 child: TextFormField(
+                    readOnly: widget.readOnly,
                     initialValue: widget.initialValue,
                     inputFormatters: widget.inputFormatters,
                     focusNode: _focus,

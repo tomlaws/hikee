@@ -25,17 +25,18 @@ class DialogUtils {
               actionsPadding:
                   EdgeInsets.only(left: 16.0, bottom: 12, top: 12, right: 16),
               actionsAlignment: MainAxisAlignment.center,
-              actions: [
-                if (showDismiss)
-                  Button(
-                    secondary: true,
-                    onPressed: () {
-                      if (onDismiss != null) onDismiss();
-                      Get.back();
-                    },
-                    child: Text(dismissText ?? 'dismiss'.tr),
-                  )
-              ],
+              actions: showDismiss
+                  ? [
+                      Button(
+                        secondary: true,
+                        onPressed: () {
+                          if (onDismiss != null) onDismiss();
+                          Get.back();
+                        },
+                        child: Text(dismissText ?? 'dismiss'.tr),
+                      )
+                    ]
+                  : null,
               content: Column(
                 children: [
                   Padding(
@@ -47,6 +48,10 @@ class DialogUtils {
                             style: TextStyle(color: Colors.black),
                           ),
                   ),
+                  if (!showDismiss)
+                    SizedBox(
+                      height: 16,
+                    )
                 ],
               ),
             ));

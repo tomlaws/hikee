@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart' hide TextInput;
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
@@ -611,24 +612,99 @@ class CompassController extends GetxController
                   Container(
                     height: 16,
                   ),
-                  Opacity(
-                    opacity: .75,
-                    child: Text('youAreAwayFromThisDistancePost'
-                        .trArgs([GeoUtils.formatMetres(dist)])),
-                  ),
-                  Opacity(
-                    opacity: .75,
-                    child: Text(
-                      'thisMayHelpTheRescueTeamToLocateYou'.tr,
+                  SizedBox(
+                    width: 300,
+                    child: Opacity(
+                      opacity: .75,
+                      child: Text(
+                        'youAreAwayFromThisDistancePost'
+                                .trArgs([GeoUtils.formatMetres(dist)]) +
+                            " " +
+                            'thisMayHelpTheRescueTeamToLocateYou'.tr,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
+                  )
                 ]
               ],
             );
           },
         ),
-        okText: 'dial'.tr + ' 999', onOk: () {
-      launchUrl(Uri.parse("tel://999"));
+        okText: 'dial'.tr + ' 112', onOk: () {
+      launchUrl(Uri.parse("tel://112"));
     }, critical: true);
+  }
+
+  Future<void> shareLiveLocation() async {
+    if (!activeTrailProvider.hasLive) {
+      const availableDuration = [1, 2, 4, 8, 12];
+      int hours = 4;
+      await DialogUtils.showActionDialog(
+          'shareLiveLocation'.tr,
+          Column(
+            children: [
+              DropdownField<int>(
+                label: 'expiresIn'.tr,
+                itemBuilder: (v) {
+                  return Text(v.toString() + ' ' + 'hours'.tr);
+                },
+                items: availableDuration,
+                selected: hours,
+                onChange: (v) => hours = v,
+              ),
+            ],
+          ),
+          mutate: true,
+          okText: 'ok'.tr, onOk: () async {
+        await activeTrailProvider.createLive(hours: hours);
+      });
+    }
+    if (activeTrailProvider.hasLive) {
+      int id = activeTrailProvider.activeTrail.value!.live!.id!;
+      String secret = activeTrailProvider.activeTrail.value!.live!.secret!;
+      var url = 'https://www.hikees.com/live/$id?secret=$secret';
+      await DialogUtils.showActionDialog(
+          'shareLiveLocation'.tr,
+          Column(
+            children: [
+              Text(
+                'shareYouLiveLocation'.tr,
+                style: TextStyle(color: Colors.black38),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextInput(
+                      initialValue: url,
+                      readOnly: true,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  SizedBox(
+                    height: 44,
+                    child: Button(
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: url));
+                        },
+                        child: Text('copy'.tr)),
+                  )
+                ],
+              )
+            ],
+          ),
+          critical: true,
+          okText: 'stopSharing'.tr, onOk: () async {
+        await DialogUtils.showActionDialog(
+            'warning'.tr, Text('stopSharingWarning'.tr), critical: true,
+            onOk: () {
+          return activeTrailProvider.deleteLive();
+        }, okText: 'yes'.tr);
+      });
+    }
   }
 }
