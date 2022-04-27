@@ -659,7 +659,7 @@ class CompassController extends GetxController
     if (activeTrailProvider.hasLive) {
       int id = activeTrailProvider.activeTrail.value!.live!.id!;
       String secret = activeTrailProvider.activeTrail.value!.live!.secret!;
-      var url = 'https://hikees.com/live/$id?secret=$secret';
+      var url = 'https://www.hikees.com/live/$id?secret=$secret';
       await DialogUtils.showActionDialog(
           'shareLiveLocation'.tr,
           Column(
