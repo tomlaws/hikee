@@ -515,6 +515,28 @@ class CompassPage extends GetView<CompassController> {
                         onError: (_) => SizedBox(),
                         onLoading: SizedBox()),
                   ),
+                  Obx(() => controller.activeTrail.value == null
+                      ? SizedBox()
+                      : Container(
+                          margin: EdgeInsets.only(right: 64),
+                          child: SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: Button(
+                              onPressed: () {
+                                controller.shareLiveLocation();
+                              },
+                              invert: true,
+                              radius: 16,
+                              backgroundColor: Colors.black12,
+                              icon: Icon(
+                                Icons.share_location,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ))
                 ],
               ),
               _weatherController.hobx((weather) {

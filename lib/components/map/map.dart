@@ -382,7 +382,7 @@ class HikeeMap extends StatelessWidget {
                       builder: (_, __) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
+                              vertical: 10.0, horizontal: 16.0),
                           child: Transform.rotate(angle: rot, child: Compass()),
                         );
                       });

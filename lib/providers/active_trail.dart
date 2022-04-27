@@ -12,12 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:get/get.dart';
 import 'package:hikees/models/active_trail.dart';
+import 'package:hikees/models/live.dart';
 import 'package:hikees/models/trail.dart';
 import 'package:hikees/providers/offline.dart';
 import 'package:hikees/providers/shared/base.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:hikees/utils/location_callback_handler.dart';
 import 'package:hikees/utils/location_service_repository.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -135,6 +137,12 @@ class ActiveTrailProvider extends BaseProvider {
         accuracy: location.accuracy);
     if (activeTrail.value?.isStarted == true) {
       LatLng latlng = LatLng(location.latitude, location.longitude);
+
+      // Check whether to update live
+      var dist =
+          GeoUtils.calculateDistance(activeTrail.value!.userPath.last, latlng);
+      if (dist > 10) this.updateLive();
+
       if (activeTrail.value!.userPath.length > 0 &&
           activeTrail.value!.userPath.last != latlng) {
         activeTrail.update((t) {
@@ -238,5 +246,53 @@ class ActiveTrailProvider extends BaseProvider {
 
   quit() async {
     activeTrail.value = null;
+  }
+
+  // Live feature
+  Future<Live> createLive({required int hours}) async {
+    var params = {
+      'path': GeoUtils.encodePath(activeTrail.value!.userPath),
+      'hours': hours,
+    };
+    var res = await post('live', params);
+    Live live = Live.fromJson(res.body);
+    activeTrail.update((val) {
+      val?.live = live;
+    });
+    return live;
+  }
+
+  Future<bool> updateLive() async {
+    var liveId = activeTrail.value?.live?.id;
+    var liveSecret = activeTrail.value?.live?.secret;
+    if (liveId == null || liveSecret == null) return false;
+    var params = {
+      'path': GeoUtils.encodePath(activeTrail.value!.userPath),
+      'secret': liveSecret,
+    };
+    var res = await patch('live/$liveId', params);
+    return jsonDecode(res.body);
+  }
+
+  Future<bool> deleteLive() async {
+    var liveId = activeTrail.value?.live?.id;
+    var liveSecret = activeTrail.value?.live?.secret;
+    if (liveId == null || liveSecret == null) return false;
+    var res = await delete(
+      'live/$liveId/$liveSecret',
+    );
+    activeTrail.update((val) {
+      val?.live = null;
+    });
+    return jsonDecode(res.body);
+  }
+
+  bool get hasLive {
+    return activeTrail.value?.live != null &&
+        activeTrail.value!.live!.id != null &&
+        activeTrail.value!.live!.secret != null &&
+        JwtDecoder.getRemainingTime(activeTrail.value!.live!.secret!)
+                .inSeconds >
+            0;
   }
 }

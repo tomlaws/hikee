@@ -1,4 +1,5 @@
 import 'package:hikees/models/height_data.dart';
+import 'package:hikees/models/live.dart';
 import 'package:hikees/models/map_marker.dart';
 import 'package:hikees/utils/geo.dart';
 import 'package:latlong2/latlong.dart';
@@ -20,6 +21,8 @@ class ActiveTrail {
   int? originalDuration;
   List<LatLng>? originalPath;
   List<HeightData>? originalHeights;
+
+  Live? live;
 
   bool offline;
 

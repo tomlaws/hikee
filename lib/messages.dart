@@ -188,7 +188,15 @@ class Messages extends Translations {
           "thisMayHelpTheRescueTeamToLocateYou":
               "This may help the rescue team to locate you",
           "youAreAwayFromThisDistancePost":
-              "You\'re %s away away from this distance post."
+              "You\'re %s away away from this distance post.",
+          "shareLiveLocation": "Share Live Location",
+          "expiresIn": "Expires in",
+          "shareYouLiveLocation":
+              "Share the link to let someone know your live location",
+          "copy": "Copy",
+          "stopSharing": "Stop Sharing",
+          "stopSharingWarning":
+              "The link will become invalid and no one can see your live location. Are you sure you want to continue?",
         },
         'zh_CN': {
           "bookmarks": "书籤",
@@ -368,7 +376,13 @@ class Messages extends Translations {
           "dial": "拨打",
           "showInMap": "在地图上显示",
           "thisMayHelpTheRescueTeamToLocateYou": "这有助救援团队得悉你的位置",
-          "youAreAwayFromThisDistancePost": "你与标距柱距离 %s"
+          "youAreAwayFromThisDistancePost": "你与标距柱距离 %s",
+          "shareLiveLocation": "分享实况位置",
+          "expiresIn": "有效期",
+          "shareYouLiveLocation": "分享链结即可让对方查看您实况位置",
+          "copy": "复制",
+          "stopSharing": "停止分享",
+          "stopSharingWarning": "链结将会失效，没有人能看到您的实况位置，确定要继续吗？",
         },
         'zh_HK': {
           "bookmarks": "書籤",
@@ -548,7 +562,13 @@ class Messages extends Translations {
           "dial": "撥打",
           "showInMap": "在地圖上顯示",
           "thisMayHelpTheRescueTeamToLocateYou": "這有助救援團隊得悉你的位置",
-          "youAreAwayFromThisDistancePost": "你與標距柱距離 %s"
+          "youAreAwayFromThisDistancePost": "你與標距柱距離 %s",
+          "shareLiveLocation": "分享實況位置",
+          "expiresIn": "有效期",
+          "shareYouLiveLocation": "分享鏈結即可讓對方查看您實況位置",
+          "copy": "複製",
+          "stopSharing": "停止分享",
+          "stopSharingWarning": "鏈結將會失效，沒有人能看到您的實況位置，確定要繼續嗎？",
         },
       };
 }

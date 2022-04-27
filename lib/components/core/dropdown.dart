@@ -5,26 +5,27 @@ import 'package:hikees/utils/dialog.dart';
 import 'package:collection/collection.dart';
 
 class DropdownField<T> extends FormField<T> {
-  DropdownField({
-    Key? key,
-    String? label,
-    required Widget Function(T) itemBuilder,
-    required List<T> items,
-    T? selected,
-    FormFieldSetter<T>? onSaved,
-    FormFieldValidator<T>? validator,
-  }) : super(
+  DropdownField(
+      {Key? key,
+      String? label,
+      required Widget Function(T) itemBuilder,
+      required List<T> items,
+      T? selected,
+      FormFieldSetter<T>? onSaved,
+      FormFieldValidator<T>? validator,
+      Function(T)? onChange})
+      : super(
             key: key,
             onSaved: onSaved,
             validator: validator,
             initialValue: selected,
             builder: (FormFieldState<T> state) {
               return Dropdown<T>(
-                label: label,
-                items: items,
-                itemBuilder: itemBuilder,
-                formFieldState: state,
-              );
+                  label: label,
+                  items: items,
+                  itemBuilder: itemBuilder,
+                  formFieldState: state,
+                  onChange: onChange);
             });
 }
 
@@ -34,7 +35,8 @@ class Dropdown<T> extends StatefulWidget {
       this.label,
       required this.items,
       required this.itemBuilder,
-      this.formFieldState})
+      this.formFieldState,
+      this.onChange})
       : super(key: key);
 
   @override
@@ -43,6 +45,7 @@ class Dropdown<T> extends StatefulWidget {
   final Widget Function(T) itemBuilder;
   final List<T> items;
   final FormFieldState<T>? formFieldState;
+  final Function(T)? onChange;
 }
 
 class _DropdownState<T> extends State<Dropdown<T>> {
@@ -71,6 +74,8 @@ class _DropdownState<T> extends State<Dropdown<T>> {
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
                               if (widget.formFieldState != null) {
+                                if (widget.onChange != null)
+                                  widget.onChange!(e);
                                 widget.formFieldState!.didChange(e);
                               }
                               Get.back();

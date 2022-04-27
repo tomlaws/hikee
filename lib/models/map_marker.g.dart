@@ -15,7 +15,7 @@ MapMarker _$MapMarkerFromJson(Map<String, dynamic> json) => MapMarker(
           : LatLng.fromJson(json['locationInLatLng'] as Map<String, dynamic>),
       title: json['title'] as String,
       color: json['color'] == null
-          ? const Color(0xFF000000)
+          ? Colors.indigo
           : const ColorConverter().fromJson(json['color'] as String?),
       message: json['message'] as String?,
     );
