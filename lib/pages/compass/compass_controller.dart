@@ -94,6 +94,18 @@ class CompassController extends GetxController
     return activeTrailProvider.isCloseToGoal;
   }
 
+  String? get tooltipText {
+    if (activeTrail.value?.isStarted == true &&
+        activeTrailProvider.isCloseToGoal.value &&
+        !activeTrailProvider.recordMode)
+      return 'swipeUpToFinishTheTrail'.tr + '!';
+    if (activeTrail.value?.isStarted == false &&
+        activeTrailProvider.isCloseToStart.value &&
+        !activeTrailProvider.recordMode)
+      return 'swipeUpToStartRecording'.tr + '!';
+    return null;
+  }
+
   Rxn<ActiveTrail> get activeTrail {
     return activeTrailProvider.activeTrail;
   }
@@ -107,9 +119,9 @@ class CompassController extends GetxController
   }
 
   // m per hour
-  int? get speed {
-    return activeTrailProvider.activeTrail.value?.speed;
-  }
+  // int? get speed {
+  //   return activeTrailProvider.activeTrail.value?.speed;
+  // }
 
   int? get estimatedFinishTime {
     return activeTrailProvider.activeTrail.value?.estimatedFinishTime;

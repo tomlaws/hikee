@@ -41,12 +41,11 @@ class ActiveTrail {
     return GeoUtils.getPathLength(path: userPath);
   }
 
-  // meters/second
+  // meters/hour
   int get speed {
     if (elapsed == 0) return 0;
-    var mps = (length / elapsed).floor();
-    var mph = mps * 3600;
-    return mph;
+    var mps = (length.toDouble() / elapsed);
+    return (mps * 1000).round();
   }
 
   // in second

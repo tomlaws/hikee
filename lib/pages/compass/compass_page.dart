@@ -60,14 +60,12 @@ class CompassPage extends GetView<CompassController> {
                   controller.collapsedPanelHeight +
                   16,
               left: 8,
-              child: controller.activeTrail.value?.isStarted == true &&
-                      controller.activeTrailProvider.isCloseToGoal.value &&
-                      !controller.activeTrailProvider.recordMode
+              child: controller.tooltipText != null
                   ? Opacity(
                       opacity: 1 - controller.panelPosition.value,
                       child: FloatingTooltip(
                           animation: true,
-                          child: Text('swipeUpToFinishTheTrail'.tr + '!',
+                          child: Text(controller.tooltipText! + '!',
                               style: TextStyle(fontWeight: FontWeight.w500))),
                     )
                   : SizedBox(),
@@ -177,7 +175,7 @@ class CompassPage extends GetView<CompassController> {
                                     var t = controller.activeTrailProvider.tick
                                         .value; // do not remove this line
                                     return Text(
-                                      '${GeoUtils.formatMetres(controller.speed!)}/h',
+                                      '${GeoUtils.formatMetres(controller.activeTrail.value!.speed)}/h',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w600),
