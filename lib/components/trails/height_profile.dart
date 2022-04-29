@@ -31,14 +31,15 @@ class HeightProfile extends StatelessWidget {
     double maxH = double.negativeInfinity;
     double minH = double.infinity;
     FlSpot? currentSpot;
-    double minDist = double.infinity;
+    double minDistInMeters = double.infinity;
 
     heights.asMap().forEach((index, value) {
-      int dist = 9999;
+      int dist = 99999;
       double e = 0;
 
-      if (myLocation != null)
+      if (myLocation != null) {
         dist = GeoUtils.calculateDistance(value.location, myLocation!);
+      }
       e = value.height.toDouble();
 
       maxH = max(e, maxH);
@@ -51,9 +52,9 @@ class HeightProfile extends StatelessWidget {
       }
       var spot = FlSpot(length, e);
 
-      if (dist < minDist) {
+      if (dist < minDistInMeters) {
         currentSpot = spot;
-        minDist = dist.toDouble();
+        minDistInMeters = dist.toDouble();
       }
       return spots.add(spot);
       //}
@@ -68,7 +69,7 @@ class HeightProfile extends StatelessWidget {
       //   );
     }
     bool _showCurrent = true;
-    if (minDist > 1) {
+    if (minDistInMeters > 100) {
       // far away from trail
       _showCurrent = false;
     }

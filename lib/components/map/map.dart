@@ -152,6 +152,10 @@ class HikeeMap extends StatelessWidget {
     var result1 = _adjustMarkers(path);
     double startMarkerAngle = result1.item1;
     LatLng? startMarker = result1.item2;
+    if (positionStream != null &&
+        path != null &&
+        userPath != null &&
+        userPath!.length > 0) startMarker = null;
     LatLng? endMarker = result1.item3;
     Widget startMarkerContent = Center(
       child: Transform.rotate(
