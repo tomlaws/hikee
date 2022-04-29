@@ -70,6 +70,7 @@ dependencies:
   sqflite: ^2.0.2
   geolocator: ^8.2.0
   flutter_compass: ^0.7.0
+  synchronized: ^3.0.0+2
 dev_dependencies:
   flutter_test:
     sdk: flutter

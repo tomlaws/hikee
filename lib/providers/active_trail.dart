@@ -22,6 +22,7 @@ import 'package:hikees/utils/location_service_repository.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:synchronized/synchronized.dart';
 
 // Core Provider
 class ActiveTrailProvider extends BaseProvider {
@@ -36,7 +37,7 @@ class ActiveTrailProvider extends BaseProvider {
   Timer? _timer;
   final tick = 0.obs;
   final heights = RxList<double>();
-  bool tracking = false;
+  var lock = Lock();
 
   bool get recordMode {
     if (activeTrail.value == null) return false;
@@ -47,32 +48,28 @@ class ActiveTrailProvider extends BaseProvider {
   void onInit() {
     super.onInit();
     _load();
-    activeTrail.listen((_) {
-      _update();
-      if (activeTrail.value == null || !activeTrail.value!.isStarted) {
-        if (_timer != null) {
-          tick.value = 0;
-          _timer!.cancel();
-          _timer = null;
+    activeTrail.listen((_) async {
+      await lock.synchronized(() async {
+        _update();
+        if (activeTrail.value == null || !activeTrail.value!.isStarted) {
+          if (_timer != null) {
+            tick.value = 0;
+            _timer!.cancel();
+            _timer = null;
+          }
+        } else {
+          _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+            // update
+            tick.value += 1;
+          });
         }
-      } else {
-        _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-          // update
-          tick.value += 1;
-        });
-      }
-      // location tracking
-      if (activeTrail.value == null) {
-        if (tracking) {
-          _stopLocationTracking();
-          print('stop tracking');
+        // location tracking
+        if (activeTrail.value == null) {
+          await _stopLocationTracking();
+        } else {
+          await _startLocationTracking();
         }
-      } else {
-        if (!tracking) {
-          _startLocationTracking();
-          print('start tracking');
-        }
-      }
+      });
     });
 
     // For location tracking
@@ -91,7 +88,8 @@ class ActiveTrailProvider extends BaseProvider {
   }
 
   @override
-  void onClose() {
+  void onClose() async {
+    await _stopLocationTracking();
     activeTrail.close();
     IsolateNameServer.removePortNameMapping(
         LocationServiceRepository.isolateName);
@@ -125,7 +123,6 @@ class ActiveTrailProvider extends BaseProvider {
                 notificationIconColor: Colors.grey,
                 notificationTapCallback:
                     LocationCallbackHandler.notificationCallback)));
-    tracking = true;
   }
 
   Future<void> _stopLocationTracking() async {
@@ -174,7 +171,7 @@ class ActiveTrailProvider extends BaseProvider {
   }
 
   Future<void> updateNotification() async {
-    if (tracking) {
+    if (await BackgroundLocator.isRegisterLocationUpdate()) {
       BackgroundLocator.updateNotificationText(bigMsg: notificationText);
     }
   }
@@ -207,16 +204,19 @@ class ActiveTrailProvider extends BaseProvider {
       // } catch (ex) {
       //   print(ex);
       // }
-      activeTrail.value = ActiveTrail(
-          name: trail.name,
-          regionId: trail.regionId,
-          referenceTrailId: trail.id,
-          originalPath: GeoUtils.decodePath(trail.path));
-      isCloseToStart.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!.latLng, activeTrail.value!.originalPath![0]);
-      isCloseToGoal.value = GeoUtils.isCloseToPoint(
-          currentLocation.value!.latLng, activeTrail.value!.originalPath!.last);
-      updateNotification();
+      await lock.synchronized(() async {
+        activeTrail.value = ActiveTrail(
+            name: trail.name,
+            regionId: trail.regionId,
+            referenceTrailId: trail.id,
+            originalPath: GeoUtils.decodePath(trail.path));
+        isCloseToStart.value = GeoUtils.isCloseToPoint(
+            currentLocation.value!.latLng, activeTrail.value!.originalPath![0]);
+        isCloseToGoal.value = GeoUtils.isCloseToPoint(
+            currentLocation.value!.latLng,
+            activeTrail.value!.originalPath!.last);
+        updateNotification();
+      });
     } catch (ex) {
       print(ex);
     }
@@ -224,32 +224,38 @@ class ActiveTrailProvider extends BaseProvider {
 
   start() async {
     try {
-      if (activeTrail.value == null) return;
-      var startTime = DateTime.now().millisecondsSinceEpoch;
-      activeTrail.update((t) {
-        t?.startTime = startTime;
-      });
-      if (currentLocation.value != null) {
+      await lock.synchronized(() async {
+        if (activeTrail.value == null) return;
+        var startTime = DateTime.now().millisecondsSinceEpoch;
         activeTrail.update((t) {
-          t?.addPoint(currentLocation.value!.latLng);
+          t?.startTime = startTime;
         });
-        this.updateLive([currentLocation.value!.latLng]);
-      }
+        if (currentLocation.value != null) {
+          activeTrail.update((t) {
+            t?.addPoint(currentLocation.value!.latLng);
+          });
+          this.updateLive([currentLocation.value!.latLng]);
+        }
 
-      updateNotification();
+        updateNotification();
+      });
     } catch (ex) {
       print(ex);
     }
   }
 
   record() async {
-    final _offlineProvider = Get.find<OfflineProvider>();
-    activeTrail.value = ActiveTrail();
-    updateNotification();
+    await lock.synchronized(() async {
+      final _offlineProvider = Get.find<OfflineProvider>();
+      activeTrail.value = ActiveTrail();
+      updateNotification();
+    });
   }
 
   quit() async {
-    activeTrail.value = null;
+    await lock.synchronized(() async {
+      activeTrail.value = null;
+    });
   }
 
   // Live feature
