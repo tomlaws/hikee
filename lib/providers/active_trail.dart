@@ -65,10 +65,12 @@ class ActiveTrailProvider extends BaseProvider {
       if (activeTrail.value == null) {
         if (tracking) {
           _stopLocationTracking();
+          print('stop tracking');
         }
       } else {
         if (!tracking) {
           _startLocationTracking();
+          print('start tracking');
         }
       }
     });
@@ -98,6 +100,7 @@ class ActiveTrailProvider extends BaseProvider {
   }
 
   Future<void> _startLocationTracking() async {
+    await _stopLocationTracking();
     Map<String, dynamic> data = {'countInit': 1};
     double distanceFilter = 12.0; // 12meters
     await BackgroundLocator.registerLocationUpdate(
@@ -125,9 +128,8 @@ class ActiveTrailProvider extends BaseProvider {
     tracking = true;
   }
 
-  void _stopLocationTracking() {
-    BackgroundLocator.unRegisterLocationUpdate();
-    tracking = false;
+  Future<void> _stopLocationTracking() async {
+    await BackgroundLocator.unRegisterLocationUpdate();
   }
 
   Future<void> onLocationChange(LocationDto location) async {
@@ -165,7 +167,7 @@ class ActiveTrailProvider extends BaseProvider {
 
   String get notificationText {
     return activeTrail.value?.isStarted == true
-        ? "You've walked ${activeTrail.value!.length.toString()} km"
+        ? "You\'re hiking. Tap to see more details."
         : (recordMode
             ? 'You\'re in recording mode. Tap to see more details.'
             : 'Trail selected. Tap to see more details.');
@@ -210,7 +212,6 @@ class ActiveTrailProvider extends BaseProvider {
           regionId: trail.regionId,
           referenceTrailId: trail.id,
           originalPath: GeoUtils.decodePath(trail.path));
-
       isCloseToStart.value = GeoUtils.isCloseToPoint(
           currentLocation.value!.latLng, activeTrail.value!.originalPath![0]);
       isCloseToGoal.value = GeoUtils.isCloseToPoint(
