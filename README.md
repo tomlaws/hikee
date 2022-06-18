@@ -2,14 +2,22 @@
 
 This is our final year project at HKUST.
 
-# Setup
+# Screenshots
+<table>
+<tr>
+<td><img src="screenshots/1.png" height="400"/></td>
+<td><img src="screenshots/2.png" height="400"/></td>
+</tr>
+<tr>
+<td><img src="screenshots/3.png" height="400"/></td>
+<td><img src="screenshots/4.png" height="400"/></td>
+</tr>
+<tr>
+<td><img src="screenshots/5.png" height="400"/></td>
+<td><img src="screenshots/6.png" height="400"/></td>
+</tr>
 
-1. Install <a href="https://flutter.dev/docs/get-started/install">Flutter and Android Studio</a>
-2. Run `flutter run -t lib/main-dev-bs.dart` to launch the app in emulator/browser
-3. `flutter build web --web-renderer canvaskit`
-
-# JSON Serialization/Deserialization Setup
-1. Run `flutter pub run build_runner build --delete-conflicting-outputs`
+</table>
 
 # Team
 
